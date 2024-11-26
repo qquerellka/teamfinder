@@ -14,7 +14,7 @@
 	"devDependencies": {
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
-		"prettier": "^3.1.1",
+		"prettier": "3.3.3",
 		"prettier-plugin-svelte": "^3.1.2",
 		"sass-embedded": "^1.80.5",
 		"svelte": "^4.2.7",
@@ -24,6 +24,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fontsource-variable/noto-sans-display": "^5.1.0",
 		"@sveltejs/adapter-node": "^5.2.2",
 		"svelte-routing": "^2.13.0"
 	}
