@@ -1,0 +1,43 @@
+﻿# venv / окружение
+.venv/
+env/
+venv/
+
+# кэш/мусор Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# локальные БД и дампы
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+
+# конфиги/секреты
+.env
+.env.*
+*.key
+*.pem
+
+# логи и временные файлы
+*.log
+*.tmp
+*.swp
+
+# IDE/OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# сборки/артефакты
+dist/
+build/
