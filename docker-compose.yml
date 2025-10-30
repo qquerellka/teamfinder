@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:15
+    container_name: teamfinder-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: teamfinder
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../sql/initdb:/docker-entrypoint-initdb.d
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d teamfinder"]
+      interval: 5s
+      timeout: 5s
+      retries: 20

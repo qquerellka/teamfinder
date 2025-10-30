@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 # Teamfinder — Backend & SQL DB (PostgreSQL)
 
@@ -306,6 +305,3 @@ README.md
 
 **Nice-to-have:**
 - Рекомендации (матчинг по навыкам), артефакты проектов, рефералки, приглашение в команду по ссылке.
-=======
-# teamfinder_backend
->>>>>>> 4070cb90d360c2b54cb4c961724ccf13ea4c6ee9
