@@ -8,7 +8,7 @@ import type { ComponentType, JSX } from 'react';
 import { HackathonsPage } from '@/pages/HackathonsPage';
 interface Route {
   path: string;
-  Component: ComponentType;
+  Component: ComponentType<any>;
   title?: string;
   icon?: JSX.Element;
 }

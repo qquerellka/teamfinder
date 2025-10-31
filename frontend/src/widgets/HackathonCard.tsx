@@ -1,6 +1,6 @@
 import { FC } from "react";
 import styled from "styled-components";
-import { Card, Title, Cell, Image } from "@telegram-apps/telegram-ui";
+import { Card, Title } from "@telegram-apps/telegram-ui";
 import hackathonImage2 from "../../assets/hackathonImage8.webp";
 import hackathonImage1 from "../../assets/hackathonImage7.webp";
 import hackathonImage3 from "../../assets/hackathonImage6.webp";
@@ -59,14 +59,16 @@ export const HackathonCard: FC<Hackathon> = ({
       </Poster>
       <Info>
         <Title weight="1">{name}</Title>
-        {hackathonParams.map(({ icon, text }, index) => (
-          <HackathonCardParam key={index}>
-            <img src={icon} alt={text} />
-            <SubTitle level={"2"} weight="3">
-              {text}
-            </SubTitle>
-          </HackathonCardParam>
-        ))}
+        <HackathonCardParams>
+          {hackathonParams.map(({ icon, text }, index) => (
+            <HackathonCardParam key={index}>
+              <img src={icon} alt={text} />
+              <SubTitle level={"2"} weight="3">
+                {text}
+              </SubTitle>
+            </HackathonCardParam>
+          ))}
+        </HackathonCardParams>
       </Info>
     </HackCard>
   );
@@ -79,7 +81,7 @@ const HackCard = styled(Card)`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1); /* Улучшение внешнего вида */
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   &:hover {
     transform: translateY(-5px);
@@ -113,11 +115,17 @@ const Poster = styled.div`
   }
 `;
 
-const Info = styled.div``;
+const Info = styled.div`
+  margin: 0 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
 
 const SubTitle = styled(Title)`
   color: var(--tg-theme-hint-color, #8e8e93);
   font-size: 1rem;
+  line-height: normal;
 `;
 
 const HackathonCardParam = styled.div`
@@ -125,6 +133,10 @@ const HackathonCardParam = styled.div`
   flex-direction: row;
   gap: 0.5rem;
   align-items: center;
-  margin-bottom: 8px;
 `;
 
+const HackathonCardParams = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
