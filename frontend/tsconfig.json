@@ -30,7 +30,7 @@
   },
   "include": [
     "src"
-  ],
+, "src/widgets/DisplayData", "src/widgets/Link", "src/widgets/RGB"  ],
   "references": [
     {
       "path": "./tsconfig.node.json"
