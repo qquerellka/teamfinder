@@ -1,1 +1,0 @@
-import{j as s}from"./index-CIkW4Xix.js";import{h as a}from"./hackathonImage7-DCu_ugfE.js";import{A as o}from"./Avatar-6pgY5BgR.js";const r=()=>s.jsx(o,{src:a,size:96});export{r as NotificationsPage,r as default};
