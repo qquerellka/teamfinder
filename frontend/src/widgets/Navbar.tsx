@@ -1,55 +1,60 @@
-// Navbar.tsx
+import { FC } from "react";
 import styled from "styled-components";
 import { Tabbar, Image } from "@telegram-apps/telegram-ui";
-import { useState } from "react";
+import { NavLink } from "react-router-dom";
+
 import Hack from "../../assets/icons/hackathonsPageIcon.svg";
 import Bell from "../../assets/icons/NotificationsIcon.svg";
 import Prof from "../../assets/icons/ProfileIcon.svg";
 
-const STabbar = styled(Tabbar)`
+const NAV = [
+  { id: 1, name: "hackathons", icon: Hack, path: "/" },
+  { id: 2, name: "notifications", icon: Bell, path: "/notifications" },
+  { id: 3, name: "profile", icon: Prof, path: "/profile" },
+];
 
+export const Navbar: FC = () => (
+  <STabbar>
+    {NAV.map(({ id, icon, path }) => (
+      <SItem key={id}>
+        <NavLink
+          to={path}
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          <SImage src={icon} />
+        </NavLink>
+      </SItem>
+    ))}
+  </STabbar>
+);
+
+const STabbar = styled(Tabbar)`
   position: sticky;
   bottom: 0;
-  background: var(--tg-theme-secondary-bg-color, #fff);
-
+  background: var(--tg-theme-section-bg-color, #fff);
 `;
 
-const SItem = styled(Tabbar.Item)<{ $active?: boolean }>`
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  padding: 0;
-  color: ${({ $active }) =>
-    $active
-      ? "var(--tg-theme-accent-text-color, #2481cc)"
-      : "var(--tg-theme-hint-color, #8e8e93)"};
+const SItem = styled(Tabbar.Item)`
+  a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    color: var(--tg-theme-hint-color, #8e8e93);
+    text-decoration: none;
+    transition: color 0.2s ease;
 
-  svg {
-    width: 24px;
-    height: 24px;
+    img {
+      
+    }
+  }
+  
+  a.active {
+    color: var(--tg-theme-accent-text-color, #2481cc);
   }
 `;
 
-const NAV = [
-  { id: 1, name: "hackathons", icon: Hack },
-  { id: 2, name: "notifications", icon: Bell },
-  { id: 3, name: "profile", icon: Prof },
-];
-
-export const Navbar = () => {
-  const [active, setActive] = useState(1);
-  return (
-    <STabbar>
-      {NAV.map(({ id, icon }) => (
-        <SItem
-          key={id}
-          $active={active === id} // transient-prop, не уедет в DOM
-          selected={active === id}
-          onClick={() => setActive(id)}
-        >
-          <Image src={icon} />
-        </SItem>
-      ))}
-    </STabbar>
-  );
-};
+const SImage = styled(Image)`
+  box-shadow: none;
+  background: var(--tg-theme-section-bg-color, #fff);
+`

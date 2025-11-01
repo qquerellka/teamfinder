@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
-import { FixedLayout, Title } from "@telegram-apps/telegram-ui";
+import { FixedLayout } from "@telegram-apps/telegram-ui";
 import { Navbar } from "../widgets/Navbar";
 
 export default function RootLayout() {
@@ -44,11 +44,11 @@ export default function RootLayout() {
 
   return (
     <SRoot>
-      <SHeaderFixed>
+      {/* <SHeaderFixed>
         <SHeaderInner ref={topRef}>
           <Title>Header</Title>
         </SHeaderInner>
-      </SHeaderFixed>
+      </SHeaderFixed> */}
 
       <SContent $top={offsets.top} $bottom={offsets.bottom}>
         <Outlet />
@@ -72,24 +72,24 @@ const SRoot = styled.div`
   padding: 1rem;
 `;
 
-const SHeaderFixed = styled(FixedLayout).attrs({
-  vertical: "top",
-  Component: "header",
-})``;
+// const SHeaderFixed = styled(FixedLayout).attrs({
+//   vertical: "top",
+//   Component: "header",
+// })``;
 
 const SFooterFixed = styled(FixedLayout).attrs({
   vertical: "bottom",
   Component: "footer",
 })``;
 
-const SHeaderInner = styled.div`
-  padding: 0.75rem;
-  background: var(--tg-theme-bg-color, #fff);
-`;
+// const SHeaderInner = styled.div`
+//   padding: 0.75rem;
+//   background: var(--tg-theme-bg-color, #fff);
+// `;
 
 const SFooterInner = styled.div`
+  background: var(--tg-theme-section-bg-color, #fff);
   padding-bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
-  background: var(--tg-theme-secondary-bg-color, #fff);
 `;
 
 const SContent = styled.div<{ $top: number; $bottom: number }>`

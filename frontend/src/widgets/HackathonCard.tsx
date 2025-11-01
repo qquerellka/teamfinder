@@ -75,7 +75,7 @@ export const HackathonCard: FC<Hackathon> = ({
 };
 
 const HackCard = styled(Card)`
-  background: var(--tg-theme-secondary-bg-color, #fff);
+  background: var(--tg-theme-section-bg-color, #fff);
   border-radius: 1rem;
   padding: 0.5rem 0.5rem 1rem 0.5rem;
   display: flex;

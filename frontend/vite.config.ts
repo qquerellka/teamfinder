@@ -1,15 +1,15 @@
-import react from '@vitejs/plugin-react-swc';
-import { defineConfig } from 'vite';
-import mkcert from 'vite-plugin-mkcert';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "vite";
+import mkcert from "vite-plugin-mkcert";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/teamfinder/',
+  base: "/teamfinder/",
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern',
+        api: "modern",
       },
     },
   },
@@ -26,10 +26,10 @@ export default defineConfig({
     process.env.HTTPS && mkcert(),
   ],
   build: {
-    target: 'esnext',
-    minify: 'terser'
+    target: "esnext",
+    minify: "terser",
   },
-  publicDir: './public',
+  publicDir: "./public",
   server: {
     // Exposes your dev server and makes it accessible for the devices in the same network.
     host: true,
