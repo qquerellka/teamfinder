@@ -1,0 +1,1 @@
+import{u as a,j as s,N as t}from"./index-CIkW4Xix.js";import{h as o,H as r}from"./hackathons-D3M_PXHL.js";import"./hackathonImage7-DCu_ugfE.js";import"./hackathonImage6-shJ4JQ9w.js";const i=()=>{const{id:i}=a(),n=o.find(a=>String(a.id)===i);return n?s.jsx(r,{...n}):s.jsx(t,{to:"*",replace:!0})};export{i as HackathonPage,i as default};
