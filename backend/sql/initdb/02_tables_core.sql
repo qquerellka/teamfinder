@@ -117,3 +117,14 @@ CREATE TABLE IF NOT EXISTS notification (
   is_read    BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS achievements (
+  id         BIGSERIAL PRIMARY KEY,
+  user_id    BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+  name       TEXT NOT NULL,                        
+  impact     TEXT,
+  place      achiev_place NOT NULL DEFAULT 'participant',
+  hackLink   TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+);

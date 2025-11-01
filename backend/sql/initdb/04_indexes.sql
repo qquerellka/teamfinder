@@ -10,3 +10,5 @@ CREATE INDEX IF NOT EXISTS idx_us_user            ON user_skills(user_id);
 
 CREATE INDEX IF NOT EXISTS idx_invite_active      ON invite   (application_id) WHERE status='pending';
 CREATE INDEX IF NOT EXISTS idx_response_active    ON response (vacancy_id)    WHERE status='pending';
+
+CREATE INDEX IF NOT EXISTS idx_achieves_user_id   ON achievements (user_id);
