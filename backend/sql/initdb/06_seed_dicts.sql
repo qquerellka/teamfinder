@@ -1,6 +1,6 @@
 INSERT INTO role_dict(name) VALUES
   ('DevOps'), ('Game developer'), 
-  ('IOS / Android dev'), ('Product manager'), , ('DS'), ('ML'),
+  ('IOS / Android dev'), ('Product manager'), ('DS'), ('ML'),
    ('Fullstack'),
   ('backend'), ('frontend'), ('designer'), ('analytics'), ('qa')
 ON CONFLICT (name) DO NOTHING;

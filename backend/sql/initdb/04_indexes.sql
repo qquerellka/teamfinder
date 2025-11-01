@@ -7,8 +7,6 @@ CREATE INDEX IF NOT EXISTS idx_ar_role            ON application_roles(role_id);
 CREATE INDEX IF NOT EXISTS idx_ar_app             ON application_roles(application_id);
 CREATE INDEX IF NOT EXISTS idx_us_skill           ON user_skills(skill_id);
 CREATE INDEX IF NOT EXISTS idx_us_user            ON user_skills(user_id);
-CREATE INDEX IF NOT EXISTS idx_uss_skill          ON user_soft_skills(soft_skill_id);
-CREATE INDEX IF NOT EXISTS idx_uss_user           ON user_soft_skills(user_id);
 
 CREATE INDEX IF NOT EXISTS idx_invite_active      ON invite   (application_id) WHERE status='pending';
 CREATE INDEX IF NOT EXISTS idx_response_active    ON response (vacancy_id)    WHERE status='pending';

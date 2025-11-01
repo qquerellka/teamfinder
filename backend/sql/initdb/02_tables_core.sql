@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS hackathon (
   id                    BIGSERIAL PRIMARY KEY,
   name                  TEXT NOT NULL,
   description           TEXT,
+  image_link            TEXT,
   start_date            TIMESTAMPTZ NOT NULL,
   end_date              TIMESTAMPTZ NOT NULL,
   registration_end_date TIMESTAMPTZ,
