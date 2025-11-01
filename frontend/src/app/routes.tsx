@@ -1,16 +1,38 @@
-import type { ComponentType, JSX } from "react";
-import { HackathonsPage } from "@/pages/HackathonsPage";
-import { NotificationsPage } from "@/pages/NotificationsPage";
-import { ProfilePage } from "@/pages/Profile";
-interface Route {
-  path: string;
-  Component: ComponentType<any>;
-  title?: string;
-  icon?: JSX.Element;
-}
+import { lazy } from "react";
+import { useRoutes, type RouteObject, Navigate } from "react-router-dom";
+import RootLayout from "./Layout";
+import { paths } from "./paths";
 
-export const routes: Route[] = [
-  { path: "/", Component: HackathonsPage },
-  { path: "/notifications", Component: NotificationsPage },
-  { path: "/profile", Component: ProfilePage },
+const HackathonsPage = lazy(() => import("@/pages/HackathonsPage"));
+const HackathonPage = lazy(() => import("@/pages/HackathonPage"));
+const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
+const ProfilePage = lazy(() => import("@/pages/Profile"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
+const routes: RouteObject[] = [
+  {
+    path: paths.root,
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <Navigate to={paths.hackathons} replace /> },
+
+      {
+        path: paths.hackathons,
+        children: [
+          { index: true, element: <HackathonsPage /> },
+          { path: ":id", element: <HackathonPage /> },
+        ],
+      },
+
+      { path: paths.notifications, element: <NotificationsPage /> },
+      { path: paths.profile, element: <ProfilePage /> },
+      { path: paths.error404, element: <NotFound /> },
+      { path: "*", element: <Navigate to={paths.hackathons} replace /> },
+    ],
+  },
 ];
+
+export function AppRouter() {
+  const element = useRoutes(routes);
+  return element;
+}

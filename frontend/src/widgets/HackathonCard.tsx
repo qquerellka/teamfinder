@@ -32,6 +32,7 @@ export const HackathonCard: FC<Hackathon> = ({
   city,
   mode,
   prizeFund,
+
 }) => {
   const hackathonParams = [
     {

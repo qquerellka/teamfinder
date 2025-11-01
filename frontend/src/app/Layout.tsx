@@ -1,9 +1,9 @@
-// RootLayout.tsx
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
-import { FixedLayout } from "@telegram-apps/telegram-ui";
+import { FixedLayout, Spinner } from "@telegram-apps/telegram-ui";
 import { Navbar } from "../widgets/Navbar";
+import BackButtonController from "./BackButtonController";
 
 export default function RootLayout() {
   const topRef = useRef<HTMLDivElement>(null);
@@ -42,24 +42,36 @@ export default function RootLayout() {
     return () => window.removeEventListener("resize", setVH);
   }, []);
 
+  function PageFallback() {
+    return (
+      <div
+        style={{
+          minHeight: "60vh",
+          display: "grid",
+          placeItems: "center",
+          padding: 12,
+        }}
+      >
+        <Spinner size="l" />
+      </div>
+    );
+  }
+
   return (
-    <SRoot>
-      {/* <SHeaderFixed>
-        <SHeaderInner ref={topRef}>
-          <Title>Header</Title>
-        </SHeaderInner>
-      </SHeaderFixed> */}
+    <Suspense fallback={<PageFallback />}>
+      <BackButtonController />
+      <SRoot>
+        <SContent $top={offsets.top} $bottom={offsets.bottom}>
+          <Outlet />
+        </SContent>
 
-      <SContent $top={offsets.top} $bottom={offsets.bottom}>
-        <Outlet />
-      </SContent>
-
-      <SFooterFixed>
-        <SFooterInner ref={bottomRef}>
-          <Navbar />
-        </SFooterInner>
-      </SFooterFixed>
-    </SRoot>
+        <SFooterFixed>
+          <SFooterInner ref={bottomRef}>
+            <Navbar />
+          </SFooterInner>
+        </SFooterFixed>
+      </SRoot>
+    </Suspense>
   );
 }
 
@@ -72,20 +84,10 @@ const SRoot = styled.div`
   padding: 1rem;
 `;
 
-// const SHeaderFixed = styled(FixedLayout).attrs({
-//   vertical: "top",
-//   Component: "header",
-// })``;
-
 const SFooterFixed = styled(FixedLayout).attrs({
   vertical: "bottom",
   Component: "footer",
 })``;
-
-// const SHeaderInner = styled.div`
-//   padding: 0.75rem;
-//   background: var(--tg-theme-bg-color, #fff);
-// `;
 
 const SFooterInner = styled.div`
   background: var(--tg-theme-section-bg-color, #fff);

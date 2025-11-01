@@ -6,11 +6,12 @@ import { NavLink } from "react-router-dom";
 import Hack from "../../assets/icons/hackathonsPageIcon.svg";
 import Bell from "../../assets/icons/NotificationsIcon.svg";
 import Prof from "../../assets/icons/ProfileIcon.svg";
+import { paths } from "@/app/paths";
 
 const NAV = [
-  { id: 1, name: "hackathons", icon: Hack, path: "/" },
-  { id: 2, name: "notifications", icon: Bell, path: "/notifications" },
-  { id: 3, name: "profile", icon: Prof, path: "/profile" },
+  { id: 1, name: "hackathons", icon: Hack, path: paths.hackathons },
+  { id: 2, name: "notifications", icon: Bell, path: paths.notifications },
+  { id: 3, name: "profile", icon: Prof, path: paths.profile },
 ];
 
 export const Navbar: FC = () => (

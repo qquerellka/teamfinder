@@ -1,10 +1,9 @@
-import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import { useLaunchParams, useSignal, miniApp } from "@tma.js/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 
-import { routes } from "@/app/routes";
-import RootLayout from "./Layout";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { AppRouter } from "./routes";
 
 function ErrorBoundaryError({ error }: { error: unknown }) {
   return (
@@ -14,9 +13,9 @@ function ErrorBoundaryError({ error }: { error: unknown }) {
         <code>
           {error instanceof Error
             ? error.message
-            : typeof error === 'string'
-              ? error
-              : JSON.stringify(error)}
+            : typeof error === "string"
+            ? error
+            : JSON.stringify(error)}
         </code>
       </blockquote>
     </div>
@@ -36,14 +35,7 @@ export function App() {
         }
       >
         <HashRouter>
-          <Routes>
-            <Route element={<RootLayout />}>
-              {routes.map((r) => (
-                <Route key={r.path} {...r} />
-              ))}
-            </Route>{" "}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
+          <AppRouter />
         </HashRouter>
       </AppRoot>
     </ErrorBoundary>
