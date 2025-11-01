@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS achievements (
   id         BIGSERIAL PRIMARY KEY,
   user_id    BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   name       TEXT NOT NULL,                        
-  impact     TEXT,
+  role       TEXT NOT NULL,
   place      achiev_place NOT NULL DEFAULT 'participant',
   hackLink   TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
