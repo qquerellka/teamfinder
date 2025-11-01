@@ -7,6 +7,7 @@ const TAB_ROUTES: ReadonlySet<string> = new Set([
   paths.hackathons,
   paths.notifications,
   paths.profile,
+  paths.teams,
 ]);
 
 export default function BackButtonController() {

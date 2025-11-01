@@ -90,6 +90,8 @@ const SFooterFixed = styled(FixedLayout).attrs({
 })``;
 
 const SFooterInner = styled.div`
+  border-radius: 1rem 1rem 0 0;
+  /* overflow: hidden; */
   background: var(--tg-theme-section-bg-color, #fff);
   padding-bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
 `;

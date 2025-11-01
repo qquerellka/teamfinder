@@ -4,5 +4,6 @@ export const paths = {
   hackathons: "/hackathons",
   notifications: "/notifications",
   profile: "/profile",
+  teams: "/myTeams",
   hackathon: (id: string | number = ":id") => `/hackathons/${id}`,
 } as const;

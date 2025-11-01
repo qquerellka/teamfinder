@@ -8,7 +8,7 @@ const HackathonPage = lazy(() => import("@/pages/HackathonPage"));
 const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
 const ProfilePage = lazy(() => import("@/pages/Profile"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-
+const UserTeamsPage = lazy(() => import("@/pages/UserTeamsPage"));
 const routes: RouteObject[] = [
   {
     path: paths.root,
@@ -26,6 +26,8 @@ const routes: RouteObject[] = [
 
       { path: paths.notifications, element: <NotificationsPage /> },
       { path: paths.profile, element: <ProfilePage /> },
+      { path: paths.teams, element: <UserTeamsPage /> },
+
       { path: paths.error404, element: <NotFound /> },
       { path: "*", element: <Navigate to={paths.hackathons} replace /> },
     ],

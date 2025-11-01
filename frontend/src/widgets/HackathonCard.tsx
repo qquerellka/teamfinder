@@ -82,12 +82,6 @@ const HackCard = styled(Card)`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  }
 `;
 
 const Poster = styled.div`
@@ -100,7 +94,6 @@ const Poster = styled.div`
     height: 100%;
     object-fit: cover;
     display: block;
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
   }
 
   &::after {
