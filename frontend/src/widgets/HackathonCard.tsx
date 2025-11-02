@@ -2,11 +2,11 @@ import { FC } from "react";
 import styled from "styled-components";
 import { Card, Title } from "@telegram-apps/telegram-ui";
 import hackathonImage2 from "../../assets/hackathonImage8.webp";
-import hackathonImage1 from "../../assets/hackathonImage7.webp";
+// import hackathonImage1 from "../../assets/hackathonImage7.webp";
 import hackathonImage3 from "../../assets/hackathonImage6.webp";
 import hackathonImage4 from "../../assets/hackathonImage4.webp";
 import hackathonImage5 from "../../assets/hackathonImage9.png";
-
+import imga from "../../assets/download.jpeg"
 import hackathonPrizeIcon from "../../assets/icons/hackathonCard/hackathonPrizeIcon.svg";
 import hackathonDate from "../../assets/icons/hackathonCard/hackathonDateIcon.svg";
 import hackathonPlace from "../../assets/icons/hackathonCard/hackathonPlaceIcon.svg";
@@ -16,7 +16,7 @@ import { Hackathon } from "@/shared/types/hackathon";
 import { formatDateRange, formatRegistrationDate } from "@/shared/helpers/date";
 
 const images = [
-  hackathonImage1,
+  imga,
   hackathonImage2,
   hackathonImage3,
   hackathonImage4,
@@ -49,7 +49,7 @@ export const HackathonCard: FC<Hackathon> = ({
     },
     {
       icon: hackathonPrizeIcon,
-      text: prizeFund.toLocaleString(), // Печать числа с разделителями
+      text: prizeFund.toLocaleString(),
     },
   ];
 
@@ -59,7 +59,7 @@ export const HackathonCard: FC<Hackathon> = ({
         <img src={images[id % 5]} alt={name} />
       </Poster>
       <Info>
-        <Title weight="1">{name}</Title>
+        <Title weight="2">{name}</Title>
         <HackathonCardParams>
           {hackathonParams.map(({ icon, text }, index) => (
             <HackathonCardParam key={index}>

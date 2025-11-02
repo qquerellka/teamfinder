@@ -2,8 +2,8 @@ import { HashRouter } from "react-router-dom";
 import { useLaunchParams, useSignal, miniApp } from "@tma.js/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 
-import { ErrorBoundary } from "./ErrorBoundary";
-import { AppRouter } from "./routes";
+import { ErrorBoundary } from "./layouts/ErrorBoundary";
+import { AppRouter } from "./routing/routes";
 
 function ErrorBoundaryError({ error }: { error: unknown }) {
   return (

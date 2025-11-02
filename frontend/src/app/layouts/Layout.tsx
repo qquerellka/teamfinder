@@ -2,7 +2,7 @@ import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import { FixedLayout, Spinner } from "@telegram-apps/telegram-ui";
-import { Navbar } from "../widgets/Navbar";
+import { Navbar } from "../../widgets/Navbar";
 import BackButtonController from "./BackButtonController";
 
 export default function RootLayout() {

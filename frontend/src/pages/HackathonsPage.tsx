@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Hackathon } from "@/shared/types/hackathon";
 import { HackathonCard } from "@/widgets/HackathonCard";
 import { hackathons } from "@/shared/mocks/hackathons";
-import { paths } from "@/app/paths";
+import { paths } from "@/app/routing/paths";
 import { Link } from "react-router-dom";
 
 export const HackathonsPage: FC = () => {
@@ -29,9 +29,9 @@ const Grid = styled.section`
 `;
 
 const CardLink = styled(Link)`
-  display:block;
-  text-decoration:none;
-  color:inherit;
+  display: block;
+  text-decoration: none;
+  color: inherit;
 `;
 
 export default HackathonsPage;

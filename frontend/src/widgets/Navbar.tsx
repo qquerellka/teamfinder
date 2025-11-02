@@ -8,7 +8,7 @@ import Bell from "../../assets/icons/navbarIcons/NotificationsIcon.svg";
 import Prof from "../../assets/icons/navbarIcons/ProfileIcon.svg";
 import Team from "../../assets/icons/navbarIcons/TeamsIcon.svg";
 
-import { paths } from "@/app/paths";
+import { paths } from "@/app/routing/paths";
 
 const NAV = [
   { id: 1, name: "hackathons", icon: Hack, path: paths.hackathons },

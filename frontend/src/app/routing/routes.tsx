@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { useRoutes, type RouteObject, Navigate } from "react-router-dom";
-import RootLayout from "./Layout";
+import RootLayout from "../layouts/Layout";
 import { paths } from "./paths";
 
 const HackathonsPage = lazy(() => import("@/pages/HackathonsPage"));

@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { backButton } from "@tma.js/sdk-react";
-import { paths } from "./paths";
+import { paths } from "../routing/paths";
 
 const TAB_ROUTES: ReadonlySet<string> = new Set([
   paths.hackathons,
