@@ -5,18 +5,18 @@ CREATE TABLE IF NOT EXISTS "user" (
   name            TEXT,
   surname         TEXT,
   language_code   TEXT,
-  avatar_url      TEXT,
+  bio             TEXT,
+  
+  -- avatar_url      TEXT,
+  -- city            TEXT,
+  -- university      TEXT,
 
-  age             INT,
-  city            TEXT,
-  university      TEXT,
+  -- soft_skills     JSONB DEFAULT '[]'::jsonb,
+  -- achievements    JSONB DEFAULT '[]'::jsonb,
+  -- links           JSONB DEFAULT '{}'::jsonb,
+  -- portfolio_link  TEXT,
 
   skills          JSONB DEFAULT '[]'::jsonb,
-  soft_skills     JSONB DEFAULT '[]'::jsonb,
-  achievements    JSONB DEFAULT '[]'::jsonb,
-  portfolio_link  TEXT,
-  links           JSONB DEFAULT '{}'::jsonb,
-  bio             TEXT,
 
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS team (
   captain_id     BIGINT NOT NULL REFERENCES "user"(id),
   name           TEXT NOT NULL,
   description    TEXT,
+  is_private     BOOLEAN DEFAULT FALSE,
   links          JSONB DEFAULT '{}'::jsonb,
   status         team_status NOT NULL DEFAULT 'forming',
   created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -112,7 +113,6 @@ CREATE TABLE IF NOT EXISTS notification (
   id         BIGSERIAL PRIMARY KEY,
   user_id    BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   type       TEXT NOT NULL,
-  channel    notif_channel NOT NULL DEFAULT 'in_app',
   payload    JSONB DEFAULT '{}'::jsonb,
   is_read    BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
