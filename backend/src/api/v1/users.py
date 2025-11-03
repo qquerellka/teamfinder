@@ -3,7 +3,7 @@ from pydantic import BaseModel, conlist
 # Optional - для необязательных полей
 from typing import List, Optional
 # Импорт исключений FastAPI для обработки HTTP ошибок.
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 # Импорт функций для парсинга URL: urlparse - разбирает URL на компоненты, parse_qs - парсит query-параметры
 from urllib.parse import urlparse, parse_qs
 import json
@@ -11,7 +11,7 @@ from src.core.db import AsyncSessionLocal
 from src.models.user import User
 from src.repositories.users import upsert_from_tg_profile
 
-app = FastAPI()
+router = APIRouter()
 
 class UserUpdate(BaseModel):
     tg_link: str  # Ссылка на профиль Telegram
