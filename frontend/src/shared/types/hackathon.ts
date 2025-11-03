@@ -14,4 +14,5 @@ export interface Hackathon {
     teamMembersLimit: number,
     registrationLink: string,
     prizeFund: number,
+    imageLink: string,
 }

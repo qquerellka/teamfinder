@@ -14,11 +14,13 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 5,
     registrationLink: "https://example.com/register/1",
     prizeFund: 5000,
+    imageLink: "",
   },
   {
     id: 2,
     name: "AI Revolution",
-    description: "A hackathon to explore the future of AI in various industries.",
+    description:
+      "A hackathon to explore the future of AI in various industries.",
     startDate: new Date("2025-10-05"),
     endDate: new Date("2025-10-07"),
     registrationEndDate: new Date("2025-10-04"),
@@ -28,11 +30,13 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 4,
     registrationLink: "https://example.com/register/2",
     prizeFund: 10000,
+    imageLink: "",
   },
   {
     id: 3,
     name: "Smart Cities Challenge",
-    description: "Join the challenge to build smarter, more sustainable cities.",
+    description:
+      "Join the challenge to build smarter, more sustainable cities.",
     startDate: new Date("2025-11-01"),
     endDate: new Date("2025-11-03"),
     registrationEndDate: new Date("2025-10-31"),
@@ -42,6 +46,7 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 6,
     registrationLink: "https://example.com/register/3",
     prizeFund: 8000,
+    imageLink: "",
   },
   {
     id: 4,
@@ -56,11 +61,13 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 5,
     registrationLink: "https://example.com/register/4",
     prizeFund: 12000,
+    imageLink: "",
   },
   {
     id: 5,
     name: "Blockchain Innovations",
-    description: "Hackathon dedicated to creating new solutions using blockchain technology.",
+    description:
+      "Hackathon dedicated to creating new solutions using blockchain technology.",
     startDate: new Date("2025-09-20"),
     endDate: new Date("2025-09-22"),
     registrationEndDate: new Date("2025-09-19"),
@@ -70,6 +77,7 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 4,
     registrationLink: "https://example.com/register/5",
     prizeFund: 7000,
+    imageLink: "",
   },
   {
     id: 6,
@@ -84,11 +92,13 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 6,
     registrationLink: "https://example.com/register/6",
     prizeFund: 15000,
+    imageLink: "",
   },
   {
     id: 7,
     name: "FinTech Hackathon",
-    description: "Create the next generation of financial services and applications.",
+    description:
+      "Create the next generation of financial services and applications.",
     startDate: new Date("2025-11-05"),
     endDate: new Date("2025-11-07"),
     registrationEndDate: new Date("2025-11-04"),
@@ -98,6 +108,7 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 4,
     registrationLink: "https://example.com/register/7",
     prizeFund: 9000,
+    imageLink: "",
   },
   {
     id: 8,
@@ -112,6 +123,7 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 5,
     registrationLink: "https://example.com/register/8",
     prizeFund: 11000,
+    imageLink: "",
   },
   {
     id: 9,
@@ -126,11 +138,13 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 6,
     registrationLink: "https://example.com/register/9",
     prizeFund: 6000,
+    imageLink: "",
   },
   {
     id: 10,
     name: "Robotics Challenge",
-    description: "Develop innovative robotics solutions for real-world problems.",
+    description:
+      "Develop innovative robotics solutions for real-world problems.",
     startDate: new Date("2025-12-20"),
     endDate: new Date("2025-12-22"),
     registrationEndDate: new Date("2025-12-19"),
@@ -140,5 +154,6 @@ export const hackathons: Hackathon[] = [
     teamMembersLimit: 5,
     registrationLink: "https://example.com/register/10",
     prizeFund: 20000,
+    imageLink: "",
   },
 ];
