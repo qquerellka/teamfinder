@@ -2,21 +2,21 @@
 import { FC } from "react";
 import styled from "styled-components";
 import { Hackathon } from "@/shared/types/hackathon";
-import { HackathonCard } from "@/widgets/HackathonCard";
 import { hackathons } from "@/shared/mocks/hackathons";
 import { paths } from "@/app/routing/paths";
 import { Link } from "react-router-dom";
+import { HackathonCard } from "@/widgets/HackathonCard";
 
 export const HackathonsPage: FC = () => {
   return (
     <Grid>
-      {hackathons.map((hackathon: Hackathon) => (
+      {hackathons.map((h: Hackathon) => (
         <CardLink
-          key={hackathon.id}
-          to={paths.hackathon(hackathon.id)}
+          key={h.id}
+          to={paths.hackathon(h.id)}
           onMouseEnter={() => import("@/pages/HackathonPage")}
         >
-          <HackathonCard key={hackathon.id} {...hackathon} />
+          <HackathonCard key={h.id} hackathon={h} type="part" />
         </CardLink>
       ))}
     </Grid>

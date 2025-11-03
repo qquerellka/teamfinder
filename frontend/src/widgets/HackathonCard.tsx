@@ -1,119 +1,137 @@
 import { FC } from "react";
 import styled from "styled-components";
-import { Card, Title } from "@telegram-apps/telegram-ui";
-import hackathonImage2 from "../../assets/hackathonImage8.webp";
-// import hackathonImage1 from "../../assets/hackathonImage7.webp";
-import hackathonImage3 from "../../assets/hackathonImage6.webp";
-import hackathonImage4 from "../../assets/hackathonImage4.webp";
-import hackathonImage5 from "../../assets/hackathonImage9.png";
-import imga from "../../assets/download.jpeg"
+import { Card, InlineButtons, Title } from "@telegram-apps/telegram-ui";
+import { Hackathon } from "@/shared/types/hackathon";
+import {
+  formatDateRange,
+  formatRegistrationDate,
+  getTeamMembersRange,
+} from "@/shared/helpers/date";
+import { STitle } from "@/shared/ui/STitle";
+
+import shareIcon from "../../assets/icons/shareIcon.svg";
 import hackathonPrizeIcon from "../../assets/icons/hackathonCard/hackathonPrizeIcon.svg";
 import hackathonDate from "../../assets/icons/hackathonCard/hackathonDateIcon.svg";
 import hackathonPlace from "../../assets/icons/hackathonCard/hackathonPlaceIcon.svg";
 import hackathonRegistration from "../../assets/icons/hackathonCard/hackathonRegistrationIcon.svg";
+import hackathonTeam from "../../assets/icons/hackathonCard/hackathonTeamIcon.svg";
+import defaultImage from "../../assets/hackathonImage6.webp";
 
-import { Hackathon } from "@/shared/types/hackathon";
-import { formatDateRange, formatRegistrationDate } from "@/shared/helpers/date";
 
-const images = [
-  imga,
-  hackathonImage2,
-  hackathonImage3,
-  hackathonImage4,
-  hackathonImage5,
-];
+interface HackathonCardProps {
+  hackathon: Hackathon;
+  type: "part" | "full";
+}
 
-export const HackathonCard: FC<Hackathon> = ({
-  id,
-  name,
-  startDate,
-  endDate,
-  registrationEndDate,
-  city,
-  mode,
-  prizeFund,
-
+export const HackathonCard: FC<HackathonCardProps> = ({
+  hackathon,
+  type = "full",
 }) => {
   const hackathonParams = [
     {
       icon: hackathonDate,
-      text: formatDateRange(startDate, endDate),
+      text: formatDateRange(hackathon.startDate, hackathon.endDate),
     },
     {
       icon: hackathonRegistration,
-      text: formatRegistrationDate(registrationEndDate),
+      text: formatRegistrationDate(hackathon.registrationEndDate),
     },
     {
       icon: hackathonPlace,
-      text: `${city} • ${mode}`,
+      text: `${hackathon.city} • ${hackathon.mode}`,
     },
     {
       icon: hackathonPrizeIcon,
-      text: prizeFund.toLocaleString(),
+      text: hackathon.prizeFund.toLocaleString(),
+    },
+    {
+      icon: hackathonTeam,
+      text: getTeamMembersRange(
+        hackathon.teamMembersLimit,
+        hackathon.teamMembersMinimum
+      ),
     },
   ];
-
+  if (type === "part") {
+    return (
+      <SHackathonCard key={hackathon.id}>
+        <SHackathonImage>
+          {hackathon.imageLink ? (
+            <SImage src={hackathon.imageLink} alt={hackathon.name} />
+          ) : (
+            <SImage src={defaultImage} alt={"Hackathon"} />
+          )}
+        </SHackathonImage>
+        <SHackathonInfo>
+          <STitle weight="2">{hackathon.name}</STitle>
+          <HackathonParams>
+            {hackathonParams
+              .filter(({ icon }) => icon !== hackathonTeam)
+              .map(({ icon, text }, index) => (
+                <HackathonParam key={index}>
+                  <SIcon src={icon} alt={text} />
+                  <SubTitle level={"2"} weight="3">
+                    {text}
+                  </SubTitle>
+                </HackathonParam>
+              ))}
+          </HackathonParams>
+        </SHackathonInfo>
+      </SHackathonCard>
+    );
+  }
   return (
-    <HackCard key={id}>
-      <Poster>
-        <img src={images[id % 5]} alt={name} />
-      </Poster>
-      <Info>
-        <Title weight="2">{name}</Title>
-        <HackathonCardParams>
+    <SHackathonCard key={hackathon.id}>
+      <SHackathonImage>
+        {hackathon.imageLink ? (
+          <SImage src={hackathon.imageLink} alt={hackathon.name} />
+        ) : (
+          <SImage src={defaultImage} alt={"Hackathon"} />
+        )}
+      </SHackathonImage>
+      <SHackathonInfo>
+        <STitle weight="2">{hackathon.name}</STitle>
+        <HackathonParams>
           {hackathonParams.map(({ icon, text }, index) => (
-            <HackathonCardParam key={index}>
-              <img src={icon} alt={text} />
+            <HackathonParam key={index}>
+              <SIcon src={icon} alt={text} />
               <SubTitle level={"2"} weight="3">
                 {text}
               </SubTitle>
-            </HackathonCardParam>
+            </HackathonParam>
           ))}
-        </HackathonCardParams>
-      </Info>
-    </HackCard>
+        </HackathonParams>
+        <ButtonContainer>
+          <SInlineButtons mode="plain">
+            <SIcon src={shareIcon} />
+          </SInlineButtons>
+        </ButtonContainer>
+      </SHackathonInfo>
+    </SHackathonCard>
   );
 };
 
-const HackCard = styled(Card)`
+const SHackathonCard = styled(Card)`
   background: var(--tg-theme-section-bg-color, #fff);
   border-radius: 1rem;
-  padding: 0.5rem 0.5rem 1rem 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  border-radius: 1rem;
 `;
 
-const Poster = styled.div`
+const SHackathonImage = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 1.5rem;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 40%,
-      rgba(0, 0, 0, 0.25) 100%
-    );
-    pointer-events: none;
-  }
 `;
 
-const Info = styled.div`
-  margin: 0 0.25rem;
+const SHackathonInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  padding: 0.5rem 0.625rem 0.75rem 0.625rem;
+  position: relative;
 `;
 
 const SubTitle = styled(Title)`
@@ -122,15 +140,36 @@ const SubTitle = styled(Title)`
   line-height: normal;
 `;
 
-const HackathonCardParam = styled.div`
+const HackathonParams = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const HackathonParam = styled.div`
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
   align-items: center;
 `;
 
-const HackathonCardParams = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+const SImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 `;
+
+const SIcon = styled.img``;
+
+const ButtonContainer = styled.div`
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+`;
+
+const SInlineButtons = styled(InlineButtons.Item)`
+  padding: 0.75rem 0.625rem;
+  min-height: auto;
+  min-width: auto;
+`
