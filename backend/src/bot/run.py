@@ -21,8 +21,8 @@ async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
             session,
             tg_id=u.id,
             username=u.username,
-            first_name=u.first_name,
-            last_name=u.last_name,
+            name=u.name,
+            surname=u.surname,
             lang=u.language_code,
         )
     await update.message.reply_text(f"Привет, {u.first_name}! Твой id в БД: {user.id}")

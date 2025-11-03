@@ -18,8 +18,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """,
         u.id,
         u.username,
-        (u.first_name or None),
-        (u.last_name or None),
+        (u.name or None),
+        (u.surname or None),
         (u.language_code or None),
     )
     await update.message.reply_text("Привет! Я тебя запомнил в базе.")

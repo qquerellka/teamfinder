@@ -8,8 +8,8 @@ class UserInitData(BaseModel):
     telegram_id: int
     # может быть строкой или None(значение по умолчанию)
     username: Optional[str] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    name: Optional[str] = None
+    surname: Optional[str] = None
     language_code: Optional[str] = None
     avatar_url: Optional[str] = None
 

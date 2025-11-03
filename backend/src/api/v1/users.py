@@ -46,8 +46,8 @@ async def update_user_data(user_update: UserUpdate):
 
         tg_id = user_data['id']
         username = user_data.get('username')
-        first_name = user_data.get('first_name')
-        last_name = user_data.get('last_name')
+        name = user_data.get('name')
+        surname = user_data.get('surname')
         language_code = user_data.get('language_code')
         avatar_url = user_data.get('photo_url', None)
 
@@ -60,8 +60,8 @@ async def update_user_data(user_update: UserUpdate):
                 session,
                 tg_id=tg_id,
                 username=username,
-                first_name=first_name,
-                last_name=last_name,
+                name=name,
+                surname=surname,
                 language_code=language_code,
                 avatar_url=avatar_url,
             )
