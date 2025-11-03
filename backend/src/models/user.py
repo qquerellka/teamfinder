@@ -22,7 +22,7 @@ class User(Base):
     age = Column(Integer, nullable=True)
     city = Column(String, nullable=True)
     university = Column(String, nullable=True)
-    link = Column(String, nullable=True) 
+    link = Column(String, default="") 
     # Создает столбец для ссылок в формате JSON, по умолчанию пустой словарь.
     skills = Column(JSON, default=[])  
     # TIMESTAMP(timezone=True) - временная метка с часовым поясом

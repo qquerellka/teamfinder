@@ -1,4 +1,3 @@
-# src/bot/run.py
 import logging
 import asyncio
 from telegram import Update
