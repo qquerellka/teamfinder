@@ -1,38 +1,32 @@
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
-from sqlalchemy import BigInteger, Integer, Text, func
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-
+# Импортируем необходимые типы данных для столбцов, TIMESTAMP - для временных меток
+from sqlalchemy import Column, Integer, String, BigInteger, JSON, TIMESTAMP
+# Импортирует фуннкции SQL из SQLAlchemy (func.now() для получения текущего времени сервера БД)
+from sqlalchemy.sql import func
+# Импортирует базовый класс Base из локального модуля,
+# который обычно инициализируется через declarative_base() и используется для создания моделей
 from src.core.db import Base
 
 class User(Base):
     __tablename__ = "users"
-    __table_args__ = {"schema": "teamfinder"}   # <<-- НОВАЯ СХЕМА
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
-
-    username: Mapped[Optional[str]] = mapped_column(Text)
-    name: Mapped[Optional[str]] = mapped_column(Text)
-    surname: Mapped[Optional[str]] = mapped_column(Text)
-    language_code: Mapped[Optional[str]] = mapped_column(Text)
-    avatar_url: Mapped[Optional[str]] = mapped_column(Text)
-
-    age: Mapped[Optional[int]] = mapped_column(Integer)
-    city: Mapped[Optional[str]] = mapped_column(Text)
-    university: Mapped[Optional[str]] = mapped_column(Text)
-
-    skills: Mapped[List[Any]] = mapped_column(JSONB, default=list)
-    soft_skills: Mapped[List[Any]] = mapped_column(JSONB, default=list)
-    achievements: Mapped[List[Any]] = mapped_column(JSONB, default=list)
-    portfolio_link: Mapped[Optional[str]] = mapped_column(Text)
-    links: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
-    bio: Mapped[Optional[str]] = mapped_column(Text)
-
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=func.now(), nullable=False
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-    )
+    # primary_key=True - указывает что это первичный ключ, autoincrement=True - автоматическое увеличение значения
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    #unique=True - гарантирует уникальность значений, nullable=False - запрещает пустые значения
+    telegram_id = Column(BigInteger, unique=True, nullable=False)
+    username = Column(String, nullable=True)
+    name = Column(String, nullable=True)
+    surname = Column(String, nullable=True)
+    language_code = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
+    bio = Column(String, nullable=True)
+    age = Column(Integer, nullable=True)
+    city = Column(String, nullable=True)
+    university = Column(String, nullable=True)
+    # Создает столбец для ссылок в формате JSON, по умолчанию пустой словарь.
+    link = Column(JSON, default={})  
+    skills = Column(JSON, default=[])  
+    # TIMESTAMP(timezone=True) - временная метка с часовым поясом
+    # server_default=func.now() - значение по умолчанию (текущее время сервера БД)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    # onupdate=func.now() - автоматическое обновление при изменении записи
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())

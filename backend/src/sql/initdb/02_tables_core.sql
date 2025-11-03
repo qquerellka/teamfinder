@@ -6,17 +6,16 @@ CREATE TABLE IF NOT EXISTS "user" (
   surname         TEXT,
   language_code   TEXT,
   avatar_url      TEXT,
+  bio             TEXT,
 
   age             INT,
   city            TEXT,
   university      TEXT,
-
+  
+  --achievements    JSONB DEFAULT '[]'::jsonb,
+  link           JSONB DEFAULT '{}'::jsonb,
+  
   skills          JSONB DEFAULT '[]'::jsonb,
-  soft_skills     JSONB DEFAULT '[]'::jsonb,
-  achievements    JSONB DEFAULT '[]'::jsonb,
-  portfolio_link  TEXT,
-  links           JSONB DEFAULT '{}'::jsonb,
-  bio             TEXT,
 
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
