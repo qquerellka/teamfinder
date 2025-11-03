@@ -16,7 +16,6 @@ async def upsert_from_tg_profile(session: AsyncSession, tg_data: dict) -> User:
     username = tg_data.get('user', {}).get('username')
     name = tg_data.get('user', {}).get('name')
     surname = tg_data.get('user', {}).get('surname')
-    language_code = tg_data.get('user', {}).get('language_code')
     avatar_url = tg_data.get('user', {}).get('photo_url', None)
 
     # Если telegram_id не найден в данных, то выбрасываем ошибку
@@ -37,7 +36,6 @@ async def upsert_from_tg_profile(session: AsyncSession, tg_data: dict) -> User:
                 username=username,
                 name=name,
                 surname=surname,
-                language_code=language_code,
                 avatar_url=avatar_url
             )
             session.add(user)
@@ -48,7 +46,6 @@ async def upsert_from_tg_profile(session: AsyncSession, tg_data: dict) -> User:
             user.username = username
             user.name = name
             user.surname = surname
-            user.language_code = language_code
             user.avatar_url = avatar_url
             await session.commit()  # сохраняем изменения
             await session.refresh(user)  # обновляем объект

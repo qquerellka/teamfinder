@@ -10,7 +10,6 @@ class UserInitData(BaseModel):
     username: Optional[str] = None
     name: Optional[str] = None
     surname: Optional[str] = None
-    language_code: Optional[str] = None
     avatar_url: Optional[str] = None
 
     # поля, вводимые вручную

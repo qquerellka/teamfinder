@@ -48,7 +48,6 @@ async def update_user_data(user_update: UserUpdate):
         username = user_data.get('username')
         name = user_data.get('name')
         surname = user_data.get('surname')
-        language_code = user_data.get('language_code')
         avatar_url = user_data.get('photo_url', None)
 
         # Используем одну сессию
@@ -62,7 +61,6 @@ async def update_user_data(user_update: UserUpdate):
                 username=username,
                 name=name,
                 surname=surname,
-                language_code=language_code,
                 avatar_url=avatar_url,
             )
 

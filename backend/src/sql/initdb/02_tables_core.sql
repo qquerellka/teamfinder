@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS "user" (
   bio             TEXT,
   
   avatar_url      TEXT,
+  age             INTEGER,
   city            TEXT,
   university      TEXT,
   link            TEXT,

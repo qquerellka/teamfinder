@@ -16,7 +16,6 @@ class User(Base):
     username = Column(String, nullable=True)
     name = Column(String, nullable=True)
     surname = Column(String, nullable=True)
-    language_code = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
     bio = Column(String, nullable=True)
     age = Column(Integer, nullable=True)
