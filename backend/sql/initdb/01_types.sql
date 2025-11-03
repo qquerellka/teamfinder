@@ -29,3 +29,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN
   CREATE TYPE achiev_place AS ENUM ('1','2', '3', 'finalyst', 'participant');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE notif_channel AS ENUM ('tg','in_app');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

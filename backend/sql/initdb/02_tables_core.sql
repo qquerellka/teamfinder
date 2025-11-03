@@ -7,11 +7,10 @@ CREATE TABLE IF NOT EXISTS "user" (
   language_code   TEXT,
   bio             TEXT,
   
-  -- avatar_url      TEXT,
-  -- city            TEXT,
-  -- university      TEXT,
+  avatar_url      TEXT,
+  city            TEXT,
+  university      TEXT,
 
-  -- soft_skills     JSONB DEFAULT '[]'::jsonb,
   -- achievements    JSONB DEFAULT '[]'::jsonb,
   -- links           JSONB DEFAULT '{}'::jsonb,
   -- portfolio_link  TEXT,
@@ -83,7 +82,6 @@ CREATE TABLE IF NOT EXISTS vacancy (
   role         TEXT NOT NULL,
   description  TEXT,
   skills       JSONB DEFAULT '[]'::jsonb,
-  seniority    TEXT,
   status       vacancy_status NOT NULL DEFAULT 'open',
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -113,6 +111,7 @@ CREATE TABLE IF NOT EXISTS notification (
   id         BIGSERIAL PRIMARY KEY,
   user_id    BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   type       TEXT NOT NULL,
+  channel    notif_channel NOT NULL DEFAULT 'in_app',
   payload    JSONB DEFAULT '{}'::jsonb,
   is_read    BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
