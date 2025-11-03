@@ -1,0 +1,1 @@
+import{j as a}from"./index-PW1pfEYe.js";import{h as s}from"./hackathonImage6-shJ4JQ9w.js";import{A as o}from"./Avatar-Cwa6DAQz.js";const r=()=>a.jsx(o,{src:s,size:96});export{r as ProfilePage,r as default};
