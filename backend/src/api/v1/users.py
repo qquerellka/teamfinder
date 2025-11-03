@@ -1,27 +1,89 @@
-# Добавление роута для обновления данных пользователя через PATCH
-
-# Импортирует необходимые компоненты FastAPI: APIRouter - для создания группы маршрутов,
-# HTTPException - для обработки ошибок HTTP, Depends - для системы зависимостей
-from fastapi import APIRouter, HTTPException, Depends
-# Импортирует Pydantic схему для валидации данных пользователя
-from src.schemas.telegram_init import UserInitData
-from sqlalchemy.ext.asyncio import AsyncSession
-# Импортирует генератор сессий БД из конфигурации базы данных
+# conlist - валидатор для списков с ограничениями
+from pydantic import BaseModel, conlist
+# Optional - для необязательных полей
+from typing import List, Optional
+# Импорт исключений FastAPI для обработки HTTP ошибок.
+from fastapi import HTTPException
+# Импорт функций для парсинга URL: urlparse - разбирает URL на компоненты, parse_qs - парсит query-параметры
+from urllib.parse import urlparse, parse_qs
+import json
 from src.core.db import AsyncSessionLocal
-# Импортирует функцию бизнес-логики для создания/обновления пользователя
-from src.repositories.users import upsert_user
+from src.models.user import User
+from src.repositories.users import upsert_from_tg_profile
 
-# Создает экземпляр роутера - это группа маршрутов, которая будет подключена к основному приложению
-router = APIRouter()
+app = FastAPI()
 
-# Декоратор для создания PATCH endpoint: 
-# PATCH - HTTP метод для частичного обновления ресурса, "/users/" - URL путь для этого endpoint
-@router.patch("/users/")
-async def update_user(user_data: UserInitData, db: AsyncSession = Depends(AsyncSessionLocal)):
-    # Вызывает функцию репозитория для создания/обновления пользователя в БД
-    user = await upsert_user(user_data, db)
-    # Проверяет результат и выбрасывает исключение если пользователь не был создан/найден
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    # Возвращает успешный ответ в формате JSON
-    return {"message": "User data updated successfully", "user": user}
+class UserUpdate(BaseModel):
+    tg_link: str  # Ссылка на профиль Telegram
+    bio: str
+    age: int
+    city: str
+    university: str
+    skills: conlist(str, min_items=1)  # Валидация для списка с минимальным элементом
+    link: str  # Прочая ссылка
+
+# Функция для парсинга ссылки на Telegram профиль
+def parse_telegram_link(link: str):
+    parsed_url = urlparse(link)
+    # Разбирает URL на компоненты
+    query_params = parse_qs(parsed_url.query)
+
+    user_data = query_params.get('user', [None])[0]
+    if user_data is None:
+        raise HTTPException(status_code=400, detail="User data is missing in the link")
+
+    # Парсим JSON строку с данными пользователя
+    user = json.loads(user_data)
+    return user
+
+# Использует PATCH метод для частичного обновления
+@app.patch("/user/update")
+# Принимает данные в формате UserUpdate
+async def update_user_data(user_update: UserUpdate):
+    try:
+        # Парсим данные из ссылки tg_link
+        user_data = parse_telegram_link(user_update.tg_link)
+
+        tg_id = user_data['id']
+        username = user_data.get('username')
+        first_name = user_data.get('first_name')
+        last_name = user_data.get('last_name')
+        language_code = user_data.get('language_code')
+        avatar_url = user_data.get('photo_url', None)
+
+        # Используем одну сессию
+        # Создание асинхронной сессии БД с использованием контекстного менеджера.
+        async with AsyncSessionLocal() as session:
+            # Вызываем upsert функцию для обновления или вставки данных пользователя
+            # Использует await для асинхронного выполнения
+            user = await upsert_from_tg_profile(
+                session,
+                tg_id=tg_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                language_code=language_code,
+                avatar_url=avatar_url,
+            )
+
+            # Обновляем вручную введенные данные
+            user.bio = user_update.bio
+            user.age = user_update.age
+            user.city = user_update.city
+            user.university = user_update.university
+            user.skills = user_update.skills
+            user.link = user_update.link
+
+            # Сохраняем изменения в БД
+            session.add(user)
+            await session.commit()
+
+            # После коммита синхронизируем объект с БД
+            await session.refresh(user)
+
+        return {"message": "User updated successfully", "user": user}
+    
+    except Exception as e:
+        # Логируем или отправляем ошибку
+        # Возвращает HTTP 500 с описанием ошибки
+        raise HTTPException(status_code=500, detail=f"Error updating user: {str(e)}")

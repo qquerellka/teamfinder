@@ -1,59 +1,56 @@
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import Session
 from src.models.user import User
-from src.schemas import UserInitData
-from fastapi import HTTPException
 
-# Объявление асинхронной функции которая выполняет операцию "upsert" (update + insert)
-async def upsert_user(user_data: UserInitData, db: AsyncSession):
-    # Проверяем, существует ли пользователь
-    # Создает SQL запрос для поиска пользователя по telegram_id, фильтр по telegram_id
-    stmt = select(User).filter(User.telegram_id == user_data.telegram_id)
-    # Выполняет асинхронно SQL запрос в базе данных.
-    result = await db.execute(stmt)
-    # возвращает один объект или None, если не найден
-    user = result.scalar_one_or_none()
+async def upsert_from_tg_profile(session: AsyncSession, tg_data: dict) -> User:
+    
+    # Функция для обновления или вставки данных пользователя в БД
+    # на основе данных, полученных с Telegram.
 
-    # Если пользователь не найден, создаем нового
-    if user is None:
-        # Создает нового пользователя - преобразует данные из Pydantic схемы в SQLAlchemy модель.
-        user = User(
-            telegram_id=user_data.telegram_id,
-            username=user_data.username,
-            name=user_data.first_name,
-            surname=user_data.last_name,
-            language_code=user_data.language_code,
-            avatar_url=user_data.avatar_url,
-            bio=user_data.bio,
-            age=user_data.age,
-            city=user_data.city,
-            university=user_data.university,
-            link=user_data.link,
-            skills=user_data.skills
-        )
-        # Добавляет нового пользователя в сессию БД.
-        db.add(user)
-        # Сохраняет изменения в базе данных (коммит транзакции).
-        await db.commit()
-        # Обновляет объект пользователя из БД, чтобы получить сгенерированные поля (например, id).
-        await db.refresh(user)
-    else:
-        # Обновляем данные
-        # or для обновления только если новое значение не None
-        # Если user_data.username не None - использует его, иначе оставляет текущее значение
-        user.username = user_data.username or user.username
-        user.name = user_data.first_name or user.name
-        user.surname = user_data.last_name or user.surname
-        user.language_code = user_data.language_code or user.language_code
-        user.avatar_url = user_data.avatar_url or user.avatar_url
-        user.bio = user_data.bio or user.bio
-        user.age = user_data.age or user.age
-        user.city = user_data.city or user.city
-        user.university = user_data.university or user.university
-        user.link = user_data.link or user.link
-        user.skills = user_data.skills or user.skills
-        await db.commit()
-        await db.refresh(user)
+    # :param session: Сессия базы данных
+    # :param tg_data: Данные пользователя с Telegram
+    # :return: Обновленный или вставленный пользователь
+    
+    tg_id = tg_data.get('user', {}).get('id')
+    username = tg_data.get('user', {}).get('username')
+    first_name = tg_data.get('user', {}).get('first_name')
+    last_name = tg_data.get('user', {}).get('last_name')
+    language_code = tg_data.get('user', {}).get('language_code')
+    avatar_url = tg_data.get('user', {}).get('photo_url', None)
+
+    # Если telegram_id не найден в данных, то выбрасываем ошибку
+    if not tg_id:
+        raise HTTPException(status_code=400, detail="Telegram ID is required")
+
+    # Используем переданную сессию (не создаём новую)
+    async with session.begin():  # используем существующую сессию для транзакции
+        # Ищем пользователя по telegram_id
+        stmt = select(User).filter(User.telegram_id == tg_id)
+        result = await session.execute(stmt)
+        user = result.scalar_one_or_none()
+
+        # Если пользователь не найден, создаем нового
+        if user is None:
+            user = User(
+                telegram_id=tg_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                language_code=language_code,
+                avatar_url=avatar_url
+            )
+            session.add(user)
+            await session.commit()  # сохраняем пользователя
+            await session.refresh(user)  # обновляем объект с новым id
+        else:
+            # Если пользователь найден, обновляем данные
+            user.username = username
+            user.first_name = first_name
+            user.last_name = last_name
+            user.language_code = language_code
+            user.avatar_url = avatar_url
+            await session.commit()  # сохраняем изменения
+            await session.refresh(user)  # обновляем объект
 
     return user
