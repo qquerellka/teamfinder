@@ -8,6 +8,7 @@ import logging
 import json
 from urllib.parse import urlparse, parse_qs
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 router = APIRouter()
 
@@ -44,7 +45,9 @@ def parse_telegram_link(tg_link: str):
         name = user_data.get('first_name')
         username = user_data.get('username')
         surname = user_data.get('last_name')
-        avatar_url = user_data.get('avatar_url', None)
+        avatar_url = user_data.get('avatar_url')
+        if avatar_url == "":
+            avatar_url = None
 
         if not user_id:
             raise HTTPException(status_code=400, detail="Telegram ID is required")
@@ -80,39 +83,30 @@ async def update_user_data(
             'avatar_url': user_data['avatar_url']
         }
 
-        # НАЧИНАЕМ ТРАНЗАКЦИЮ ВРУЧНУЮ
+        # ВАРИАНТ А: Используем ТОЛЬКО async with session.begin() - ОН САМ УПРАВЛЯЕТ ТРАНЗАКЦИЕЙ
         async with session.begin():
-            try:
-                # Обновляем или вставляем данные пользователя
-                user = await upsert_from_tg_profile(session, tg_data=tg_data)
+            # Обновляем или вставляем данные пользователя
+            user = await upsert_from_tg_profile(session, tg_data=tg_data)
 
-                # Обновляем вручную введенные данные
-                user.bio = user_update.bio
-                user.age = user_update.age
-                user.city = user_update.city
-                user.university = user_update.university
-                user.skills = user_update.skills
-                user.link = user_update.link
+            # Обновляем вручную введенные данные
+            user.bio = user_update.bio
+            user.age = user_update.age
+            user.city = user_update.city
+            user.university = user_update.university
+            user.skills = user_update.skills
+            user.link = user_update.link
 
-                # ЯВНО ДОБАВЛЯЕМ user в сессию (на случай если это новый пользователь)
-                session.add(user)
-                
-                # FLUSH вместо COMMIT - отправляем изменения в БД но не коммитим
-                await session.flush()
-                
-                # REFRESH чтобы получить актуальные данные из БД
-                await session.refresh(user)
-                
-                logger.info(f"User successfully updated in transaction: {user.id}")
-                
-                # Транзакция автоматически коммитится при выходе из блока async with
-                
-            except Exception as e:
-                logger.error(f"Error in transaction: {str(e)}", exc_info=True)
-                # Транзакция автоматически откатится при исключении
-                raise HTTPException(status_code=500, detail=f"Error updating user: {str(e)}")
+            # Добавляем пользователя в сессию (особенно важно для новых пользователей)
+            session.add(user)
+            
+            logger.info(f"All changes prepared for user: {user.id}")
+            
+            # НЕ делаем flush() и НЕ делаем commit() - async with session.begin() САМ сделает коммит при выходе
 
-        # После выхода из блока async with транзакция уже закоммичена
+        # После выхода из async with session.begin() транзакция АВТОМАТИЧЕСКИ коммитится
+        logger.info(f"Transaction automatically committed for user: {user.id}")
+        
+        # Возвращаем пользователя - данные уже сохранены в БД
         return {"message": "User updated successfully", "user": user}
     
     except HTTPException:
@@ -120,3 +114,69 @@ async def update_user_data(
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+@router.get("/debug/check-db")
+async def debug_check_db(session: AsyncSession = Depends(get_db)):
+    """Отладочный эндпоинт для проверки данных в БД"""
+    try:
+        # Проверяем все записи в таблице users
+        stmt = select(User)
+        result = await session.execute(stmt)
+        users = result.scalars().all()
+        
+        user_list = []
+        for user in users:
+            user_list.append({
+                "id": user.id,
+                "telegram_id": user.telegram_id,
+                "name": user.name,
+                "username": user.username,
+                "surname": user.surname,
+                "avatar_url": user.avatar_url,
+                "bio": user.bio,
+                "age": user.age,
+                "city": user.city,
+                "university": user.university,
+                "skills": user.skills,
+                "link": user.link,
+                "created_at": user.created_at.isoformat() if user.created_at else None,
+                "updated_at": user.updated_at.isoformat() if user.updated_at else None
+            })
+        
+        return {
+            "total_users": len(users),
+            "users": user_list
+        }
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/check/{telegram_id}")
+async def check_user(telegram_id: int, session: AsyncSession = Depends(get_db)):
+    """Проверка существования пользователя в БД"""
+    stmt = select(User).where(User.telegram_id == telegram_id)
+    result = await session.execute(stmt)
+    user = result.scalar_one_or_none()
+    
+    if user:
+        return {
+            "exists": True,
+            "user": {
+                "id": user.id,
+                "telegram_id": user.telegram_id,
+                "name": user.name,
+                "username": user.username,
+                "surname": user.surname,
+                "avatar_url": user.avatar_url,
+                "bio": user.bio,
+                "age": user.age,
+                "city": user.city,
+                "university": user.university,
+                "skills": user.skills,
+                "link": user.link,
+                "created_at": user.created_at.isoformat() if user.created_at else None,
+                "updated_at": user.updated_at.isoformat() if user.updated_at else None
+            }
+        }
+    else:
+        return {"exists": False}
