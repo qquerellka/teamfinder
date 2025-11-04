@@ -8,6 +8,7 @@ from src.core.db import Base
 
 class User(Base):
     __tablename__ = "users"
+    telegram_id = Column(BigInteger, unique=True, nullable=False)
 
     # primary_key=True - указывает что это первичный ключ, autoincrement=True - автоматическое увеличение значения
     id = Column(BigInteger, primary_key=True, autoincrement=True)
