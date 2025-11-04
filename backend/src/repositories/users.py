@@ -12,11 +12,11 @@ async def upsert_from_tg_profile(session: AsyncSession, tg_data: dict) -> User:
     # :param tg_data: Данные пользователя с Telegram
     # :return: Обновленный или вставленный пользователь
     
-    tg_id = tg_data.get('user', {}).get('id')
-    username = tg_data.get('user', {}).get('username')
-    name = tg_data.get('user', {}).get('name')
-    surname = tg_data.get('user', {}).get('surname')
-    avatar_url = tg_data.get('user', {}).get('photo_url', None)
+    tg_id = tg_data.get('id')
+    username = tg_data.get('username')
+    name = tg_data.get('name')
+    surname = tg_data.get('surname')
+    avatar_url = tg_data.get('avatar_url', None)
 
     # Если telegram_id не найден в данных, то выбрасываем ошибку
     if not tg_id:
