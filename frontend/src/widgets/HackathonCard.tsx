@@ -9,13 +9,14 @@ import {
 } from "@/shared/helpers/date";
 import { STitle } from "@/shared/ui/STitle";
 
-import shareIcon from "../../assets/icons/shareIcon.svg";
-import hackathonPrizeIcon from "../../assets/icons/hackathonCard/hackathonPrizeIcon.svg";
-import hackathonDate from "../../assets/icons/hackathonCard/hackathonDateIcon.svg";
-import hackathonPlace from "../../assets/icons/hackathonCard/hackathonPlaceIcon.svg";
-import hackathonRegistration from "../../assets/icons/hackathonCard/hackathonRegistrationIcon.svg";
-import hackathonTeam from "../../assets/icons/hackathonCard/hackathonTeamIcon.svg";
+import shareIcon from "../../assets/icons/shareIcon.svg?react";
+import hackathonPrizeIcon from "../../assets/icons/hackathonCard/hackathonPrizeIcon.svg?react";
+import hackathonDate from "../../assets/icons/hackathonCard/hackathonDateIcon.svg?react";
+import hackathonPlace from "../../assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
+import hackathonRegistration from "../../assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
+import hackathonTeam from "../../assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
 import defaultImage from "../../assets/hackathonImage6.webp";
+import { SIcon } from "@/shared/ui/SIcon";
 
 
 interface HackathonCardProps {
@@ -69,7 +70,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
               .filter(({ icon }) => icon !== hackathonTeam)
               .map(({ icon, text }, index) => (
                 <HackathonParam key={index}>
-                  <SIcon src={icon} alt={text} />
+                  <SIcon icon={icon} color={'transparent'} size={16} />
                   <SubTitle level={"2"} weight="3">
                     {text}
                   </SubTitle>
@@ -94,7 +95,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
         <HackathonParams>
           {hackathonParams.map(({ icon, text }, index) => (
             <HackathonParam key={index}>
-              <SIcon src={icon} alt={text} />
+              <SIcon icon={icon} />
               <SubTitle level={"2"} weight="3">
                 {text}
               </SubTitle>
@@ -103,7 +104,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
         </HackathonParams>
         <ButtonContainer>
           <SInlineButtons mode="plain">
-            <SIcon src={shareIcon} />
+            <SIcon icon={shareIcon} />
           </SInlineButtons>
         </ButtonContainer>
       </SHackathonInfo>
@@ -160,7 +161,7 @@ const SImage = styled.img`
   display: block;
 `;
 
-const SIcon = styled.img``;
+// const SIcon = styled.img``;
 
 const ButtonContainer = styled.div`
   position: absolute;

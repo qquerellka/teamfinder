@@ -2,6 +2,7 @@ import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import mkcert from "vite-plugin-mkcert";
 import tsconfigPaths from "vite-tsconfig-paths";
+import svgr from 'vite-plugin-svgr' // 1. Импортируем плагин
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,6 +18,7 @@ export default defineConfig({
     // Allows using React dev server along with building a React application with Vite.
     // https://npmjs.com/package/@vitejs/plugin-react-swc
     react(),
+    svgr(),
     // Allows using the compilerOptions.paths property in tsconfig.json.
     // https://www.npmjs.com/package/vite-tsconfig-paths
     tsconfigPaths(),
