@@ -8,7 +8,10 @@ import {
 } from "@telegram-apps/telegram-ui";
 import { STitle } from "@/shared/ui/STitle";
 import { useLaunchParams } from "@tma.js/sdk-react";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, FC } from "react";
+
+import { Achievement } from "@/shared/types/achievement";
+import { formatHackPlace } from "@/shared/helpers/date";
 
 type MultiSelectOptions = MultiselectProps["options"][number];
 
@@ -41,6 +44,41 @@ const skillsOptions: MultiSelectOptions[] = [
   { value: "objectivec", label: "Objective-C" },
   { value: "dart", label: "Dart" },
   { value: "flutter", label: "Flutter" },
+];
+
+const mockAchievements: Achievement[] = [
+  {
+    id: "qwvge02837ydb21872`dpjinsd",
+    name: "TenderHack 2025",
+    place: "1",
+    userId: "123",
+    role: "Backend",
+    hackLink: "https://github.com/qquerellka",
+  },
+  {
+    id: "qwvge02837ydb21872`dpjinh",
+    name: "МТС True Tech",
+    place: "Участие",
+    userId: "123",
+    role: "Backend",
+    hackLink: "https://github.com/qquerellka",
+  },
+  {
+    id: "qwvge02837ydb21872`dpjins",
+    name: "VTB API 2025",
+    place: "Финал",
+    userId: "123",
+    role: "Frontend",
+    hackLink: "https://github.com/qquerellka",
+  },
+  {
+    id: "qwvge02837ydb21872`dpjinq",
+    name: "Digital Spring 2024",
+    place: "2",
+    userId: "123",
+    role: "Backend",
+    hackLink: "https://github.com/qquerellka",
+  },
 ];
 
 export const ProfilePage = () => {
@@ -90,8 +128,11 @@ export const ProfilePage = () => {
       </SProfileHeader>
 
       <SExtraInfo>
-        <SSection header="Навыки" footer={skillsError ?? skillsError}>
-          <Multiselect
+        <SSection header="Навыки" footer={skillsError}>
+          <SMultiselect
+            // style={{
+            //   backgroundColor: `var(--tg-theme-section-bg-color, #fff)`,
+            // }}
             status={skillsError ? "error" : "default"}
             options={skillsOptions}
             value={selectedSkills}
@@ -103,16 +144,21 @@ export const ProfilePage = () => {
           />
         </SSection>
 
-        <SSection
-          header="Обо мне"
-          footer={bioError ?? bioError}
-        >
+        <SSection header="Обо мне" footer={bioError}>
           <Textarea
             status={bioError ? "error" : "default"}
             value={bio}
             onChange={handleBioChange}
             placeholder="Расскажите немного о себе..."
           />
+        </SSection>
+        <SSection header="Достижения">
+          {mockAchievements.map((mockAchievement) => (
+            <AchievementCard
+              key={mockAchievement.id}
+              achievement={mockAchievement}
+            />
+          ))}
         </SSection>
       </SExtraInfo>
     </SProfile>
@@ -125,7 +171,7 @@ const SProfile = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.75rem 0;
+  padding: 2.5rem 0;
   gap: 1.5rem;
 `;
 
@@ -157,7 +203,6 @@ const SSection = styled(Section)`
   & > div {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 
     & > header {
       padding: 0;
@@ -166,7 +211,8 @@ const SSection = styled(Section)`
     & > div {
       padding: 0;
       & > div {
-        padding: 0;
+        background: var(--tg-theme-section-bg-color, #fff);
+        padding: 1rem 0 1rem 0;
       }
     }
   }
@@ -175,6 +221,30 @@ const SSection = styled(Section)`
     & > h6 {
       color: var(--tg-theme-destructive-text-color, #fff);
     }
-    /* 3. Меняем цвет, если $isError === true */
   }
+`;
+
+interface AchievementCardProps {
+  achievement: Achievement;
+}
+
+export const AchievementCard: FC<AchievementCardProps> = ({ achievement }) => {
+  return (
+    <SAchievementCard>
+      <STitle>{achievement.name}</STitle>
+      <STitle>{formatHackPlace(achievement.place)}</STitle>
+    </SAchievementCard>
+  );
+};
+
+const SAchievementCard = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 1rem 0;
+  font-size: var();
+`;
+
+const SMultiselect = styled(Multiselect)`
+  background: var(#fff);
 `;

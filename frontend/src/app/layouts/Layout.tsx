@@ -10,6 +10,9 @@ export default function RootLayout() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [offsets, setOffsets] = useState({ top: 0, bottom: 0 });
 
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [initialHeight] = useState(window.innerHeight);
+
   useLayoutEffect(() => {
     const measure = () =>
       setOffsets({
@@ -32,15 +35,22 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    const setVH = () =>
+    const handleResize = () => {
+      const currentHeight = window.innerHeight;
+
       document.documentElement.style.setProperty(
         "--vh",
-        `${window.innerHeight * 0.01}px`
+        `${currentHeight * 0.01}px`
       );
-    setVH();
-    window.addEventListener("resize", setVH);
-    return () => window.removeEventListener("resize", setVH);
-  }, []);
+
+      const heightDifference = initialHeight - currentHeight;
+      setIsKeyboardVisible(heightDifference > 200);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [initialHeight]);
 
   function PageFallback() {
     return (
@@ -64,8 +74,7 @@ export default function RootLayout() {
         <SContent $top={offsets.top} $bottom={offsets.bottom}>
           <Outlet />
         </SContent>
-
-        <SFooterFixed>
+        <SFooterFixed style={{ display: isKeyboardVisible ? "none" : "block" }}>
           <SFooterInner ref={bottomRef}>
             <Navbar />
           </SFooterInner>
