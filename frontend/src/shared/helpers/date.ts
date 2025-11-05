@@ -59,3 +59,11 @@ export function getTeamMembersRange(
 
   return `${teamMembersMinimum} - ${teamMembersLimit} участников`;
 }
+
+export function formatHackPlace(place: string): string {
+  if (place === "Финал" || place === "Участие") {
+    return place;
+  } else {
+    return `${place} место`;
+  }
+}
