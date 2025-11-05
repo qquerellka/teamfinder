@@ -31,5 +31,18 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
-  CREATE TYPE notif_channel AS ENUM ('tg','in_app');
+  CREATE TYPE role_type AS ENUM ('DevOps','GameDev',
+  'MobileDev','Product manager','DS','ML','Fullstack',
+  'Backend','Frontend','Designer','Analytics','QA');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE notif_type AS ENUM ('info', 'warning', -- новые хаки и предуупреждения
+  'response:accept', 'response:decline', -- заявка на вступление - принятие \ отказ (user)
+  'invitation:new',  -- новое приглашение (user)
+  'invitation:reject', 'invitation:accept', -- приглашение на вступление - отказ \ принятие (capitain)
+  'team:entry','team:leave',-- (capitain)
+  'team:kicked', -- кикнули из тимы (user)
+  );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
