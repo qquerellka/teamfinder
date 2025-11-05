@@ -1,13 +1,11 @@
-# src/core/config.py
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+import os
+
+# Загружаем .env файл
+load_dotenv()
 
 class Settings(BaseSettings):
-    telegram_bot_token: str | None = None
-    database_url: str
-
-    class Config:
-        env_file = ".env"
-        env_prefix = ""
-        case_sensitive = False
+    database_url: str = os.getenv('DATABASE_URL')
 
 settings = Settings()

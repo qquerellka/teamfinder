@@ -1,22 +1,24 @@
-# src/core/db.py
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase
-from src.core.config import settings
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 engine = create_async_engine(
-    settings.database_url,  # postgresql+asyncpg://...
-    future=True,
-    pool_pre_ping=True,
+    "postgresql+asyncpg://andreym1234:k7895123k@localhost:5432/teamfinder",
+    echo=True,
 )
 
-AsyncSessionLocal: async_sessionmaker[AsyncSession] = async_sessionmaker(
-    bind=engine, autoflush=False, expire_on_commit=False
+Base = declarative_base()
+
+AsyncSessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    autoflush=False,
+    expire_on_commit=False,
 )
 
-class Base(DeclarativeBase):
-    pass
-
-# зависимость под fastapi/или просто convenience
 async def get_db():
-    async with AsyncSessionLocal() as session:
+    # Создаем сессию без контекста - будем управлять вручную
+    session = AsyncSessionLocal()
+    try:
         yield session
+    finally:
+        await session.close()

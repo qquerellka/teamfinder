@@ -8,7 +8,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # upsert пользователя
     await execute(
         """
-        INSERT INTO "user"(telegram_id, username, name, surname, language_code)
+        INSERT INTO "user"(telegram_id, username, name, surname)
         VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT (telegram_id) DO UPDATE
         SET username = EXCLUDED.username,
@@ -18,9 +18,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """,
         u.id,
         u.username,
-        (u.first_name or None),
-        (u.last_name or None),
-        (u.language_code or None),
+        (u.name or None),
+        (u.surname or None),
     )
     await update.message.reply_text("Привет! Я тебя запомнил в базе.")
 

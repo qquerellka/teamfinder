@@ -1,38 +1,44 @@
-# src/repositories/users.py
-from sqlalchemy import select, insert
-from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from src.models.user import User
+from fastapi import HTTPException
+import logging
 
-async def upsert_from_tg_profile(
-    session: AsyncSession,
-    tg_id: int,
-    username: str | None,
-    first_name: str | None,
-    last_name: str | None,
-    lang: str | None,
-):
-    stmt = pg_insert(User).values(
-        telegram_id=tg_id,
-        username=username,
-        name=first_name,
-        surname=last_name,
-        language_code=lang,
-    ).on_conflict_do_update(
-        index_elements=[User.telegram_id],
-        set_={
-            "username": username,
-            "name": first_name,
-            "surname": last_name,
-            "language_code": lang,
-        }
-    ).returning(User)
-    res = await session.execute(stmt)
-    user = res.scalar_one()
-    await session.commit()
+logger = logging.getLogger(__name__)
+
+async def upsert_from_tg_profile(session: AsyncSession, tg_data: dict) -> User:
+    tg_id = tg_data.get('id')
+    username = tg_data.get('username')
+    name = tg_data.get('name')
+    surname = tg_data.get('surname')
+    avatar_url = tg_data.get('avatar_url', None)
+
+    if not tg_id:
+        raise HTTPException(status_code=400, detail="Telegram ID is required")
+
+    logger.info(f"Upsert process started for tg_id: {tg_id}")
+
+    # ПРОСТОЙ SELECT - без управления транзакциями
+    stmt = select(User).filter(User.telegram_id == tg_id)
+    result = await session.execute(stmt)
+    user = result.scalar_one_or_none()
+
+    if user is None:
+        user = User(
+            telegram_id=tg_id,
+            username=username,
+            name=name,
+            surname=surname,
+            avatar_url=avatar_url
+        )
+        logger.info(f"New user object created: {user}")
+    else:
+        user.username = username
+        user.name = name
+        user.surname = surname
+        user.avatar_url = avatar_url
+        logger.info(f"Existing user object updated: {user}")
+
+    # НЕ делаем session.add() здесь - это сделает вызывающий код
+    # НЕ управляем транзакциями - это ответственность вызывающего кода
     return user
-
-async def get_by_telegram_id(session: AsyncSession, tg_id: int) -> User | None:
-    q = select(User).where(User.telegram_id == tg_id)
-    res = await session.execute(q)
-    return res.scalar_one_or_none()
