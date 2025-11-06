@@ -26,6 +26,10 @@ DROP TRIGGER IF EXISTS trg_vac_updated ON vacancy;
 CREATE TRIGGER trg_vac_updated BEFORE UPDATE ON vacancy
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_achievements_set_updated_at ON achievements;
+CREATE TRIGGER trg_achievements_set_updated_at BEFORE UPDATE ON achievements
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 CREATE OR REPLACE FUNCTION fn_check_one_team_per_hack()
 RETURNS TRIGGER AS $$
 DECLARE
