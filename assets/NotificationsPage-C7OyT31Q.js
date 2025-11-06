@@ -1,1 +1,0 @@
-import{j as a}from"./index-BMGbl8m_.js";import{A as s}from"./Avatar-BsVBBC8t.js";import"./Subheadline-CXdJL6gJ.js";const e=()=>a.jsx(s,{src:"/teamfinder/assets/hackathonImage7-DVO5CaH5.webp",size:96});export{e as NotificationsPage,e as default};

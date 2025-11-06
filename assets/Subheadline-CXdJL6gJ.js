@@ -1,1 +1,0 @@
-import{r as a,a as e,j as s,X as o,e as f,f as r,b as t}from"./index-BMGbl8m_.js";const n={1:"tgui-30064fce0d501f17",2:"tgui-8f63cd31b2513281"},m=a.forwardRef((a,m)=>{var{level:l="1",className:c,Component:d}=a,b=e(a,["level","className","Component"]);return s.jsx(o,f(t({},b),{ref:m,className:r("tgui-266b6ffdbad2b90e",n[l],c),Component:d||"h6"}))});export{m as S};
