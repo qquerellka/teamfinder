@@ -1,10 +1,17 @@
+# Веб-фреймворк и сервер
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
 
 python-telegram-bot==21.7
 
+# База данны
 SQLAlchemy[asyncio]==2.0.35
 asyncpg==0.29.0
 
+# Валидация данных
+pydantic==2.5.0
 pydantic-settings==2.5.2
 httpx==0.27.2
+
+# Переменные окружения
+python-dotenv==1.0.0
