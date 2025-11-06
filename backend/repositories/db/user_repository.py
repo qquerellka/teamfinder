@@ -22,7 +22,7 @@ class UserRepository:
                 result = await session.execute(stmt)
                 await session.commit()
                 created = result.fetchone()
-                return dict(created._mapping) if created else {}
+                return {k: v for k, v in created._mapping.items()} if created else {}
             else:
                 # UPDATE user SET ... WHERE telegram_id = ... RETURNING *
                 stmt = (
@@ -34,35 +34,5 @@ class UserRepository:
                 result = await session.execute(stmt)
                 await session.commit()
                 updated = result.fetchone()
-                return dict(updated._mapping) if updated else {}
+                return {k: v for k, v in updated._mapping.items()} if updated else {}
 
-    async def get_user_by_telegram_id(self, telegram_id: int) -> dict | None:
-        """
-        -- SELECT * FROM user WHERE telegram_id = {telegram_id} LIMIT 1
-        """
-        stmt = select(User).where(User.telegram_id == telegram_id).limit(1)
-
-        async with self._sessionmaker() as session:
-            result = await session.execute(stmt)
-
-        user = result.fetchone()
-        if user:
-            return dict(user._mapping)
-        return None
-
-    async def get_all_users(self) -> list[dict]:
-        """
-        -- SELECT * FROM user ORDER BY created_at
-        """
-        stmt = select(
-            User.id, User.telegram_id, User.username, User.name, User.surname,
-            User.bio, User.age, User.city, User.university, User.link, User.skills,
-            User.created_at, User.updated_at
-        ).order_by(User.created_at)
-
-        async with self._sessionmaker() as session:
-            result = await session.execute(stmt)
-
-        users = result.fetchall()
-        keys = [col.name for col in stmt.selected_columns]
-        return [dict(zip(keys, row)) for row in users]

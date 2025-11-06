@@ -56,16 +56,4 @@ async def update_user(user_data: UserUpdateSchema):
     }
 
     user = await user_service.upsert_user_from_telegram(tg_data)
-    return {"status": "ok", "updated": user}
-
-@app.get("/user/{telegram_id}/check")
-async def check_user(telegram_id: int):
-    return await user_service.check_user_by_telegram_id(telegram_id)
-
-@app.get("/user/list")
-async def get_all_users():
-    return await user_service.get_all_users()
-
-@app.get("/ping")
-def ping():
     return {"status": "ok"}

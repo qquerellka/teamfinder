@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from config.config import PG_DATABASE, PG_HOST, PG_PORT, PG_USER, PG_PASSWORD
 
-
 class Postgres(BaseModel):
 	database: str = PG_DATABASE
 	host: str = PG_HOST
