@@ -74,7 +74,7 @@ const mockAchievements: Achievement[] = [
   {
     id: "qwvge02837ydb21872`dpjinq",
     name: "Digital Spring 2024",
-    place: "2",
+    place: "4",
     userId: "123",
     role: "Backend",
     hackLink: "https://github.com/qquerellka",

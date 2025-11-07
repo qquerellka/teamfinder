@@ -4,6 +4,7 @@ import { AppRoot } from "@telegram-apps/telegram-ui";
 
 import { ErrorBoundary } from "./layouts/ErrorBoundary";
 import { AppRouter } from "./routing/routes";
+import { useEffect } from "react";
 
 function ErrorBoundaryError({ error }: { error: unknown }) {
   return (
@@ -21,11 +22,17 @@ function ErrorBoundaryError({ error }: { error: unknown }) {
     </div>
   );
 }
-
-export function App() {
+interface AppProps {
+  str: string | undefined;
+}
+export function App({ str }: AppProps) {
   const lp = useLaunchParams();
-  const isDark = useSignal(miniApp.isDark);
 
+  const isDark = useSignal(miniApp.isDark);
+  useEffect(() => {
+    console.log("[App] initDataRaw:", lp.initDataRaw);
+    // console.log("[App] user:", lp.initData?.user);
+  }, [lp]);
   return (
     <ErrorBoundary fallback={ErrorBoundaryError}>
       <AppRoot
@@ -34,6 +41,8 @@ export function App() {
           ["macos", "ios"].includes(lp.tgWebAppPlatform) ? "ios" : "base"
         }
       >
+        {" "}
+        {str}
         <HashRouter>
           <AppRouter />
         </HashRouter>
