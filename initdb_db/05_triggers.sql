@@ -60,15 +60,15 @@ FOR EACH ROW EXECUTE FUNCTION fn_check_one_team_per_hack();
 
 DROP TRIGGER IF EXISTS trg_users_updated_at ON users;
 CREATE TRIGGER trg_users_updated_at
-  BEFORE UPDATE ON user
+  BEFORE UPDATE ON users
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
-DROP TRIGGER IF EXISTS trg_user_skill_limit_ins ON user_skill;
-CREATE TRIGGER trg_user_skill_limit_ins
-BEFORE INSERT ON user_skill
-FOR EACH ROW EXECUTE FUNCTION enforce_user_skill_limit();
+-- DROP TRIGGER IF EXISTS trg_user_skill_limit_ins ON user_skill;
+-- CREATE TRIGGER trg_user_skill_limit_ins
+-- BEFORE INSERT ON user_skill
+-- FOR EACH ROW EXECUTE FUNCTION enforce_user_skill_limit();
 
-DROP TRIGGER IF EXISTS trg_user_skill_limit_upd ON user_skill;
-CREATE TRIGGER trg_user_skill_limit_upd
-BEFORE UPDATE OF user_id ON user_skill
-FOR EACH ROW EXECUTE FUNCTION enforce_user_skill_limit();
+-- DROP TRIGGER IF EXISTS trg_user_skill_limit_upd ON user_skill;
+-- CREATE TRIGGER trg_user_skill_limit_upd
+-- BEFORE UPDATE OF user_id ON user_skill
+-- FOR EACH ROW EXECUTE FUNCTION enforce_user_skill_limit();

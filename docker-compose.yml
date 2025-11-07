@@ -15,8 +15,7 @@ services:
       retries: 10
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./backend/initdb:/docker-entrypoint-initdb.d:ro   # <— ВАЖНО
-
+      - ./initdb_db:/docker-entrypoint-initdb.d
   api:
     build:
       context: .
