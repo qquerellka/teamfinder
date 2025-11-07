@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTSusers(
-  id              BIGSERIAL PRIMARY KEY,
-  telegram_id     BIGINT UNIQUE NOT NULL,
+CREATE TABLE IF NOT EXISTS users (
+  id              SERIAL PRIMARY KEY,
+  telegram_id     INT UNIQUE NOT NULL,
   username        TEXT,
   first_name      TEXT,
   last_name       TEXT,
@@ -16,22 +16,24 @@ CREATE TABLE IF NOT EXISTSusers(
 );
 
 CREATE TABLE IF NOT EXISTS skill (
-  id          BIGSERIAL PRIMARY KEY,             
-  slug        TEXT NOT NULL UNIQUE,               -- канонический ключ в нижнем регистре
-  name        TEXT NOT NULL,
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  id          SERIAL PRIMARY KEY,
+  slug        TEXT NOT NULL UNIQUE,         -- канонический, нижний регистр
+  name        TEXT NOT NULL,                -- человекочитаемое имя (может дублироваться)
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  CHECK (slug = lower(slug)),
 );
 
 CREATE TABLE IF NOT EXISTS user_skill (
-  user_id   BIGINT NOT NULL REFERENCES user(id)  ON DELETE CASCADE,
-  skill_id  BIGINT NOT NULL REFERENCES skill(id)  ON DELETE RESTRICT,
+  user_id  INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  skill_id INT NOT NULL REFERENCES skill(id)  ON DELETE RESTRICT,
   PRIMARY KEY (user_id, skill_id)
 );
 
 
 CREATE TABLE IF NOT EXISTS hackathon (
-  id                    BIGSERIAL PRIMARY KEY,
+  id                    SERIAL PRIMARY KEY,
   name                  TEXT NOT NULL,
   description           TEXT,
   image_link            TEXT,
@@ -50,9 +52,9 @@ CREATE TABLE IF NOT EXISTS hackathon (
 );
 
 CREATE TABLE IF NOT EXISTS application (
-  id            BIGSERIAL PRIMARY KEY,
-  hackathon_id  BIGINT NOT NULL REFERENCES hackathon(id) ON DELETE CASCADE,
-  user_id       BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+  id            SERIAL PRIMARY KEY,
+  hackathon_id  INT NOT NULL REFERENCES hackathon(id) ON DELETE CASCADE,
+  user_id       INT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   role          role_type,
   status        application_status NOT NULL DEFAULT 'published',
   joined        BOOLEAN NOT NULL DEFAULT FALSE,
@@ -62,9 +64,9 @@ CREATE TABLE IF NOT EXISTS application (
 );
 
 CREATE TABLE IF NOT EXISTS team (
-  id             BIGSERIAL PRIMARY KEY,
-  hackathon_id   BIGINT NOT NULL REFERENCES hackathon(id) ON DELETE CASCADE,
-  captain_id     BIGINT NOT NULL REFERENCES "user"(id),
+  id             SERIAL PRIMARY KEY,
+  hackathon_id   INT NOT NULL REFERENCES hackathon(id) ON DELETE CASCADE,
+  captain_id     INT NOT NULL REFERENCES "user"(id),
   name           TEXT NOT NULL,
   description    TEXT,
   is_private     BOOLEAN DEFAULT FALSE,
@@ -74,8 +76,8 @@ CREATE TABLE IF NOT EXISTS team (
 );
 
 CREATE TABLE IF NOT EXISTS team_member (
-  team_id     BIGINT NOT NULL REFERENCES team(id) ON DELETE CASCADE,
-  user_id     BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+  team_id     INT NOT NULL REFERENCES team(id) ON DELETE CASCADE,
+  user_id     INT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   role        role_type NOT NULL,
   is_captain  BOOLEAN NOT NULL DEFAULT FALSE,
   joined_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -83,8 +85,8 @@ CREATE TABLE IF NOT EXISTS team_member (
 );
 
 CREATE TABLE IF NOT EXISTS vacancy (
-  id           BIGSERIAL PRIMARY KEY,
-  team_id      BIGINT NOT NULL REFERENCES team(id) ON DELETE CASCADE,
+  id           SERIAL PRIMARY KEY,
+  team_id      INT NOT NULL REFERENCES team(id) ON DELETE CASCADE,
   role         role_type NOT NULL,
   description  TEXT,
   skills       JSONB DEFAULT '[]'::jsonb,
@@ -94,9 +96,9 @@ CREATE TABLE IF NOT EXISTS vacancy (
 );
 
 CREATE TABLE IF NOT EXISTS invite (
-  id             BIGSERIAL PRIMARY KEY,
-  team_id        BIGINT NOT NULL REFERENCES team(id) ON DELETE CASCADE,
-  application_id BIGINT NOT NULL REFERENCES application(id) ON DELETE CASCADE,
+  id             SERIAL PRIMARY KEY,
+  team_id        INT NOT NULL REFERENCES team(id) ON DELETE CASCADE,
+  application_id INT NOT NULL REFERENCES application(id) ON DELETE CASCADE,
   invited_role   role_type NOT NULL,
   status         invite_status NOT NULL DEFAULT 'pending',
   expires_at     TIMESTAMPTZ,
@@ -104,16 +106,16 @@ CREATE TABLE IF NOT EXISTS invite (
 );
 
 CREATE TABLE IF NOT EXISTS response (
-  id             BIGSERIAL PRIMARY KEY,
-  vacancy_id     BIGINT NOT NULL REFERENCES vacancy(id) ON DELETE CASCADE,
+  id             SERIAL PRIMARY KEY,
+  vacancy_id     INT NOT NULL REFERENCES vacancy(id) ON DELETE CASCADE,
   desired_role   role_type NOT NULL DEFAULT 'Analytics',
   status         response_status NOT NULL DEFAULT 'pending',
   created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS notification (
-  id         BIGSERIAL PRIMARY KEY,
-  user_id    BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+  id         SERIAL PRIMARY KEY,
+  user_id    INT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   type       notif_type NOT NULL default 'info',
   payload    JSONB DEFAULT '{}'::jsonb,
   is_read    BOOLEAN NOT NULL DEFAULT FALSE,
@@ -121,8 +123,8 @@ CREATE TABLE IF NOT EXISTS notification (
 );
 
 CREATE TABLE IF NOT EXISTS achievements (
-  id         BIGSERIAL PRIMARY KEY,
-  user_id    BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+  id         SERIAL PRIMARY KEY,
+  user_id    INT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   name       TEXT NOT NULL,                        
   role       role_type NOT NULL,
   place      achiev_place NOT NULL DEFAULT 'participant',

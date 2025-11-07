@@ -1,17 +1,21 @@
 CREATE OR REPLACE VIEW v_public_applications AS
-SELECT a.id AS application_id,
-       a.hackathon_id,
-       a.user_id,
-       u.username,
-       u.name,
-       u.skills,
-       a.roles,
-       a.about,
-       a.status,
-       a.created_at
+SELECT
+  a.id AS application_id,
+  a.hackathon_id,
+  a.user_id,
+  u.username,
+  CONCAT_WS(' ', u.first_name, u.last_name) AS full_name,
+  COALESCE(ARRAY_AGG(DISTINCT s.name) FILTER (WHERE s.id IS NOT NULL), ARRAY[]::text[]) AS skills, -- обновление
+  a.role,
+  a.status,
+  a.created_at
 FROM application a
-JOIN "user" u ON u.id=a.user_id
-WHERE a.status='published';
+JOIN "user" u ON u.id = a.user_id
+LEFT JOIN user_skill us ON us.user_id = u.id
+LEFT JOIN skill s ON s.id = us.skill_id
+WHERE a.status = 'published'
+GROUP BY a.id, a.hackathon_id, a.user_id, u.username, u.first_name, u.last_name, a.role, a.status, a.created_at;
+
 
 CREATE OR REPLACE VIEW v_team_overview AS
 SELECT t.id AS team_id,

@@ -1,12 +1,12 @@
 -- Принять инвайт (actor = владелец анкеты)
-CREATE OR REPLACE FUNCTION accept_invite(p_invite_id BIGINT, p_actor_user_id BIGINT)
+CREATE OR REPLACE FUNCTION accept_invite(p_invite_id INT, p_actor_user_id INT)
 RETURNS VOID AS $$
 DECLARE
-  v_team_id BIGINT;
-  v_app_id BIGINT;
+  v_team_id INT;
+  v_app_id INT;
   v_role TEXT;
-  v_hack_id BIGINT;
-  v_user_id BIGINT;
+  v_hack_id INT;
+  v_user_id INT;
 BEGIN
   SELECT i.team_id, i.application_id, i.invited_role, t.hackathon_id, a.user_id
     INTO v_team_id, v_app_id, v_role, v_hack_id, v_user_id
@@ -54,15 +54,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Принять отклик (actor = капитан соответствующей команды)
-CREATE OR REPLACE FUNCTION accept_response(p_response_id BIGINT, p_actor_user_id BIGINT)
+CREATE OR REPLACE FUNCTION accept_response(p_response_id INT, p_actor_user_id INT)
 RETURNS VOID AS $$
 DECLARE
-  v_vac_id BIGINT;
-  v_app_id BIGINT;
+  v_vac_id INT;
+  v_app_id INT;
   v_role TEXT;
-  v_team_id BIGINT;
-  v_hack_id BIGINT;
-  v_user_id BIGINT;
+  v_team_id INT;
+  v_hack_id INT;
+  v_user_id INT;
   v_is_captain BOOLEAN;
 BEGIN
   SELECT r.vacancy_id, r.application_id, r.desired_role,

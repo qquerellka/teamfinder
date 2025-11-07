@@ -34,7 +34,7 @@ CREATE OR REPLACE FUNCTION fn_check_one_team_per_hack()
 RETURNS TRIGGER AS $$
 DECLARE
   existing_count INT;
-  target_hack_id BIGINT;
+  target_hack_id INT;
 BEGIN
   SELECT hackathon_id INTO target_hack_id FROM team WHERE id = NEW.team_id;
 
