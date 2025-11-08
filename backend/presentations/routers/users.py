@@ -75,6 +75,22 @@ async def get_me(user_id: int = Depends(get_current_user_id), session: AsyncSess
         created_at=str(user.created_at), updated_at=str(user.updated_at)
     )
 
+# Роутер для получение пользователя по id
+@router.get("/{user_id}", response_model=UserOut)
+async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_session), _current_user: int = Depends(get_current_user_id)):
+    repo = UsersRepo(session)
+    user = await repo.get_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="user not found")
+    skills = await repo.get_user_skills(user_id)
+    return UserOut(
+        id=user.id, telegram_id=user.telegram_id,
+        username=user.username, first_name=user.first_name, last_name=user.last_name,
+        avatar_url=user.avatar_url, bio=user.bio, city=user.city, university=user.university, link=user.link,
+        skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
+        created_at=str(user.created_at), updated_at=str(user.updated_at)
+    )
+
 # Роутер для обновления данных профиля текущего пользователя
 @router.patch("/me", response_model=UserOut)
 async def patch_me(
