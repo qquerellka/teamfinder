@@ -6,10 +6,11 @@ from __future__ import annotations
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column  # Для декларативного описания моделей
 from sqlalchemy import BigInteger, Text, TIMESTAMP  # Для определения типов данных в таблице
 from sqlalchemy.sql import func  # Для использования SQL-функций, например, для генерации времени на сервере
+from backend.persistend.base import Base
 
-class Base(DeclarativeBase):
-    """Базовый класс для всех моделей SQLAlchemy. Предоставляет функциональность для создания таблиц."""
-    pass
+# class Base(DeclarativeBase):
+#     """Базовый класс для всех моделей SQLAlchemy. Предоставляет функциональность для создания таблиц."""
+#     pass
 
 # Модель пользователя, которая будет отображать таблицу "users" в базе данных
 class User(Base):

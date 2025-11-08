@@ -5,11 +5,11 @@ from __future__ import annotations
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column  # Для создания ORM-моделей и работы с колонками
 from sqlalchemy import Text, TIMESTAMP  # Для использования типов данных в таблицах
 from sqlalchemy.sql import func  # Для использования SQL-функций, таких как NOW()
-
+from backend.persistend.base import Base
 # Базовый класс для всех моделей SQLAlchemy, от него должны наследоваться другие модели
-class Base(DeclarativeBase):
-    """Базовый класс для всех ORM-моделей"""
-    pass
+# class Base(DeclarativeBase):
+#     """Базовый класс для всех ORM-моделей"""
+#     pass
 
 # Модель для таблицы "skill", которая будет хранить информацию о навыках
 class Skill(Base):
