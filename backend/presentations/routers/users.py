@@ -1,170 +1,259 @@
-# Этот файл реализует аутентификацию и управление данными пользователей через Telegram.
-# Включает маршруты для получения информации о текущем пользователе, обновления его данных и поиска пользователей.
-# Также включает обработку JWT-токенов для безопасной аутентификации.
+# =============================================================================
+# ФАЙЛ: backend/presentations/routers/users.py
+# КРАТКО: роутер FastAPI для работы с пользователями.
+# ЗАЧЕМ:
+#   • Авторизация по JWT (достаём user_id из заголовка Authorization).
+#   • Получение собственного профиля / чужого профиля по id.
+#   • Частичное обновление профиля (PATCH /users/me), включая замену набора навыков.
+#   • Поиск пользователей с фильтрацией по тексту и навыкам.
+# ОСОБЕННОСТИ:
+#   • Репозиторий UsersRepo сам открывает асинхронные сессии «на операцию» (per-operation).
+#   • В ответе отдаем Pydantic-модели (удобно для OpenAPI/доков).
+#   • Ошибки репозитория маппим в понятные HTTP-коды и JSON-детали.
+# ВАЖНЫЕ МИКРО-ПРАВКИ:
+#   • skills в UserOut теперь через Field(default_factory=list), чтобы избежать «мутабельного дефолта».
+#   • Параметр mode типизирован как Literal["all","any"] (строже, чем regex в Query).
+#   • Удалены случайные посторонние комментарии из исходника.
+# =============================================================================
 
-from __future__ import annotations
-import os  # Для работы с переменными окружения
-from typing import Optional  # Для аннотаций типов
-from fastapi import APIRouter, Depends, HTTPException, Header, status, Query  # Импортируем необходимые классы и функции из FastAPI
-from pydantic import BaseModel, Field  # Для создания моделей данных и валидации
-from sqlalchemy.ext.asyncio import AsyncSession  # Для асинхронных операций с базой данных
-from backend.infrastructure.db import get_session  # Для получения сессии с базой данных
-from backend.utils import jwt_simple  # Для работы с JWT
-from backend.repositories.users import UsersRepo  # Импорт репозитория для работы с пользователями
+from __future__ import annotations  # Современные аннотации типов (отложенная оценка)
 
-# Создаем экземпляр маршрутизатора FastAPI для работы с пользователями
-router = APIRouter(prefix="/users", tags=["users"])  
+import os                                 # Достаём секрет для JWT из переменных окружения
+from typing import Optional, List, Literal # Типы для аннотаций (Optional, списки, Literal для ограниченных значений)
 
-# Функция для получения ID текущего пользователя из заголовка авторизации
+from fastapi import (                      # Компоненты FastAPI
+    APIRouter, Depends, HTTPException, Header, Query, status
+)
+from pydantic import BaseModel, Field      # Pydantic-модели схем, Field для настроек полей
+
+from backend.repositories.users import UsersRepo  # Наш слой доступа к данным пользователей
+from backend.utils import jwt_simple              # Простой модуль для кодирования/декодирования JWT
+
+# Роутер с префиксом и тегом — красиво группируется в Swagger/Redoc
+router = APIRouter(prefix="/users", tags=["users"])
+
+# Репозиторий пользователей. Внутри он получает sessionmaker и открывает сессию на каждую операцию.
+users_repo = UsersRepo()
+
+# ---- Аутентификация (JWT -> user_id) ----
+
 async def get_current_user_id(authorization: str | None = Header(default=None)) -> int:
-    # Проверяем, есть ли в заголовке токен и начинается ли он с "Bearer"
+    """
+    Достаём user_id из заголовка Authorization: Bearer <JWT>.
+    Если заголовка нет или токен невалиден — бросаем 401.
+    """
+    # Проверяем, что заголовок есть и начинается с 'Bearer '
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="missing token")
-    token = authorization.split(" ", 1)[1]  # Извлекаем токен из заголовка
+
+    # Забираем сам токен после пробела
+    token = authorization.split(" ", 1)[1]
+
     try:
-        # Декодируем токен и извлекаем payload с помощью функции из jwt_simple
+        # Декодируем токен и получаем payload (ожидаем, что в sub лежит user_id)
         payload = jwt_simple.decode(token, os.getenv("JWT_SECRET", "dev-secret-change-me"))
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")  # Если токен некорректен
-    return int(payload["sub"])  # Возвращаем ID пользователя из поля "sub" в payload
+        # Любая ошибка декодирования токена — это 401
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
 
-# Модель данных для вывода навыков пользователя
+    # Возвращаем числовой идентификатор пользователя
+    return int(payload["sub"])
+
+# ---- Схемы (Pydantic) ----
+
 class UserSkillOut(BaseModel):
+    """Мини-представление навыка, используемое в ответах API."""
     id: int
     slug: str
     name: str
 
-# Модель данных для вывода информации о пользователе
 class UserOut(BaseModel):
+    """
+    Публичный профиль пользователя.
+    Поля опциональны, потому что в Телеграме часть из них может отсутствовать.
+    """
     id: int
     telegram_id: int
-    username: str | None = None
-    first_name: str | None = None
-    last_name: str | None = None
-    avatar_url: str | None = None
-    bio: str | None = None
-    city: str | None = None
-    university: str | None = None
-    link: str | None = None
-    skills: list[UserSkillOut] = []  # Список навыков
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    bio: Optional[str] = None
+    city: Optional[str] = None
+    university: Optional[str] = None
+    link: Optional[str] = None
+    # ВАЖНО: default_factory=list вместо [] — избегаем общего мутабельного дефолта на уровне класса.
+    skills: List[UserSkillOut] = Field(default_factory=list)
+    # Даты удобнее отдавать в ISO-строке; можно сделать datetime и настроить сериализацию
     created_at: str
     updated_at: str
-    match_count: int | None = None  # Только для /users?mode=any (количество совпадений по навыкам)
+    # match_count выдаём только при поиске (mode="any"), иначе None
+    match_count: int | None = None
 
-# Модель данных для изменения профиля пользователя
 class UserPatchIn(BaseModel):
-    bio: Optional[str] = Field(default=None, max_length=2000)  # Максимальная длина bio
+    """
+    Поля, которые можно частично обновить у текущего пользователя.
+    Если поле не передано — оно не изменяется.
+    """
+    bio: Optional[str] = Field(default=None, max_length=2000)
     city: Optional[str] = Field(default=None, max_length=128)
     university: Optional[str] = Field(default=None, max_length=256)
     link: Optional[str] = Field(default=None, max_length=1024)
-    skills: Optional[list[str]] = None  # Список slugs для замены набора навыков
+    # Полная замена набора навыков по slug (ограничиваем максимумом)
+    skills: Optional[List[str]] = None
 
-# Роутер для получения данных о текущем пользователе
-@router.get("/me", response_model=UserOut)
-async def get_me(user_id: int = Depends(get_current_user_id), session: AsyncSession = Depends(get_session)):
-    repo = UsersRepo(session)  # Создаем репозиторий для работы с пользователями
-    user = await repo.get_by_id(user_id)  # Получаем пользователя по ID
-    if not user:
-        raise HTTPException(status_code=404, detail="user not found")  # Если пользователь не найден
-    skills = await repo.get_user_skills(user_id)  # Получаем навыки пользователя
-    return UserOut(
-        id=user.id, telegram_id=user.telegram_id,
-        username=user.username, first_name=user.first_name, last_name=user.last_name,
-        avatar_url=user.avatar_url, bio=user.bio, city=user.city, university=user.university, link=user.link,
-        skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],  # Преобразуем навыки в UserSkillOut
-        created_at=str(user.created_at), updated_at=str(user.updated_at)
-    )
+# ---- Вспомогательное упаковывание пользователя ----
 
-# Роутер для получение пользователя по id
-@router.get("/{user_id}", response_model=UserOut)
-async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_session), _current_user: int = Depends(get_current_user_id)):
-    repo = UsersRepo(session)
-    user = await repo.get_by_id(user_id)
+async def _pack_user(user_id: int) -> UserOut:
+    """
+    Достаём пользователя и его навыки и собираем объект UserOut.
+    Общий хелпер, чтобы не дублировать код в хэндлерах.
+    """
+    user = await users_repo.get_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
-    skills = await repo.get_user_skills(user_id)
+
+    skills = await users_repo.get_user_skills(user_id)
+
     return UserOut(
-        id=user.id, telegram_id=user.telegram_id,
-        username=user.username, first_name=user.first_name, last_name=user.last_name,
-        avatar_url=user.avatar_url, bio=user.bio, city=user.city, university=user.university, link=user.link,
+        id=user.id,
+        telegram_id=user.telegram_id,
+        username=user.username,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        avatar_url=user.avatar_url,
+        bio=user.bio,
+        city=user.city,
+        university=user.university,
+        link=user.link,
         skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
-        created_at=str(user.created_at), updated_at=str(user.updated_at)
+        created_at=str(user.created_at),
+        updated_at=str(user.updated_at),
     )
 
-# Роутер для обновления данных профиля текущего пользователя
+# ---- Роуты ----
+
+@router.get("/me", response_model=UserOut)
+async def get_me(current_user_id: int = Depends(get_current_user_id)):
+    """
+    Получить свой профиль (по user_id из JWT).
+    """
+    return await _pack_user(current_user_id)
+
+@router.get("/{user_id}", response_model=UserOut)
+async def get_user_by_id(user_id: int, _current_user_id: int = Depends(get_current_user_id)):
+    """
+    Получить профиль любого пользователя по его id.
+    Требует валидный JWT (но не обязательно, чтобы это был «сам пользователь»).
+    """
+    return await _pack_user(user_id)
+
 @router.patch("/me", response_model=UserOut)
-async def patch_me(
-    payload: UserPatchIn,  # Данные для обновления
-    user_id: int = Depends(get_current_user_id),  # Получаем ID текущего пользователя
-    session: AsyncSession = Depends(get_session),  # Получаем сессию с базой данных
-):
-    repo = UsersRepo(session)  # Создаем репозиторий для работы с пользователями
-    user = await repo.get_by_id(user_id)  # Получаем пользователя по ID
+async def patch_me(payload: UserPatchIn, current_user_id: int = Depends(get_current_user_id)):
+    """
+    Частичное обновление своего профиля.
+    Если payload.skills передан — заменяем весь набор навыков по списку slug (<= max_count).
+    """
+    # 1) Обновляем «простые» поля профиля
+    user = await users_repo.update_profile(
+        current_user_id,
+        bio=payload.bio,
+        city=payload.city,
+        university=payload.university,
+        link=payload.link,
+    )
     if not user:
-        raise HTTPException(status_code=404, detail="user not found")  # Если пользователь не найден
+        raise HTTPException(status_code=404, detail="user not found")
 
-    # Обновляем профиль пользователя
-    await repo.update_profile_fields(user, payload.model_dump())
-
-    # Обновляем навыки (замена набора), если поле skills передано
+    # 2) Если пришёл список skills — пробуем заменить весь набор
     if payload.skills is not None:
         try:
-            skills = await repo.replace_user_skills_by_slugs(user_id, payload.skills, max_count=10)
+            await users_repo.replace_user_skills_by_slugs(
+                current_user_id,
+                payload.skills,
+                max_count=10,  # ограничение по ТЗ (до 10 навыков)
+            )
         except ValueError as e:
+            # Репозиторий кодирует ошибки в текст, распаковываем в структурированный ответ
             msg = str(e)
-            if msg.startswith("too_many_skills:"):
-                raise HTTPException(status_code=422, detail=msg.replace("too_many_skills:", "too_many_skills: "))
             if msg.startswith("unknown_skills:"):
-                # Отдаем список неизвестных навыков
-                unknown = msg.split(":", 1)[1].split(",") if ":" in msg else []
-                raise HTTPException(status_code=422, detail={"error": "unknown_skills", "unknown": unknown})
-            raise
-    else:
-        skills = await repo.get_user_skills(user_id)
+                # Собираем список неизвестных скиллов: "unknown_skills:python,elixir"
+                unknown = [s for s in msg.split(":", 1)[1].split(",") if s]
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail={"error": "unknown_skills", "unknown": unknown},
+                )
+            if msg.startswith("too_many_skills:"):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail={"error": "too_many_skills"},
+                )
+            # Любая другая ошибка — 400
+            raise HTTPException(status_code=400, detail=str(e))
 
-    # Возвращаем обновленные данные пользователя
-    user = await repo.get_by_id(user_id)
-    return UserOut(
-        id=user.id, telegram_id=user.telegram_id,
-        username=user.username, first_name=user.first_name, last_name=user.last_name,
-        avatar_url=user.avatar_url, bio=user.bio, city=user.city, university=user.university, link=user.link,
-        skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
-        created_at=str(user.created_at), updated_at=str(user.updated_at)
-    )
+    # Возвращаем актуальные данные профиля
+    return await _pack_user(current_user_id)
 
-# Роутер для поиска пользователей
 @router.get("", response_model=dict)
 async def search_users(
-    q: Optional[str] = Query(default=None),  # Текстовый поиск
-    skills: Optional[str] = Query(default=None, description="CSV: react,typescript"),  # Список slugs для поиска
-    mode: str = Query(default="all", pattern="^(all|any)$"),  # Режим поиска: all — все навыки, any — хотя бы один
-    limit: int = Query(default=20, ge=1, le=100),  # Лимит на количество результатов
-    offset: int = Query(default=0, ge=0),  # Смещение для пагинации
-    _current: int = Depends(get_current_user_id),  # Валидируем токен текущего пользователя
-    session: AsyncSession = Depends(get_session),  # Получаем сессию с базой данных
+    q: Optional[str] = Query(default=None, description="Поиск по тексту (username/имя/фамилия/био и т.д.)"),
+    skills: Optional[str] = Query(default=None, description="CSV навыков по slug, например: react,typescript"),
+    # Literal даёт строгую типизацию и валидирует значение ещё до вызова функции
+    mode: Literal["all", "any"] = Query(default="all", description="all — все навыки; any — хотя бы один"),
+    limit: int = Query(default=20, ge=1, le=100, description="Сколько записей вернуть"),
+    offset: int = Query(default=0, ge=0, description="Сколько записей пропустить"),
+    _current_user_id: int = Depends(get_current_user_id),
 ):
-    repo = UsersRepo(session)  # Создаем репозиторий для работы с пользователями
-    skill_list = [s.strip() for s in skills.split(",")] if skills else None  # Преобразуем список slugs в список
+    """
+    Поиск пользователей:
+      • q — текстовый поиск.
+      • skills — CSV со slug'ами навыков.
+      • mode:
+          - "all": у пользователя должны быть все указанные навыки,
+          - "any": достаточно хотя бы одного (match_count покажет, сколько совпало).
+    """
+    # Преобразуем CSV "react, typescript" -> ["react", "typescript"]
+    skill_list = [s.strip() for s in skills.split(",")] if skills else None
+
     try:
-        rows, total = await repo.search_users(q, skill_list, mode, limit, offset)
+        # Репозиторий должен вернуть:
+        #   rows  — список кортежей (пользователь, match_count)
+        #   total — сколько всего результатов без учёта limit/offset
+        rows, total = await users_repo.search_users(q, skill_list, mode, limit, offset)
     except ValueError as e:
+        # Если репозиторий бросил "unknown_skills:..."
         msg = str(e)
         if msg.startswith("unknown_skills:"):
-            unknown = msg.split(":", 1)[1].split(",") if ":" in msg else []
-            raise HTTPException(status_code=422, detail={"error": "unknown_skills", "unknown": unknown})
-        raise
+            unknown = [s for s in msg.split(":", 1)[1].split(",") if s]
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={"error": "unknown_skills", "unknown": unknown},
+            )
+        # Иные ошибки поиска → 400
+        raise HTTPException(status_code=400, detail=str(e))
 
+    # Формируем список элементов для ответа.
+    # ПРИМЕЧАНИЕ: тут есть N+1 — на каждого пользователя делаем отдельный запрос за skills.
+    # Если это станет узким местом, оптимизируйте в репозитории «пакетную» выдачу скиллов по списку user_id.
     items = []
     for usr, mc in rows:
-        # Получаем навыки пользователя для каждого найденного пользователя
-        skills = await repo.get_user_skills(usr.id)
+        usr_skills = await users_repo.get_user_skills(usr.id)
         items.append(UserOut(
-            id=usr.id, telegram_id=usr.telegram_id,
-            username=usr.username, first_name=usr.first_name, last_name=usr.last_name,
-            avatar_url=usr.avatar_url, bio=usr.bio, city=usr.city, university=usr.university, link=usr.link,
-            skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
-            created_at=str(usr.created_at), updated_at=str(usr.updated_at),
-            match_count=mc  # Количество совпадений для пользователя
+            id=usr.id,
+            telegram_id=usr.telegram_id,
+            username=usr.username,
+            first_name=usr.first_name,
+            last_name=usr.last_name,
+            avatar_url=usr.avatar_url,
+            bio=usr.bio,
+            city=usr.city,
+            university=usr.university,
+            link=usr.link,
+            skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in usr_skills],
+            created_at=str(usr.created_at),
+            updated_at=str(usr.updated_at),
+            match_count=mc,
         ).model_dump())
 
-    return {"items": items, "total": total, "limit": limit, "offset": offset}  # Возвращаем результаты поиска с пагинацией
+    # Оборачиваем в пагинационный ответ
+    return {"items": items, "total": total, "limit": limit, "offset": offset}

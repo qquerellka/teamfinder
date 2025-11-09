@@ -1,104 +1,54 @@
-# Этот файл реализует базовый репозиторий для работы с ORM-моделями в SQLAlchemy.
-# Репозиторий инкапсулирует стандартные операции CRUD (создание, чтение, обновление, удаление) и может быть использован с любыми моделями.
-# Он обеспечивает гибкость при работе с базой данных и упрощает повторное использование кода для различных моделей.
+# =============================================================================
+# ФАЙЛ: backend/repositories/base.py
+# КРАТКО: базовый класс для репозиториев.
+# ЗАЧЕМ:
+#   • Хранит общую фабрику асинхронных сессий (async_sessionmaker).
+#   • Даёт удобные хелперы для открытия сессии и транзакции.
+# ИДЕЯ:
+#   Репозитории не принимают сессию «снаружи», а сами берут её из общего sessionmaker,
+#   открывая краткоживущую сессию «на операцию» (per-operation).
+# =============================================================================
 
-from typing import TypeVar, Generic, Optional, Sequence, Any  # Импорты для аннотаций типов (дженерики и типы)
-from sqlalchemy import select  # Для выполнения SQL-запросов
-from sqlalchemy.ext.asyncio import AsyncSession  # Для работы с асинхронной сессией SQLAlchemy
+from __future__ import annotations  # Отложенная оценка аннотаций (удобно для типов)
 
-T = TypeVar("T")  # "дженерик-параметр": сюда подставится конкретная ORM-модель при наследовании
+from typing import AsyncContextManager  # Тип для аннотации методов, возвращающих async with-контекст
+from sqlalchemy.ext.asyncio import (   # Асинхронные сущности SQLAlchemy
+    AsyncSession,
+    async_sessionmaker,
+)
+from backend.infrastructure.db import get_sessionmaker  # Глобальная фабрика сессий (singleton)
 
-# Базовый репозиторий для работы с произвольной ORM-моделью (например, User, Skill)
-class BaseRepository(Generic[T]):
-    """
-    Базовый класс репозитория для произвольной ORM-модели T.
+class BaseRepository:
+    """База для всех репозиториев: хранит фабрику сессий (sessionmaker) и даёт хелперы."""
 
-    Использование:
-        repo = BaseRepository[User](session, User)
+    def __init__(self, sm: async_sessionmaker[AsyncSession] | None = None) -> None:
+        """
+        Инициализация репозитория.
 
-    Обычно создаются подклассы:
-        class UserRepository(BaseRepository[User]):
-            def __init__(self, session: AsyncSession):
-                super().__init__(session, User)
-            # здесь пишем методы для доменной логики:
-            # get_by_email, list_active, exists_by_username и т.д.
-    """
+        sm:
+          • Если передать свою фабрику — репозиторий будет использовать её (удобно для тестов).
+          • Если не передавать — возьмём глобальную фабрику из инфраструктуры (get_sessionmaker()).
+        """
+        self._sm: async_sessionmaker[AsyncSession] = sm or get_sessionmaker()
 
-    # Инициализация репозитория с сессией и моделью
-    def __init__(self, session: AsyncSession, model: type[T]):
-        self.session = session  # асинхронная сессия SQLAlchemy для выполнения запросов
-        self.model = model      # ORM-модель (например, User, Skill)
+    # # --- Хелперы для работы с сессией/транзакцией ---
 
-    # -------------------------
-    # READ (по первичному ключу)
-    # -------------------------
-    async def get(self, id: Any) -> Optional[T]:
-        """
-        Получить объект по первичному ключу.
-        Вернёт объект модели или None (если не найдено).
-        """
-        return await self.session.get(self.model, id)  # Используется асинхронный метод get() SQLAlchemy
+    # def session(self) -> AsyncContextManager[AsyncSession]:
+    #     """
+    #     Открыть НОВУЮ сессию без автозапуска транзакции.
+    #     Использование:
+    #         async with repo.session() as session:
+    #             res = await session.execute(...)
+    #             await session.commit()  # если были изменения
+    #     """
+    #     return self._sm()  # Возвращаем async context manager: async with ... as session:
 
-    # -------------------------
-    # READ (список с пагинацией)
-    # -------------------------
-    async def list(self, limit: int = 100, offset: int = 0) -> Sequence[T]:
-        """
-        Получить список объектов с лимитом и смещением.
-        В реальных задачах часто добавляется сортировка (order_by).
-        """
-        stmt = select(self.model).limit(limit).offset(offset)  # Формируем SQL-запрос с лимитом и смещением
-        res = await self.session.execute(stmt)  # Выполняем запрос
-        return res.scalars().all()  # Возвращаем результаты как список объектов
-
-    # -------------------------
-    # CREATE (добавление объекта)
-    # -------------------------
-    async def add(self, obj: T) -> T:
-        """
-        Добавить объект в сессию и сделать flush().
-        flush отправляет INSERT в БД (без COMMIT), чтобы появились значения
-        генерируемых полей (id, default-значения).
-        """
-        self.session.add(obj)  # Добавляем объект в сессию
-        await self.session.flush()  # Выполняем flush для отправки данных в БД без коммита
-        return obj  # Возвращаем добавленный объект
-
-    # -------------------------
-    # DELETE (удаление объекта)
-    # -------------------------
-    async def delete(self, obj: T) -> None:
-        """
-        Удалить объект (без COMMIT).
-        """
-        await self.session.delete(obj)  # Удаляем объект из сессии (без коммита)
-
-    # -------------------------
-    # (Полезные расширения — опционально)
-    # -------------------------
-    
-    # Проверка существования объекта по первичному ключу (id)
-    async def exists_by_id(self, id: Any) -> bool:
-        """
-        Быстрая проверка существования по PK (True/False).
-        """
-        return (await self.get(id)) is not None  # Возвращает True, если объект найден, иначе False
-
-    # Универсальный метод для поиска одного объекта по фильтрам
-    async def get_one_by(self, **filters) -> Optional[T]:
-        """
-        Универсальный поиск по набору равенств: repo.get_one_by(email="x@y", active=True)
-        Вернёт один объект или None.
-        """
-        stmt = select(self.model).filter_by(**filters).limit(1)  # Формируем запрос с фильтрами
-        res = await self.session.execute(stmt)  # Выполняем запрос
-        return res.scalars().first()  # Возвращаем первый результат или None, если ничего не найдено
-
-    # Универсальный метод для получения списка объектов по фильтрам с пагинацией
-    async def list_by(self, limit: int = 100, offset: int = 0, **filters) -> Sequence[T]:
-        """
-        Универсальный список по равенствам с пагинацией: repo.list_by(active=True, limit=20)
-        """
-        stmt = select(self.model).filter_by(**filters).limit(limit).offset(offset)  # Формируем запрос с фильтрами
-        res = await self.session.execute(stmt)  # Выполняем запрос
-        return res.scalars().all()  # Возвращаем результаты как список объектов
+    # def transaction(self) -> AsyncContextManager[AsyncSession]:
+    #     """
+    #     Открыть НОВУЮ сессию и сразу начать транзакцию.
+    #     Использование:
+    #         async with repo.transaction() as session:
+    #             session.add(...)
+    #             # commit/rollback произойдёт автоматически по выходу из контекста
+    #     """
+    #     return self._sm.begin()  # Контекст, который выдаёт session с открытой транзакцией

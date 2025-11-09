@@ -1,36 +1,47 @@
-# Этот файл содержит определения для моделей SQLAlchemy.
-# Модель User наследует от базового класса и описывает таблицу пользователей в базе данных.
-# Включает в себя все необходимые поля и механизмы для работы с базой данных (например, автогенерация времени создания и обновления).
+# =============================================================================
+# ФАЙЛ: backend/persistend/models/users.py
+# КРАТКО: ORM-модель таблицы "users" для SQLAlchemy.
+# ЗАЧЕМ:
+#   • Хранит учётные записи пользователей (включая telelgram_id и профиль).
+#   • Даёт типобезопасный доступ к данным через ORM (вместо «сырого» SQL).
+#   • Автоматически ведёт created_at/updated_at через TimestampMixin.
+#
+# КОНЦЕПТЫ (если вы впервые в бэкенде/БД):
+#   • Модель — это Python-класс, описывающий таблицу и её столбцы.
+#   • ORM сама строит SQL-запросы по вашим действиям с объектами класса.
+#   • Первичный ключ (PK) — уникальный идентификатор строки (поле id).
+# =============================================================================
 
-from __future__ import annotations
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column  # Для декларативного описания моделей
-from sqlalchemy import BigInteger, Text, TIMESTAMP  # Для определения типов данных в таблице
-from sqlalchemy.sql import func  # Для использования SQL-функций, например, для генерации времени на сервере
-from backend.persistend.base import Base, TimestampMixin
+from __future__ import annotations  # Разрешает отложенную оценку аннотаций типов (удобно для ORM и старых Python)
 
-# class Base(DeclarativeBase):
-#     """Базовый класс для всех моделей SQLAlchemy. Предоставляет функциональность для создания таблиц."""
-#     pass
+from sqlalchemy.orm import Mapped, mapped_column   # Инструменты SQLAlchemy для декларативного описания полей модели
+from sqlalchemy import BigInteger, Text            # Типы столбцов: BigInteger (для BIGINT/BIGSERIAL), Text — произвольной длины
 
-# Модель пользователя, которая будет отображать таблицу "users" в базе данных
-class User(Base, TimestampMixin):
-    __tablename__ = "users"  # Имя таблицы в базе данных
+from backend.persistend.base import Base, TimestampMixin  # Наш общий Base и миксин с таймстемпами (created_at/updated_at)
 
-    # Определение столбцов (полей) таблицы
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)  # ID пользователя, автоинкремент
-    telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True)  # Уникальный telegram_id пользователя (тип BigInteger)
 
-    # Дополнительные поля с типом Text (для строковых данных)
-    username: Mapped[str | None] = mapped_column(Text)  # Имя пользователя (может быть пустым)
-    first_name: Mapped[str | None] = mapped_column(Text)  # Имя
-    last_name: Mapped[str | None] = mapped_column(Text)  # Фамилия
-    language_code: Mapped[str | None] = mapped_column(Text)  # Языковой код (например, 'en', 'ru')
-    bio: Mapped[str | None] = mapped_column(Text)  # Биография пользователя
-    avatar_url: Mapped[str | None] = mapped_column(Text)  # URL аватара пользователя
-    city: Mapped[str | None] = mapped_column(Text)  # Город
-    university: Mapped[str | None] = mapped_column(Text)  # Университет
-    link: Mapped[str | None] = mapped_column(Text)  # Личное или профессиональное ссылка (например, на профиль)
+# -----------------------------------------------------------------------------
+# МОДЕЛЬ ТАБЛИЦЫ USERS
+# -----------------------------------------------------------------------------
+class User(Base, TimestampMixin):                 # Наследуемся от Base (регистрация в metadata) и миксина таймстемпов
+    __tablename__ = "users"                       # Явно задаём имя таблицы в БД
 
-    # Время создания и последнего обновления записи
-    # created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())  # Время создания (функция NOW() на сервере)
-    # updated_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())  # Время последнего обновления (обновляется при изменении записи)
+    # id — первичный ключ. Используем BigInteger, чтобы совпадать с FK в user_skill (BigInteger там уже принят).
+    # autoincrement=True — база сама проставляет следующее число (BIGSERIAL).
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+
+    # telegram_id — уникальный идентификатор пользователя в Telegram.
+    # unique=True — запрет дубликатов; nullable=False — значение обязательно.
+    telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
+
+    # username и прочие поля профиля — обычные текстовые поля, которые могут отсутствовать (nullable=True по умолчанию).
+    # В Telegram username может быть пустым — поэтому не делаем NOT NULL.
+    username: Mapped[str | None] = mapped_column(Text)          # Ник в Telegram (может быть None)
+    first_name: Mapped[str | None] = mapped_column(Text)        # Имя
+    last_name: Mapped[str | None] = mapped_column(Text)         # Фамилия
+    language_code: Mapped[str | None] = mapped_column(Text)     # Например: 'ru', 'en'
+    bio: Mapped[str | None] = mapped_column(Text)               # Короткая биография
+    avatar_url: Mapped[str | None] = mapped_column(Text)        # Ссылка на аватар
+    city: Mapped[str | None] = mapped_column(Text)              # Город
+    university: Mapped[str | None] = mapped_column(Text)        # Университет/ВУЗ
+    link: Mapped[str | None] = mapped_column(Text)              # Личная/проф. ссылка (портфолио, сайт и т.п.)

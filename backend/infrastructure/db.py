@@ -1,48 +1,79 @@
-# Этот файл отвечает за подключение к БД в асинхронном режиме (SQLAlchemy).
-# Содержит:
-#  - создание async engine и фабрики сессий;
-#  - зависимость get_session() с автокоммитом/роллбеком транзакции;
-#  - init_db() — быстрая проверка доступности БД (health/ready);
-#  - dispose_db() — корректное закрытие пула соединений при остановке приложения.
+# =============================================================================
+# ФАЙЛ: infrastructure/db.py
+# КРАТКО: единая точка работы с БД (PostgreSQL и т.п.) для всего приложения.
+# ЗАЧЕМ:
+#   • Создаёт один общий "engine" (соединение с БД + пул соединений).
+#   • Создаёт общий async_sessionmaker — фабрику для выдачи асинхронных сессий.
+#   • Даёт аккуратные геттеры get_engine() / get_sessionmaker() для репозиториев.
+#   • Оставляет get_session() как временную зависимость для роутов FastAPI
+#     (на случай обратной совместимости), но основной сценарий — открывать
+#     сессию прямо в репозитории (репо само делает commit/rollback).
+#   • init_db() — «пинг» БД на старте (проверка, что подключение живо).
+#   • dispose_db() — корректное закрытие пула при остановке приложения.
+#
+# КАК ЭТО ЧИТАТЬ, ЕСЛИ ВЫ НОВИЧОК:
+#   БД ≈ «удалённый сервис, с которым мы общаемся по сети».
+#   engine  — «диспетчер соединений» (он держит пул подключений).
+#   session — «рабочая единица» для запросов/транзакций.
+#   sessionmaker — «фабрика», которая выдаёт новые session по запросу.
+# =============================================================================
 
-from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy import text
-from backend.settings.config import settings
+from __future__ import annotations  # Позволяет использовать аннотации типов из будущих версий Python (отложенная оценка типов)
 
+from typing import AsyncGenerator        # Тип для обозначения асинхронного генератора (используем в get_session)
+from sqlalchemy import text             # Функция text() — чтобы выполнять сырые SQL-выражения вроде "SELECT 1"
+from sqlalchemy.ext.asyncio import (    # Асинхронные инструменты SQLAlchemy
+    AsyncSession,                       # Класс асинхронной сессии (через него выполняем запросы)
+    async_sessionmaker,                 # Фабрика, которая создаёт AsyncSession по требованию
+    create_async_engine,                # Функция для создания асинхронного engine (пул соединений)
+)
+from backend.settings.config import settings  # Наши настройки (оттуда берём DATABASE_URL и прочие параметры)
+
+# --- Единый engine ---
+# Создаём один общий engine на всё приложение. Он «знает», как подключаться к БД,
+# держит пул соединений и управляет низкоуровневой связью с СУБД.
+# Важно: settings.database_url должен быть async-строкой, например:
+#   postgresql+asyncpg://user:password@host:5432/dbname
 engine = create_async_engine(
-    settings.database_url,
-    echo=settings.DB_ECHO,
-    pool_pre_ping=True,                 # проверять соединение перед выдачей из пула
-    pool_size=settings.DB_POOL_SIZE,    # размер пула соединений
-    max_overflow=settings.DB_MAX_OVERFLOW,  # «переполнение» сверх пула при пиках
+    settings.database_url,                          # Строка подключения к БД (из настроек)
+    echo=getattr(settings, "DB_ECHO", False),       # echo=True — логировать все SQL в консоль (шумно, но полезно в отладке)
+    pool_pre_ping=True,                             # Перед выдачей соединения из пула проверять, что оно живо
+    pool_size=getattr(settings, "DB_POOL_SIZE", 5), # Базовый размер пула соединений
+    max_overflow=getattr(settings, "DB_MAX_OVERFLOW", 10),  # Сколько «доп. соединений» можно открыть сверх пула при пиках
 )
 
-# Фабрика асинхронных сессий (expire_on_commit=False — объекты остаются «живыми» после commit)
-SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
+# --- Единый sessionmaker (без автокоммита/автофлаша) ---
+# Создаём фабрику асинхронных сессий. Сами по себе сессии здесь не создаются — они
+# будут создаваться каждый раз внутри "async with _sessionmaker() as session:".
+_sessionmaker: async_sessionmaker[AsyncSession] = async_sessionmaker(
+    bind=engine,                        # Привязываем к нашему engine (пулу соединений)
+    class_=AsyncSession,                # Говорим фабрике выдавать именно AsyncSession
+    expire_on_commit=False,             # После commit объекты НЕ «протухают» (их атрибуты остаются доступны без повторного запроса)
+    autoflush=False,                    # Не отправлять запросы в БД автоматически «между делом» (мы контролируем момент flush/commit сами)
+)
 
+# Публичные геттеры для использования в репозиториях/системных маршрутах
+def get_engine():
+    """Вернуть общий engine (обычно напрямую не нужен, но бывает полезен для админ-задач)."""
+    return engine
+
+def get_sessionmaker() -> async_sessionmaker[AsyncSession]:
+    """Вернуть общую фабрику сессий — используйте её внутри репозиториев."""
+    return _sessionmaker
+
+# ВРЕМЕННО: зависимость FastAPI для обратной совместимости.
+# Репозитории теперь сами открывают сессию через get_sessionmaker() и делают commit/rollback внутри своих методов.
+# Этот генератор просто даёт «готовую сессию» на время одного запроса.
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    """
-    Зависимость для FastAPI: выдаёт сессию на время запроса.
-    При успехе — commit, при исключении — rollback.
-    """
-    async with SessionLocal() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
+    async with _sessionmaker() as session:  # Открываем новую сессию (и гарантированно закроем при выходе из блока)
+        yield session                       # Отдаём её наружу (например, в роут), без автоматических commit/rollback
 
+# Зовём на старте приложения (health-ping).
+# Небольшой запрос "SELECT 1" убеждается, что соединение к БД доступно и параметры верные.
 async def init_db() -> None:
-    """
-    Лёгкая проверка доступности БД на старте приложения.
-    """
-    async with engine.begin() as conn:
-        await conn.execute(text("SELECT 1"))
+    async with engine.begin() as conn:      # Открываем соединение в «транзакционном» контексте
+        await conn.execute(text("SELECT 1"))# Выполняем простой SQL, ошибок быть не должно
 
+# Корректно закрываем пул при остановке (важно для чистого завершения и тестов).
 async def dispose_db() -> None:
-    """
-    Корректно закрыть пул соединений при завершении работы приложения.
-    """
-    await engine.dispose()
+    await engine.dispose()                  # Закрываем все соединения и освобождаем ресурсы

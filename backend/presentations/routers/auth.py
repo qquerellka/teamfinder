@@ -1,30 +1,50 @@
-# Этот файл реализует аутентификацию пользователя через Telegram и возвращает информацию о пользователе, включая его навыки и токен доступа.
-# Включает маршрут для аутентификации пользователя и получения его данных (профиль, навыки) после успешной авторизации через Telegram.
+# =============================================================================
+# ФАЙЛ: backend/presentations/routers/auth.py
+# КРАТКО: роутер FastAPI для аутентификации через Telegram WebApp.
+# ЗАЧЕМ:
+#   • Принимает init_data от Telegram Mini App.
+#   • Через AuthTelegramService валидирует подпись/срок действия и получает AuthResult
+#     (обычно: user_id + access_token/JWT).
+#   • Достаёт профиль пользователя и его навыки из БД (UsersRepo открывает сессию сам).
+#   • Возвращает клиенту access_token и полную структуру профиля (UserOut).
+# КОМУ ПОЛЕЗНО:
+#   • Начинающим: понять связку «роут -> сервис аутентификации -> репозиторий».
+#   • Интеграции с фронтом: знать, какой JSON отправлять/получать.
+# ПРИМЕЧАНИЯ:
+#   • Исключения маппятся в корректные HTTP-коды (401 для InitDataError, 400 для прочих ошибок).
+#   • created_at/updated_at приводятся к строке для простоты (можно вернуть ISO-даты как datetime).
+# =============================================================================
 
-from __future__ import annotations
-from pydantic import BaseModel
-from fastapi import APIRouter, Depends, HTTPException, status  # Импортируем нужные компоненты для FastAPI
-from sqlalchemy.ext.asyncio import AsyncSession  # Для работы с асинхронной сессией SQLAlchemy
-from backend.infrastructure.db import get_session  # Для получения сессии с базой данных
-from backend.services.auth_telegram import AuthTelegramService  # Сервис для аутентификации через Telegram
-from backend.utils.telegram_initdata import InitDataError  # Ошибки для некорректных данных Telegram
-from backend.repositories.users import UsersRepo  # Репозиторий для работы с пользователями
+from __future__ import annotations  # отложенная оценка типов — удобно для аннотаций и циклических импортов
+from pydantic import BaseModel      # Pydantic-модели для валидации входа/выхода (схема ответа OpenAPI)
+from fastapi import APIRouter, HTTPException, status  # роутер и исключения FastAPI
 
-# Создание экземпляра маршрутизатора FastAPI для аутентификации
+# Доменные сервисы/утилиты и репозитории нашего приложения:
+from backend.services.auth_telegram import AuthTelegramService, AuthResult  # сервис аутентификации через Telegram initData
+from backend.utils.telegram_initdata import InitDataError                   # ошибка в initData (подпись/срок и т.д.)
+from backend.repositories.users import UsersRepo                            # репозиторий пользователей (сам открывает сессию на операцию)
+
+# Создаём роутер с префиксом и группой тегов для Swagger/Redoc
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# Модель для входных данных аутентификации через Telegram
-class TelegramInitIn(BaseModel):
-    init_data: str  # Данные для инициализации, полученные из Telegram
+# Инициализируем зависимости на модульном уровне:
+auth_service = AuthTelegramService()  # статeless-сервис — можно переиспользовать инстанс
+users_repo = UsersRepo()              # репозиторий, внутри использует get_sessionmaker() и контекстные сессии
 
-# Модель для вывода информации о навыках пользователя
+# ===== Pydantic-модели запроса/ответа (схемы для OpenAPI) =====
+
+class TelegramInitIn(BaseModel):
+    """Входная модель: строка init_data из Telegram Mini App (window.Telegram.WebApp.initData)."""
+    init_data: str  # фронт присылает то, что получил от Telegram; сервер проверит подпись/валидность
+
 class UserSkillOut(BaseModel):
+    """Одна запись навыка пользователя для ответа API."""
     id: int
     slug: str
     name: str
 
-# Модель для вывода информации о пользователе
 class UserOut(BaseModel):
+    """Публичный профиль пользователя, который вернём фронтенду после успешной авторизации."""
     id: int
     telegram_id: int
     username: str | None = None
@@ -35,33 +55,51 @@ class UserOut(BaseModel):
     city: str | None = None
     university: str | None = None
     link: str | None = None
-    skills: list[UserSkillOut]  # Список навыков пользователя
-    created_at: str
+    skills: list[UserSkillOut]  # упрощённый список навыков
+    created_at: str             # для простоты как str; можно заменить на datetime и настроить сериализацию ISO-8601
     updated_at: str
 
-# Модель для вывода информации об аутентификации (токен и профиль)
 class AuthOut(BaseModel):
+    """Ответ роутера авторизации: токен + профиль."""
     user_id: int
     access_token: str
-    profile: UserOut  # Включает профиль пользователя
+    profile: UserOut
 
-# Роут для аутентификации через Telegram
+# ===== Роут =====
+
 @router.post("/telegram", response_model=AuthOut)
-async def auth_telegram(payload: TelegramInitIn, session: AsyncSession = Depends(get_session)):
-    service = AuthTelegramService(session)  # Инициализируем сервис для аутентификации через Telegram
+async def auth_telegram(payload: TelegramInitIn):
+    """
+    Точка входа авторизации.
+    1) Валидируем init_data через AuthTelegramService (подпись, свежесть).
+    2) Получаем AuthResult с user_id и access_token (например, JWT).
+    3) Читаем профиль пользователя и его навыки из БД.
+    4) Возвращаем токен и профиль фронту.
+    """
     try:
-        res = await service.authenticate(payload.init_data)  # Попытка аутентификации с использованием init_data
+        # authenticate() проверит подпись Telegram, время, достанет/сгенерирует токен и вернёт user_id
+        res: AuthResult = await auth_service.authenticate(payload.init_data)
     except InitDataError as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))  # Ошибка, если данные некорректны
+        # Ошибка в init_data (подпись, экспирация и т.п.) → 401 Unauthorized
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+    except Exception as e:
+        # Любая другая ошибка на этом шаге → 400 Bad Request (можно логировать e для диагностики)
+        raise HTTPException(status_code=400, detail=str(e))
 
-    repo = UsersRepo(session)  # Создаем репозиторий для работы с пользователями
-    user = await repo.get_by_id(res.user_id)  # Получаем пользователя по его ID
-    skills = await repo.get_user_skills(res.user_id)  # Получаем навыки пользователя по его ID
+    # Достаём пользователя из БД по id, который вернул сервис аутентификации
+    user = await users_repo.get_by_id(res.user_id)
+    if not user:
+        # Если запись не найдена — либо неконсистентность, либо пользователь удалён → 404
+        raise HTTPException(status_code=404, detail="user not found")
 
-    # Возвращаем данные пользователя, токен и навыки
+    # Подтягиваем навыки пользователя (репозиторий сам управляет сессией)
+    skills = await users_repo.get_user_skills(res.user_id)
+
+    # Собираем ответ по схеме AuthOut.
+    # created_at/updated_at приводим к строке, чтобы избежать кастомной сериализации дат.
     return AuthOut(
         user_id=user.id,
-        access_token=res.access_token,  # Токен доступа
+        access_token=res.access_token,
         profile=UserOut(
             id=user.id,
             telegram_id=user.telegram_id,
@@ -73,7 +111,7 @@ async def auth_telegram(payload: TelegramInitIn, session: AsyncSession = Depends
             city=user.city,
             university=user.university,
             link=user.link,
-            skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],  # Преобразуем навыки в UserSkillOut
+            skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
             created_at=str(user.created_at),
             updated_at=str(user.updated_at),
         ),
