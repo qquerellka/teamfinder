@@ -18,7 +18,7 @@ services:
       - ./initdb_db:/docker-entrypoint-initdb.d
   api:
     build:
-      context: .
+      context: backend
       dockerfile: Dockerfile
     env_file:
       - .env

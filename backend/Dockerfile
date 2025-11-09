@@ -5,12 +5,12 @@ ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     PIP_NO_CACHE_DIR=off   
 WORKDIR /app
 
 # Установим зависимости
-COPY backend/requirements.txt /app/backend/requirements.txt
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем исходники
-COPY backend /app/backend
-COPY .env /app/.env
+COPY . .
+# COPY .env /app/.env
 
 EXPOSE 8000
 
