@@ -2,92 +2,111 @@
 # ФАЙЛ: backend/services/applications.py
 # КРАТКО: Сервис для работы с анкетами пользователей на хакатоны.
 # ЗАЧЕМ:
-#   • Создание анкеты для пользователя на хакатон.
-#   • Поиск анкет по различным фильтрам.
-#   • Обновление существующих анкет пользователей.
-#   • Обеспечивает бизнес-логику для обработки анкет.
-# ОСОБЕННОСТИ:
-#   • Взаимодействует с репозиторием ApplicationsRepo.
-#   • Логика поиска, фильтрации и создания анкет инкапсулирована в сервисе.
-#   • Работает с моделью анкеты и дополнительной бизнес-логикой.
+#   • Инкапсулирует бизнес-логику (уникальность, доступность, простые проверки)
+#   • Делегирует SQL-детали репозиторию ApplicationsRepo
 # =============================================================================
+
+from __future__ import annotations
+
+from typing import Optional
 
 from backend.repositories.applications import ApplicationsRepo
 from backend.repositories.users import UsersRepo
-# from backend.repositories.hackathons import HackathonsRepo      ПОКА НЕ СОЗДАН!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# NOTE: HackathonsRepo пока нет — не импортируем/не используем.
+
 
 class ApplicationsService:
-    """
-    Сервис для работы с анкетами пользователей на хакатоны.
-    Предоставляет методы для создания, поиска и обновления анкет.
-    """
+    """Сервисный слой для анкет."""
 
-    def __init__(self):
-        # Репозитории для работы с анкетами, пользователями и хакатонами
-        self.applications_repo = ApplicationsRepo()
-        self.users_repo = UsersRepo()
-        self.hackathons_repo = HackathonsRepo()
+    def __init__(self) -> None:
+        self.apps = ApplicationsRepo()
+        self.users = UsersRepo()
 
-    # ---- СОЗДАНИЕ АНКЕТЫ ----
+    # ---- СОЗДАНИЕ ----
 
-    async def create(self, user_id: int, hackathon_id: int, role: str, title: str, about: str, city: str, skills: list[str]):
+    async def create(
+        self,
+        user_id: int,
+        hackathon_id: int,
+        role: Optional[str] = None,
+        title: Optional[str] = None,
+        about: Optional[str] = None,
+        city: Optional[str] = None,
+        skills: Optional[list[str]] = None,  # игнорится на MVP (skills из профиля)
+    ):
         """
-        Создаёт анкету пользователя для конкретного хакатона.
-        Параметры:
-          user_id: ID пользователя, который создаёт анкету.
-          hackathon_id: ID хакатона, для которого создаётся анкета.
-          role: Роль пользователя на хакатоне (например, 'Backend', 'Frontend').
-          title: Заголовок анкеты (например, название проекта или команды).
-          about: Описание анкеты.
-          city: Город пользователя.
-          skills: Навыки, которые могут быть добавлены в анкету.
-        """
-        # Подготавливаем данные для создания анкеты
-        data = {
-            "role": role,
-            "title": title,
-            "about": about,
-            "city": city,
-            "skills": skills  # Список навыков для анкеты
-        }
-        # Передаем данные в репозиторий для создания анкеты
-        return await self.applications_repo.create(hackathon_id, user_id, data)
+        Создать анкету пользователя на хакатон.
 
-    # ---- ПОИСК АНКЕТ ----
-
-    async def search(self, hackathon_id: int, role: str = None, skills_any: list[str] = None, q: str = None, limit: int = 50, offset: int = 0):
+        Инварианты:
+          • На 1 (hackathon_id, user_id) — только 1 анкета.
+        Поведение:
+          • Если анкета уже существует — поднимаем ValueError("app_exists").
+            (Роутер маппит в HTTP 409.)
         """
-        Поиск анкет для хакатона с возможностью фильтрации по роли, навыкам и текстовому запросу.
-        Параметры:
-          hackathon_id: ID хакатона, для которого ищутся анкеты.
-          role: Роль на хакатоне (опционально).
-          skills_any: Список навыков, которые должны быть у пользователя (опционально).
-          q: Текстовый запрос для поиска по анкете (опционально).
-          limit: Ограничение на количество возвращаемых результатов (по умолчанию 50).
-          offset: Смещение для пагинации (по умолчанию 0).
-        """
-        # Передаем запрос в репозиторий для поиска
-        return await self.applications_repo.search(hackathon_id, role, skills_any, q, limit, offset)
+        # Pre-check, чтобы вернуть дружелюбную ошибку, а не ловить IntegrityError снизу
+        existing = await self.apps.get_by_user_and_hackathon(
+            user_id=user_id, hackathon_id=hackathon_id
+        )
+        if existing:
+            raise ValueError("app_exists")
 
-    # ---- ОБНОВЛЕНИЕ АНКЕТЫ ----
+        # Создаём (репозиторий сам присвоит дефолты status/joined, выставит опциональные поля при их наличии)
+        return await self.apps.create(
+            user_id=user_id,
+            hackathon_id=hackathon_id,
+            role=role,
+            title=title,
+            about=about,
+            city=city,
+            skills=skills,
+        )
+
+    # ---- СПИСОК/ПОИСК ----
+
+    async def search(
+        self,
+        hackathon_id: int,
+        role: Optional[str] = None,
+        q: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0,
+    ):
+        """
+        Список анкет хакатона с фильтрами:
+          • role — точное совпадение роли
+          • q    — username/first_name/last_name (case-insensitive)
+        """
+        return await self.apps.search(
+            hackathon_id=hackathon_id,
+            role=role,
+            q=q,
+            limit=limit,
+            offset=offset,
+        )
+
+    # ---- ОБНОВЛЕНИЕ ----
 
     async def update(self, app_id: int, data: dict):
         """
-        Обновление анкеты пользователя по её ID.
-        Параметры:
-          app_id: ID анкеты, которую нужно обновить.
-          data: Данные для обновления анкеты (например, роль, описание, навыки).
+        Частичное обновление анкеты по id.
+        data — {'role': ..., 'status': ..., 'title': ..., 'about': ..., 'city': ...}
         """
-        # Передаем данные для обновления анкеты в репозиторий
-        return await self.applications_repo.update(app_id, data)
+        return await self.apps.update(app_id, data)
 
-    # ---- ПОЛУЧЕНИЕ АНКЕТЫ ----
+    # ---- ЧТЕНИЕ ----
 
     async def get(self, app_id: int):
-        """
-        Получение анкеты по ID.
-        Параметры:
-          app_id: ID анкеты, которую нужно получить.
-        """
-        # Запрашиваем анкету по ID через репозиторий
-        return await self.applications_repo.get(app_id)
+        """Получить анкету по id (или None)."""
+        return await self.apps.get_by_id(app_id)
+
+    async def get_my_for_hackathon(self, user_id: int, hackathon_id: int):
+        """Получить мою анкету на конкретный хакатон (или None)."""
+        return await self.apps.get_by_user_and_hackathon(
+            user_id=user_id, hackathon_id=hackathon_id
+        )
+
+    async def list_my(self, user_id: int, limit: int = 50, offset: int = 0):
+        """Список всех моих анкет по всем хакатонам (пагинированный)."""
+        return await self.apps.search_by_user(
+            user_id=user_id, limit=limit, offset=offset
+        )

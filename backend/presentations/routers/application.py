@@ -1,21 +1,24 @@
 # =============================================================================
 # ФАЙЛ: backend/presentations/routers/applications.py
-# КРАТКО: роутер FastAPI для анкет пользователей на хакатоны.
+# КРАТКО: роутер FastAPI для анкет пользователей на хакатоны (Application).
 # ЗАЧЕМ:
-#   • Ручки под контракт:
-#       GET  /hackathons/{hackathon_id}/applications            (список с фильтрами)
-#       GET  /hackathons/{hackathon_id}/applications/me         (моя анкета на хакатон)
-#       GET  /hackathons/{hackathon_id}/applications/{user_id}  (анкета пользователя на хакатон)
-#       POST /hackathons/{hackathon_id}/applications            (создать мою анкету)
-#       PATCH/hackathons/{hackathon_id}/applications/me         (обновить мою анкету)
-#       GET  /me/applications                                   (все мои анкеты)
-#       GET  /me/applications/{hackathon_id}                    (моя анкета на конкретный хакатон)
-#   • Схемы Pydantic объявлены прямо здесь (как в users.py).
+# • Позволяет пользователям создавать и редактировать свою анкету на конкретный хакатон.
+# • Даёт капитанам/другим пользователям список анкет с базовой фильтрацией.
+# • Возвращает «карточку анкеты», собранную из нескольких источников:
+# - application: id, hackathon_id, user_id, role
+# - users: username, first_name, last_name
+# - user_skill/skill: skills[]
+# - hackathon: registration_end_date
 # ОСОБЕННОСТИ:
-#   • «Пакер» _pack_application_card собирает данные для фронта:
-#       id, hackathon_id, user_id, role, username, first_name, last_name, skills[], registration_end_date.
-#   • skills берём по user_id из user_skill/skill (через UsersRepo.get_user_skills).
-#   • registration_end_date берём из hackathon.
+# • Аутентификация через JWT (извлекаем user_id).
+# • На 1 хакатон — у пользователя может быть только 1 анкета.
+# • Фильтр списка — только по роли и по q (username/first_name/last_name).
+# • skills в карточке подтягиваются из профиля (user_id), пока не храним их в application (MVP).
+# • Ответы типизированы Pydantic-моделями (удобно для Swagger/Redoc).
+# ПАГИНАЦИЯ:
+# • Списки возвращают {"items": [...], "limit": X, "offset": Y}.
+# ДОГОВОР С ФРОНТОМ (ApplicationCardOut):
+# • id, hackathon_id, user_id, role, username, first_name, last_name, skills[], registration_end_date
 # =============================================================================
 
 from __future__ import annotations
@@ -111,10 +114,11 @@ async def _pack_application_card(app_obj) -> ApplicationCardOut:
         registration_end_date=reg_end,
     )
 
-# ---- РУЧКИ ПО КОНТРАКТУ ----
+# ---- РОУТЫ ----
 
 @router.get("/hackathons/{hackathon_id}/applications", response_model=dict)
 async def list_hackathon_applications(
+# Возвращает список карточек анкет одного хакатона с пагинацией и простыми фильтрами.  
     hackathon_id: int,
     role: Optional[RoleType] = Query(default=None, description="Фильтр по роли"),
     q: Optional[str] = Query(
@@ -142,6 +146,7 @@ async def list_hackathon_applications(
 
 @router.get("/hackathons/{hackathon_id}/applications/me", response_model=ApplicationCardOut)
 async def get_my_application_on_hackathon(hackathon_id: int, user_id: int = Depends(get_current_user_id)):
+# Возвращает мою анкету на указанный хакатон (карточка).  
     app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
     if not app:
         raise HTTPException(status_code=404, detail="application not found")
@@ -149,6 +154,7 @@ async def get_my_application_on_hackathon(hackathon_id: int, user_id: int = Depe
 
 @router.get("/hackathons/{hackathon_id}/applications/{user_id}", response_model=ApplicationCardOut)
 async def get_user_application_on_hackathon(hackathon_id: int, user_id: int, _me: int = Depends(get_current_user_id)):
+# Возвращает анкету конкретного пользователя на указанном хакатоне (карточка).
     app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
     if not app:
         raise HTTPException(status_code=404, detail="application not found")
@@ -156,6 +162,7 @@ async def get_user_application_on_hackathon(hackathon_id: int, user_id: int, _me
 
 @router.post("/hackathons/{hackathon_id}/applications", response_model=ApplicationCardOut, status_code=status.HTTP_201_CREATED)
 async def create_my_application(hackathon_id: int, payload: ApplicationCreateIn, user_id: int = Depends(get_current_user_id)):
+# Создаёт мою анкету на конкретный хакатон. На 1 хакатон — только 1 анкета.
     exists = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
     if exists:
         raise HTTPException(status_code=409, detail="application already exists for this hackathon")
@@ -173,6 +180,7 @@ async def create_my_application(hackathon_id: int, payload: ApplicationCreateIn,
 
 @router.patch("/hackathons/{hackathon_id}/applications/me", response_model=ApplicationCardOut)
 async def patch_my_application(hackathon_id: int, payload: ApplicationPatchIn, user_id: int = Depends(get_current_user_id)):
+# Частично обновляет мою анкету на указанном хакатоне (роль/описание/город/статус).
     app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
     if not app:
         raise HTTPException(status_code=404, detail="application not found")
@@ -191,6 +199,8 @@ async def patch_my_application(hackathon_id: int, payload: ApplicationPatchIn, u
 
 @router.get("/me/applications", response_model=dict)
 async def list_my_applications(
+# Возвращает пагинированный список всех моих анкет по всем хакатонам, где я их создавал.
+# Удобно, когда нужно быстро посмотреть свой «портфель» заявок на разные события.
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     user_id: int = Depends(get_current_user_id),
@@ -201,6 +211,7 @@ async def list_my_applications(
 
 @router.get("/me/applications/{hackathon_id}", response_model=ApplicationCardOut)
 async def get_my_application_on_specific_hackathon(hackathon_id: int, user_id: int = Depends(get_current_user_id)):
+# Возвращает мою анкету на конкретный хакатон (то же, что /hackathons/{hackathon_id}/applications/me, но из «моего раздела»).
     app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
     if not app:
         raise HTTPException(status_code=404, detail="application not found")
