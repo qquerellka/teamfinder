@@ -55,8 +55,8 @@ class Application(Base, TimestampMixin):
     joined: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Связи (работают, только если в User/Hackathon задан back_populates!!!!!)
-    user = relationship("User", back_populates="applications", lazy="joined")
-    hackathon = relationship("Hackathon", back_populates="applications", lazy="joined")
+    user = relationship("User", back_populates="applications")
+    hackathon = relationship("Hackathon", back_populates="applications")
 
     __table_args__ = (
         # Одна анкета на (hackathon_id, user_id)

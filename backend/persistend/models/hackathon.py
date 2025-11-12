@@ -41,10 +41,10 @@ class Hackathon(Base, TimestampMixin):
 
     status: Mapped[HackathonStatus] = mapped_column(Enum(HackathonStatus, name="hackathon_status"), nullable=False, default=HackathonStatus.open)
 
-    # Связи
-    applications: Mapped[List["Application"]] = relationship(
+    # <<< NEW
+    applications = relationship(
         "Application",
         back_populates="hackathon",
-        cascade="all,delete-orphan",
+        cascade="all, delete-orphan",
         passive_deletes=True,
     )

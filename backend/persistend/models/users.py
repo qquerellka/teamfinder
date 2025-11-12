@@ -14,7 +14,7 @@
 
 from __future__ import annotations  # Разрешает отложенную оценку аннотаций типов (удобно для ORM и старых Python)
 
-from sqlalchemy.orm import Mapped, mapped_column   # Инструменты SQLAlchemy для декларативного описания полей модели
+from sqlalchemy.orm import Mapped, mapped_column, relationship   # Инструменты SQLAlchemy для декларативного описания полей модели
 from sqlalchemy import BigInteger, Text            # Типы столбцов: BigInteger (для BIGINT/BIGSERIAL), Text — произвольной длины
 
 from backend.persistend.base import Base, TimestampMixin  # Наш общий Base и миксин с таймстемпами (created_at/updated_at)
@@ -45,3 +45,11 @@ class User(Base, TimestampMixin):                 # Наследуемся от 
     city: Mapped[str | None] = mapped_column(Text)              # Город
     university: Mapped[str | None] = mapped_column(Text)        # Университет/ВУЗ
     link: Mapped[str | None] = mapped_column(Text)              # Личная/проф. ссылка (портфолио, сайт и т.п.)
+
+    # <<< NEW
+    applications = relationship(
+        "Application",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
