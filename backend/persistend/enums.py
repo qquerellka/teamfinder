@@ -20,7 +20,7 @@ class RoleType(str, Enum):  # Перечисление ролей на хака�
     DevOps = 'DevOps'            
     GameDev = 'GameDev'          
     MobileDev = 'MobileDev'      
-    ProductManager = 'Product manager'  
+    Product_Manager = 'Product manager'  
     DS = 'DS'                    
     ML = 'ML'                    
     Fullstack = 'Fullstack'     
@@ -49,3 +49,13 @@ class ApplicationStatus(str, Enum):  # Перечисление статуса �
 # Статус анкеты может быть либо 'published' (опубликована), либо 'hidden' (скрыта).
 # Это перечисление будет использоваться в модели анкеты (application) для поля status.
 # -----------------------------------------------------------------------------
+
+class HackathonMode(str, Enum):
+    online  = "online"
+    offline = "offline"
+    hybrid  = "hybrid"
+
+class HackathonStatus(str, Enum):
+    draft  = "draft"
+    open   = "open"
+    closed = "closed"

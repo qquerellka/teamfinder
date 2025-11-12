@@ -1,20 +1,17 @@
 # =============================================================================
 # ФАЙЛ: backend/persistend/models/hackathon.py
-# КРАТКО: ORM-модель таблицы "hackathon".
-# ЗАЧЕМ:
-#   • Хранит карточку хакатона (даты, режим, статус, город и т.д.).
-#   • Даёт связь One-to-Many с анкетами (Application).
-# ОСОБЕННОСТИ:
-#   • Enum-колонки мапятся на SQL ENUM'ы с именами: hackathon_mode, hackathon_status.
-#   • Типы согласованы с твоим DDL (INTEGER/SERIAL).
+# КРАТКО: ORM-модель "hackathon" (SQLAlchemy 2.x, Mapped / mapped_column).
 # =============================================================================
 
 from __future__ import annotations
-from sqlalchemy import Integer, Text, DateTime, Enum
+from datetime import datetime
+from typing import Optional, List
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Text, Integer, DateTime, Enum
 
 from backend.persistend.base import Base, TimestampMixin
-
+from backend.persistend.enums import HackathonMode, HackathonStatus  # см. твой enums.py
 
 class Hackathon(Base, TimestampMixin):
     __tablename__ = "hackathon"
@@ -24,32 +21,30 @@ class Hackathon(Base, TimestampMixin):
 
     # Основные поля
     name: Mapped[str] = mapped_column(Text, nullable=False)
-    description: Mapped[str | None] = mapped_column(Text)
-    image_link: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    image_link: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # Даты
-    start_date: Mapped = mapped_column(DateTime, nullable=False)
-    end_date: Mapped = mapped_column(DateTime, nullable=False)
-    registration_end_date: Mapped | None = mapped_column(DateTime)
-
-    # Enum'ы — должны совпасть по ИМЕНАМ и НАБОРАМ ЗНАЧЕНИЙ с твоими DDL-типами
-    mode: Mapped[str] = mapped_column(
-        Enum("online", "offline", "hybrid", name="hackathon_mode"),
-        nullable=False,
-        default="online",
-    )
-    status: Mapped[str] = mapped_column(
-        Enum("draft", "open", "closed", name="hackathon_status"),
-        nullable=False,
-        default="open",
-    )
+    # Даты (с таймзоной)
+    start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    registration_end_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Прочее
-    city: Mapped[str | None] = mapped_column(Text)
-    team_members_minimum: Mapped[int | None] = mapped_column(Integer)
-    team_members_limit: Mapped[int | None] = mapped_column(Integer)
-    registration_link: Mapped[str | None] = mapped_column(Text)
-    prize_fund: Mapped[str | None] = mapped_column(Text)
+    mode: Mapped[HackathonMode] = mapped_column(Enum(HackathonMode, name="hackathon_mode"), nullable=False, default=HackathonMode.online)
+    city: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    # Связи (замкнётся на Application.hackathon = relationship(..., back_populates="applications"))
-    applications = relationship("Application", back_populates="hackathon", lazy="noload")
+    team_members_minimum: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    team_members_limit: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
+    registration_link: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    prize_fund: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    status: Mapped[HackathonStatus] = mapped_column(Enum(HackathonStatus, name="hackathon_status"), nullable=False, default=HackathonStatus.open)
+
+    # Связи
+    applications: Mapped[List["Application"]] = relationship(
+        "Application",
+        back_populates="hackathon",
+        cascade="all,delete-orphan",
+        passive_deletes=True,
+    )
