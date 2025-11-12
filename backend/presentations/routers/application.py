@@ -1,112 +1,207 @@
 # =============================================================================
 # ФАЙЛ: backend/presentations/routers/applications.py
-# КРАТКО: роутер FastAPI для работы с анкетами пользователей на хакатоны.
+# КРАТКО: роутер FastAPI для анкет пользователей на хакатоны.
 # ЗАЧЕМ:
-#   • Создание анкеты для хакатона (POST /applications).
-#   • Получение списка анкет для хакатона (GET /applications).
-#   • Просмотр конкретной анкеты по ID (GET /applications/{app_id}).
-#   • Обновление анкеты пользователя (PATCH /applications/{app_id}).
+#   • Ручки под контракт:
+#       GET  /hackathons/{hackathon_id}/applications            (список с фильтрами)
+#       GET  /hackathons/{hackathon_id}/applications/me         (моя анкета на хакатон)
+#       GET  /hackathons/{hackathon_id}/applications/{user_id}  (анкета пользователя на хакатон)
+#       POST /hackathons/{hackathon_id}/applications            (создать мою анкету)
+#       PATCH/hackathons/{hackathon_id}/applications/me         (обновить мою анкету)
+#       GET  /me/applications                                   (все мои анкеты)
+#       GET  /me/applications/{hackathon_id}                    (моя анкета на конкретный хакатон)
+#   • Схемы Pydantic объявлены прямо здесь (как в users.py).
 # ОСОБЕННОСТИ:
-#   • Используем сервисный слой `ApplicationsService` для бизнес-логики.
-#   • В ответах используются Pydantic-модели для анкет (ApplicationOut), которые удобно документируются в OpenAPI.
-#   • Реализуем проверку прав доступа с помощью токена (JWT) через зависимость `get_current_user_id`.
-# ВАЖНЫЕ МИКРО-ПРАВКИ:
-#   • У каждого пользователя может быть только одна анкета на хакатон.
-#   • Анкеты пользователей могут изменять статус с "published" на "hidden", когда они вступают в команду.
-#   • Модели данных анкеты обновляются через POST, GET и PATCH запросы.
+#   • «Пакер» _pack_application_card собирает данные для фронта:
+#       id, hackathon_id, user_id, role, username, first_name, last_name, skills[], registration_end_date.
+#   • skills берём по user_id из user_skill/skill (через UsersRepo.get_user_skills).
+#   • registration_end_date берём из hackathon.
 # =============================================================================
 
-from fastapi import APIRouter, Depends, HTTPException
-from backend.services.applications import ApplicationsService
-# from backend.presentations.schemas.applications import ApplicationCreate, ApplicationUpdate, ApplicationOut !!!!!!!
-# from backend.presentations.deps import get_current_user_id  !!!!!!!
+from __future__ import annotations
 
-# Роутер с префиксом /applications и тегом для OpenAPI документации
-router = APIRouter(prefix="/applications", tags=["applications"])
+from typing import Optional, List
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 
-# Инициализируем сервис для работы с анкетами
-svc = ApplicationsService()
+# Реиспользуем готовую зависимость JWT -> user_id
+from backend.presentations.routers.users import get_current_user_id
 
-# ---- РОУТЫ ----
+# Репозитории
+from backend.repositories.users import UsersRepo
+from backend.repositories.hackathons import HackathonsRepo
+from backend.repositories.applications import ApplicationsRepo
 
-# Создание анкеты для хакатона
-@router.post("", response_model=ApplicationOut)
-async def create_application(body: ApplicationCreate, user_id: int = Depends(get_current_user_id)):
+# Enum-типы (как в persistend/enums.py)
+from backend.persistend.enums import RoleType, ApplicationStatus
+
+router = APIRouter(tags=["applications"])
+
+users_repo = UsersRepo()
+hacks_repo = HackathonsRepo()
+apps_repo  = ApplicationsRepo()
+
+# ---- СХЕМЫ ----
+
+class SkillOut(BaseModel):
+    id: int
+    slug: str
+    name: str
+
+class ApplicationCardOut(BaseModel):
     """
-    Создаёт анкету для хакатона. Пользователь может выбрать роль на хакатон,
-    добавить описание, город и другие детали. Анкета будет сохранена в статусе 'published'.
-    
-    Параметры:
-      body: ApplicationCreate — данные анкеты, такие как role, title, about, city и т.д.
-      user_id: int — ID пользователя, получаем из JWT токена через get_current_user_id.
-    
-    Возвращает:
-      ApplicationOut — модель анкеты, которая возвращается в ответе.
+    Карточка анкеты (собирается из нескольких таблиц).
     """
-    # Создание анкеты с переданными данными и текущим user_id
-    app = await svc.create(user_id, body.hackathon_id, body.role, body.title, body.about, body.city, body.skills)
-    return app
+    id: int
+    hackathon_id: int
+    user_id: int
+    role: Optional[RoleType] = None
 
-# Получение списка анкет для хакатона
-@router.get("", response_model=list[ApplicationOut])
-async def list_applications(
-    hackathon_id: int, 
-    role: str = None, 
-    skills_any: list[str] = None, 
-    q: str = None, 
-    limit: int = 50, 
-    offset: int = 0
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+    skills: List[SkillOut] = Field(default_factory=list)
+    registration_end_date: Optional[str] = None  # ISO-строка
+
+class ApplicationCreateIn(BaseModel):
+    """Тело POST: создать анкету на хакатон."""
+    role: Optional[RoleType] = None
+    title: Optional[str] = None
+    about: Optional[str] = None
+    city: Optional[str] = None
+
+class ApplicationPatchIn(BaseModel):
+    """Тело PATCH: частично обновить мою анкету на хакатон."""
+    role: Optional[RoleType] = None
+    title: Optional[str] = None
+    about: Optional[str] = None
+    city: Optional[str] = None
+    status: Optional[ApplicationStatus] = None  # published/hidden (draft добавишь — расширишь Enum)
+
+# ---- ВСПОМОГАТЕЛЬНАЯ СБОРКА КАРТОЧКИ ----
+
+async def _pack_application_card(app_obj) -> ApplicationCardOut:
+    """
+    Сборка карточки анкеты:
+      • из application: id, hackathon_id, user_id, role
+      • из users: username, first_name, last_name
+      • из user_skill/skill: skills[]
+      • из hackathon: registration_end_date
+    """
+    usr = await users_repo.get_by_id(app_obj.user_id)
+    if not usr:
+        raise HTTPException(status_code=500, detail="dangling application: user not found")
+
+    u_skills = await users_repo.get_user_skills(usr.id)
+    skills_out = [SkillOut(id=s.id, slug=s.slug, name=s.name) for s in u_skills]
+
+    hack = await hacks_repo.get_by_id(app_obj.hackathon_id)
+    reg_end = hack.registration_end_date.isoformat() if (hack and hack.registration_end_date) else None
+
+    return ApplicationCardOut(
+        id=app_obj.id,
+        hackathon_id=app_obj.hackathon_id,
+        user_id=app_obj.user_id,
+        role=app_obj.role,
+        username=usr.username,
+        first_name=usr.first_name,
+        last_name=usr.last_name,
+        skills=skills_out,
+        registration_end_date=reg_end,
+    )
+
+# ---- РУЧКИ ПО КОНТРАКТУ ----
+
+@router.get("/hackathons/{hackathon_id}/applications", response_model=dict)
+async def list_hackathon_applications(
+    hackathon_id: int,
+    role: Optional[RoleType] = Query(default=None, description="Фильтр по роли"),
+    q: Optional[str] = Query(
+        default=None,
+        description="Поиск по username/first_name/last_name (ILIKE, без учёта регистра)"
+    ),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    _me: int = Depends(get_current_user_id),
 ):
     """
-    Получает список анкет для конкретного хакатона, с возможностью фильтрации по роли,
-    навыкам и текстовому запросу.
-    
-    Параметры:
-      hackathon_id: int — ID хакатона.
-      role: str (опционально) — роль пользователя на хакатоне.
-      skills_any: list[str] (опционально) — список навыков, которые должны быть у пользователя.
-      q: str (опционально) — текстовый запрос для поиска по анкете.
-      limit: int — максимальное количество анкет для возврата (по умолчанию 50).
-      offset: int — смещение для пагинации.
-    
-    Возвращает:
-      list[ApplicationOut] — список анкет с указанными фильтрами.
+    Вернуть массив карточек анкет одного хакатона c пагинацией.
+      • role — Enum-фильтр по роли (опционально)
+      • q    — поиск по username/first_name/last_name
     """
-    return await svc.search(hackathon_id, role, skills_any, q, limit, offset)
+    rows = await apps_repo.search(
+        hackathon_id=hackathon_id,
+        role=role.value if role else None,  # repo ожидает str | None
+        q=q,
+        limit=limit,
+        offset=offset,
+    )
+    items = [await _pack_application_card(r) for r in rows]
+    return {"items": [i.model_dump() for i in items], "limit": limit, "offset": offset}
 
-# Получение анкеты по ID
-@router.get("/{app_id}", response_model=ApplicationOut)
-async def get_application(app_id: int, user_id: int = Depends(get_current_user_id)):
-    """
-    Получение анкеты по ID. В ответе возвращаются все данные анкеты, включая роль, статус и информацию о хакатоне.
-    
-    Параметры:
-      app_id: int — ID анкеты.
-      user_id: int — ID текущего пользователя, передаётся через JWT.
-    
-    Возвращает:
-      ApplicationOut — данные анкеты с информацией о пользователе и хакатоне.
-    """
-    app = await svc.get(app_id)
+@router.get("/hackathons/{hackathon_id}/applications/me", response_model=ApplicationCardOut)
+async def get_my_application_on_hackathon(hackathon_id: int, user_id: int = Depends(get_current_user_id)):
+    app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
     if not app:
-        raise HTTPException(404, detail="Application not found")
-    return app
+        raise HTTPException(status_code=404, detail="application not found")
+    return await _pack_application_card(app)
 
-# Обновление анкеты пользователя
-@router.patch("/{app_id}", response_model=ApplicationOut)
-async def update_application(app_id: int, body: ApplicationUpdate, user_id: int = Depends(get_current_user_id)):
-    """
-    Частичное обновление анкеты. Пользователь может обновить роль, описание и другие поля анкеты.
-    
-    Параметры:
-      app_id: int — ID анкеты.
-      body: ApplicationUpdate — данные для обновления анкеты.
-      user_id: int — ID пользователя, получаем из JWT токена через get_current_user_id.
-    
-    Возвращает:
-      ApplicationOut — обновлённая анкета.
-    """
-    app = await svc.update(app_id, body.dict(exclude_unset=True))
+@router.get("/hackathons/{hackathon_id}/applications/{user_id}", response_model=ApplicationCardOut)
+async def get_user_application_on_hackathon(hackathon_id: int, user_id: int, _me: int = Depends(get_current_user_id)):
+    app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
     if not app:
-        raise HTTPException(404, detail="Application not found")
-    return app
+        raise HTTPException(status_code=404, detail="application not found")
+    return await _pack_application_card(app)
+
+@router.post("/hackathons/{hackathon_id}/applications", response_model=ApplicationCardOut, status_code=status.HTTP_201_CREATED)
+async def create_my_application(hackathon_id: int, payload: ApplicationCreateIn, user_id: int = Depends(get_current_user_id)):
+    exists = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
+    if exists:
+        raise HTTPException(status_code=409, detail="application already exists for this hackathon")
+
+    app = await apps_repo.create(
+        user_id=user_id,
+        hackathon_id=hackathon_id,
+        role=payload.role.value if payload.role else None,
+        title=payload.title,
+        about=payload.about,
+        city=payload.city,
+        skills=None,  # навыки не сохраняем в application (MVP)
+    )
+    return await _pack_application_card(app)
+
+@router.patch("/hackathons/{hackathon_id}/applications/me", response_model=ApplicationCardOut)
+async def patch_my_application(hackathon_id: int, payload: ApplicationPatchIn, user_id: int = Depends(get_current_user_id)):
+    app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="application not found")
+
+    data = payload.model_dump(exclude_unset=True)
+    if "role" in data and data["role"] is not None:
+        data["role"] = data["role"].value
+    if "status" in data and data["status"] is not None:
+        data["status"] = data["status"].value
+
+    updated = await apps_repo.update(app.id, data)
+    if not updated:
+        raise HTTPException(status_code=404, detail="application not found (update)")
+
+    return await _pack_application_card(updated)
+
+@router.get("/me/applications", response_model=dict)
+async def list_my_applications(
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    user_id: int = Depends(get_current_user_id),
+):
+    rows = await apps_repo.search_by_user(user_id=user_id, limit=limit, offset=offset)
+    items = [await _pack_application_card(r) for r in rows]
+    return {"items": [i.model_dump() for i in items], "limit": limit, "offset": offset}
+
+@router.get("/me/applications/{hackathon_id}", response_model=ApplicationCardOut)
+async def get_my_application_on_specific_hackathon(hackathon_id: int, user_id: int = Depends(get_current_user_id)):
+    app = await apps_repo.get_by_user_and_hackathon(user_id=user_id, hackathon_id=hackathon_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="application not found")
+    return await _pack_application_card(app)
