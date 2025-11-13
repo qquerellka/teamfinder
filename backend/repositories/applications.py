@@ -165,9 +165,6 @@ class ApplicationsRepo(BaseRepository):
         user_id: int,
         hackathon_id: int,
         role: Optional[str],
-        title: Optional[str],
-        about: Optional[str],
-        city: Optional[str],
         skills: Optional[list[str]],  # сейчас не сохраняем (MVP), поле для совместимости сигнатур
     ) -> m_app.Application:
         """
@@ -181,7 +178,6 @@ class ApplicationsRepo(BaseRepository):
         ПОВЕДЕНИЕ:
           • Заполняет минимально необходимые поля: user_id, hackathon_id, role.
           • Поля status/joined берутся по дефолтам из БД/модели.
-          • Доп. поля (title/about/city) проставляются, только если есть в ORM-модели (hasattr).
 
         ВОЗВРАЩАЕТ:
           • ORM-объект Application с проставленным первичным ключом (после commit/refresh).
@@ -194,13 +190,6 @@ class ApplicationsRepo(BaseRepository):
                 role=role,  # Колонка Enum примет строку (SQLAlchemy приведёт)
                 # status / joined — по дефолту
             )
-            # Поля могут отсутствовать в модели — защищаемся через hasattr
-            if hasattr(A, "title"):
-                obj.title = title
-            if hasattr(A, "about"):
-                obj.about = about
-            if hasattr(A, "city"):
-                obj.city = city
 
             s.add(obj)
             # Возможные исключения:

@@ -29,10 +29,7 @@ class ApplicationsService:
         user_id: int,
         hackathon_id: int,
         role: Optional[str] = None,
-        title: Optional[str] = None,
-        about: Optional[str] = None,
-        city: Optional[str] = None,
-        skills: Optional[list[str]] = None,  # игнорится на MVP (skills из профиля)
+        skills: Optional[list[str]] = None,  
     ):
         """
         Создать анкету пользователя на хакатон.
@@ -55,9 +52,6 @@ class ApplicationsService:
             user_id=user_id,
             hackathon_id=hackathon_id,
             role=role,
-            title=title,
-            about=about,
-            city=city,
             skills=skills,
         )
 
@@ -89,7 +83,7 @@ class ApplicationsService:
     async def update(self, app_id: int, data: dict):
         """
         Частичное обновление анкеты по id.
-        data — {'role': ..., 'status': ..., 'title': ..., 'about': ..., 'city': ...}
+        data — {'role': ..., 'status': ...}
         """
         return await self.apps.update(app_id, data)
 

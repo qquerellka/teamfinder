@@ -70,16 +70,10 @@ class ApplicationCardOut(BaseModel):
 class ApplicationCreateIn(BaseModel):
     """Тело POST: создать анкету на хакатон."""
     role: Optional[RoleType] = None
-    title: Optional[str] = None
-    about: Optional[str] = None
-    city: Optional[str] = None
 
 class ApplicationPatchIn(BaseModel):
     """Тело PATCH: частично обновить мою анкету на хакатон."""
     role: Optional[RoleType] = None
-    title: Optional[str] = None
-    about: Optional[str] = None
-    city: Optional[str] = None
     status: Optional[ApplicationStatus] = None  # published/hidden (draft добавишь — расширишь Enum)
 
 # ---- ВСПОМОГАТЕЛЬНАЯ СБОРКА КАРТОЧКИ ----
@@ -171,9 +165,6 @@ async def create_my_application(hackathon_id: int, payload: ApplicationCreateIn,
         user_id=user_id,
         hackathon_id=hackathon_id,
         role=payload.role.value if payload.role else None,
-        title=payload.title,
-        about=payload.about,
-        city=payload.city,
         skills=None,  # навыки не сохраняем в application (MVP)
     )
     return await _pack_application_card(app)
