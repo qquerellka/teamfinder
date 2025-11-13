@@ -27,7 +27,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
-  CREATE TYPE achiev_place AS ENUM ('1','2', '3', 'finalyst', 'participant');
+  CREATE TYPE achiev_place AS ENUM ('firstPlace','secondPlace', 'thirdPlace', 'finalyst', 'participant');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN

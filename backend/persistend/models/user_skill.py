@@ -22,7 +22,7 @@ from __future__ import annotations
 # Table/Column — декларативное создание таблицы без ORM-класса
 # ForeignKey — внешний ключ для связей с другими таблицами
 # Index — отдельный индекс для ускорения частых выборок
-from sqlalchemy import Table, Column, BigInteger, ForeignKey, Index
+from sqlalchemy import Table, Column, Integer, ForeignKey, Index
 
 # Base — общий объект metadata для всех таблиц/моделей проекта
 from backend.persistend.base import Base
@@ -39,7 +39,7 @@ user_skill = Table(
     # ondelete="CASCADE" — при удалении пользователя автоматически удаляются его связи.
     Column(
         "user_id",
-        BigInteger,          # Используем BigInteger, чтобы совпадать с BIGSERIAL/BIGINT в users.id
+        Integer,          # Используем BigInteger, чтобы совпадать с BIGSERIAL/BIGINT в users.id
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True
     ),
@@ -48,7 +48,7 @@ user_skill = Table(
     # ondelete="RESTRICT" — не даём удалить навык, если он где-то используется.
     Column(
         "skill_id",
-        BigInteger,          # Аналогично: под BIGSERIAL/BIGINT в skill.id
+        Integer,          # Аналогично: под BIGSERIAL/BIGINT в skill.id
         ForeignKey("skill.id", ondelete="RESTRICT"),
         primary_key=True
     ),

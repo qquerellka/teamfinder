@@ -14,8 +14,8 @@
 
 from __future__ import annotations  # Разрешает отложенную оценку аннотаций типов (удобно для ORM и старых Python)
 
+from sqlalchemy import BigInteger, Text, Integer            # Типы столбцов: BigInteger (для BIGINT/BIGSERIAL), Text — произвольной длины
 from sqlalchemy.orm import Mapped, mapped_column, relationship   # Инструменты SQLAlchemy для декларативного описания полей модели
-from sqlalchemy import BigInteger, Text            # Типы столбцов: BigInteger (для BIGINT/BIGSERIAL), Text — произвольной длины
 
 from backend.persistend.base import Base, TimestampMixin  # Наш общий Base и миксин с таймстемпами (created_at/updated_at)
 
@@ -28,11 +28,11 @@ class User(Base, TimestampMixin):                 # Наследуемся от 
 
     # id — первичный ключ. Используем BigInteger, чтобы совпадать с FK в user_skill (BigInteger там уже принят).
     # autoincrement=True — база сама проставляет следующее число (BIGSERIAL).
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
     # telegram_id — уникальный идентификатор пользователя в Telegram.
     # unique=True — запрет дубликатов; nullable=False — значение обязательно.
-    telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
+    telegram_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
 
     # username и прочие поля профиля — обычные текстовые поля, которые могут отсутствовать (nullable=True по умолчанию).
     # В Telegram username может быть пустым — поэтому не делаем NOT NULL.
