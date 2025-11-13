@@ -20,6 +20,7 @@ from backend.infrastructure.db import init_db, dispose_db  # Инициализ�
 from backend.presentations.routers.system import router as system_router  # Системные ручки (/system)
 from backend.presentations.routers.auth import router as auth_router      # Авторизация (/auth)
 from backend.presentations.routers.users import router as users_router    # Пользователи (/users)
+from backend.presentations.routers.achievements import router as achievements_router    # Пользователи (/users)
 
 # Фабрика приложения: создаёт и возвращает настроенный экземпляр FastAPI
 def create_app() -> FastAPI:
@@ -32,12 +33,19 @@ def create_app() -> FastAPI:
         title=getattr(settings, "APP_NAME", "MiniApp API"),
         version=getattr(settings, "APP_VERSION", "0.1.0"),
     )
+    
+    allowed_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://localhost:5173",
+        "https://127.0.0.1:5173",
+    ]
 
     # CORS — кто может обращаться к API из браузера.
     # В dev часто ставят "*", в prod — конкретные домены фронтенда.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=getattr(settings, "CORS_ORIGINS_LIST", ["*"]),  # Разрешённые источники (список строк)
+        allow_origins=allowed_origins,  # Разрешённые источники (список строк)
         allow_credentials=True,   # Разрешаем cookies/авторизационные заголовки
         allow_methods=["*"],      # Разрешаем любые HTTP-методы (GET/POST/PUT/DELETE/...)
         allow_headers=["*"],      # Разрешаем любые заголовки
@@ -56,7 +64,8 @@ def create_app() -> FastAPI:
     app.include_router(system_router)  # /system: health/version/ready
     app.include_router(auth_router)    # /auth: авторизация через Telegram
     app.include_router(users_router)   # /users: профиль, правки, поиск
-
+    app.include_router(achievements_router)
+    
     # Хук старта приложения: проверяем доступность БД (health-ping)
     @app.on_event("startup")
     async def _startup():

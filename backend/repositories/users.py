@@ -19,6 +19,8 @@ from backend.repositories.base import BaseRepository
 from backend.persistend.models import users as m_users
 from backend.persistend.models import skill as m_skill
 from backend.persistend.models import user_skill as m_us
+from backend.persistend.models import achievement as m_ach
+
 
 
 class UsersRepo(BaseRepository):
@@ -60,6 +62,19 @@ class UsersRepo(BaseRepository):
             res = await s.execute(stmt)  # Выполнение запроса
             return list(res.scalars().all())  # Возвращаем все найденные навыки в виде списка
 
+    async def get_user_achievements(self, user_id: int) -> List[m_ach.Achievement]:
+        """
+        Вернёт список достижений пользователя, отсортированный по времени создания (новые сверху).
+        """
+        async with self._sm() as s:
+            stmt = (
+                select(m_ach.Achievement)
+                .where(m_ach.Achievement.user_id == user_id)
+                .order_by(m_ach.Achievement.created_at.desc())
+            )
+            res = await s.execute(stmt)
+            return list(res.scalars().all())
+    
     # ---------- ЗАПИСЬ ----------
 
     async def upsert_from_tg(self, profile: dict) -> m_users.User:
