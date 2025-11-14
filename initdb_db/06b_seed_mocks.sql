@@ -28,7 +28,7 @@ VALUES
  'Kubernetes, GitOps, observability, FinOps. Трек по CI/CD и безопасности цепочки поставок.',
  'https://cdn.example.ru/hacks/sib-devops.png',
  '2026-04-18 09:00:00+03', '2026-04-19 20:00:00+03', '2026-04-14 23:59:59+03',
- 'offline', 'Новосибирск', 3, 6, 'https://sibcloud.dev/register', '₽2,200,000', 'draft'),
+ 'offline', 'Новосибирск', 3, 6, 'https://sibcloud.dev/register', '₽2,200,000', 'open'),
 
 -- 5. Нижний Новгород, гибрид
 ('Volga Mobility Hack',
@@ -42,7 +42,7 @@ VALUES
  'CTF + продуктовые задания по DevSecOps, SAST/DAST, secrets, runtime security.',
  'https://cdn.example.ru/hacks/ural-cybersec.png',
  '2026-06-13 09:00:00+03', '2026-06-14 18:00:00+03', '2026-06-09 23:59:59+03',
- 'online', 'Екатеринбург', 1, 4, 'https://ural-sec.ru', '₽700,000', 'draft'),
+ 'online', 'Екатеринбург', 1, 4, 'https://ural-sec.ru', '₽700,000', 'open'),
 
 -- 7. Самара, офлайн
 ('Samara Industrial AI',
@@ -56,7 +56,7 @@ VALUES
  'Агро-аналитика: NDVI, прогноз урожайности, логистика и сбыт.',
  'https://cdn.example.ru/hacks/agro-south.webp',
  '2026-08-22 09:00:00+03', '2026-08-23 20:00:00+03', '2026-08-18 23:59:59+03',
- 'hybrid', 'Краснодар', 2, 5, 'https://agrotech-south.ru/register', '₽1,000,000', 'draft'),
+ 'hybrid', 'Краснодар', 2, 5, 'https://agrotech-south.ru/register', '₽1,000,000', 'open'),
 
 -- 9. Пермь, офлайн
 ('Perm Digital Breakers',
