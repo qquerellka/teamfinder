@@ -20,7 +20,7 @@ import asyncio
 from backend.repositories.base import BaseRepository
 from backend.persistend.models import achievement as m_ach
 from backend.persistend.models import users as m_users
-from backend.persistend.models import hackathons as m_hack
+from backend.persistend.models import hackathon as m_hack
 
 _key_locks: dict[tuple[int, int], asyncio.Lock] = defaultdict(asyncio.Lock)
 
