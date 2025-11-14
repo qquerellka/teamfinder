@@ -56,6 +56,5 @@ class HackathonMode(str, Enum):
     hybrid  = "hybrid"
 
 class HackathonStatus(str, Enum):
-    draft  = "draft"
     open   = "open"
     closed = "closed"

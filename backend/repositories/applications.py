@@ -162,9 +162,6 @@ class ApplicationsRepo(BaseRepository):
 
         ВОЗВРАЩАЕТ:
           • Список ORM-объектов Application, отсортированный по updated_at DESC.
-
-        ИНДЕКСЫ:
-          • Рекомендуется индекс на application(user_id, updated_at) — ускорит WHERE и ORDER BY.
         """
         A = m_app.Application
 

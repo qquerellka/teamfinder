@@ -208,25 +208,4 @@ async def get_my_application_on_specific_hackathon(hackathon_id: int, user_id: i
         raise HTTPException(status_code=404, detail="application not found")
     return await _pack_application_card(app)
 
-# --- ХЕЛПЕР: собрать «карточку анкеты» (ORM Application → dict для фронта) ---
-
-async def pack_application_card(app, users_repo, hack_repo) -> dict:
-    # 1) владелец анкеты
-    user = await users_repo.get_by_id(app.user_id)
-    # 2) навыки владельца (из user_skill)
-    skills = await users_repo.get_user_skills(app.user_id)
-    # 3) хакатон — ради registration_end_date (и в перспективе любых полей)
-    hack = await hack_repo.get_by_id(app.hackathon_id)
-
-    return {
-        "id": app.id,
-        "hackathon_id": app.hackathon_id,
-        "user_id": app.user_id,
-        "role": app.role,
-        "username": user.username if user else None,
-        "first_name": user.first_name if user else None,
-        "last_name": user.last_name if user else None,
-        "skills": [{"id": s.id, "slug": s.slug, "name": s.name} for s in skills],
-        "registration_end_date": str(hack.registration_end_date) if (hack and hack.registration_end_date) else None,
-    }
 
