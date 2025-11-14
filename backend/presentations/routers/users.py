@@ -71,7 +71,7 @@ class UserAchievementOut(BaseModel):
     """Мини-представление достижения, используемое в ответах API."""
     id: int
     user_id: int
-    hackathon_id: int                        
+    hackathon_id: Optional[int] = None      # <<< было: int
     role: Optional[str] = None
     place: Optional[str] = None
 
@@ -270,6 +270,8 @@ async def search_users(
     items = []
     for usr, mc in rows:
         usr_skills = await users_repo.get_user_skills(usr.id)
+        usr_achs = await users_repo.get_user_achievements(usr.id)   # <<< добавили
+
         items.append(UserOut(
             id=usr.id,
             telegram_id=usr.telegram_id,
@@ -282,7 +284,7 @@ async def search_users(
             university=usr.university,
             link=usr.link,
             skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in usr_skills],
-            achievements=_map_achievements(usr_achs),
+            achievements=_map_achievements(usr_achs),                # <<< теперь переменная есть
 
             # created_at=str(usr.created_at),
             # updated_at=str(usr.updated_at),
