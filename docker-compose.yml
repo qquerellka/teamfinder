@@ -30,6 +30,22 @@ services:
     volumes:
       - ./backend:/app/backend:rw
       - ./.env:/app/.env:ro
-
+  admin-bot:
+    build:
+      context: .
+      dockerfile: admin_bot/Dockerfile
+    container_name: admin-bot
+    environment:
+      # токен бота из BotFather
+      - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
+      # URL твоего API внутри docker-сети (имя сервиса api)
+      - API_URL=http://api:8000
+      # сервисный токен / JWT, который backend принимает как Authorization: Bearer
+      - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
+      # список телеграм id админов через запятую
+      - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
+    depends_on:
+      - api
+    restart: unless-stopped
 volumes:
   db-data:
