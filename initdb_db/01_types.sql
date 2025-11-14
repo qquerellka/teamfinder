@@ -3,7 +3,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
-  CREATE TYPE hackathon_status AS ENUM ('draft','open','closed');
+  CREATE TYPE hackathon_status AS ENUM ('open','closed');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN

@@ -22,7 +22,7 @@ from backend.presentations.routers.auth import router as auth_router      # Ав
 from backend.presentations.routers.users import router as users_router    # Пользователи (/users)
 from backend.presentations.routers.achievements import router as achievements_router    # Пользователи (/users)
 from backend.presentations.routers.hackathons import router as hack_router     # /hackathons
-from backend.presentations.routers.applications import router as apps_router   # /hackathons/{id}/applications, /me/applications
+from backend.presentations.routers.applications import router as applications_router   # /hackathons/{id}/applications, /me/applications
 
 # Фабрика приложения: создаёт и возвращает настроенный экземпляр FastAPI
 def create_app() -> FastAPI:
@@ -69,7 +69,7 @@ def create_app() -> FastAPI:
     app.include_router(achievements_router)
     
     app.include_router(hack_router)     # /hackathons: чтение списка/деталей (минимум)
-    app.include_router(apps_router)     # /hackathons/{id}/applications, /me/applications
+    app.include_router(applications_router)     # /hackathons/{id}/applications, /me/applications
 
     # Хук старта приложения: проверяем доступность БД (health-ping)
     @app.on_event("startup")
