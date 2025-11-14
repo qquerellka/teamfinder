@@ -46,10 +46,15 @@ class User(Base, TimestampMixin):                 # Наследуемся от 
     university: Mapped[str | None] = mapped_column(Text)        # Университет/ВУЗ
     link: Mapped[str | None] = mapped_column(Text)              # Личная/проф. ссылка (портфолио, сайт и т.п.)
 
-    # <<< NEW
+    # Связь "один пользователь -> много анкет (Application)"
     applications = relationship(
-        "Application",
-        back_populates="user",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
+        "Application",                # Модель, с которой связываемся (строкой, чтобы избежать проблем с порядком импорта)
+        back_populates="user",        # Обратное поле в Application: там есть user = relationship("User", back_populates="applications")
+        cascade="all, delete-orphan", # Каскад для ORM:
+                                      #  • all — изменения/удаления пользователя прокидываются на его анкеты в сессии
+                                      #  • delete-orphan — анкета удаляется,
+                                      # если её убрать из user.applications и она больше ни к кому не привязана
+
+        passive_deletes=True,         # Не трогать связанные анкеты в ORM при удалении пользователя —
+                                      # доверяем БД и ON DELETE CASCADE в внешнем ключе (user_id)
     )
