@@ -36,12 +36,7 @@ def create_app() -> FastAPI:
         version=getattr(settings, "APP_VERSION", "0.1.0"),
     )
     
-    allowed_origins = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://localhost:5173",
-        "https://127.0.0.1:5173",
-    ]
+    allowed_origins = settings.CORS_ORIGINS_LIST()
 
     # CORS — кто может обращаться к API из браузера.
     # В dev часто ставят "*", в prod — конкретные домены фронтенда.

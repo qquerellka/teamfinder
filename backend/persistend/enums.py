@@ -58,3 +58,10 @@ class HackathonMode(str, Enum):
 class HackathonStatus(str, Enum):
     open   = "open"
     closed = "closed"
+    
+class AchievementPlace(str, Enum):
+    participant = "participant"
+    firstPlace  = "firstPlace"
+    secondPlace = "secondPlace"
+    thirdPlace  = "thirdPlace"
+    finalyst    = "finalyst"

@@ -44,29 +44,29 @@ async def get_current_user_id(authorization: str | None = Header(default=None)) 
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token")
     return int(payload["sub"])
 
-# ---- Схемы (Pydantic) ----
+# ---- Схемы (Pydantic) ----AchievPlace
 
 class AchievementOut(BaseModel):
     id: int
     user_id: int
     hackathon_id: int
     role: m_ach.RoleType
-    place: m_ach.AchievPlace
+    place: m_ach.AchievementPlace
 
 class AchievementCreateIn(BaseModel):
     hackathon_id: int
     role: m_ach.RoleType
     # если не задано — репозиторий поставит participant
-    place: Optional[m_ach.AchievPlace] = None
+    place: Optional[m_ach.AchievementPlace] = None
 
 class AchievementUpsertIn(BaseModel):
     hackathon_id: int
     role: Optional[m_ach.RoleType] = None
-    place: Optional[m_ach.AchievPlace] = None
+    place: Optional[m_ach.AchievementPlace] = None
 
 class AchievementUpdateIn(BaseModel):
     role: Optional[m_ach.RoleType] = None
-    place: Optional[m_ach.AchievPlace] = None
+    place: Optional[m_ach.AchievementPlace] = None
 
 # ---- Хелперы упаковки ----
 
@@ -88,7 +88,7 @@ def _pack_many(items: List[m_ach.Achievement]) -> List[dict]:
 @router.get("/me", response_model=dict)
 async def list_my_achievements(
     role: Optional[m_ach.RoleType] = Query(default=None),
-    place: Optional[m_ach.AchievPlace] = Query(default=None),
+    place: Optional[m_ach.AchievementPlace] = Query(default=None),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     current_user_id: int = Depends(get_current_user_id),
@@ -108,7 +108,7 @@ async def list_my_achievements(
 async def list_user_achievements(
     user_id: int = Path(..., ge=1),
     role: Optional[m_ach.RoleType] = Query(default=None),
-    place: Optional[m_ach.AchievPlace] = Query(default=None),
+    place: Optional[m_ach.AchievementPlace] = Query(default=None),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     _current_user_id: int = Depends(get_current_user_id),
@@ -163,7 +163,7 @@ async def create_achievement(payload: AchievementCreateIn, current_user_id: int 
             user_id=current_user_id,
             hackathon_id=payload.hackathon_id,
             role=payload.role,
-            place=payload.place or m_ach.AchievPlace.participant,
+            place=payload.place or m_ach.AchievementPlace.participant,
         )
     except ValueError as e:
         if str(e) == "duplicate_achievement":

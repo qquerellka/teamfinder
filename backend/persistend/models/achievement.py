@@ -21,31 +21,7 @@ from sqlalchemy import Integer, ForeignKey, Enum, DateTime, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.persistend.base import Base, TimestampMixin
-
-
-# ---------------------------- PostgreSQL ENUM'ы ------------------------------
-
-class RoleType(enum.Enum):
-    # Дополните фактическими ролями из БД:
-    Analytics = "Analytics"
-    Backend = "Backend"
-    Frontend = "Frontend"
-    Design = "Design"
-    PM = "PM"
-    DS = "DS"
-    QA = "QA"
-
-
-class AchievPlace(enum.Enum):
-    # Дополните при необходимости: finalist / prize / 1st / 2nd / 3rd и т.п.
-    participant = "участие"
-    firstPlace= "1",
-    secondPlace = "2",
-    thirdPlace = "3",
-    finalyst = "финал"
-
-
-# -------------------------------- Модель -------------------------------------
+from backend.persistend.enums import RoleType, AchievementPlace
 
 class Achievement(Base, TimestampMixin):
     __tablename__ = "achievements"
@@ -68,10 +44,8 @@ class Achievement(Base, TimestampMixin):
         nullable=False,
     )
 
-    place: Mapped[AchievPlace] = mapped_column(
-        Enum(AchievPlace, name="achiev_place", create_type=False),
+    place: Mapped[AchievementPlace] = mapped_column(
+        Enum(AchievementPlace, name="achiev_place", create_type=False),
         nullable=False,
         server_default=text("'participant'::achiev_place"),
     )
-
-    # Таймстемпы: created_at / updated_at — из TimestampMixin
