@@ -59,3 +59,10 @@ class HackathonStatus(str, Enum):
     draft  = "draft"
     open   = "open"
     closed = "closed"
+    
+class AchievementPlace(str, Enum):
+    participant = "participant"
+    firstPlace  = "firstPlace"
+    secondPlace = "secondPlace"
+    thirdPlace  = "thirdPlace"
+    finalyst    = "finalyst"
