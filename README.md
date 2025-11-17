@@ -1,311 +1,317 @@
-<<<<<<< HEAD
+# Clean FastAPI + PostgreSQL Template
 
-# Teamfinder — Backend & SQL DB (PostgreSQL)
+Минимальный чистый шаблон бэкенда на **FastAPI** с **PostgreSQL** и асинхронным SQLAlchemy.
+Архитектура слоями: `presentations` (API) → `services` (бизнес‑логика) → `repositories` (доступ к БД) → `persistend` (ORM‑модели) → `infrastructure` (подключение БД) → `settings` (настройки).
 
-## Содержание
-- [1. Описание продукта и цели](#1-описание-продукта-и-цели)
-- [2. Подход: Telegram Mini App](#2-подход-telegram-mini-app)
-- [3. Модель предметной области](#3-модель-предметной-области)
-- [4. ER-диаграмма (Mermaid)](#4-er-диаграмма-mermaid)
-- [5. Бизнес-правила и инварианты](#5-бизнес-правила-и-инварианты)
-- [6. Что внутри репозитория](#6-что-внутри-репозитория)
-- [7. Быстрый старт (Docker)](#7-быстрый-старт-docker)
-- [8. Структура проекта](#8-структура-проекта)
-- [9. DDL/SQL: где смотреть](#9-ddlsql-где-смотреть)
-- [10. Метрики и аналитика (DAU/MAU и др.)](#10-метрики-и-аналитика-daumau-и-др)
-- [11. Пользовательские потоки и BPMN-заметки](#11-пользовательские-потоки-и-bpmn-заметки)
-- [12. Frontend архитектура: Feature-Sliced Design](#12-frontend-архитектура-feature-sliced-design)
-- [13. Справочник полей по сущностям](#13-справочник-полей-по-сущностям)
-- [14. Backlog / MVP](#14-backlog--mvp)
+## Быстрый старт (Docker)
+
+1) Скопируйте `.env.example` → `.env` и при необходимости измените значения.
+2) Запустите:
+```bash
+docker compose up --build
+```
+3) Проверьте:
+- Swagger UI: http://localhost:8000/docs
+- Healthcheck: http://localhost:8000/health
+
+## Локально (без Docker)
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r backend/requirements.txt
+export $(grep -v '^#' .env | xargs)  # либо задайте ENV переменные вручную
+uvicorn backend.main:app --reload
+```
+
+## Структура
+
+```
+backend/
+  main.py
+  presentations/
+    app.py
+    routers/health.py
+  services/
+  repositories/
+    base.py
+  persistend/
+    base.py
+    models/
+  infrastructure/
+    db.py
+  settings/
+    config.py
+  utils/
+  requirements.txt
+Dockerfile
+docker-compose.yml
+.env.example
+```
+
+## Дальше
+
+- Добавляйте модели в `persistend/models` и запускайте миграции (можно подключить Alembic позже).
+- Реализуйте репозитории и сервисы под свою доменную логику.
+- Подключайте новые роуты через `presentations/app.py`.
+
+## Backend Architecture — Quick Reference (FastAPI + SQLAlchemy + Postgres)
+
+> Конспект по архитектуре проекта и правилам расширения. Готово для вставки в `README.md`.
+>
+> Используется стек: **FastAPI**, **SQLAlchemy (async)**, **PostgreSQL**, **pydantic-settings**.
 
 ---
 
-## 1. Описание продукта и цели
+## 1) Зачем такая архитектура
 
-**Проблема.** Участникам хакатонов сложно быстро собирать команды — поиск по чатам Telegram шумный и медленный. Организаторы теряют участников и качество решений.
-
-**Гипотеза.** Сервис **Teamfinder** упрощает формирование команд под конкретный хакатон: участники быстрее находят друг друга, организаторы получают больше сильных заявок.
-
-**ЦА.** Студенты и джуны/мидлы без стабильной команды, а также организаторы хакатонов.
-
----
-
-## 2. Подход: Telegram Mini App
-
-- **UI:** WebApp внутри бота (нативные `BackButton`, темы, авторизация через `initData`).
-- **Auth/безопасность:** валидация `initData` на бэкенде (HMAC-SHA256). Можно работать без cookie/JWT; при желании выдаём короткий JWT.
-- **Хранение:** `telegram_id`, `username`, `language_code`, `avatar_url` (опц.).
-- **Бот = нотификации + диплинки:** deep links `startapp=hackathon:<id>|vacancy:<id>|invite:<id>`.
-- **Админка (MVP):** команды бота `/admin` + простые формы в Mini App; полноценную панель можно позже.
+- Отделяем HTTP-обвязку от бизнес-логики и SQL.
+- Единая точка конфигурации и подключения к БД.
+- Понятные границы транзакций (commit/rollback).
+- Лёгкое добавление новых сущностей (модели → репозитории → сервисы → роутеры).
 
 ---
 
-## 3. Модель предметной области
+## 2) Дерево проекта (краткое описание слоёв)
 
-- **User** — постоянные данные и skill-профиль.
-- **Hackathon** — рамки события; все ограничения действуют внутри него.
-- **Application** — анкета пользователя под конкретный хакатон (`desired_roles`).
-- **Team / TeamMember** — команда и членство; роль фиксируется при присоединении.
-- **Vacancy** — открытая позиция в команде; на неё отправляется **Response**.
-- **Response** — «я откликнулся на вакансию». При `accepted` создаётся `TeamMember`, прочие предложения закрываются.
-- **Invite** — «команда пригласила меня». При `accepted` — то же.
-- **Notification** — оповещения на каждом шаге.
+```text
+backend/
+  main.py                         # точка входа: app = create_app()
+  presentations/
+    app.py                        # сборка FastAPI, CORS, middleware, startup/shutdown (init_db/dispose_db)
+    routers/
+      health.py                   # системные ручки: /system/health, /system/version
+  services/                       # бизнес-логика: правила, валидации, оркестрация репозиториев
+  repositories/
+    base.py                       # общий Generic-репозиторий (get/list/add/delete/exists и т.п.)
+  persistend/
+    base.py                       # Declarative Base + TimestampMixin (created_at/updated_at)
+    models/                       # ORM-модели (по одной сущности в файл)
+  infrastructure/
+    db.py                         # Async SQLAlchemy: engine, sessionmaker, get_session() с commit/rollback
+  settings/
+    config.py                     # конфиги (Pydantic Settings): .env, CORS, DATABASE_URL, pool params
+  utils/                          # вспомогательные функции без побочек
+Dockerfile
+docker-compose.yml
+.env.example
+```
 
 ---
 
-## 4. ER-диаграмма (Mermaid)
-
-> Диаграмма использует упрощённые типы (`int`, `string`, `date`, `datetime`) для корректного рендера; в реальной схеме это `bigint`, `text`, `date/timestamptz` и т.д.
+## 3) Поток данных (кто кого вызывает)
 
 ```mermaid
-erDiagram
-  USER ||--o{ APPLICATION : creates
-  USER ||--o{ TEAM_MEMBER : participates
-  USER ||--o{ NOTIFICATION : receives
-  USER ||--o{ PRODUCT_EVENT : makes
-
-  HACKATHON ||--o{ APPLICATION : has
-  HACKATHON ||--o{ TEAM : has
-  HACKATHON ||--o{ PRODUCT_EVENT : has
-
-  TEAM ||--o{ TEAM_MEMBER : includes
-  TEAM ||--o{ VACANCY : posts
-  TEAM ||--o{ INVITE : sends
-
-  APPLICATION ||--o{ INVITE : gets
-  APPLICATION ||--o{ RESPONSE : sends
-
-  VACANCY ||--o{ RESPONSE : receives
-
-  USER {
-    int id PK
-    int telegram_id UK
-    string username
-    string name
-  }
-
-  HACKATHON {
-    int id PK
-    string name
-    date start_date
-    date end_date
-  }
-
-  APPLICATION {
-    int id PK
-    int hackathon_id FK
-    int user_id FK
-    string roles
-    string about
-    string status
-  }
-
-  TEAM {
-    int id PK
-    int hackathon_id FK
-    int captain_id FK
-    string name
-    string status
-  }
-
-  TEAM_MEMBER {
-    int team_id FK
-    int user_id FK
-    string role
-    boolean is_captain
-  }
-
-  VACANCY {
-    int id PK
-    int team_id FK
-    string role
-    string status
-  }
-
-  INVITE {
-    int id PK
-    int team_id FK
-    int application_id FK
-    string invited_role
-    string status
-  }
-
-  RESPONSE {
-    int id PK
-    int vacancy_id FK
-    int application_id FK
-    string desired_role
-    string status
-  }
-
-  NOTIFICATION {
-    int id PK
-    int user_id FK
-    string type
-    boolean is_read
-  }
-
-  PRODUCT_EVENT {
-    int id PK
-    int user_id FK
-    int hackathon_id FK
-    int type_id FK
-    datetime ts
-  }
+flowchart LR
+    A[HTTP-запрос] --> B[presentations/routers]
+    B --> C[services]
+    C --> D[repositories]
+    D --> E["persistend/models\nSQLAlchemy ORM"]
+    E --> F[(PostgreSQL)]
+    B --> G[settings/config]
+    C --> G
+    D --> H["infrastructure/db\nget_session()"]
 ```
 
 ---
 
-## 5. Бизнес-правила и инварианты
+## 4) Принципы разделения
 
-- **1 анкета на хакатон:** `Application` уникальна в паре (`user_id`, `hackathon_id`).
-- **1 команда на хакатон:** один `User` не может состоять более чем в одной команде внутри одного `Hackathon`.  
-  Гарантируется триггером на `team_member` (и может быть усилено `UNIQUE(user_id, hackathon_id)` при денормализации).
-- **Accept → членство:** при `accepted` (`Invite` или `Response`) создаётся `TeamMember`, анкету скрываем/помечаем `joined`, прочие предложения в этом хаке закрываем, шлём нотификации. Всё — атомарно.
-- **Статусы:**  
-  `Application: draft → published ↔ hidden`  
-  `Vacancy: open ↔ closed`  
-  `Invite: pending → accepted | rejected | expired`  
-  `Response: pending → accepted | rejected | withdrawn`
-- **Права:** капитан управляет составом/вакансиями/инвайтами; участник — своей анкетой и откликами; админ — CRUD хакатонов и модерация.
+- **presentations/** — только HTTP-детали (FastAPI-роуты, Pydantic-схемы).
+- **services/** — бизнес-правила, валидации, оркестрация нескольких репозиториев.
+- **repositories/** — SQL и доступ к данным (никакой бизнес-логики).
+- **persistend/** — ORM-модели и общие базовые классы.
+- **infrastructure/** — интеграции и тех. детали (БД, кэш, очереди и т.д.).
+- **settings/** — конфиги (.env → Settings).
+- **utils/** — вспомогательные идемпотентные функции.
 
 ---
 
-## 6. Что внутри репозитория
+## 5) Транзакции и сессии
 
-- `docs/conceptual.md` — концептуальная модель.
-- `docs/logical.md` — логическая модель (Mermaid ER).
-- `sql/initdb/*.sql` — физическая модель: типы, таблицы, индексы, триггеры, словари, сиды.
-- `sql/analytics/queries.sql` — готовые метрики (DAU/MAU, конверсия, fill rate, time-to-join, retention).
-- `infra/docker-compose.yml` — локальный Postgres с авто-инициализацией из `sql/initdb`.
-- `LICENSE` — MIT.
+- Одна операция/HTTP-запрос → **одна `AsyncSession`**.
+- Используем контекстный менеджер:
+
+  ```python
+  async with get_session() as s:
+      # делаем изменения/чтение
+  # внутри блока:
+  #   без исключений → COMMIT
+  #   с исключением  → ROLLBACK (ошибка пробрасывается выше)
+  ```
+
+- Репозитории **не коммитят** (делают `flush()` при необходимости ID/defaults). Commit/rollback осуществляет `get_session()`.
 
 ---
 
-## 7. Быстрый старт (Docker)
+## 6) Настройки и CORS
+
+- Все конфиги в `settings/config.py` (pydantic-settings).
+- CORS: передавайте в `app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS_LIST, ...)`.
+- Строка подключения к БД: `settings.database_url` (берётся из `DATABASE_URL` или собирается из `POSTGRES_*`).
+
+```mermaid
+flowchart LR
+  subgraph Settings
+    S1[ENV/.env] --> S2[settings/config.py]
+  end
+  S2 --> DB[(PostgreSQL)]
+  S2 --> APP[FastAPI App]
+  S2 --> ENG[SQLAlchemy Engine]
+```
+
+---
+
+## 7) Системные эндпоинты
+
+- `GET /system/health` — «жив ли процесс» (не трогает БД).
+- `GET /system/version` — имя/версия/окружение.
+- (Опционально) `GET /system/ready` — проверка доступности БД (см. пример в `health.py`).
+
+---
+
+## 8) Как добавить новую сущность — пошагово
+
+**Шаг 1 — Модель (ORM)**  
+`backend/persistend/models/<entity>.py`
+
+```python
+import uuid
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, Text
+from backend.persistend.base import Base, TimestampMixin
+
+class Link(TimestampMixin, Base):
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    short: Mapped[str] = mapped_column(String(16), unique=True, index=True)
+    long: Mapped[str] = mapped_column(Text(), nullable=False)
+```
+
+**Шаг 2 — Репозиторий**  
+`backend/repositories/links.py`
+
+```python
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from backend.repositories.base import BaseRepository
+from backend.persistend.models.link import Link
+
+class LinkRepository(BaseRepository[Link]):
+    def __init__(self, session: AsyncSession):
+        super().__init__(session, Link)
+
+    async def get_by_short(self, code: str) -> Link | None:
+        res = await self.session.execute(select(Link).where(Link.short == code).limit(1))
+        return res.scalars().first()
+```
+
+**Шаг 3 — Сервис (бизнес-логика)**  
+`backend/services/links.py`
+
+```python
+from backend.infrastructure.db import get_session
+from backend.repositories.links import LinkRepository
+from backend.persistend.models.link import Link
+
+async def create_link(short: str, long: str) -> Link:
+    async with get_session() as s:
+        repo = LinkRepository(s)
+        if await repo.get_by_short(short):
+            raise ValueError("short already exists")
+        link = Link(short=short, long=long)
+        await repo.add(link)   # commit произойдёт в get_session()
+        return link
+```
+
+**Шаг 4 — Роутер (HTTP-слой)**  
+`backend/presentations/routers/links.py`
+
+```python
+from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel
+from backend.services.links import create_link
+
+router = APIRouter(prefix="/links", tags=["links"])
+
+class LinkCreate(BaseModel):
+    short: str
+    long: str
+
+class LinkOut(BaseModel):
+    id: str
+    short: str
+    long: str
+
+@router.post("", response_model=LinkOut, status_code=status.HTTP_201_CREATED)
+async def create(payload: LinkCreate):
+    try:
+        link = await create_link(payload.short, payload.long)
+        return LinkOut.model_validate(link)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_409_CONFLICT, str(e))
+```
+
+**Шаг 5 — Подключить роутер**  
+`backend/presentations/app.py`:
+
+```python
+from backend.presentations.routers.links import router as links_router
+app.include_router(links_router)
+```
+
+---
+
+## 9) Нейминг и конвенции
+
+- Файлы по сущностям: `user.py`, `link.py` (единственное число).
+- PK по умолчанию — UUID (удобно для шардирования и импортов).
+- Время — через `TimestampMixin` (UTC предпочтительно).
+- Pydantic-схемы можно держать в роутере или вынести в `presentations/schemas/<entity>.py`, если их много.
+
+---
+
+## 10) Ошибки и ответы
+
+- В **сервисах** бросайте доменные исключения (`ValueError`, свои `DomainError`).
+- В **роутерах** маппьте их на `HTTPException` с корректными статусами (404/409/422/...).
+- Не пропускайте raw SQL-ошибки наружу без нормального текста/статуса.
+
+---
+
+## 11) Миграции
+
+- Dev: временно можно включить `Base.metadata.create_all()` в `init_db()`.
+- Prod: используйте **Alembic** (инициализация, ревизии, апгрейды).
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant Alembic as Alembic CLI
+    participant DB as PostgreSQL
+    Dev->>Alembic: alembic revision --autogenerate -m "add link"
+    Alembic->>DB: сравнение моделей и схемы БД
+    Dev->>Alembic: alembic upgrade head
+    Alembic->>DB: применяет миграции
+```
+
+---
+
+## 12) Запуск
 
 ```bash
-cd infra
-docker compose up -d
-docker compose logs -f db
-```
-
-Подключение:
-- Host: `localhost`
-- Port: `5432`
-- DB: `teamfinder`
-- User: `postgres`
-- Password: `postgres`
-
-psql:
-```bash
-docker exec -it teamfinder-db psql -U postgres -d teamfinder
+cp .env.example .env
+docker compose up --build
+# Swagger: http://localhost:8000/docs
+# Health:  http://localhost:8000/system/health
 ```
 
 ---
 
-## 8. Структура проекта
+## 13) Чек-лист при добавлении фичи
 
-```
-teamfinder/
-  docs/
-    conceptual.md
-    logical.md
-  infra/
-    docker-compose.yml
-  sql/
-    initdb/
-      01_types.sql
-      02_tables_core.sql
-      03_tables_norm.sql
-      04_indexes.sql
-      05_triggers.sql
-      06_seed_dicts.sql
-      # опционально:
-      07_seed_data.sql
-      08_views.sql
-      09_procedures.sql
-      10_toast_and_retention.sql
-      11_analytics_seed.sql
-    analytics/
-      queries.sql
-LICENSE
-README.md
-```
-
-> **Обязательный минимум:** `01–06`. Остальные — опциональны (демо-данные, вьюхи, процедуры, компрессия/ретеншн, сиды событий).
-
----
-
-## 9. DDL/SQL: где смотреть
-
-- Полная схема (`ENUM`, таблицы, индексы, триггеры) находится в `sql/initdb/01–05`.  
-- Справочники ролей/скиллов/soft-skills и M2M-связки — `03_tables_norm.sql`, сиды — `06_seed_dicts.sql`.  
-- Процедуры `accept_invite/accept_response` (атомарные транзакции) — `09_procedures.sql` *(опционально)*.  
-- Компрессия LZ4 TOAST + функции ретеншна — `10_toast_and_retention.sql` *(опционально)*.
-
----
-
-## 10. Метрики и аналитика (DAU/MAU и др.)
-
-- Событийная таблица: `event_type`, `product_event`.  
-- Примеры запросов: `sql/analytics/queries.sql` — **DAU/MAU**, конверсия publish→join, **time-to-join**, **fill rate** вакансий, **retention** (D1/D7/D30), оконные функции/CTE.
-
----
-
-## 11. Пользовательские потоки и BPMN-заметки
-
-- **Нотификации (минимум):** создание/принятие/отклонение `Invite`/`Response`, вступление/выход, передача капитанства; напоминания до старта/закрытия регистрации.
-- **Формирование команд:** на MVP допускается ручное распределение админом поверх пользовательских потоков.
-- **UX-дополнения:** явный выход/кик, передача капитана, статус `Team.ready`.
-
----
-
-## 12. Frontend архитектура: Feature-Sliced Design
-
-Слои: `app` (инициализация), `pages`, `widgets`, `features` (сценарии), `entities` (доменные сущности), `shared` (утилиты/базовые компоненты).
-
-Примеры модулей:
-- `entities/user`, `entities/hackathon`, `entities/team`
-- `features/respond-to-vacancy`, `features/invite-user`, `features/accept-invite`
-- `widgets/team-dashboard`, `widgets/hackathon-header`
-
----
-
-## 13. Справочник полей по сущностям
-
-**User:** `id, telegram_id(unique), username?, name, surname?, language_code?, avatar_url?, age?, city?, university?, skills[], soft_skills[]?, achievements[]?, portfolio_link?, links{github?,site?,tg?}, bio?, created_at, updated_at`
-
-**Hackathon:** `id, name, description?, start_date, end_date, registration_end_date?, mode('online'|'offline'|'hybrid'), city?, team_members_minimum?, team_members_limit?, registration_link?, prize_fund?, status('draft'|'open'|'closed'), created_at, updated_at`
-
-**Application:** `id, hackathon_id->Hackathon, user_id->User (unique вместе), roles[], about?, status('draft'|'published'|'hidden'), joined:boolean, created_at, updated_at`
-
-**Team:** `id, hackathon_id->Hackathon, captain_id->User, name, description?, links?, status('forming'|'ready'), created_at, updated_at`
-
-**TeamMember:** `team_id->Team, user_id->User (PK вместе), role, is_captain:boolean, joined_at`
-
-**Vacancy:** `id, team_id->Team, role, description?, skills[]?, seniority?, status('open'|'closed'), created_at, updated_at`
-
-**Invite (Team→Application):** `id, team_id->Team, application_id->Application, invited_role, message?, status('pending'|'accepted'|'rejected'|'expired'), expires_at?, created_at`
-
-**Response (Application→Vacancy):** `id, vacancy_id->Vacancy, application_id->Application, desired_role, message?, status('pending'|'accepted'|'rejected'|'withdrawn'), created_at`
-
-**Notification:** `id, user_id->User, type, payload:jsonb, channel('tg'|'in_app'), is_read:boolean, created_at`
-
----
-
-## 14. Backlog / MVP
-
-**Must-have (MVP):**
-- Авторизация через Telegram; список хакатонов.
-- Анкета (`Application`) и её публикация.
-- Команда (`Team`), капитан, набор.
-- Вакансии (`Vacancy`), отклики (`Response`) и инвайты (`Invite`).
-- Уведомления/подтверждения; запрет второй команды на тот же хак.
-- Простая админка (распределение, CRUD хакатонов).
-
-**Nice-to-have:**
-- Рекомендации (матчинг по навыкам), артефакты проектов, рефералки, приглашение в команду по ссылке.
-=======
-# teamfinder_backend
->>>>>>> 4070cb90d360c2b54cb4c961724ccf13ea4c6ee9
+- [ ] ORM-модель в `persistend/models`.
+- [ ] Репозиторий с запросами в `repositories`.
+- [ ] Сервис с бизнес-правилами в `services`.
+- [ ] Роутер + схемы в `presentations/routers` (+ подключить в `app.py`).
+- [ ] Проверить в Swagger (`/docs`).
+- [ ] (Prod) создать и прогнать миграцию Alembic.
