@@ -78,3 +78,22 @@ class AuthTelegramService:
 
         # Возвращаем минимальный, но достаточный набор данных
         return AuthResult(user_id=user.id, access_token=token)
+    
+    async def authenticate_dev(self, tg_user: Dict[str, Any]) -> AuthResult:
+        """
+        Упрощённая авторизация для DEV-окружения:
+        - НЕ проверяет подпись initData;
+        - просто апсертит пользователя по переданному tg_user;
+        - генерирует access_token так же, как в authenticate().
+        """
+        # 1) Апсертим пользователя по данным из Telegram-подобного словаря
+        user = await self.users.upsert_from_tg(tg_user)
+
+        # 2) Генерируем токен ровно тем же способом, что и в authenticate()
+        token = jwt_encode(
+            {"sub": str(user.id)},
+            self.jwt_secret,
+            exp_seconds=self.jwt_ttl,
+        )
+
+        return AuthResult(user_id=user.id, access_token=token)
