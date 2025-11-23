@@ -45,3 +45,51 @@ class HackathonsRepo(BaseRepository):
             stmt = stmt.order_by(H.start_date.desc()).limit(limit).offset(offset)
             res = await s.execute(stmt)
             return list(res.scalars().all())
+    
+    async def create(self, **data: Any) -> m_hack.Hackathon:
+        """
+        Создать новый хакатон.
+        Ожидает те же поля, что и у модели Hackathon (без id / created_at / updated_at).
+        """
+        async with self._sm() as s:
+            obj = m_hack.Hackathon(**data)
+            s.add(obj)
+            await s.commit()
+            await s.refresh(obj)
+            return obj
+
+    async def update(self, hackathon_id: int, **fields: Any) -> Optional[m_hack.Hackathon]:
+        """
+        Частично обновить хакатон.
+        fields — только те ключи, которые нужно изменить.
+        Возвращает обновлённый объект или None, если не найден.
+        """
+        if not fields:
+            # Нечего обновлять
+            return await self.get_by_id(hackathon_id)
+
+        async with self._sm() as s:
+            obj = await s.get(m_hack.Hackathon, hackathon_id)
+            if not obj:
+                return None
+
+            for key, value in fields.items():
+                setattr(obj, key, value)
+
+            await s.commit()
+            await s.refresh(obj)
+            return obj
+
+    async def delete(self, hackathon_id: int) -> bool:
+        """
+        Удалить хакатон по id.
+        Возвращает True, если удалён, False — если не найден.
+        """
+        async with self._sm() as s:
+            obj = await s.get(m_hack.Hackathon, hackathon_id)
+            if not obj:
+                return False
+
+            await s.delete(obj)
+            await s.commit()
+            return True

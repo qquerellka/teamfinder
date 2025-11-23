@@ -125,10 +125,9 @@ CREATE TABLE IF NOT EXISTS notification (
 CREATE TABLE IF NOT EXISTS achievements (
   id         SERIAL PRIMARY KEY,
   user_id    INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  name       TEXT NOT NULL,                        
+  hackathon_id    INT NOT NULL REFERENCES hackathon(id) ON DELETE CASCADE,
   role       role_type NOT NULL,
   place      achiev_place NOT NULL DEFAULT 'participant',
-  hackLink   TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

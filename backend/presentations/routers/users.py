@@ -66,6 +66,14 @@ class UserSkillOut(BaseModel):
     id: int
     slug: str
     name: str
+    
+class UserAchievementOut(BaseModel):
+    """Мини-представление достижения, используемое в ответах API."""
+    id: int
+    user_id: int
+    hackathon_id: Optional[int] = None      # <<< было: int
+    role: Optional[str] = None
+    place: Optional[str] = None
 
 class UserOut(BaseModel):
     """
@@ -84,9 +92,10 @@ class UserOut(BaseModel):
     link: Optional[str] = None
     # ВАЖНО: default_factory=list вместо [] — избегаем общего мутабельного дефолта на уровне класса.
     skills: List[UserSkillOut] = Field(default_factory=list)
+    achievements: List[UserAchievementOut] = Field(default_factory=list)
     # Даты удобнее отдавать в ISO-строке; можно сделать datetime и настроить сериализацию
-    created_at: str
-    updated_at: str
+    # created_at: str
+    # updated_at: str
     # match_count выдаём только при поиске (mode="any"), иначе None
     match_count: int | None = None
 
@@ -101,6 +110,7 @@ class UserPatchIn(BaseModel):
     link: Optional[str] = Field(default=None, max_length=1024)
     # Полная замена набора навыков по slug (ограничиваем максимумом)
     skills: Optional[List[str]] = None
+    achievements: Optional[List[str]] = None
 
 # ---- Вспомогательное упаковывание пользователя ----
 
@@ -114,7 +124,7 @@ async def _pack_user(user_id: int) -> UserOut:
         raise HTTPException(status_code=404, detail="user not found")
 
     skills = await users_repo.get_user_skills(user_id)
-
+    achievements = await users_repo.get_user_achievements(user_id)
     return UserOut(
         id=user.id,
         telegram_id=user.telegram_id,
@@ -127,9 +137,31 @@ async def _pack_user(user_id: int) -> UserOut:
         university=user.university,
         link=user.link,
         skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
-        created_at=str(user.created_at),
-        updated_at=str(user.updated_at),
+        achievements=_map_achievements(achievements),
+
+        # created_at=str(user.created_at),
+        # updated_at=str(user.updated_at),
     )
+def _map_achievements(achs) -> List[UserAchievementOut]:
+    def _val(x):
+        # поддержим и Enum, и str (на всякий случай)
+        return getattr(x, "value", x) if x is not None else None
+
+    items: List[UserAchievementOut] = []
+    for a in achs:
+        # в БД колонка может называться hack_id — отдадим как hackathon_id
+        hackathon_id = getattr(a, "hackathon_id", None)
+        if hackathon_id is None:
+            hackathon_id = getattr(a, "hack_id", None)
+
+        items.append(UserAchievementOut(
+            id=a.id,
+            user_id=a.user_id,
+            hackathon_id=int(hackathon_id) if hackathon_id is not None else None,
+            role=_val(a.role),
+            place=_val(a.place),
+        ))
+    return items
 
 # ---- Роуты ----
 
@@ -238,6 +270,8 @@ async def search_users(
     items = []
     for usr, mc in rows:
         usr_skills = await users_repo.get_user_skills(usr.id)
+        usr_achs = await users_repo.get_user_achievements(usr.id)   # <<< добавили
+
         items.append(UserOut(
             id=usr.id,
             telegram_id=usr.telegram_id,
@@ -250,8 +284,10 @@ async def search_users(
             university=usr.university,
             link=usr.link,
             skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in usr_skills],
-            created_at=str(usr.created_at),
-            updated_at=str(usr.updated_at),
+            achievements=_map_achievements(usr_achs),                # <<< теперь переменная есть
+
+            # created_at=str(usr.created_at),
+            # updated_at=str(usr.updated_at),
             match_count=mc,
         ).model_dump())
 
