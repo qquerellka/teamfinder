@@ -33,7 +33,7 @@ from __future__ import annotations # Отложенная оценка анно�
 
 
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Query, status # FastAPI-примитивы
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Response # FastAPI-примитивы
 from pydantic import BaseModel, Field # Pydantic-схемы для валидации/документации
 
 # Зависимость, которая по JWT-токену достаёт user_id (используется во всех ручках)
