@@ -1,6 +1,6 @@
 import { hackathons } from "@/shared/mocks/hackathons";
 import type { Hackathon } from "@/shared/types/hackathon";
-import { HackathonCard } from "@/widgets/HackathonCard";
+import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import { Button } from "@telegram-apps/telegram-ui";
 import { Navigate, useParams } from "react-router-dom";
 import styled from "styled-components";

@@ -3,12 +3,12 @@ import { useRoutes, type RouteObject, Navigate } from "react-router-dom";
 import RootLayout from "../layouts/Layout";
 import { paths } from "./paths";
 
-const HackathonsPage = lazy(() => import("@/pages/HackathonsPage"));
-const HackathonPage = lazy(() => import("@/pages/HackathonPage"));
-const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
-const ProfilePage = lazy(() => import("@/pages/Profile"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
-const UserTeamsPage = lazy(() => import("@/pages/UserTeamsPage"));
+const HackathonsPage = lazy(() => import("@/pages/hackathons/ui/Page"));
+const HackathonPage = lazy(() => import("@/pages/hackathon/ui/Page"));
+const NotificationsPage = lazy(() => import("@/pages/notifications/ui/Page"));
+const ProfilePage = lazy(() => import("@/pages/profile/ui/Page"));
+const NotFound = lazy(() => import("@/pages/not-found/ui/Page"));
+const UserTeamsPage = lazy(() => import("@/pages/user-teams/ui/Page"));
 const routes: RouteObject[] = [
   {
     path: paths.root,

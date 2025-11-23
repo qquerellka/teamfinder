@@ -70,7 +70,7 @@ class UserSkillOut(BaseModel):
 class UserAchievementOut(BaseModel):
     """Мини-представление достижения, используемое в ответах API."""
     id: int
-    user_id: int
+    # user_id: int
     hackathon_id: Optional[int] = None      # <<< было: int
     role: Optional[str] = None
     place: Optional[str] = None
@@ -156,7 +156,7 @@ def _map_achievements(achs) -> List[UserAchievementOut]:
 
         items.append(UserAchievementOut(
             id=a.id,
-            user_id=a.user_id,
+            # user_id=a.user_id,
             hackathon_id=int(hackathon_id) if hackathon_id is not None else None,
             role=_val(a.role),
             place=_val(a.place),
