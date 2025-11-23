@@ -22,18 +22,21 @@ import os                                 # Достаём секрет для J
 from typing import Optional, List, Literal # Типы для аннотаций (Optional, списки, Literal для ограниченных значений)
 
 from fastapi import (                      # Компоненты FastAPI
-    APIRouter, Depends, HTTPException, Header, Query, status
+    APIRouter, Depends, HTTPException, Header, Query, status, Path
 )
 from pydantic import BaseModel, Field      # Pydantic-модели схем, Field для настроек полей
 
 from backend.repositories.users import UsersRepo  # Наш слой доступа к данным пользователей
 from backend.utils import jwt_simple              # Простой модуль для кодирования/декодирования JWT
+from backend.repositories.achievements import AchievementsRepo
+from backend.persistend.models import achievement as m_ach
 
 # Роутер с префиксом и тегом — красиво группируется в Swagger/Redoc
 router = APIRouter(prefix="/users", tags=["users"])
 
 # Репозиторий пользователей. Внутри он получает sessionmaker и открывает сессию на каждую операцию.
 users_repo = UsersRepo()
+ach_repo = AchievementsRepo()
 
 # ---- Аутентификация (JWT -> user_id) ----
 
@@ -111,6 +114,20 @@ class UserPatchIn(BaseModel):
     # Полная замена набора навыков по slug (ограничиваем максимумом)
     skills: Optional[List[str]] = None
     achievements: Optional[List[str]] = None
+
+
+class AchievementOut(BaseModel):
+    id: int
+    user_id: int
+    hackathon_id: int
+    role: m_ach.RoleType
+    place: m_ach.AchievementPlace
+
+class AchievementCreateIn(BaseModel):
+    hackathon_id: int
+    role: m_ach.RoleType
+    place: Optional[m_ach.AchievementPlace] = None
+    
 
 # ---- Вспомогательное упаковывание пользователя ----
 
@@ -293,3 +310,112 @@ async def search_users(
 
     # Оборачиваем в пагинационный ответ
     return {"items": items, "total": total, "limit": limit, "offset": offset}
+
+
+@router.get("/me/achievements", response_model=dict)
+async def list_my_achievements(
+    role: Optional[m_ach.RoleType] = Query(default=None),
+    place: Optional[m_ach.AchievementPlace] = Query(default=None),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    """
+    Список моих достижений
+    """
+    items, total = await ach_repo.list_by_user(
+        current_user_id,
+        role=role,
+        place=place,
+        limit=limit,
+        offset=offset,
+    )
+    return {
+        "items": [
+            AchievementOut(
+                id=a.id,
+                user_id=a.user_id,
+                hackathon_id=a.hackathon_id,
+                role=a.role,
+                place=a.place,
+            )
+            for a in items
+        ],
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }
+
+@router.get("/{user_id}/achievements", response_model=dict)
+async def list_user_achievements(
+    user_id: int = Path(..., ge=1),
+    role: Optional[m_ach.RoleType] = Query(default=None),
+    place: Optional[m_ach.AchievementPlace] = Query(default=None),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    _current_user_id: int = Depends(get_current_user_id),
+):
+    """
+    Список достижений произвольного пользователя.
+    Требует валидный JWT, но user_id может быть любым.
+    """
+    items, total = await ach_repo.list_by_user(
+        user_id,
+        role=role,
+        place=place,
+        limit=limit,
+        offset=offset,
+    )
+    return {
+        "items": [
+            AchievementOut(
+                id=a.id,
+                user_id=a.user_id,
+                hackathon_id=a.hackathon_id,
+                role=a.role,
+                place=a.place,
+            )
+            for a in items
+        ],
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }
+
+@router.post("/me/achievements", response_model=AchievementOut, status_code=status.HTTP_201_CREATED)
+async def create_my_achievement(
+    payload: AchievementCreateIn,
+    current_user_id: int = Depends(get_current_user_id),
+):
+    """
+    Создать достижение текущему пользователю.
+    Логика полностью как в старом POST /achievements.
+    """
+    try:
+        ach = await ach_repo.create(
+            user_id=current_user_id,
+            hackathon_id=payload.hackathon_id,
+            role=payload.role,
+            place=payload.place or m_ach.AchievementPlace.participant,
+        )
+    except ValueError as e:
+        msg = str(e)
+        if msg == "duplicate_achievement":
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={"error": "duplicate_achievement"},
+            )
+        if msg.startswith("integrity_error:"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={"error": "integrity_error"},
+            )
+        raise HTTPException(status_code=400, detail=msg)
+
+    return AchievementOut(
+        id=ach.id,
+        user_id=ach.user_id,
+        hackathon_id=ach.hackathon_id,
+        role=ach.role,
+        place=ach.place,
+    )

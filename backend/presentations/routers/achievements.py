@@ -85,42 +85,42 @@ def _pack_many(items: List[m_ach.Achievement]) -> List[dict]:
 
 # ---- Роуты: мои достижения ----
 
-@router.get("/me", response_model=dict)
-async def list_my_achievements(
-    role: Optional[m_ach.RoleType] = Query(default=None),
-    place: Optional[m_ach.AchievementPlace] = Query(default=None),
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
-    current_user_id: int = Depends(get_current_user_id),
-):
-    """
-    Список моих достижений с фильтрами по роли/месту.
-    Пагинация: items/total/limit/offset.
-    """
-    items, total = await ach_repo.list_by_user(
-        current_user_id, role=role, place=place, limit=limit, offset=offset
-    )
-    return {"items": _pack_many(items), "total": total, "limit": limit, "offset": offset}
+# @router.get("/me", response_model=dict)
+# async def list_my_achievements(
+#     role: Optional[m_ach.RoleType] = Query(default=None),
+#     place: Optional[m_ach.AchievementPlace] = Query(default=None),
+#     limit: int = Query(default=20, ge=1, le=100),
+#     offset: int = Query(default=0, ge=0),
+#     current_user_id: int = Depends(get_current_user_id),
+# ):
+#     """
+#     Список моих достижений с фильтрами по роли/месту.
+#     Пагинация: items/total/limit/offset.
+#     """
+#     items, total = await ach_repo.list_by_user(
+#         current_user_id, role=role, place=place, limit=limit, offset=offset
+#     )
+#     return {"items": _pack_many(items), "total": total, "limit": limit, "offset": offset}
 
 # ---- Роуты: по пользователю ----
 
-@router.get("/user/{user_id}", response_model=dict)
-async def list_user_achievements(
-    user_id: int = Path(..., ge=1),
-    role: Optional[m_ach.RoleType] = Query(default=None),
-    place: Optional[m_ach.AchievementPlace] = Query(default=None),
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
-    _current_user_id: int = Depends(get_current_user_id),
-):
-    """
-    Список достижений произвольного пользователя.
-    Требует валидный JWT, но не требует, чтобы user_id совпадал с субъктом токена.
-    """
-    items, total = await ach_repo.list_by_user(
-        user_id, role=role, place=place, limit=limit, offset=offset
-    )
-    return {"items": _pack_many(items), "total": total, "limit": limit, "offset": offset}
+# @router.get("/user/{user_id}", response_model=dict)
+# async def list_user_achievements(
+#     user_id: int = Path(..., ge=1),
+#     role: Optional[m_ach.RoleType] = Query(default=None),
+#     place: Optional[m_ach.AchievementPlace] = Query(default=None),
+#     limit: int = Query(default=20, ge=1, le=100),
+#     offset: int = Query(default=0, ge=0),
+#     _current_user_id: int = Depends(get_current_user_id),
+# ):
+#     """
+#     Список достижений произвольного пользователя.
+#     Требует валидный JWT, но не требует, чтобы user_id совпадал с субъктом токена.
+#     """
+#     items, total = await ach_repo.list_by_user(
+#         user_id, role=role, place=place, limit=limit, offset=offset
+#     )
+#     return {"items": _pack_many(items), "total": total, "limit": limit, "offset": offset}
 
 # ---- Роуты: по хакатону ----
 
@@ -156,24 +156,24 @@ async def list_user_achievements(
 
 # ---- CRUD ----
 
-@router.post("", response_model=AchievementOut, status_code=status.HTTP_201_CREATED)
-async def create_achievement(payload: AchievementCreateIn, current_user_id: int = Depends(get_current_user_id)):
-    try:
-        ach = await ach_repo.create(
-            user_id=current_user_id,
-            hackathon_id=payload.hackathon_id,
-            role=payload.role,
-            place=payload.place or m_ach.AchievementPlace.participant,
-        )
-    except ValueError as e:
-        if str(e) == "duplicate_achievement":
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail={"error": "duplicate_achievement"})
-        if str(e).startswith("integrity_error:"):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"error": "integrity_error"})
-        raise HTTPException(status_code=400, detail=str(e))
-    return AchievementOut(
-        id=ach.id, user_id=ach.user_id, hackathon_id=ach.hackathon_id, role=ach.role, place=ach.place
-    )
+# @router.post("", response_model=AchievementOut, status_code=status.HTTP_201_CREATED)
+# async def create_achievement(payload: AchievementCreateIn, current_user_id: int = Depends(get_current_user_id)):
+#     try:
+#         ach = await ach_repo.create(
+#             user_id=current_user_id,
+#             hackathon_id=payload.hackathon_id,
+#             role=payload.role,
+#             place=payload.place or m_ach.AchievementPlace.participant,
+#         )
+#     except ValueError as e:
+#         if str(e) == "duplicate_achievement":
+#             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail={"error": "duplicate_achievement"})
+#         if str(e).startswith("integrity_error:"):
+#             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"error": "integrity_error"})
+#         raise HTTPException(status_code=400, detail=str(e))
+#     return AchievementOut(
+#         id=ach.id, user_id=ach.user_id, hackathon_id=ach.hackathon_id, role=ach.role, place=ach.place
+#     )
 
 
 # @router.post("/upsert", response_model=AchievementOut)
