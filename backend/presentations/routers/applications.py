@@ -33,7 +33,7 @@ from __future__ import annotations # Отложенная оценка анно�
 
 
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Query, status # FastAPI-примитивы
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Response # FastAPI-примитивы
 from pydantic import BaseModel, Field # Pydantic-схемы для валидации/документации
 
 # Зависимость, которая по JWT-токену достаёт user_id (используется во всех ручках)
@@ -140,7 +140,7 @@ async def _pack_application_card(app_obj) -> ApplicationCardOut:
     )
 
 
-# ---- РОУТЫ ----
+# ---- РОУТЫ: список по хакатону ----
 
 @router.get("/hackathons/{hackathon_id}/applications", response_model=dict)
 async def list_hackathon_applications(
@@ -151,46 +151,33 @@ async def list_hackathon_applications(
     ),
     q: Optional[str] = Query(
         default=None,
-        description="Поиск по username/first_name/last_name (поиск без учёта регистра)",
+        description="Поиск по username/first_name/last_name (без учёта регистра)",
     ),
-    limit: int = Query(default=20, ge=1, le=100, description="Размер страницы (пагинация)"),
-    offset: int = Query(default=0, ge=0, description="Смещение от начала списка (пагинация)"),
-    _me: int = Depends(get_current_user_id),  # Требуем авторизацию, но сам user_id здесь не используем
+    limit: int = Query(default=20, ge=1, le=100, description="Размер страницы"),
+    offset: int = Query(default=0, ge=0, description="Смещение от начала списка"),
+    _me: int = Depends(get_current_user_id),  # просто требуем авторизацию
 ):
     """
     Список анкет одного хакатона с фильтрами и пагинацией.
-
-    ПАРАМЕТРЫ:
-      • hackathon_id — ID хакатона
-      • role         — фильтр по Enum-ролям (DevOps/Backend/...); если не задан — не фильтруем.
-      • q            — поиск по username/first_name/last_name (регистронезависимый).
-      • limit/offset — стандартная пагинация.
-
-    ВОЗВРАЩАЕТ:
-      {
-        "items": [ApplicationCardOut, ...],
-        "limit": <int>,
-        "offset": <int>
-      }
     """
     rows = await apps_repo.search(
         hackathon_id=hackathon_id,
-        role=role.value if role else None,  # repo ожидает str | None, Enum преобразуем в строку
+        role=role.value if role else None,
         q=q,
         limit=limit,
         offset=offset,
     )
 
-    # Собираем карточки для каждого ORM-объекта Application
     items = [await _pack_application_card(r) for r in rows]
 
-    # Возвращаем в виде dict, чтобы явно положить limit/offset и сериализовать Pydantic-объекты
     return {
         "items": [i.model_dump() for i in items],
         "limit": limit,
         "offset": offset,
     }
 
+
+# ---- РОУТЫ: моя анкета на хакатон ----
 
 @router.get("/hackathons/{hackathon_id}/applications/me", response_model=ApplicationCardOut)
 async def get_my_application_on_hackathon(
@@ -199,41 +186,6 @@ async def get_my_application_on_hackathon(
 ):
     """
     Получить *мою* анкету на указанном хакатоне.
-
-    ПРИМЕР:
-      GET /hackathons/1/applications/me
-
-    ВОЗВРАЩАЕТ:
-      • ApplicationCardOut, если анкета существует.
-      • 404, если у пользователя нет анкеты на этом хакатоне.
-    """
-    app = await apps_repo.get_by_user_and_hackathon(
-        user_id=user_id,
-        hackathon_id=hackathon_id,
-    )
-    if not app:
-        raise HTTPException(status_code=404, detail="application not found")
-
-    return await _pack_application_card(app)
-
-
-@router.get("/hackathons/{hackathon_id}/applications/{user_id}", response_model=ApplicationCardOut)
-async def get_user_application_on_hackathon(
-    hackathon_id: int,
-    user_id: int,
-    _me: int = Depends(get_current_user_id),
-):
-    """
-    Получить анкету *конкретного пользователя* на указанном хакатоне.
-
-    ПРИМЕР:
-      GET /hackathons/1/applications/42
-
-    КТО МОЖЕТ ВЫЗВАТЬ:
-      • Любой авторизованный пользователь (ограничений нет, это публичная анкета).
-
-    ВОЗВРАЩАЕТ:
-      • ApplicationCardOut или 404, если анкеты нет.
     """
     app = await apps_repo.get_by_user_and_hackathon(
         user_id=user_id,
@@ -258,14 +210,8 @@ async def create_my_application(
     """
     Создать *мою* анкету на конкретный хакатон.
 
-    ИНВАРИАНТ:
-      • На один (hackathon_id, user_id) — только ОДНА анкета.
-
-    ПОВЕДЕНИЕ:
-      • Если анкета уже существует — 409 Conflict.
-      • Если нет — создаём новую и возвращаем её карточку.
+    Инвариант: на один (hackathon_id, user_id) может быть только одна анкета.
     """
-    # Проверяем, не существует ли уже анкеты пользователя на этом хакатоне
     exists = await apps_repo.get_by_user_and_hackathon(
         user_id=user_id,
         hackathon_id=hackathon_id,
@@ -276,59 +222,17 @@ async def create_my_application(
             detail="application already exists for this hackathon",
         )
 
-    # Создаём анкету (репозиторий сам проставит дефолты status/joined)
     app = await apps_repo.create(
         user_id=user_id,
         hackathon_id=hackathon_id,
-        role=payload.role.value if payload.role else None,  # Enum → str
-        skills=None,  # !? навыки не сохраняем в application (MVP), подтягиваем из профиля
+        role=payload.role.value if payload.role else None,
+        skills=None,  # навыки не храним в application, они подтягиваются из профиля
     )
 
     return await _pack_application_card(app)
 
 
-@router.patch("/hackathons/{hackathon_id}/applications/me", response_model=ApplicationCardOut)
-async def patch_my_application(
-    hackathon_id: int,
-    payload: ApplicationPatchIn,
-    user_id: int = Depends(get_current_user_id),
-):
-    """
-    Частично обновить *мою* анкету на указанном хакатоне.
-
-    ЧТО МОЖНО МЕНЯТЬ СЕЙЧАС:
-      • role   — смена роли (Backend → Fullstack, и т.п.)
-      • status — смена статуса анкеты (published/hidden)
-
-    ПОВЕДЕНИЕ:
-      • Если анкеты нет — 404.
-      • Если есть — обновляем только переданные поля (partial update).
-    """
-    # Сначала найдём мою анкету на этом хакатоне
-    app = await apps_repo.get_by_user_and_hackathon(
-        user_id=user_id,
-        hackathon_id=hackathon_id,
-    )
-    if not app:
-        raise HTTPException(status_code=404, detail="application not found")
-
-    # Превращаем Pydantic-модель в dict, игнорируя неустановленные поля
-    data = payload.model_dump(exclude_unset=True)
-
-    # Поля role/status — Enum, репозиторий/БД ждут строки → конвертируем
-    if "role" in data and data["role"] is not None:
-        data["role"] = data["role"].value
-    if "status" in data and data["status"] is not None:
-        data["status"] = data["status"].value
-
-    # Отдаём обновление на уровень репозитория
-    updated = await apps_repo.update(app.id, data)
-    if not updated:
-        # Теоретически маловероятно (могли удалить запись между SELECT и UPDATE)
-        raise HTTPException(status_code=404, detail="application not found (update)")
-
-    return await _pack_application_card(updated)
-
+# ---- РОУТЫ: мои анкеты по всем хакатонам ----
 
 @router.get("/me/applications", response_model=dict)
 async def list_my_applications(
@@ -337,17 +241,7 @@ async def list_my_applications(
     user_id: int = Depends(get_current_user_id),
 ):
     """
-    Список всех *моих* анкет по всем хакатонам.
-
-    УДОБНО:
-      • Для «личного кабинета», чтобы показать пользователю его заявки на разные хакатоны.
-
-    ВОЗВРАЩАЕТ:
-      {
-        "items": [ApplicationCardOut, ...],
-        "limit": <int>,
-        "offset": <int>
-      }
+    Список всех *моих* анкет по всем хакатонам (для личного кабинета).
     """
     rows = await apps_repo.search_by_user(
         user_id=user_id,
@@ -363,26 +257,81 @@ async def list_my_applications(
     }
 
 
-@router.get("/me/applications/{hackathon_id}", response_model=ApplicationCardOut)
-async def get_my_application_on_specific_hackathon(
-    hackathon_id: int,
-    user_id: int = Depends(get_current_user_id),
+# ---- РОУТЫ: работа по application_id ----
+
+@router.get("/applications/{application_id}", response_model=ApplicationCardOut)
+async def get_application_by_id(
+    application_id: int,
+    _me: int = Depends(get_current_user_id),
 ):
     """
-    Получить *мою* анкету на конкретный хакатон из «моего раздела».
+    Получить анкету по её id.
 
-    Это логически то же самое, что:
-      GET /hackathons/{hackathon_id}/applications/me
-
-    Просто другой URL, более удобный для фронта в разделе /me.
+    Доступна любому авторизованному пользователю.
     """
-    app = await apps_repo.get_by_user_and_hackathon(
-        user_id=user_id,
-        hackathon_id=hackathon_id,
-    )
+    app = await apps_repo.get_by_id(application_id)
     if not app:
         raise HTTPException(status_code=404, detail="application not found")
 
     return await _pack_application_card(app)
 
+
+@router.patch("/applications/{application_id}", response_model=ApplicationCardOut)
+async def patch_application_by_id(
+    application_id: int,
+    payload: ApplicationPatchIn,
+    user_id: int = Depends(get_current_user_id),
+):
+    """
+    Частично обновить анкету по id.
+
+    Ограничение:
+      • менять может только владелец анкеты (app.user_id == current user).
+    """
+    app = await apps_repo.get_by_id(application_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="application not found")
+
+    if app.user_id != user_id:
+        raise HTTPException(status_code=403, detail="forbidden: not an owner")
+
+    data = payload.model_dump(exclude_unset=True)
+
+    if "role" in data and data["role"] is not None:
+        data["role"] = data["role"].value
+    if "status" in data and data["status"] is not None:
+        data["status"] = data["status"].value
+
+    updated = await apps_repo.update(application_id, data)
+    if not updated:
+        # На случай, если кто-то удалил запись между SELECT и UPDATE
+        raise HTTPException(status_code=404, detail="application not found (update)")
+
+    return await _pack_application_card(updated)
+
+
+@router.delete("/applications/{application_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_application_by_id(
+    application_id: int,
+    user_id: int = Depends(get_current_user_id),
+):
+    """
+    Удалить анкету по id.
+
+    Ограничение:
+      • удалять может только владелец анкеты.
+    """
+    app = await apps_repo.get_by_id(application_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="application not found")
+
+    if app.user_id != user_id:
+        raise HTTPException(status_code=403, detail="forbidden: not an owner")
+
+    ok = await apps_repo.delete(application_id)
+    if not ok:
+        # теоретически: уже удалили между проверкой и delete()
+        raise HTTPException(status_code=404, detail="application not found (delete)")
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
