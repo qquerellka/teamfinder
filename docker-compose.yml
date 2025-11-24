@@ -45,14 +45,14 @@ services:
       - api
     restart: unless-stopped
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    depends_on:
-      - api
-    ports:
-      - "3000:80"
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - api
+  #   ports:
+  #     - "3000:80"
     # если захочешь передавать какие-то ENV в билд (например VITE_API_URL),
     # можно добавить:
     # environment:
