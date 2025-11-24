@@ -14,11 +14,12 @@ from __future__ import annotations
 from typing import Optional, List
 from datetime import datetime
 
-from fastapi import APIRouter, Query, HTTPException, Depends, status
+from fastapi import APIRouter, Query, HTTPException, Depends, status, UploadFile, File
 from pydantic import BaseModel, Field
 
 from backend.repositories.hackathons import HackathonsRepo
 from backend.presentations.routers.users import get_current_user_id  # берём готовый депенденси
+from backend.infrastructure.s3_client import upload_hackathon_image_to_s3  # импорт для S3
 
 router = APIRouter(prefix="/hackathons", tags=["hackathons"])
 repo = HackathonsRepo()
@@ -212,6 +213,46 @@ async def update_hackathon(
     h = await repo.update(hackathon_id, **data)
     if not h:
         raise HTTPException(status_code=404, detail="hackathon not found")
+    return _pack(h)
+
+@router.post(
+    "/{hackathon_id}/image",
+    response_model=HackathonOut,
+    status_code=status.HTTP_200_OK,
+)
+async def upload_hackathon_image(
+    hackathon_id: int,
+    file: UploadFile = File(...),
+    _current_user_id: int = Depends(get_current_user_id),
+):
+    """
+    Загрузить/обновить картинку (обложку) хакатона.
+
+    Принимает multipart/form-data с полем "file".
+    Сохраняет файл в S3 и обновляет поле image_link у хакатона.
+    """
+    # 1. Проверяем, что хакатон существует
+    h = await repo.get_by_id(hackathon_id)
+    if not h:
+        raise HTTPException(status_code=404, detail="hackathon not found")
+
+    # TODO: здесь можно добавить проверку ролей (организатор/админ),
+    # пока достаточно факта, что пользователь авторизован.
+
+    # 2. Заливаем файл в S3 и получаем публичный URL
+    try:
+        image_url = upload_hackathon_image_to_s3(hackathon_id=hackathon_id, file=file)
+    except Exception:
+        # В реальном коде лучше логировать и кидать более точное сообщение/тип
+        raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILED")
+
+    # 3. Обновляем хакатон в БД (image_link = новый URL)
+    h = await repo.update(hackathon_id, image_link=image_url)
+    if not h:
+        # Теоретически не должно случиться, но на всякий случай
+        raise HTTPException(status_code=404, detail="hackathon not found")
+
+    # 4. Возвращаем актуальное состояние хакатона
     return _pack(h)
 
 
