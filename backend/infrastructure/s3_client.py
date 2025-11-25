@@ -154,3 +154,23 @@ def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
 
     # 5. Возвращаем публичный URL
     return make_public_url(key)
+
+def upload_hackathon_image_from_bytes(hackathon_id: int, data: bytes, content_type: str) -> str:
+    """
+    Загрузить картинку хакатона в S3 из байтов (используется для Telegram file_id).
+    """
+    ext = _guess_extension(content_type)  # .jpg/.png/.webp и т.п.
+    key = build_hackathon_key(hackathon_id, ext)
+
+    try:
+        _s3.put_object(
+            Bucket=settings.S3_BUCKET,
+            Key=key,
+            Body=data,           # <-- сюда передаём байты
+            ACL="public-read",
+            ContentType=content_type,
+        )
+    except Exception:
+        raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILED")
+
+    return make_public_url(key)

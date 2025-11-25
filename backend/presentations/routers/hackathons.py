@@ -19,7 +19,10 @@ from pydantic import BaseModel, Field
 
 from backend.repositories.hackathons import HackathonsRepo
 from backend.presentations.routers.users import get_current_user_id  # берём готовый депенденси
+
 from backend.infrastructure.s3_client import upload_hackathon_image_to_s3  # импорт для S3
+from backend.infrastructure.s3_client import upload_hackathon_image_from_bytes
+from backend.infrastructure.telegram_files import download_telegram_file
 
 router = APIRouter(prefix="/hackathons", tags=["hackathons"])
 repo = HackathonsRepo()
@@ -54,7 +57,8 @@ class HackathonOut(BaseModel):
 class HackathonCreateIn(BaseModel):
     name: str = Field(..., max_length=255)
     description: Optional[str] = None
-    image_link: Optional[str] = None
+
+    image_file_id: Optional[str] = None
 
     start_date: str
     end_date: str
@@ -162,7 +166,6 @@ async def get_hackathon(hackathon_id: int):
     return _pack(h)
 
 
-# ---------- Мутации (только с JWT) ----------
 @router.post(
     "",
     response_model=HackathonOut,
@@ -175,9 +178,18 @@ async def create_hackathon(
     """
     Создать новый хакатон.
     Даты ожидаем в формате dd.mm.yyyy.
+
+    Дополнительно:
+      • если передан image_file_id (Telegram file_id),
+        то backend сам скачивает картинку из Telegram и кладёт её в S3,
+        а в БД сохраняет итоговый image_link.
     """
     data = payload.model_dump()
 
+    # забираем file_id отдельно, чтобы не пихать его в repo.create
+    image_file_id = data.pop("image_file_id", None)
+
+    # --- Парсим даты ---
     data["start_date"] = _parse_ddmmyyyy(data["start_date"], "start_date")
     data["end_date"] = _parse_ddmmyyyy(data["end_date"], "end_date")
     data["registration_end_date"] = _parse_ddmmyyyy(
@@ -185,8 +197,21 @@ async def create_hackathon(
         "registration_end_date",
     )
 
+    # 1. Создаём хакатон без картинки (image_link будет NULL по умолчанию)
     h = await repo.create(**data)
+
+    # 2. Если бот прислал file_id — качаем картинку и кладём в S3
+    if image_file_id:
+        file_bytes, content_type = download_telegram_file(image_file_id)
+        image_url = upload_hackathon_image_from_bytes(
+            hackathon_id=h.id,
+            data=file_bytes,
+            content_type=content_type,
+        )
+        h = await repo.update(h.id, image_link=image_url)
+
     return _pack(h)
+
 
 @router.patch(
     "/{hackathon_id}",
