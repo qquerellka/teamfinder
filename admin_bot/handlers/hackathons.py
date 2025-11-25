@@ -276,7 +276,7 @@ async def form_prize_fund(message: Message, state: FSMContext):
         try:
             prize_fund_value = int(prize_fund_input)
             if prize_fund_value > 0:
-                await state.update_data(prize_fund=prize_fund_value)
+                await state.update_data(prize_fund=str(prize_fund_value))
                 
             else:
                 await message.answer("❌ Призовой фонд должен быть положительным числом или '-'.")
