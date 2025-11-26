@@ -1,67 +1,126 @@
 # =============================================================================
 # ФАЙЛ: backend/persistend/enums.py
-# КРАТКО: Определения перечислений для ролей на хакатоне и статуса анкеты.
-# ЗАЧЕМ:
-#   • Роли пользователей на хакатонах (DevOps, Backend, Frontend и т.д.).
-#   • Статус анкеты пользователя (опубликована или скрыта).
-#   • Используются для ограничения значений в соответствующих полях в базе данных и в коде.
-#
-# КОНЦЕПТЫ:
-#   • Перечисление (Enum) — это способ ограничить набор возможных значений для переменной.
-#   • В SQLAlchemy перечисления (Enum) используются для обеспечения типобезопасности при сохранении значений в базе данных.
+# КРАТКО: все enum’ы, которые отражают типы в БД (01_types.sql).
 # =============================================================================
 
-from enum import Enum  # Импортируем базовый класс для создания перечислений
-
-# -----------------------------------------------------------------------------
-# ПЕРЕЧИСЛЕНИЕ РОЛЕЙ НА ХАКАТОНЕ
-# -----------------------------------------------------------------------------
-class RoleType(str, Enum):  # Перечисление ролей на хакатоне (наследуемся от str и Enum)
-    DevOps = 'DevOps'            
-    GameDev = 'GameDev'          
-    MobileDev = 'MobileDev'      
-    Product_Manager = 'Product manager'  
-    DS = 'DS'                    
-    ML = 'ML'                    
-    Fullstack = 'Fullstack'     
-    Backend = 'Backend'         
-    Frontend = 'Frontend'        
-    Designer = 'Designer'       
-    Analytics = 'Analytics'     
-    QA = 'QA'                    
-
-# Пояснение:
-# Перечисление RoleType описывает все возможные роли на хакатоне.
-# Каждая роль ассоциируется с определённым типом строки. Например, 'Backend' или 'Frontend'.
-# Это перечисление будет использоваться в модели анкеты (application) для поля role.
-# -----------------------------------------------------------------------------
+from enum import Enum
 
 
 # -----------------------------------------------------------------------------
-# ПЕРЕЧИСЛЕНИЕ СТАТУСА АНКЕТЫ
+# РОЛИ НА ХАКАТОНЕ
 # -----------------------------------------------------------------------------
-class ApplicationStatus(str, Enum):  # Перечисление статуса анкеты (наследуемся от str и Enum)
-    published = 'published'  # Статус анкеты: опубликована (пользователи могут её видеть)
-    hidden = 'hidden'       # Статус анкеты: скрыта (пользователь не виден в списке анкет)
+class RoleType(str, Enum):
+    DevOps = "DevOps"
+    GameDev = "GameDev"
+    MobileDev = "MobileDev"
+    ProductManager = "Product manager"
+    DS = "DS"
+    ML = "ML"
+    Fullstack = "Fullstack"
+    Backend = "Backend"
+    Frontend = "Frontend"
+    Designer = "Designer"
+    Analytics = "Analytics"
+    QA = "QA"
 
-# Пояснение:
-# Перечисление ApplicationStatus описывает возможные статусы анкеты пользователя на хакатон.
-# Статус анкеты может быть либо 'published' (опубликована), либо 'hidden' (скрыта).
-# Это перечисление будет использоваться в модели анкеты (application) для поля status.
+
 # -----------------------------------------------------------------------------
+# СТАТУС АНКЕТЫ (application_status)
+# -----------------------------------------------------------------------------
+class ApplicationStatus(str, Enum):
+    draft = "draft"
+    published = "published"
+    hidden = "hidden"
 
+
+# -----------------------------------------------------------------------------
+# РЕЖИМ И СТАТУС ХАКАТОНА
+# -----------------------------------------------------------------------------
 class HackathonMode(str, Enum):
-    online  = "online"
+    online = "online"
     offline = "offline"
-    hybrid  = "hybrid"
+    hybrid = "hybrid"
+
 
 class HackathonStatus(str, Enum):
-    open   = "open"
+    open = "open"
     closed = "closed"
-    
+
+
+# -----------------------------------------------------------------------------
+# СТАТУС КОМАНДЫ (team_status)
+# -----------------------------------------------------------------------------
+class TeamStatus(str, Enum):
+    forming = "forming"
+    ready = "ready"
+
+
+# -----------------------------------------------------------------------------
+# СТАТУС ВАКАНСИИ (vacancy_status)
+# -----------------------------------------------------------------------------
+class VacancyStatus(str, Enum):
+    open = "open"
+    closed = "closed"
+
+
+# -----------------------------------------------------------------------------
+# СТАТУС ИНВАЙТА (invite_status)
+# -----------------------------------------------------------------------------
+class InviteStatus(str, Enum):
+    pending = "pending"
+    accepted = "accepted"
+    rejected = "rejected"
+    expired = "expired"
+
+
+# -----------------------------------------------------------------------------
+# СТАТУС ОТКЛИКА (response_status)
+# -----------------------------------------------------------------------------
+class ResponseStatus(str, Enum):
+    pending = "pending"
+    accepted = "accepted"
+    rejected = "rejected"
+    withdrawn = "withdrawn"
+
+
+# -----------------------------------------------------------------------------
+# ДОСТИЖЕНИЯ (achiev_place)
+# -----------------------------------------------------------------------------
 class AchievementPlace(str, Enum):
-    participant = "participant"
-    firstPlace  = "firstPlace"
+    firstPlace = "firstPlace"
     secondPlace = "secondPlace"
-    thirdPlace  = "thirdPlace"
-    finalyst    = "finalyst"
+    thirdPlace = "thirdPlace"
+    finalyst = "finalyst"
+    participant = "participant"
+
+
+# -----------------------------------------------------------------------------
+# ТИПЫ НОТИФИКАЦИЙ (notif_type)
+# -----------------------------------------------------------------------------
+class NotifType(str, Enum):
+    info = "info"
+    warning = "warning"
+
+    response_accept = "response:accept"
+    response_decline = "response:decline"
+
+    invitation_new = "invitation:new"
+    invitation_reject = "invitation:reject"
+    invitation_accept = "invitation:accept"
+
+    team_entry = "team:entry"
+    team_leave = "team:leave"
+    team_kicked = "team:kicked"
+    
+class InviteStatus(str, Enum):
+    pending  = "pending"
+    accepted = "accepted"
+    rejected = "rejected"
+    expired  = "expired"
+
+
+class ResponseStatus(str, Enum):
+    pending   = "pending"
+    accepted  = "accepted"
+    rejected  = "rejected"
+    withdrawn = "withdrawn"

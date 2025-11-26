@@ -17,12 +17,16 @@ from fastapi import FastAPI, Request               # FastAPI-приложени�
 from fastapi.middleware.cors import CORSMiddleware # CORS-мидлварь (контроль доступа со сторонних доменов)
 from backend.settings.config import settings       # Настройки приложения (имя, версия, CORS-источники и т.п.)
 from backend.infrastructure.db import init_db, dispose_db  # Инициализация/закрытие подключения к БД
-from backend.presentations.routers.system import router as system_router  # Системные ручки (/system)
-from backend.presentations.routers.auth import router as auth_router      # Авторизация (/auth)
-from backend.presentations.routers.users import router as users_router    # Пользователи (/users)
-from backend.presentations.routers.achievements import router as achievements_router    # Пользователи (/users)
-from backend.presentations.routers.hackathons import router as hack_router     # /hackathons
-from backend.presentations.routers.applications import router as applications_router   # /hackathons/{id}/applications, /me/applications
+from backend.presentations.routers.system import router as system_router
+from backend.presentations.routers.auth import router as auth_router
+from backend.presentations.routers.users import router as users_router
+from backend.presentations.routers.achievements import router as achievements_router
+from backend.presentations.routers.hackathons import router as hack_router
+from backend.presentations.routers.applications import router as applications_router
+from backend.presentations.routers.teams import router as teams_router
+from backend.presentations.routers.vacancies import router as vacancies_router
+
+
 
 # Фабрика приложения: создаёт и возвращает настроенный экземпляр FastAPI
 def create_app() -> FastAPI:
@@ -58,14 +62,16 @@ def create_app() -> FastAPI:
         return resp
 
     # Подключаем роутеры — это «разделы» API
-    app.include_router(system_router)  # /system: health/version/ready
-    app.include_router(auth_router)    # /auth: авторизация через Telegram
-    app.include_router(users_router)   # /users: профиль, правки, поиск
-    app.include_router(achievements_router)
+    app.include_router(system_router)       # /system/*
+    app.include_router(auth_router)         # /auth/*
+    app.include_router(users_router)        # /users/*
+    app.include_router(achievements_router) # /achievements/*
+    app.include_router(hack_router)         # /hackathons/*
+    app.include_router(applications_router) # /hackathons/{id}/applications, /me/applications
+    app.include_router(teams_router)        # /hackathons/{id}/teams, /teams/*
+    app.include_router(vacancies_router) # /hackathons/{id}/teams, /teams/{id}, /teams/{id}/members
     
-    app.include_router(hack_router)     # /hackathons: чтение списка/деталей (минимум)
-    app.include_router(applications_router)     # /hackathons/{id}/applications, /me/applications
-
+    
     # Хук старта приложения: проверяем доступность БД (health-ping)
     @app.on_event("startup")
     async def _startup():

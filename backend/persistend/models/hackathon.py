@@ -48,3 +48,26 @@ class Hackathon(Base, TimestampMixin):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+
+        # Связь: один хакатон -> много команд
+    teams = relationship(
+        "Team",
+        back_populates="hackathon",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+    applications = relationship(
+        "Application",
+        back_populates="hackathon",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+    teams = relationship(
+        "Team",
+        back_populates="hackathon",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
