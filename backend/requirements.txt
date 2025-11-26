@@ -5,3 +5,6 @@ pydantic-settings>=2.3.0
 SQLAlchemy[asyncio]>=2.0.30
 asyncpg>=0.29.0
 python-dotenv>=1.0.1
+boto3>=1.35.0
+python-multipart>=0.0.9
+requests>=2.32.0
