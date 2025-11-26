@@ -36,7 +36,8 @@ class Settings(BaseSettings):
     # ==== Auth (ОБЯЗАТЕЛЬНО объявить, иначе будет extra_forbidden) ====
     TELEGRAM_BOT_TOKEN: str = ""  # Токен для Telegram бота, должен быть заполнен в .env
     JWT_SECRET: str = "dev-secret-change-me"  # Секрет для подписи JWT токенов
-
+    # Секретный токен для доступа админ-бота к внутренним ручкам
+    ADMIN_API_TOKEN: str = ""
 
     # ==== Object Storage (S3-совместимое: Yandex Object Storage) ====
     # Базовый endpoint S3-совместимого хранилища.

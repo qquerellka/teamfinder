@@ -23,6 +23,7 @@ from backend.presentations.routers.users import get_current_user_id  # берё�
 from backend.infrastructure.s3_client import upload_hackathon_image_to_s3  # импорт для S3
 from backend.infrastructure.s3_client import upload_hackathon_image_from_bytes
 from backend.infrastructure.telegram_files import download_telegram_file
+from backend.infrastructure.admin_auth import require_admin_token
 
 router = APIRouter(prefix="/hackathons", tags=["hackathons"])
 repo = HackathonsRepo()
@@ -173,7 +174,7 @@ async def get_hackathon(hackathon_id: int):
 )
 async def create_hackathon(
     payload: HackathonCreateIn,
-    _current_user_id: int = Depends(get_current_user_id),
+    _admin = Depends(require_admin_token),
 ):
     """
     Создать новый хакатон.
@@ -220,7 +221,7 @@ async def create_hackathon(
 async def update_hackathon(
     hackathon_id: int,
     payload: HackathonUpdateIn,
-    _current_user_id: int = Depends(get_current_user_id),
+    _admin = Depends(require_admin_token),
 ):
     """
     Частично обновить хакатон.
@@ -248,7 +249,7 @@ async def update_hackathon(
 async def upload_hackathon_image(
     hackathon_id: int,
     file: UploadFile = File(...),
-    _current_user_id: int = Depends(get_current_user_id),
+    _admin = Depends(require_admin_token),
 ):
     """
     Загрузить/обновить картинку (обложку) хакатона.
@@ -287,7 +288,7 @@ async def upload_hackathon_image(
 )
 async def delete_hackathon(
     hackathon_id: int,
-    _current_user_id: int = Depends(get_current_user_id),
+    _admin = Depends(require_admin_token),
 ):
     """
     Удалить хакатон.
