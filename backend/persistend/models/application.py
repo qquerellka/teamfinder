@@ -95,8 +95,4 @@ class Application(Base, TimestampMixin): # Наследуемся от Base (р�
         UniqueConstraint("hackathon_id", "user_id", name="app_unique_per_hack"),
     )
     # На уровне БД: нельзя создать две анкеты одного и того же user’а на один и тот же hackathon.
-    invites = relationship(
-        "Invite",
-        back_populates="application",
-        cascade="all,delete-orphan",
-    )
+ 

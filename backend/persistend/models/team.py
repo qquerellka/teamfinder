@@ -69,9 +69,5 @@ class Team(Base, TimestampMixin):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    invites = relationship(
-        "Invite",
-        back_populates="team",
-        cascade="all,delete-orphan",
-    )
+
 
