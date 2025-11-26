@@ -37,18 +37,18 @@ def _get_file_path(file_id: str) -> str:
     return data["result"]["file_path"]
 
 
-def _guess_content_type_from_path(file_path: str) -> str:
-    """
-    По расширению file_path определяем content-type.
-    Если не угадали — по умолчанию image/jpeg.
-    """
-    ctype, _ = mimetypes.guess_type(file_path)
-    if ctype is None:
+def _guess_content_type_from_path(path: str) -> str | None:
+    lower = path.lower()
+    if lower.endswith((".jpg", ".jpeg")):
         return "image/jpeg"
-    return ctype
+    if lower.endswith(".png"):
+        return "image/png"
+    if lower.endswith(".webp"):
+        return "image/webp"
+    return None
 
 
-def download_telegram_file(file_id: str) -> tuple[bytes, str]:
+def download_telegram_file(file_id: str) -> tuple[bytes, str | None]:
     """
     По Telegram file_id скачиваем файл и возвращаем (байты, content_type).
     """
@@ -61,5 +61,7 @@ def download_telegram_file(file_id: str) -> tuple[bytes, str]:
     except Exception:
         raise HTTPException(status_code=400, detail="TELEGRAM_FILE_DOWNLOAD_FAILED")
 
+    # 1) пытаемся взять из заголовков
+    # 2) если там мусор/ничего — пробуем угадать по расширению в пути
     content_type = resp.headers.get("Content-Type") or _guess_content_type_from_path(file_path)
     return resp.content, content_type

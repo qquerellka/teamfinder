@@ -37,17 +37,37 @@ _s3 = boto3.client(
 
 # --- Внутренние хелперы ---
 
-def _guess_extension(content_type: str) -> str:
+def _guess_extension(content_type: str | None) -> str:
     """
-    По content-type пытаемся подобрать расширение файла.
-    Если тип неизвестен — возвращаем .bin (на твой вкус можно кидать ошибку).
+    Пытаемся угадать расширение по content-type.
+    Если ничего внятного нет — по умолчанию считаем .jpg.
     """
+    if not content_type:
+        return ".jpg"
+
+    content_type = content_type.lower().strip()
+
     mapping = {
         "image/jpeg": ".jpg",
+        "image/jpg": ".jpg",
         "image/png": ".png",
         "image/webp": ".webp",
     }
-    return mapping.get(content_type, ".bin")
+    if content_type in mapping:
+        return mapping[content_type]
+
+    # если хотя бы начинается с image/ — попробуем по подтипу
+    if content_type.startswith("image/"):
+        subtype = content_type.split("/", 1)[1]
+        if subtype in ("jpeg", "jpg"):
+            return ".jpg"
+        if subtype == "png":
+            return ".png"
+        if subtype == "webp":
+            return ".webp"
+
+    # дефолт: считаем, что это картинка jpg
+    return ".jpg"
 
 
 def _validate_image(file: UploadFile) -> None:
@@ -155,20 +175,21 @@ def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
     # 5. Возвращаем публичный URL
     return make_public_url(key)
 
-def upload_hackathon_image_from_bytes(hackathon_id: int, data: bytes, content_type: str) -> str:
-    """
-    Загрузить картинку хакатона в S3 из байтов (используется для Telegram file_id).
-    """
-    ext = _guess_extension(content_type)  # .jpg/.png/.webp и т.п.
+def upload_hackathon_image_from_bytes(
+    hackathon_id: int,
+    data: bytes,
+    content_type: str | None,
+) -> str:
+    ext = _guess_extension(content_type)
     key = build_hackathon_key(hackathon_id, ext)
 
     try:
         _s3.put_object(
             Bucket=settings.S3_BUCKET,
             Key=key,
-            Body=data,           # <-- сюда передаём байты
+            Body=data,
             ACL="public-read",
-            ContentType=content_type,
+            ContentType=content_type or "image/jpeg",
         )
     except Exception:
         raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILED")
