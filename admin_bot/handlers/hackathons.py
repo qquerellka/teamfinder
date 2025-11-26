@@ -292,11 +292,13 @@ async def form_prize_fund(message: Message, state: FSMContext):
 @router.message(HackathonForm.image_link)
 async def form_image_link(message: Message, state: FSMContext):
     if message.text == "-":
-        await state.update_data(image_link=None)
+        # Явно говорим: картинку не сохраняем
+        await state.update_data(image_file_id=None)
     elif message.photo:
-        # Берем самую большую по размеру картинку
+        # Берём самую большую по размеру картинку
         image_file_id = message.photo[-1].file_id
-        await state.update_data(image_link=image_file_id)
+        # Кладём в состояние под ключом image_file_id
+        await state.update_data(image_file_id=image_file_id)
     else:
         await message.answer("❌ Отправь картинку или <code>-</code>, чтобы пропустить.")
         return
@@ -304,7 +306,6 @@ async def form_image_link(message: Message, state: FSMContext):
     # Превью перед отправкой
     data = await state.get_data()
 
-    
     preview = (
         f"<b>Проверь данные хакатона:</b>\n"
         f"• Название: {data['name']}\n"
@@ -316,14 +317,14 @@ async def form_image_link(message: Message, state: FSMContext):
         f"• Команда: {data.get('team_members_minimum') or '—'}–{data.get('team_members_limit') or '—'} чел.\n"
         f"• Рег. ссылка: {data.get('registration_link') or '—'}\n"
         f"• Призовой фонд: {data.get('prize_fund') or '—'}\n"
-        f"• Картинка: {'Есть' if data.get('image_link') else '—'}\n\n"
+        f"• Картинка: {'Есть' if data.get('image_file_id') else '—'}\n\n"
         f"Если всё ок — отправь <code>да</code>, иначе отправь что угодно для отмены."
     )
 
     await state.set_state(HackathonForm.confirm)
     await message.answer(preview)
-    
-    image_file_id = data.get('image_link')
+
+    image_file_id = data.get("image_file_id")
     if image_file_id:
         await message.answer_photo(image_file_id)
 
@@ -342,20 +343,20 @@ async def form_confirm(message: Message, state: FSMContext):
 
     # Собираем payload под твоё API.
     payload = {
-        "name": data["name"],
-        "description": data["description"],
-        "image_link": data.get("image_link"),  # Теперь берем из состояния
-        "start_date": data["start_date"],  # dd.mm.yyyy
-        "end_date": data["end_date"],
-        "registration_end_date": data.get("registration_end_date"),
-        "mode": data["mode"],
-        "status": "open",
-        "city": data["city"],
-        "team_members_minimum": data.get("team_members_minimum"),
-        "team_members_limit": data.get("team_members_limit"),
-        "registration_link": data.get("registration_link"),
-        "prize_fund": data.get("prize_fund"),
-    }
+    "name": data["name"],
+    "description": data["description"],
+    "image_file_id": data.get("image_file_id"),
+    "start_date": data["start_date"],
+    "end_date": data["end_date"],
+    "registration_end_date": data.get("registration_end_date"),
+    "mode": data["mode"],
+    "status": "open",
+    "city": data["city"],
+    "team_members_minimum": data.get("team_members_minimum"),
+    "team_members_limit": data.get("team_members_limit"),
+    "registration_link": data.get("registration_link"),
+    "prize_fund": data.get("prize_fund"),
+}
 
     try:
         created = await create_hackathon(payload)
