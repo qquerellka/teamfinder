@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "homepage": "https://telegram-mini-apps.github.io/reactjs-template",
+  "homepage": "https://qquerellka.github.io/teamfinder/",
   "scripts": {
     "deploy": "gh-pages -d dist",
     "dev": "vite",
@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.2",
+    "@tanstack/react-query": "^5.90.10",
+    "@tanstack/react-query-devtools": "^5.91.0",
     "@telegram-apps/telegram-ui": "^2.1.13",
     "@tma.js/sdk-react": "^3.0.8",
     "@tonconnect/ui-react": "^2.2.0",
