@@ -32,7 +32,7 @@ export default function HackathonPage() {
 
   return (
     <Page>
-      <HackathonCard hackathon={h} type="full" />
+      <HackathonCard hackathon={h} variant="full" />
       <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
         Подробнее на сайте
       </SButton>
