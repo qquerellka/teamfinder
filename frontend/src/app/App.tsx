@@ -42,7 +42,7 @@ export function App({ str }: AppProps) {
           ["macos", "ios"].includes(lp.tgWebAppPlatform) ? "ios" : "base"
         }
       >
-        {" "}
+        {""}
         {str}
         <ReactQueryProvider>
           <HashRouter>

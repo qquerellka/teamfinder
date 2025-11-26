@@ -76,7 +76,6 @@ const HackathonPage: React.FC = () => {
   return (
     <Page>
       <HackathonCard hackathon={hackathon as Hackathon} variant="full" />
-
       <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
         Подробнее на сайте
       </SButton>
