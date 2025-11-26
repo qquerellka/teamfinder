@@ -3,10 +3,10 @@ import styled from "styled-components";
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { NavLink } from "react-router-dom";
 
-import HackIcon from "../../assets/icons/navbarIcons/HackathonsIcon.svg?react";
-import BellIcon from "../../assets/icons/navbarIcons/NotificationsIcon.svg?react";
-import ProfIcon from "../../assets/icons/navbarIcons/ProfileIcon.svg?react";
-import TeamIcon from "../../assets/icons/navbarIcons/TeamsIcon.svg?react";
+import HackIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
+import BellIcon from "@/assets/icons/navbarIcons/NotificationsIcon.svg?react";
+import ProfIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
+import TeamIcon from "@/assets/icons/navbarIcons/TeamsIcon.svg?react";
 import { paths } from "@/app/routing/paths";
 import { SIcon } from "@/shared/ui/SIcon";
 

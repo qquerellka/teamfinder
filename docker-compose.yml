@@ -53,10 +53,11 @@ services:
   #     - api
   #   ports:
   #     - "3000:80"
-    # если захочешь передавать какие-то ENV в билд (например VITE_API_URL),
+  # если захочешь передавать какие-то ENV в билд (например VITE_API_URL),
     # можно добавить:
     # environment:
     #   - VITE_API_URL=http://api:8000
+
 
 volumes:
   db-data:

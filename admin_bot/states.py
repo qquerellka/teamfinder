@@ -16,4 +16,5 @@ class HackathonForm(StatesGroup):
     team_max = State()
     registration_link = State()
     prize_fund = State()
+    image_link = State()
     confirm = State()

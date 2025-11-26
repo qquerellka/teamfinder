@@ -9,7 +9,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from admin_bot.config import settings
-from admin_bot.handlers import hackathons
+from admin_bot.handlers.hackathons import router
 
 
 async def main():
@@ -19,7 +19,7 @@ async def main():
     )
     dp = Dispatcher(storage=MemoryStorage())
 
-    dp.include_router(hackathons.router)
+    dp.include_router(router)
 
     await dp.start_polling(bot)
 

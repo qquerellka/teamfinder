@@ -242,7 +242,6 @@ const SAchievementCard = styled.div`
   flex-direction: row;
   justify-content: space-between;
   padding: 1rem 0;
-  font-size: var();
 `;
 
 const SMultiselect = styled(Multiselect)`

@@ -37,6 +37,33 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str = ""  # Токен для Telegram бота, должен быть заполнен в .env
     JWT_SECRET: str = "dev-secret-change-me"  # Секрет для подписи JWT токенов
 
+
+    # ==== Object Storage (S3-совместимое: Yandex Object Storage) ====
+    # Базовый endpoint S3-совместимого хранилища.
+    # Для Yandex Object Storage обычно это "https://storage.yandexcloud.net".
+    S3_ENDPOINT: str = "https://storage.yandexcloud.net"
+
+    # Название бакета, в котором будем хранить картинки (например, "tf-hackathons-images").
+    S3_BUCKET: str = ""
+
+    # Доступ к S3: статические ключи (access/secret) сервисного аккаунта.
+    # Их нужно сгенерировать в консоли Yandex Cloud и положить в .env.
+    S3_ACCESS_KEY: str = ""
+    S3_SECRET_KEY: str = ""
+
+    # Базовый публичный URL бакета, по которому будут открываться файлы.
+    # Например: "https://storage.yandexcloud.net/tf-hackathons-images"
+    # или свой CDN-домен, если будешь вешать.
+    S3_PUBLIC_BASE_URL: str = ""
+
+    # Максимальный размер картинки хакатона в мегабайтах.
+    S3_HACKATHON_MAX_SIZE_MB: int = 5
+
+    # Список разрешённых content-type для картинок хакатона.
+    # В .env можно хранить строкой через запятую (см. property ниже).
+    S3_HACKATHON_ALLOWED_TYPES: str = "image/jpeg,image/png,image/webp"
+
+
     # Метод, который возвращает список разрешенных источников CORS
     @property
     def CORS_ORIGINS_LIST(self) -> List[str]:
@@ -60,6 +87,21 @@ class Settings(BaseSettings):
             f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
+
+    # Удобный проперти, чтобы получить список типов картинок как list[str],
+    # даже если в .env он хранится одной строкой.
+    @property
+    def S3_HACKATHON_ALLOWED_TYPES_LIST(self) -> List[str]:
+        """
+        Возвращает список допустимых content-type'ов для картинок хакатона.
+        Пример значения в .env:
+        S3_HACKATHON_ALLOWED_TYPES="image/jpeg,image/png,image/webp"
+        """
+        raw = (self.S3_HACKATHON_ALLOWED_TYPES or "").strip()
+        if not raw:
+            return []
+        return [t.strip() for t in raw.split(",") if t.strip()]
+
 
 # Использование кэширования для хранения настроек и ускорения доступа к ним
 @lru_cache
