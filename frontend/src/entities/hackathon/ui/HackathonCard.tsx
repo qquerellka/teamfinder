@@ -17,7 +17,7 @@ import hackathonDate from "@/assets/icons/hackathonCard/hackathonDateIcon.svg?re
 import hackathonPlace from "@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
 import hackathonRegistration from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
 import hackathonTeam from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
-import defaultImage from "@/assets/hackathonImage6.webp";
+import { ImageWithSkeleton } from "@/shared/ui/ImageWithSkeleton";
 
 type HackathonCardVariant = "full" | "compact";
 
@@ -59,11 +59,11 @@ export const HackathonCard: FC<HackathonCardProps> = ({
         icon: hackathonTeam,
         text: getTeamMembersRange(
           hackathon.teamMembersLimit,
-          hackathon.teamMembersMinimum,
+          hackathon.teamMembersMinimum
         ),
       },
     ],
-    [hackathon],
+    [hackathon]
   );
 
   const visibleParams =
@@ -74,10 +74,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
   return (
     <SHackathonCard>
       <SHackathonImage>
-        <SImage
-          src={hackathon.imageLink || defaultImage}
-          alt={hackathon.name ?? "Hackathon"}
-        />
+        <ImageWithSkeleton src={hackathon.imageLink} alt={hackathon.name} />
       </SHackathonImage>
 
       <SHackathonInfo>
@@ -149,12 +146,12 @@ const HackathonParam = styled.div`
   align-items: center;
 `;
 
-const SImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-`;
+// const SImage = styled.img`
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+//   display: block;
+// `;
 
 const ButtonContainer = styled.div`
   position: absolute;

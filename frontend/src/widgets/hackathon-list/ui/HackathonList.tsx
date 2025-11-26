@@ -1,12 +1,9 @@
-// src/widgets/hackathon-list/ui/HackathonList.tsx
 import { FC } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 import { paths } from "@/app/routing/paths";
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-
-// src/widgets/hackathon-list/ui/HackathonList.tsx
 import { useHackathonsQuery } from "@/entities/hackathon/api/hackathon-api";
 
 export const HackathonList: FC = () => {
@@ -14,11 +11,11 @@ export const HackathonList: FC = () => {
 
   if (isLoading) return <div>Загружаем хакатоны…</div>;
   if (error) return <div>Что-то пошло не так</div>;
-  if (!data?.length) return <div>Пока нет активных хакатонов</div>;
-
+  if (!data?.items.length) return <div>Пока нет активных хакатонов</div>;
+  console.log(data)
   return (
     <Grid>
-      {data.map((h) => (
+      {data.items.map((h) => (
         <CardLink key={h.id} to={paths.hackathon(h.id)}>
           <HackathonCard hackathon={h} />
         </CardLink>
