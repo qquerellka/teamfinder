@@ -5,7 +5,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-app_db}
       POSTGRES_USER: ${POSTGRES_USER:-app_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app_password}
-
     ports:
       - "5432:5432"
     healthcheck:
@@ -16,6 +15,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./initdb_db:/docker-entrypoint-initdb.d
+
   api:
     build:
       context: backend
@@ -30,22 +30,33 @@ services:
     volumes:
       - ./backend:/app/backend:rw
       - ./.env:/app/.env:ro
+
   admin-bot:
     build:
       context: .
       dockerfile: admin_bot/Dockerfile
     container_name: admin-bot
     environment:
-      # токен бота из BotFather
       - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
-      # URL твоего API внутри docker-сети (имя сервиса api)
       - API_URL=http://api:8000
-      # сервисный токен / JWT, который backend принимает как Authorization: Bearer
       - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
-      # список телеграм id админов через запятую
       - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
     depends_on:
       - api
     restart: unless-stopped
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - api
+  #   ports:
+  #     - "3000:80"
+  #   # если захочешь передавать какие-то ENV в билд (например VITE_API_URL),
+  #   # можно добавить:
+  #   # environment:
+  #   #   - VITE_API_URL=http://api:8000
+
 volumes:
   db-data:

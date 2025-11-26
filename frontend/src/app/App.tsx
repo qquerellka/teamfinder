@@ -1,6 +1,7 @@
 import { HashRouter } from "react-router-dom";
 import { useLaunchParams, useSignal, miniApp } from "@tma.js/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
+import { ReactQueryProvider } from "./providers/react-query";
 
 import { ErrorBoundary } from "./layouts/ErrorBoundary";
 import { AppRouter } from "./routing/routes";
@@ -41,11 +42,13 @@ export function App({ str }: AppProps) {
           ["macos", "ios"].includes(lp.tgWebAppPlatform) ? "ios" : "base"
         }
       >
-        {" "}
+        {""}
         {str}
-        <HashRouter>
-          <AppRouter />
-        </HashRouter>
+        <ReactQueryProvider>
+          <HashRouter>
+            <AppRouter />
+          </HashRouter>
+        </ReactQueryProvider>
       </AppRoot>
     </ErrorBoundary>
   );

@@ -72,7 +72,7 @@ class AchievementsRepo(BaseRepository):
         hackathon_id: int,
         *,
         role: Optional[m_ach.RoleType] = None,
-        place: Optional[m_ach.AchievPlace] = None,
+        place: Optional[m_ach.AchievementPlace] = None,
         limit: int = 50,
         offset: int = 0,
         with_user: bool = False,
@@ -116,7 +116,7 @@ class AchievementsRepo(BaseRepository):
         user_id: int,
         hackathon_id: int,
         role: m_ach.RoleType,
-        place: m_ach.AchievPlace = m_ach.AchievPlace.participant,
+        place: m_ach.AchievementPlace = m_ach.AchievementPlace.participant,
     ) -> m_ach.Achievement:
         """
         Создать достижение, если для (user_id, hack_id) его ещё нет.
@@ -140,7 +140,7 @@ class AchievementsRepo(BaseRepository):
         user_id: int,
         hackathon_id: int,
         role: Optional[m_ach.RoleType] = None,
-        place: Optional[m_ach.AchievPlace] = None,
+        place: Optional[m_ach.AchievementPlace] = None,
     ) -> m_ach.Achievement:
         """
         Идемпотентная операция «одно достижение на пару (user_id, hack_id)».
@@ -169,7 +169,7 @@ class AchievementsRepo(BaseRepository):
                     user_id=user_id,
                     hackathon_id=hackathon_id,
                     role=role if role is not None else m_ach.RoleType.Analytics,  # дефолт — на ваш вкус
-                    place=place if place is not None else m_ach.AchievPlace.participant,
+                    place=place if place is not None else m_ach.AchievementPlace.participant,
                 )
                 s.add(ach)
             else:
@@ -195,7 +195,7 @@ class AchievementsRepo(BaseRepository):
         ach_id: int,
         *,
         role: Optional[m_ach.RoleType] = None,
-        place: Optional[m_ach.AchievPlace] = None,
+        place: Optional[m_ach.AchievementPlace] = None,
     ) -> Optional[m_ach.Achievement]:
         """
         Обновить роль/место достижения по id. Возвращает обновлённый объект или None.
@@ -214,8 +214,6 @@ class AchievementsRepo(BaseRepository):
             await s.commit()
             await s.refresh(ach)
             return ach
-
-    # ---------- УДАЛЕНИЕ ----------
 
     async def delete_by_id(self, ach_id: int) -> bool:
         """Удалить достижение по id. Возвращает True, если что-то удалили."""
@@ -241,9 +239,8 @@ class AchievementsRepo(BaseRepository):
             await s.commit()
             return int(res.rowcount or 0)
 
-    # ---------- АГРЕГАЦИИ (пример) ----------
 
-    async def stats_by_place_for_hack(self, hackathon_id: int) -> List[tuple[m_ach.AchievPlace, int]]:
+    async def stats_by_place_for_hack(self, hackathon_id: int) -> List[tuple[m_ach.AchievementPlace, int]]:
         """
         Пример агрегата: распределение достижений по 'place' в рамках хакатона.
         """

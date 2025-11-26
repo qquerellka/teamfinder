@@ -292,7 +292,7 @@ async def form_prize_fund(message: Message, state: FSMContext):
 @router.message(HackathonForm.image_link)
 async def form_image_link(message: Message, state: FSMContext):
     if message.text == "-":
-        # Явно говорим: картинку не сохраняем
+      # Явно говорим: картинку не сохраняем
         await state.update_data(image_file_id=None)
     elif message.photo:
         # Берём самую большую по размеру картинку
@@ -306,6 +306,7 @@ async def form_image_link(message: Message, state: FSMContext):
     # Превью перед отправкой
     data = await state.get_data()
 
+
     preview = (
         f"<b>Проверь данные хакатона:</b>\n"
         f"• Название: {data['name']}\n"
@@ -318,11 +319,17 @@ async def form_image_link(message: Message, state: FSMContext):
         f"• Рег. ссылка: {data.get('registration_link') or '—'}\n"
         f"• Призовой фонд: {data.get('prize_fund') or '—'}\n"
         f"• Картинка: {'Есть' if data.get('image_file_id') else '—'}\n\n"
+
         f"Если всё ок — отправь <code>да</code>, иначе отправь что угодно для отмены."
     )
 
     await state.set_state(HackathonForm.confirm)
     await message.answer(preview)
+    
+    image_file_id = data.get('image_link')
+    if image_file_id:
+        await message.answer_photo(image_file_id)
+
 
     image_file_id = data.get("image_file_id")
     if image_file_id:
@@ -356,7 +363,8 @@ async def form_confirm(message: Message, state: FSMContext):
     "team_members_limit": data.get("team_members_limit"),
     "registration_link": data.get("registration_link"),
     "prize_fund": data.get("prize_fund"),
-}
+    }
+
 
     try:
         created = await create_hackathon(payload)
