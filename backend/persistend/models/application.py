@@ -83,8 +83,16 @@ class Application(Base, TimestampMixin): # Наследуемся от Base (р�
     # В Hackathon ожидаем:
     # applications = relationship("Application", back_populates="hackathon")
 
+    responses = relationship(
+        "Response",
+        back_populates="application",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
     __table_args__ = (
         # Одна анкета на (hackathon_id, user_id)
         UniqueConstraint("hackathon_id", "user_id", name="app_unique_per_hack"),
     )
     # На уровне БД: нельзя создать две анкеты одного и того же user’а на один и тот же hackathon.
+ 

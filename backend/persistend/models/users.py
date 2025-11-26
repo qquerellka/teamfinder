@@ -58,3 +58,37 @@ class User(Base, TimestampMixin):                 # Наследуемся от 
         passive_deletes=True,         # Не трогать связанные анкеты в ORM при удалении пользователя —
                                       # доверяем БД и ON DELETE CASCADE в внешнем ключе (user_id)
     )
+
+        # Команды, где пользователь — капитан
+    captain_teams = relationship(
+        "Team",
+        back_populates="captain",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        foreign_keys="Team.captain_id",
+    )
+
+    # Все членства пользователя в командах
+    team_memberships = relationship(
+        "TeamMember",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    
+    captain_teams = relationship(
+        "Team",
+        back_populates="captain",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        foreign_keys="Team.captain_id",
+    )
+
+    team_memberships = relationship(
+        "TeamMember",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+

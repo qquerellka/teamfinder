@@ -1,0 +1,13 @@
+INSERT INTO users 
+(telegram_id, username, first_name, last_name, language_code, bio, avatar_url, city, university, link)
+VALUES
+(101001, 'andrey_dev', 'Andrey', 'Kuznetsov', 'ru', 'Backend dev, loves Go', 'https://picsum.photos/200?1', 'Moscow', 'HSE', 'https://t.me/andrey'),
+(101002, 'masha_front', 'Maria', 'Petrova', 'ru', 'Frontend React student', 'https://picsum.photos/200?2', 'Saint Petersburg', 'SPbSU', 'https://github.com/maria'),
+(101003, 'ivan_ml', 'Ivan', 'Smirnov', 'ru', 'ML engineer intern', 'https://picsum.photos/200?3', 'Novosibirsk', 'NSU', 'https://t.me/ivan'),
+(101004, 'julia_pm', 'Julia', 'Volkova', 'en', 'Product manager in edtech', 'https://picsum.photos/200?4', 'Berlin', 'TU Berlin', 'https://linkedin.com/julia'),
+(101005, 'max_qa', 'Maxim', 'Egorov', 'ru', 'QA engineer', 'https://picsum.photos/200?5', 'Kazan', 'KFU', 'https://github.com/maxqa'),
+(101006, 'sergey_ds', 'Sergey', 'Morozov', 'ru', 'Data Science enjoyer', 'https://picsum.photos/200?6', 'Ekaterinburg', 'UrFU', NULL),
+(101007, 'kate_design', 'Ekaterina', 'Lebedeva', 'ru', 'UI/UX designer', 'https://picsum.photos/200?7', 'Moscow', 'Bauman Moscow State Tech', 'https://figma.com/@kate'),
+(101008, 'tim_js', 'Timur', 'Ismailov', 'ru', 'Fullstack JS dev', 'https://picsum.photos/200?8', 'Krasnodar', NULL, NULL),
+(101009, 'vlad_ops', 'Vladislav', 'Kozlov', 'en', 'DevOps junior', 'https://picsum.photos/200?9', 'Tomsk', 'TPU', 'https://t.me/vladops'),
+(101010, 'alisa_ai', 'Alisa', 'Romanova', 'ru', 'AI researcher beginner', 'https://picsum.photos/200?10', 'Moscow', 'MIPT', 'https://github.com/alisa');
