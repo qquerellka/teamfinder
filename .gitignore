@@ -20,3 +20,51 @@ Thumbs.db
 # Containers
 *.log
 *.sqlite
+
+
+# --- ОС и редакторы ---
+
+.DS_Store
+Thumbs.db
+
+.idea/
+.vscode/
+*.iml
+
+# --- Python / backend ---
+
+backend/__pycache__/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.venv/
+backend/venv/
+
+# Общие virtualenv-папки
+.venv/
+venv/
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# --- Node / frontend ---
+
+frontend/node_modules/
+frontend/dist/
+frontend/.turbo/
+frontend/.parcel-cache/
+frontend/.eslintcache
+
+# Если будут storybook/build
+frontend/storybook-static/
+frontend/build/
+
+# --- Env / секреты (на всякий случай глобально) ---
+
+.env
+.env.*
+*.env
+
+# --- Docker / прочее ---
+
+docker-data/
