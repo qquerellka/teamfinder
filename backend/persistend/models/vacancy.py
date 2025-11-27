@@ -1,8 +1,3 @@
-# =============================================================================
-# ФАЙЛ: backend/persistend/models/vacancy.py
-# КРАТКО: ORM модель таблицы vacancy.
-# =============================================================================
-
 from __future__ import annotations
 from typing import Optional, List
 
@@ -32,7 +27,6 @@ class Vacancy(Base, TimestampMixin):
 
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # JSONB массив навыков (по ТЗ пока это тех. поле)
     skills: Mapped[list] = mapped_column(
         JSONB,
         nullable=False,

@@ -1,26 +1,11 @@
-# =============================================================================
-# ФАЙЛ: backend/presentations/routers/hackathons.py
-# КРАТКО: Роутер FastAPI для хакатонов.
-# ЗАЧЕМ:
-#   • Позволяет фронту получать список открытых хакатонов и деталь по id.
-#   • Позволяет (через JWT) создавать/обновлять/удалять хакатоны.
-#   • Схемы (Pydantic) описаны прямо в роутере (как в users.py).
-# ОСОБЕННОСТИ:
-#   • JWT не обязателен для чтения (GET), но обязателен для мутаций (POST/PATCH/DELETE).
-# =============================================================================
-
 from __future__ import annotations
-
 from typing import Optional, List
 from datetime import datetime
-
 from fastapi import APIRouter, Query, HTTPException, Depends, status, UploadFile, File
 from pydantic import BaseModel, Field
-
 from backend.repositories.hackathons import HackathonsRepo
-from backend.presentations.routers.users import get_current_user_id  # берём готовый депенденси
-
-from backend.infrastructure.s3_client import upload_hackathon_image_to_s3  # импорт для S3
+from backend.presentations.routers.users import get_current_user_id
+from backend.infrastructure.s3_client import upload_hackathon_image_to_s3
 from backend.infrastructure.s3_client import upload_hackathon_image_from_bytes
 from backend.infrastructure.telegram_files import download_telegram_file
 from backend.infrastructure.admin_auth import require_admin_token

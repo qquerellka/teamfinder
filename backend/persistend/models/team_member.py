@@ -35,7 +35,7 @@ class TeamMember(Base):
     joined_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
         nullable=False,
-        default=func.now(),  # <<< ДЕФОЛТ на уровне ORM
+        server_default=func.now(),
     )
 
     team = relationship("Team", back_populates="members")
