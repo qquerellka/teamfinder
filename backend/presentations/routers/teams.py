@@ -7,18 +7,17 @@ from pydantic import BaseModel, Field
 
 from backend.persistend.enums import TeamStatus, RoleType, HackathonStatus
 from backend.presentations.routers.users import get_current_user_id
-from backend.repositories.teams import TeamsRepo, TeamMembersRepo
-from backend.repositories.hackathons import HackathonsRepo
+from backend.services.teams import TeamsService
+from backend.services.team_members import TeamMembersService
+from backend.services.hackathons import HackathonsService
 from backend.repositories.users import UsersRepo
-from backend.repositories.applications import ApplicationsRepo
 
 router = APIRouter(tags=["teams"])
 
-teams_repo = TeamsRepo()
-members_repo = TeamMembersRepo()
-hacks_repo = HackathonsRepo()
+teams_service = TeamsService()
+members_service = TeamMembersService()
+hacks_service = HackathonsService()
 users_repo = UsersRepo()
-apps_repo = ApplicationsRepo()
 
 
 class TeamOut(BaseModel):
@@ -42,7 +41,7 @@ class TeamListOut(BaseModel):
 class TeamCreateIn(BaseModel):
     name: str = Field(..., max_length=255)
     description: Optional[str] = None
-    role: RoleType  
+    role: RoleType
 
 
 class TeamUpdateIn(BaseModel):
@@ -81,15 +80,18 @@ class TeamMemberUpdateIn(BaseModel):
     is_captain: Optional[bool] = None
 
 
+# ---- Хелперы ----
+
+
 async def _ensure_hackathon_exists(hackathon_id: int):
-    hack = await hacks_repo.get_by_id(hackathon_id)
+    hack = await hacks_service.get_by_id(hackathon_id)
     if not hack:
         raise HTTPException(status_code=404, detail="hackathon not found")
     return hack
 
 
 async def _ensure_team_exists(team_id: int):
-    team = await teams_repo.get_by_id(team_id)
+    team = await teams_service.get_by_id(team_id)
     if not team:
         raise HTTPException(status_code=404, detail="team not found")
     return team
@@ -98,6 +100,9 @@ async def _ensure_team_exists(team_id: int):
 async def _ensure_captain(team, user_id: int):
     if team.captain_id != user_id:
         raise HTTPException(status_code=403, detail="forbidden: not a captain")
+
+
+# ---- Список команд по хакатону ----
 
 
 @router.get("/hackathons/{hackathon_id}/teams", response_model=TeamListOut)
@@ -122,9 +127,12 @@ async def list_teams(
             try:
                 member_user_id = int(member)
             except ValueError:
-                raise HTTPException(status_code=400, detail="member must be 'me' or integer user_id")
+                raise HTTPException(
+                    status_code=400,
+                    detail="member must be 'me' or integer user_id",
+                )
 
-    teams = await teams_repo.list_by_hackathon(
+    teams = await teams_service.list_by_hackathon(
         hackathon_id=hackathon_id,
         status=status_param,
         q=q,
@@ -142,6 +150,9 @@ async def list_teams(
     )
 
 
+# ---- Создание команды ----
+
+
 @router.post(
     "/hackathons/{hackathon_id}/teams",
     response_model=TeamOut,
@@ -152,13 +163,11 @@ async def create_team(
     payload: TeamCreateIn = ...,
     user_id: int = Depends(get_current_user_id),
 ):
-    # 1. Проверяем, что хакатон существует и открыт
     hack = await _ensure_hackathon_exists(hackathon_id)
     if hack.status != HackathonStatus.open:
         raise HTTPException(status_code=400, detail="hackathon is not open")
 
-    # 2. Проверяем, что у пользователя ещё нет команды на этом хакатоне
-    already = await teams_repo.user_has_team_on_hackathon(
+    already = await teams_service.user_has_team_on_hackathon(
         user_id=user_id,
         hackathon_id=hackathon_id,
     )
@@ -168,16 +177,18 @@ async def create_team(
             detail="user already has a team on this hackathon",
         )
 
-    # 3. Создаём команду и сразу добавляем создателя как капитана
-    team = await teams_repo.create_with_captain(
+    team = await teams_service.create_with_captain(
         hackathon_id=hackathon_id,
         captain_id=user_id,
         name=payload.name,
         description=payload.description,
-        captain_role=payload.role,   # роль берём из тела запроса
+        captain_role=payload.role,
     )
 
     return TeamOut.model_validate(team)
+
+
+# ---- Мои команды ----
 
 
 @router.get("/me/teams", response_model=TeamListOut)
@@ -186,7 +197,9 @@ async def list_my_teams(
     offset: int = Query(default=0, ge=0),
     user_id: int = Depends(get_current_user_id),
 ):
-    teams = await teams_repo.list_by_user(user_id=user_id, limit=limit, offset=offset)
+    teams = await teams_service.list_by_user(
+        user_id=user_id, limit=limit, offset=offset
+    )
     return TeamListOut(
         items=[TeamOut.model_validate(t) for t in teams],
         limit=limit,
@@ -202,7 +215,7 @@ async def list_my_teams_on_hackathon(
     user_id: int = Depends(get_current_user_id),
 ):
     await _ensure_hackathon_exists(hackathon_id)
-    teams = await teams_repo.list_by_hackathon(
+    teams = await teams_service.list_by_hackathon(
         hackathon_id=hackathon_id,
         status=None,
         q=None,
@@ -219,9 +232,12 @@ async def list_my_teams_on_hackathon(
     )
 
 
+# ---- Детали/обновление/удаление команды ----
+
+
 @router.get("/teams/{team_id}", response_model=TeamOut)
 async def get_team(team_id: int = Path(..., ge=1)):
-    team = await teams_repo.get_by_id(team_id)
+    team = await teams_service.get_by_id(team_id)
     if not team:
         raise HTTPException(status_code=404, detail="team not found")
     return TeamOut.model_validate(team)
@@ -237,7 +253,7 @@ async def update_team(
     await _ensure_captain(team, user_id)
 
     data = payload.model_dump(exclude_unset=True)
-    updated = await teams_repo.update(team_id, data)
+    updated = await teams_service.update(team_id, data)
     if not updated:
         raise HTTPException(status_code=404, detail="team not found (update)")
     return TeamOut.model_validate(updated)
@@ -251,10 +267,13 @@ async def delete_team(
     team = await _ensure_team_exists(team_id)
     await _ensure_captain(team, user_id)
 
-    ok = await teams_repo.delete(team_id)
+    ok = await teams_service.delete(team_id)
     if not ok:
         raise HTTPException(status_code=404, detail="team not found (delete)")
     return None
+
+
+# ---- Участники команды ----
 
 
 @router.get("/teams/{team_id}/members", response_model=TeamMembersListOut)
@@ -262,7 +281,7 @@ async def list_team_members(team_id: int = Path(..., ge=1)):
     team = await _ensure_team_exists(team_id)
     _ = team
 
-    members = await members_repo.list_members(team_id)
+    members = await members_service.list_members(team_id)
     items: List[TeamMemberOut] = []
     for m in members:
         u = m.user
@@ -298,14 +317,16 @@ async def add_team_member(
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
 
-    already = await teams_repo.user_has_team_on_hackathon(
+    already = await teams_service.user_has_team_on_hackathon(
         user_id=payload.user_id,
         hackathon_id=team.hackathon_id,
     )
     if already:
-        raise HTTPException(status_code=409, detail="user already has a team on this hackathon")
+        raise HTTPException(
+            status_code=409, detail="user already has a team on this hackathon"
+        )
 
-    membership = await members_repo.add_member(
+    membership = await members_service.add_member(
         team_id=team_id,
         user_id=payload.user_id,
         role=payload.role,
@@ -335,7 +356,7 @@ async def update_team_member(
     await _ensure_captain(team, current_user_id)
 
     data = payload.model_dump(exclude_unset=True)
-    membership = await members_repo.update_member(
+    membership = await members_service.update_member(
         team_id=team_id,
         user_id=user_id,
         data=data,
@@ -359,7 +380,9 @@ async def update_team_member(
     )
 
 
-@router.delete("/teams/{team_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/teams/{team_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 async def remove_team_member(
     team_id: int = Path(..., ge=1),
     user_id: int = Path(..., ge=1),
@@ -368,7 +391,7 @@ async def remove_team_member(
     team = await _ensure_team_exists(team_id)
     await _ensure_captain(team, current_user_id)
 
-    ok = await members_repo.delete_member(team_id, user_id)
+    ok = await members_service.delete_member(team_id, user_id)
     if not ok:
         raise HTTPException(status_code=404, detail="team member not found (delete)")
     return None
@@ -380,7 +403,7 @@ async def leave_team(
     current_user_id: int = Depends(get_current_user_id),
 ):
     team = await _ensure_team_exists(team_id)
-    membership = await members_repo.get_membership(team_id, current_user_id)
+    membership = await members_service.get_membership(team_id, current_user_id)
     if not membership:
         raise HTTPException(status_code=404, detail="you are not a member of this team")
 
@@ -390,7 +413,7 @@ async def leave_team(
             detail="captain cannot leave team directly (use captain transfer logic / admin tools)",
         )
 
-    ok = await members_repo.delete_member(team_id, current_user_id)
+    ok = await members_service.delete_member(team_id, current_user_id)
     if not ok:
         raise HTTPException(status_code=404, detail="team member not found (leave)")
     return None

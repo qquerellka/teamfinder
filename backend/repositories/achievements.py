@@ -1,31 +1,23 @@
-# =============================================================================
-# ФАЙЛ: backend/repositories/achievements.py
-# КРАТКО: Репозиторий для работы с достижениями пользователей по хакатонам.
-# ЗАЧЕМ:
-#   • Инкапсулирует логику взаимодействия с БД для таблицы achievements.
-#   • Даёт простые методы CRUD и выборки с фильтрами и пагинацией.
-#   • Поддерживает удобные выборки: по user_id и по hackathon_id.
-# =============================================================================
-
 from __future__ import annotations
 
-from typing import Optional, Tuple, List
+import asyncio
+from collections import defaultdict
+from typing import List, Optional, Tuple
 
-from sqlalchemy import select, func, delete, insert  # при обновлении полей используем ORM-объект + commit
+from sqlalchemy import delete, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
-from collections import defaultdict
-import asyncio
 
 from backend.repositories.base import BaseRepository
+from backend.persistend.enums import AchievementPlace, RoleType
 from backend.persistend.models import achievement as m_ach
-from backend.persistend.models import users as m_users
-from backend.persistend.models import hackathon as m_hack
 
+# Лок на пару (user_id, hackathon_id), чтобы защититься от гонок при создании записи
 _key_locks: dict[tuple[int, int], asyncio.Lock] = defaultdict(asyncio.Lock)
 
+
 class AchievementsRepo(BaseRepository):
-    """Репозиторий достижений. Сессии создаются per-operation."""
+    """Репозиторий достижений. Сессии создаются per-operation через self._sm()."""
 
     # ---------- ЧТЕНИЕ ----------
 
@@ -38,15 +30,15 @@ class AchievementsRepo(BaseRepository):
         self,
         user_id: int,
         *,
-        role: Optional[m_ach.RoleType] = None,
-        place: Optional[m_ach.AchievPlace] = None,
+        role: Optional[RoleType] = None,
+        place: Optional[AchievementPlace] = None,
         limit: int = 50,
         offset: int = 0,
         with_hackathon: bool = False,
     ) -> Tuple[List[m_ach.Achievement], int]:
         """
         Список достижений пользователя с опциональными фильтрами.
-        Возвращает (items, total). По умолчанию сортируем по created_at DESC.
+        Возвращает (items, total). Сортировка по created_at DESC.
         """
         a = m_ach.Achievement
         stmt = select(a).where(a.user_id == user_id)
@@ -57,13 +49,16 @@ class AchievementsRepo(BaseRepository):
             stmt = stmt.where(a.place == place)
 
         if with_hackathon:
-            # Подтянем хакатон, чтобы избежать N+1 при обращении a.hackathon
             stmt = stmt.options(joinedload(a.hackathon))
 
         stmt = stmt.order_by(a.created_at.desc())
 
         async with self._sm() as s:
-            total = (await s.execute(select(func.count()).select_from(stmt.subquery()))).scalar_one()
+            total = (
+                await s.execute(
+                    select(func.count()).select_from(stmt.subquery())
+                )
+            ).scalar_one()
             res = await s.execute(stmt.limit(limit).offset(offset))
             return list(res.scalars().all()), total
 
@@ -71,15 +66,15 @@ class AchievementsRepo(BaseRepository):
         self,
         hackathon_id: int,
         *,
-        role: Optional[m_ach.RoleType] = None,
-        place: Optional[m_ach.AchievementPlace] = None,
+        role: Optional[RoleType] = None,
+        place: Optional[AchievementPlace] = None,
         limit: int = 50,
         offset: int = 0,
         with_user: bool = False,
     ) -> Tuple[List[m_ach.Achievement], int]:
         """
         Список достижений по хакатону с опциональными фильтрами.
-        Возвращает (items, total). По умолчанию сортируем по created_at DESC.
+        Возвращает (items, total). Сортировка по created_at DESC.
         """
         a = m_ach.Achievement
         stmt = select(a).where(a.hackathon_id == hackathon_id)
@@ -95,18 +90,26 @@ class AchievementsRepo(BaseRepository):
         stmt = stmt.order_by(a.created_at.desc())
 
         async with self._sm() as s:
-            total = (await s.execute(select(func.count()).select_from(stmt.subquery()))).scalar_one()
+            total = (
+                await s.execute(
+                    select(func.count()).select_from(stmt.subquery())
+                )
+            ).scalar_one()
             res = await s.execute(stmt.limit(limit).offset(offset))
             return list(res.scalars().all()), total
 
-    # ---------- СОЗДАНИЕ ----------
+    # ---------- СОЗДАНИЕ / UPSERT ----------
+
     async def _exists_for_user_hack(self, user_id: int, hackathon_id: int) -> bool:
         a = m_ach.Achievement
         async with self._sm() as s:
             stmt = (
                 select(func.count())
                 .select_from(a)
-                .where((a.user_id == user_id) & (a.hackathon_id == hackathon_id))
+                .where(
+                    (a.user_id == user_id)
+                    & (a.hackathon_id == hackathon_id)
+                )
             )
             return (await s.execute(stmt)).scalar_one() > 0
 
@@ -115,20 +118,26 @@ class AchievementsRepo(BaseRepository):
         *,
         user_id: int,
         hackathon_id: int,
-        role: m_ach.RoleType,
-        place: m_ach.AchievementPlace = m_ach.AchievementPlace.participant,
+        role: RoleType,
+        place: AchievementPlace = AchievementPlace.participant,
     ) -> m_ach.Achievement:
         """
-        Создать достижение, если для (user_id, hack_id) его ещё нет.
+        Создать достижение, если для (user_id, hackathon_id) его ещё нет.
         Иначе -> ValueError('duplicate_achievement').
         """
         key = (user_id, hackathon_id)
-        async with _key_locks[key]:  # защищаем от гонок в одном процессе
+
+        async with _key_locks[key]:
             if await self._exists_for_user_hack(user_id, hackathon_id):
                 raise ValueError("duplicate_achievement")
 
             async with self._sm() as s:
-                ach = m_ach.Achievement(user_id=user_id, hackathon_id=hackathon_id, role=role, place=place)
+                ach = m_ach.Achievement(
+                    user_id=user_id,
+                    hackathon_id=hackathon_id,
+                    role=role,
+                    place=place,
+                )
                 s.add(ach)
                 await s.commit()
                 await s.refresh(ach)
@@ -139,14 +148,14 @@ class AchievementsRepo(BaseRepository):
         *,
         user_id: int,
         hackathon_id: int,
-        role: Optional[m_ach.RoleType] = None,
-        place: Optional[m_ach.AchievementPlace] = None,
+        role: Optional[RoleType] = None,
+        place: Optional[AchievementPlace] = None,
     ) -> m_ach.Achievement:
         """
-        Идемпотентная операция «одно достижение на пару (user_id, hack_id)».
-        Если запись уже есть — обновляем переданные поля (role/place).
-        Если нет — создаём новую (role и/или place должны быть заданы).
-        Подходит, если в продуктовой логике вы хотите не множить записи.
+        Идемпотентная операция «одно достижение на (user_id, hackathon_id)».
+
+        Если запись есть — обновляем переданные поля (role/place).
+        Если нет — создаём новую (роль/место должны быть заданы хотя бы одно).
         """
         if role is None and place is None:
             raise ValueError("invalid_args:role_or_place_required")
@@ -154,26 +163,28 @@ class AchievementsRepo(BaseRepository):
         async with self._sm() as s:
             res = await s.execute(
                 select(m_ach.Achievement)
-                .where(
-                    (m_ach.Achievement.user_id == user_id)
-                    & (m_ach.Achievement.hackathon_id == hackathon_id)
-                )
-                .order_by(m_ach.Achievement.created_at.desc())
-                .limit(1)
+                    .where(
+                        (m_ach.Achievement.user_id == user_id)
+                        & (m_ach.Achievement.hackathon_id == hackathon_id)
+                    )
+                    .order_by(m_ach.Achievement.created_at.desc())
+                    .limit(1)
             )
             ach = res.scalars().first()
 
             if ach is None:
-                # создаём
                 ach = m_ach.Achievement(
                     user_id=user_id,
                     hackathon_id=hackathon_id,
-                    role=role if role is not None else m_ach.RoleType.Analytics,  # дефолт — на ваш вкус
-                    place=place if place is not None else m_ach.AchievementPlace.participant,
+                    role=role if role is not None else RoleType.Analytics,
+                    place=(
+                        place
+                        if place is not None
+                        else AchievementPlace.participant
+                    ),
                 )
                 s.add(ach)
             else:
-                # обновляем только переданные поля
                 if role is not None:
                     ach.role = role
                 if place is not None:
@@ -183,34 +194,39 @@ class AchievementsRepo(BaseRepository):
                 await s.commit()
             except IntegrityError as e:
                 await s.rollback()
-                raise ValueError(f"integrity_error:{e.__class__.__name__}") from e
+                raise ValueError(
+                    f"integrity_error:{e.__class__.__name__}"
+                ) from e
 
             await s.refresh(ach)
             return ach
 
-    # ---------- ОБНОВЛЕНИЕ ----------
+    # ---------- ОБНОВЛЕНИЕ / УДАЛЕНИЕ ----------
 
     async def update(
         self,
         ach_id: int,
         *,
-        role: Optional[m_ach.RoleType] = None,
-        place: Optional[m_ach.AchievementPlace] = None,
+        role: Optional[RoleType] = None,
+        place: Optional[AchievementPlace] = None,
     ) -> Optional[m_ach.Achievement]:
         """
-        Обновить роль/место достижения по id. Возвращает обновлённый объект или None.
+        Обновить роль/место достижения по id.
+        Возвращает обновлённый объект или None.
         """
         if role is None and place is None:
-            return await self.get_by_id(ach_id)  # нечего менять
+            return await self.get_by_id(ach_id)
 
         async with self._sm() as s:
             ach = await s.get(m_ach.Achievement, ach_id)
             if not ach:
                 return None
+
             if role is not None:
                 ach.role = role
             if place is not None:
                 ach.place = place
+
             await s.commit()
             await s.refresh(ach)
             return ach
@@ -222,9 +238,13 @@ class AchievementsRepo(BaseRepository):
                 delete(m_ach.Achievement).where(m_ach.Achievement.id == ach_id)
             )
             await s.commit()
-            return res.rowcount > 0
+            return bool(res.rowcount)
 
-    async def delete_for_user_in_hack(self, user_id: int, hackathon_id: int) -> int:
+    async def delete_for_user_in_hack(
+        self,
+        user_id: int,
+        hackathon_id: int,
+    ) -> int:
         """
         Удалить все достижения пользователя в конкретном хакатоне.
         Возвращает количество удалённых строк.
@@ -239,17 +259,21 @@ class AchievementsRepo(BaseRepository):
             await s.commit()
             return int(res.rowcount or 0)
 
+    # ---------- АГРЕГАТЫ ----------
 
-    async def stats_by_place_for_hack(self, hackathon_id: int) -> List[tuple[m_ach.AchievementPlace, int]]:
+    async def stats_by_place_for_hack(
+        self,
+        hackathon_id: int,
+    ) -> List[tuple[AchievementPlace, int]]:
         """
-        Пример агрегата: распределение достижений по 'place' в рамках хакатона.
+        Распределение достижений по place в рамках хакатона.
         """
         a = m_ach.Achievement
         async with self._sm() as s:
             res = await s.execute(
                 select(a.place, func.count())
-                .where(a.hackathon_id == hackathon_id)
-                .group_by(a.place)
-                .order_by(func.count().desc())
+                    .where(a.hackathon_id == hackathon_id)
+                    .group_by(a.place)
+                    .order_by(func.count().desc())
             )
             return [(place, int(cnt)) for place, cnt in res.all()]
