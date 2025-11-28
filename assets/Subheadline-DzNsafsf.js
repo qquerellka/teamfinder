@@ -1,1 +1,0 @@
-import{r as a,_ as e,j as s,ab as o,c as r,e as t,a as f}from"./index-Cv9YKEEG.js";const n={1:"tgui-30064fce0d501f17",2:"tgui-8f63cd31b2513281"},m=a.forwardRef((a,m)=>{var{level:c="1",className:l,Component:d}=a,b=e(a,["level","className","Component"]);return s.jsx(o,r(f({},b),{ref:m,className:t("tgui-266b6ffdbad2b90e",n[c],l),Component:d||"h6"}))});export{m as S};
