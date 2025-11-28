@@ -1,71 +1,44 @@
-# =============================================================================
-# ФАЙЛ: backend/repositories/users.py
-# КРАТКО: Репозиторий для работы с пользователями и их навыками.
-# ЗАЧЕМ:
-#   • Инкапсулирует логику взаимодействия с базой данных для пользователей.
-#   • Реализует методы для получения/обновления информации о пользователях и их навыках.
-#   • Обеспечивает бизнес-логику для поиска пользователей по тексту и навыкам.
-#   • Использует SQLAlchemy для взаимодействия с базой данных.
-# =============================================================================
+from __future__ import annotations
 
-from __future__ import annotations  # Для отложенной оценки аннотаций типов (удобно с ORM-моделями)
+from typing import Iterable, List, Optional, Sequence, Tuple
 
-from typing import Optional, Sequence, Iterable, List, Tuple  # Аннотации типов для разных коллекций
+from sqlalchemy import delete, func, insert, literal, select
 
-from sqlalchemy import select, func, literal, delete, insert  # SQLAlchemy: select-запросы, функции агрегатов, insert, delete
-# Репозитории наследуются от BaseRepository, обеспечивающего работу с сессиями.
-from backend.repositories.base import BaseRepository
-# Импорты ORM-моделей для пользователей, навыков и связующей таблицы user_skill
-from backend.persistend.models import users as m_users
+from backend.persistend.models import achievement as m_ach
 from backend.persistend.models import skill as m_skill
 from backend.persistend.models import user_skill as m_us
-from backend.persistend.models import achievement as m_ach
-
+from backend.persistend.models import users as m_users
+from backend.repositories.base import BaseRepository
 
 
 class UsersRepo(BaseRepository):
-    """Репозиторий для работы с пользователями и их навыками. Сессии создаются per-operation."""
+    """Репозиторий для работы с пользователями и их навыками."""
 
     # ---------- ЧТЕНИЕ ----------
 
     async def get_by_id(self, user_id: int) -> Optional[m_users.User]:
-        """
-        Получение пользователя по его идентификатору (user_id).
-        Используется метод get, который выполняет запрос по первичному ключу (PK).
-        """
-        async with self._sm() as s:  # Открытие сессии на время операции
-            return await s.get(m_users.User, user_id)  # Получаем пользователя по первичному ключу
+        async with self._sm() as s:
+            return await s.get(m_users.User, user_id)
 
     async def get_by_telegram_id(self, tg_id: int) -> Optional[m_users.User]:
-        """
-        Получение пользователя по его Telegram ID (telegram_id).
-        Запрос ограничен одним результатом.
-        """
         async with self._sm() as s:
             res = await s.execute(
-                select(m_users.User).where(m_users.User.telegram_id == tg_id).limit(1)  # SQL запрос
+                select(m_users.User).where(m_users.User.telegram_id == tg_id).limit(1)
             )
-            return res.scalars().first()  # Возвращаем первый найденный результат или None
+            return res.scalars().first()
 
     async def get_user_skills(self, user_id: int) -> List[m_skill.Skill]:
-        """
-        Получение списка навыков пользователя по его user_id, отсортированных по имени (skill.name).
-        Используется соединение между таблицами через M2M-связь.
-        """
         async with self._sm() as s:
             stmt = (
                 select(m_skill.Skill)
-                .join(m_us.user_skill, m_us.user_skill.c.skill_id == m_skill.Skill.id)  # JOIN с user_skill
-                .where(m_us.user_skill.c.user_id == user_id)  # WHERE user_id = :user_id
-                .order_by(m_skill.Skill.name.asc())  # Сортировка по имени навыка
+                .join(m_us.user_skill, m_us.user_skill.c.skill_id == m_skill.Skill.id)
+                .where(m_us.user_skill.c.user_id == user_id)
+                .order_by(m_skill.Skill.name.asc())
             )
-            res = await s.execute(stmt)  # Выполнение запроса
-            return list(res.scalars().all())  # Возвращаем все найденные навыки в виде списка
+            res = await s.execute(stmt)
+            return list(res.scalars().all())
 
     async def get_user_achievements(self, user_id: int) -> List[m_ach.Achievement]:
-        """
-        Вернёт список достижений пользователя, отсортированный по времени создания (новые сверху).
-        """
         async with self._sm() as s:
             stmt = (
                 select(m_ach.Achievement)
@@ -74,16 +47,15 @@ class UsersRepo(BaseRepository):
             )
             res = await s.execute(stmt)
             return list(res.scalars().all())
-    
+
     # ---------- ЗАПИСЬ ----------
 
     async def upsert_from_tg(self, profile: dict) -> m_users.User:
         """
-        Создаёт или обновляет пользователя на основе данных из Telegram.
-        Если пользователь найден по telegram_id — обновляем его данные, иначе создаём нового.
+        Создать или обновить пользователя по данным Telegram.
+        Ищем по telegram_id, при наличии — обновляем, иначе создаём.
         """
-        tg_id = int(profile["id"])  # Извлекаем Telegram ID из профиля
-        # Извлекаем дополнительные данные из профиля Telegram (необязательные поля)
+        tg_id = int(profile["id"])
         username = profile.get("username")
         first_name = profile.get("first_name")
         last_name = profile.get("last_name")
@@ -92,12 +64,11 @@ class UsersRepo(BaseRepository):
 
         async with self._sm() as s:
             res = await s.execute(
-                select(m_users.User).where(m_users.User.telegram_id == tg_id).limit(1)  # Запрос для поиска по tg_id
+                select(m_users.User).where(m_users.User.telegram_id == tg_id).limit(1)
             )
-            user = res.scalars().first()  # Если пользователь найден, то возвращаем его
+            user = res.scalars().first()
 
             if user is None:
-                # Если пользователя нет — создаём нового
                 user = m_users.User(
                     telegram_id=tg_id,
                     username=username,
@@ -106,9 +77,8 @@ class UsersRepo(BaseRepository):
                     language_code=language_code,
                     avatar_url=avatar_url,
                 )
-                s.add(user)  # Добавляем нового пользователя в сессию
+                s.add(user)
             else:
-                # Если пользователь найден — обновляем поля, если они были переданы
                 if username is not None:
                     user.username = username
                 if first_name is not None:
@@ -120,8 +90,8 @@ class UsersRepo(BaseRepository):
                 if avatar_url is not None:
                     user.avatar_url = avatar_url
 
-            await s.commit()  # Подтверждаем изменения в базе
-            await s.refresh(user)  # Обновляем объект пользователя в памяти
+            await s.commit()
+            await s.refresh(user)
             return user
 
     async def update_profile(
@@ -134,15 +104,14 @@ class UsersRepo(BaseRepository):
         link: Optional[str] = None,
     ) -> Optional[m_users.User]:
         """
-        Обновление простых полей профиля пользователя по его user_id.
-        Если данные были переданы, они сохраняются в базе.
+        Частичное обновление простых полей профиля.
+        Обновляет только те поля, которые переданы явно.
         """
         async with self._sm() as s:
-            user = await s.get(m_users.User, user_id)  # Получаем пользователя по id
+            user = await s.get(m_users.User, user_id)
             if not user:
-                return None  # Если пользователя нет — возвращаем None
+                return None
 
-            # Обновляем только переданные поля
             if bio is not None:
                 user.bio = bio
             if city is not None:
@@ -152,8 +121,8 @@ class UsersRepo(BaseRepository):
             if link is not None:
                 user.link = link
 
-            await s.commit()  # Подтверждаем изменения
-            await s.refresh(user)  # Обновляем объект пользователя в памяти
+            await s.commit()
+            await s.refresh(user)
             return user
 
     async def replace_user_skills_by_slugs(
@@ -163,40 +132,34 @@ class UsersRepo(BaseRepository):
         max_count: int = 10,
     ) -> List[m_skill.Skill]:
         """
-        Полная замена набора навыков пользователя по slug'ам.
-        Проверяет количество навыков (не более max_count) и добавляет/удаляет их в базе.
-        Возвращает итоговый список навыков пользователя.
+        Полностью заменить набор навыков пользователя по slug'ам.
+        Проверяет лимит и валидность скиллов.
         """
-        # Нормализация slug'ов: обрезаем пробелы, приводим к нижнему регистру и убираем пустые строки
         normalized = [s.strip().lower() for s in slugs if s and s.strip()]
-        uniq_slugs = list(dict.fromkeys(normalized))  # Убираем дубликаты из списка
+        uniq_slugs = list(dict.fromkeys(normalized))
 
-        # Проверка: если количество уникальных навыков превышает max_count — выбрасываем ошибку
         if len(uniq_slugs) > max_count:
             raise ValueError(f"too_many_skills:{len(uniq_slugs)}>{max_count}")
 
         async with self._sm() as s:
-            # Находим навыки по переданным slug'ам
             res = await s.execute(
                 select(m_skill.Skill).where(m_skill.Skill.slug.in_(uniq_slugs))
             )
-            skills = list(res.scalars().all())  # Собираем список найденных навыков
+            skills = list(res.scalars().all())
 
-            # Находим неизвестные slug'и, которые отсутствуют в БД
             found_slugs = {sk.slug for sk in skills}
             unknown = [slug for slug in uniq_slugs if slug not in found_slugs]
             if unknown:
-                # Если есть неизвестные навыки — выбрасываем ошибку
                 raise ValueError("unknown_skills:" + ",".join(unknown))
 
-            # Получаем текущие связи пользователя с навыками
             cur_res = await s.execute(
-                select(m_us.user_skill.c.skill_id).where(m_us.user_skill.c.user_id == user_id)
+                select(m_us.user_skill.c.skill_id).where(
+                    m_us.user_skill.c.user_id == user_id
+                )
             )
-            current_ids = set(cur_res.scalars().all())  # Текущие идентификаторы навыков пользователя
-            new_ids = {sk.id for sk in skills}  # Новые идентификаторы, которые мы хотим добавить
+            current_ids = set(cur_res.scalars().all())
+            new_ids = {sk.id for sk in skills}
 
-            # 1) Удаляем старые связи (если есть такие навыки, которые не должны быть у пользователя)
             to_del = current_ids - new_ids
             if to_del:
                 await s.execute(
@@ -206,7 +169,6 @@ class UsersRepo(BaseRepository):
                     )
                 )
 
-            # 2) Добавляем новые связи (если пользователь должен иметь эти навыки)
             to_add = new_ids - current_ids
             if to_add:
                 await s.execute(
@@ -214,9 +176,8 @@ class UsersRepo(BaseRepository):
                     [{"user_id": user_id, "skill_id": sid} for sid in to_add],
                 )
 
-            await s.commit()  # Фиксируем изменения
+            await s.commit()
 
-            # Возвращаем обновлённый список навыков пользователя (отсортированный по имени)
             if new_ids:
                 res2 = await s.execute(
                     select(m_skill.Skill)
@@ -237,73 +198,92 @@ class UsersRepo(BaseRepository):
         offset: int,
     ) -> Tuple[List[tuple[m_users.User, Optional[int]]], int]:
         """
-        Поиск пользователей по тексту (username, first_name, last_name) и/или навыкам.
-        Возвращает список пользователей и их соответствие с навыками (match_count).
+        Поиск пользователей по тексту (username, first_name, last_name)
+        и/или навыкам. Возвращает (список (user, match_count), total).
         """
-        u = m_users.User  # Ссылка на модель User
+        u = m_users.User
 
-        # Вспомогательная функция для применения текстового фильтра
         def _apply_text_filter(stmt):
             if not q:
-                return stmt  # Если нет текста для фильтрации, просто возвращаем запрос без изменений
-            q_like = f"%{q.lower()}%"  # Создаём шаблон для поиска по username и имени пользователя
+                return stmt
+            q_like = f"%{q.lower()}%"
             full_expr = func.concat(
                 func.coalesce(u.first_name, ""),
                 literal(" "),
                 func.coalesce(u.last_name, ""),
             )
-            # Применяем фильтрацию как для username, так и для "Имя Фамилия"
-            return stmt.where(func.lower(u.username).like(q_like) | full_expr.ilike(f"%{q}%"))
+            return stmt.where(
+                func.lower(u.username).like(q_like) | full_expr.ilike(f"%{q}%")
+            )
 
         async with self._sm() as s:
-            # Если не фильтруем по навыкам, то просто ищем по тексту
+            # Без фильтра по скиллам — только текст
             if not skill_slugs:
-                base = _apply_text_filter(select(u)).order_by(u.updated_at.desc())
-                total = (await s.execute(select(func.count()).select_from(base.subquery()))).scalar_one()
+                base = _apply_text_filter(select(u).order_by(u.updated_at.desc()))
+                total = (
+                    await s.execute(select(func.count()).select_from(base.subquery()))
+                ).scalar_one()
                 res = await s.execute(base.limit(limit).offset(offset))
-                items: List[tuple[m_users.User, Optional[int]]] = [(usr, None) for usr in res.scalars().all()]
+                items: List[tuple[m_users.User, Optional[int]]] = [
+                    (usr, None) for usr in res.scalars().all()
+                ]
                 return items, total
 
-            # Нормализуем навыки (slug) для фильтрации
             slugs = [s_.strip().lower() for s_ in skill_slugs if s_ and s_.strip()]
             sk = m_skill.Skill
             us = m_us.user_skill
 
-            # Получаем id навыков
-            ids_arr = (await s.execute(select(sk.id).where(sk.slug.in_(slugs)))).scalars().all()
-            found_slugs = set((await s.execute(select(sk.slug).where(sk.slug.in_(slugs)))).scalars().all())
+            ids_arr = (
+                (await s.execute(select(sk.id).where(sk.slug.in_(slugs))))
+                .scalars()
+                .all()
+            )
+
+            found_slugs = set(
+                (await s.execute(select(sk.slug).where(sk.slug.in_(slugs))))
+                .scalars()
+                .all()
+            )
             unknown = [slug for slug in slugs if slug not in found_slugs]
             if unknown:
-                # Если есть неизвестные скиллы — выбрасываем ошибку
                 raise ValueError("unknown_skills:" + ",".join(unknown))
 
             if mode == "all":
-                # Пользователи, у которых есть все указанные навыки
                 sub = (
                     select(us.c.user_id)
                     .where(us.c.skill_id.in_(ids_arr))
                     .group_by(us.c.user_id)
-                    .having(func.count(func.distinct(us.c.skill_id)) == len(ids_arr))  # Все навыки должны быть у пользователя
+                    .having(func.count(func.distinct(us.c.skill_id)) == len(ids_arr))
                 )
-                filtered = _apply_text_filter(select(u).where(u.id.in_(sub))).order_by(u.updated_at.desc())
-                total = (await s.execute(select(func.count()).select_from(filtered.subquery()))).scalar_one()
+                filtered = _apply_text_filter(
+                    select(u).where(u.id.in_(sub)).order_by(u.updated_at.desc())
+                )
+                total = (
+                    await s.execute(
+                        select(func.count()).select_from(filtered.subquery())
+                    )
+                ).scalar_one()
                 res = await s.execute(filtered.limit(limit).offset(offset))
                 items = [(usr, None) for usr in res.scalars().all()]
                 return items, total
-            else:
-                # Пользователи, у которых есть хотя бы один из указанных навыков
-                sub = (
-                    select(us.c.user_id, func.count().label("mc"))
-                    .where(us.c.skill_id.in_(ids_arr))
-                    .group_by(us.c.user_id)
-                    .subquery()
-                )
-                filtered = _apply_text_filter(
-                    select(u, sub.c.mc.label("match_count")).join(sub, sub.c.user_id == u.id)
-                ).order_by(sub.c.mc.desc(), u.updated_at.desc())
 
-                total = (await s.execute(select(func.count()).select_from(filtered.subquery()))).scalar_one()
-                res = await s.execute(filtered.limit(limit).offset(offset))
+            # mode != "all" → пользователи, у которых есть хотя бы один скилл
+            sub = (
+                select(us.c.user_id, func.count().label("mc"))
+                .where(us.c.skill_id.in_(ids_arr))
+                .group_by(us.c.user_id)
+                .subquery()
+            )
+            filtered = _apply_text_filter(
+                select(u, sub.c.mc.label("match_count"))
+                .join(sub, sub.c.user_id == u.id)
+                .order_by(sub.c.mc.desc(), u.updated_at.desc())
+            )
 
-                items = [(usr, int(mc)) for (usr, mc) in res.all()]
-                return items, total
+            total = (
+                await s.execute(select(func.count()).select_from(filtered.subquery()))
+            ).scalar_one()
+            res = await s.execute(filtered.limit(limit).offset(offset))
+
+            items = [(usr, int(mc)) for (usr, mc) in res.all()]
+            return items, total

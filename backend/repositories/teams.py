@@ -1,19 +1,13 @@
-# =============================================================================
-# ФАЙЛ: backend/repositories/teams.py
-# КРАТКО: репозитории для Team и TeamMember.
-# =============================================================================
-
 from __future__ import annotations
+
 from typing import Optional, List
 
 from sqlalchemy import select, func
-from sqlalchemy.orm import selectinload
 
 from backend.repositories.base import BaseRepository
 from backend.persistend.enums import TeamStatus, RoleType
 from backend.persistend.models.team import Team
 from backend.persistend.models.team_member import TeamMember
-from backend.persistend.models.hackathon import Hackathon
 
 
 class TeamsRepo(BaseRepository):
@@ -30,9 +24,6 @@ class TeamsRepo(BaseRepository):
         description: Optional[str],
         captain_role: RoleType,
     ) -> Team:
-        """
-        Создаёт команду и сразу добавляет капитана в team_member (is_captain = True).
-        """
         async with self._sm() as s:
             team = Team(
                 hackathon_id=hackathon_id,
@@ -63,6 +54,7 @@ class TeamsRepo(BaseRepository):
                 return None
 
             for k, v in data.items():
+                # если нужно уметь явно ставить None — убери if v is not None
                 if v is not None:
                     setattr(obj, k, v)
 
@@ -104,7 +96,9 @@ class TeamsRepo(BaseRepository):
                 stmt = stmt.where(T.captain_id == owner_id)
 
             if member_user_id is not None:
-                stmt = stmt.join(TM, TM.team_id == T.id).where(TM.user_id == member_user_id)
+                stmt = stmt.join(TM, TM.team_id == T.id).where(
+                    TM.user_id == member_user_id
+                )
 
             if q:
                 pattern = f"%{q.lower()}%"
@@ -158,95 +152,3 @@ class TeamsRepo(BaseRepository):
             )
             res = await s.execute(stmt)
             return res.scalar_one() > 0
-
-
-class TeamMembersRepo(BaseRepository):
-    async def list_members(self, team_id: int) -> List[TeamMember]:
-        TM = TeamMember
-        async with self._sm() as s:
-            stmt = (
-                select(TM)
-                .where(TM.team_id == team_id)
-                .options(selectinload(TM.user))
-            )
-            res = await s.execute(stmt)
-            return res.scalars().all()
-
-    async def get_membership(self, team_id: int, user_id: int) -> Optional[TeamMember]:
-        TM = TeamMember
-        async with self._sm() as s:
-            stmt = (
-                select(TM)
-                .where(TM.team_id == team_id)
-                .where(TM.user_id == user_id)
-                .limit(1)
-            )
-            res = await s.execute(stmt)
-            return res.scalars().first()
-
-    async def add_member(
-        self,
-        *,
-        team_id: int,
-        user_id: int,
-        role: RoleType,
-        is_captain: bool = False,
-    ) -> TeamMember:
-        TM = TeamMember
-        async with self._sm() as s:
-            obj = TM(
-                team_id=team_id,
-                user_id=user_id,
-                role=role,
-                is_captain=is_captain,
-            )
-            s.add(obj)
-            await s.commit()
-            await s.refresh(obj)
-            return obj
-
-    async def update_member(
-        self,
-        *,
-        team_id: int,
-        user_id: int,
-        data: dict,
-    ) -> Optional[TeamMember]:
-        TM = TeamMember
-        async with self._sm() as s:
-            stmt = (
-                select(TM)
-                .where(TM.team_id == team_id)
-                .where(TM.user_id == user_id)
-                .limit(1)
-            )
-            res = await s.execute(stmt)
-            obj = res.scalars().first()
-            if not obj:
-                return None
-
-            for k, v in data.items():
-                if v is not None:
-                    setattr(obj, k, v)
-
-            await s.commit()
-            await s.refresh(obj)
-            return obj
-
-    async def delete_member(self, team_id: int, user_id: int) -> bool:
-        TM = TeamMember
-        async with self._sm() as s:
-            stmt = (
-                select(TM)
-                .where(TM.team_id == team_id)
-                .where(TM.user_id == user_id)
-                .limit(1)
-            )
-            res = await s.execute(stmt)
-            obj = res.scalars().first()
-            if not obj:
-                return False
-
-            await s.delete(obj)
-            await s.commit()
-            return True

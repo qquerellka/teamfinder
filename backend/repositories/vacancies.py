@@ -1,10 +1,6 @@
-# =============================================================================
-# ФАЙЛ: backend/repositories/vacancies.py
-# КРАТКО: репозиторий для Vacancy.
-# =============================================================================
-
 from __future__ import annotations
-from typing import Optional, List
+
+from typing import Optional, List, Sequence, Any
 
 from sqlalchemy import select
 
@@ -30,15 +26,16 @@ class VacanciesRepo(BaseRepository):
             stmt = select(V).where(V.team_id == team_id)
             if status:
                 stmt = stmt.where(V.status == status)
+
             stmt = stmt.order_by(V.created_at.desc())
             res = await s.execute(stmt)
-            return res.scalars().all()
+            return list(res.scalars().all())
 
     async def list_for_hackathon(
         self,
         *,
         hackathon_id: int,
-        role: Optional[RoleType],
+        role: Optional[RoleType] = None,
         only_open: bool = True,
         limit: int = 50,
         offset: int = 0,
@@ -51,18 +48,16 @@ class VacanciesRepo(BaseRepository):
                 .join(T, T.id == V.team_id)
                 .where(T.hackathon_id == hackathon_id)
             )
+
             if only_open:
                 stmt = stmt.where(V.status == VacancyStatus.open)
             if role:
                 stmt = stmt.where(V.role == role)
 
-            stmt = (
-                stmt.order_by(V.created_at.desc())
-                .offset(offset)
-                .limit(limit)
-            )
+            stmt = stmt.order_by(V.created_at.desc()).offset(offset).limit(limit)
+
             res = await s.execute(stmt)
-            return res.scalars().all()
+            return list(res.scalars().all())
 
     async def create(
         self,
@@ -70,14 +65,14 @@ class VacanciesRepo(BaseRepository):
         team_id: int,
         role: RoleType,
         description: Optional[str],
-        skills: Optional[list] = None,
+        skills: Optional[Sequence[str]] = None,
     ) -> Vacancy:
         async with self._sm() as s:
             obj = Vacancy(
                 team_id=team_id,
                 role=role,
                 description=description,
-                skills=skills or [],
+                skills=list(skills) if skills is not None else [],
                 status=VacancyStatus.open,
             )
             s.add(obj)
@@ -85,15 +80,17 @@ class VacanciesRepo(BaseRepository):
             await s.refresh(obj)
             return obj
 
-    async def update(self, vacancy_id: int, fields: dict) -> Optional[Vacancy]:
+    async def update(
+        self, vacancy_id: int, fields: dict[str, Any]
+    ) -> Optional[Vacancy]:
         async with self._sm() as s:
             obj = await s.get(Vacancy, vacancy_id)
             if not obj:
                 return None
 
-            for k, v in fields.items():
-                if v is not None:
-                    setattr(obj, k, v)
+            for key, value in fields.items():
+                if value is not None:
+                    setattr(obj, key, value)
 
             await s.commit()
             await s.refresh(obj)
@@ -104,6 +101,7 @@ class VacanciesRepo(BaseRepository):
             obj = await s.get(Vacancy, vacancy_id)
             if not obj:
                 return False
+
             await s.delete(obj)
             await s.commit()
             return True

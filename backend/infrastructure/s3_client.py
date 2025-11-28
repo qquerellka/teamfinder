@@ -1,18 +1,3 @@
-# =============================================================================
-# ФАЙЛ: backend/infrastructure/s3_client.py
-# КРАТКО: Работа с S3-совместимым хранилищем (Yandex Object Storage).
-# ЗАЧЕМ:
-#   • Один общий boto3-клиент для Object Storage.
-#   • Удобные хелперы для загрузки файлов (в т.ч. картинок хакатонов).
-#   • Формирование ключей и публичных URL по единым правилам.
-#
-# КАК ЭТО ЧИТАТЬ:
-#   S3 / Object Storage ≈ «папка в облаке», где лежат файлы (объекты).
-#   bucket        — «корневая директория» (контейнер для файлов).
-#   object key    — «путь к файлу» внутри бакета (типа "hackathons/1/cover.png").
-#   публичный URL — адрес, по которому файл открывается из браузера.
-# =============================================================================
-
 from __future__ import annotations
 
 from typing import List
@@ -22,11 +7,6 @@ from fastapi import UploadFile, HTTPException
 
 from backend.settings.config import settings
 
-
-# --- Инициализация S3-клиента ---
-
-# Создаём один общий S3-клиент на всё приложение.
-# Для Yandex Object Storage важно указать endpoint_url, access_key и secret_key.
 _s3 = boto3.client(
     "s3",
     endpoint_url=settings.S3_ENDPOINT,
@@ -34,8 +14,6 @@ _s3 = boto3.client(
     aws_secret_access_key=settings.S3_SECRET_KEY,
 )
 
-
-# --- Внутренние хелперы ---
 
 def _guess_extension(content_type: str | None) -> str:
     """
@@ -56,7 +34,6 @@ def _guess_extension(content_type: str | None) -> str:
     if content_type in mapping:
         return mapping[content_type]
 
-    # если хотя бы начинается с image/ — попробуем по подтипу
     if content_type.startswith("image/"):
         subtype = content_type.split("/", 1)[1]
         if subtype in ("jpeg", "jpg"):
@@ -66,7 +43,6 @@ def _guess_extension(content_type: str | None) -> str:
         if subtype == "webp":
             return ".webp"
 
-    # дефолт: считаем, что это картинка jpg
     return ".jpg"
 
 
@@ -80,7 +56,6 @@ def _validate_image(file: UploadFile) -> None:
     allowed_types: List[str] = settings.S3_HACKATHON_ALLOWED_TYPES_LIST
     max_size_mb: int = settings.S3_HACKATHON_MAX_SIZE_MB
 
-    # Проверяем content-type
     if file.content_type not in allowed_types:
         raise HTTPException(
             status_code=400,
@@ -90,8 +65,6 @@ def _validate_image(file: UploadFile) -> None:
             },
         )
 
-    # Грубая проверка размера: читаем весь файл в память.
-    # Для небольших картинок (аватар/обложка) это обычно ок.
     file_bytes = file.file.read()
     size_mb = len(file_bytes) / (1024 * 1024)
 
@@ -105,8 +78,6 @@ def _validate_image(file: UploadFile) -> None:
             },
         )
 
-    # Важно: после чтения нужно вернуть файловый указатель в начало,
-    # иначе при upload_fileobj мы зальём «конец файла».
     file.file.seek(0)
 
 
@@ -130,8 +101,6 @@ def make_public_url(key: str) -> str:
     return f"{base}/{key}"
 
 
-# --- Публичный хелпер для загрузки картинки хакатона ---
-
 def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
     """
     Загрузить картинку хакатона в S3 и вернуть публичный URL.
@@ -143,16 +112,12 @@ def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
       4. Отправляем файл в бакет через upload_fileobj.
       5. Строим публичный URL (make_public_url) и возвращаем его.
     """
-    # 1. Валидация
     _validate_image(file)
 
-    # 2. Расширение по content-type
     ext = _guess_extension(file.content_type)
 
-    # 3. Формируем ключ
     key = build_hackathon_key(hackathon_id, ext)
 
-    # 4. Загрузка в Object Storage
     try:
         _s3.upload_fileobj(
             Fileobj=file.file,
@@ -166,14 +131,13 @@ def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
             },
         )
     except Exception as e:
-        # В реальном приложении лучше залогировать e (logger.error(...))
         raise HTTPException(
             status_code=500,
             detail="IMAGE_UPLOAD_FAILED",
         )
 
-    # 5. Возвращаем публичный URL
     return make_public_url(key)
+
 
 def upload_hackathon_image_from_bytes(
     hackathon_id: int,
@@ -192,6 +156,7 @@ def upload_hackathon_image_from_bytes(
             ContentType=content_type or "image/jpeg",
         )
     except Exception:
+        logger.exception("S3 upload failed")
         raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILED")
 
     return make_public_url(key)

@@ -1,14 +1,5 @@
-# =============================================================================
-# ФАЙЛ: backend/infrastructure/telegram_files.py
-# КРАТКО: Скачать файл из Telegram Bot API по file_id.
-# ЗАЧЕМ:
-#   • Бот присылает только file_id (image_file_id).
-#   • Этот модуль умеет по file_id получить байты файла и content-type.
-# =============================================================================
-
 from __future__ import annotations
 
-import mimetypes
 
 import requests
 from fastapi import HTTPException
@@ -63,5 +54,7 @@ def download_telegram_file(file_id: str) -> tuple[bytes, str | None]:
 
     # 1) пытаемся взять из заголовков
     # 2) если там мусор/ничего — пробуем угадать по расширению в пути
-    content_type = resp.headers.get("Content-Type") or _guess_content_type_from_path(file_path)
+    content_type = resp.headers.get("Content-Type") or _guess_content_type_from_path(
+        file_path
+    )
     return resp.content, content_type

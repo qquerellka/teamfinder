@@ -1,8 +1,3 @@
-# =============================================================================
-# ФАЙЛ: backend/persistend/models/response.py
-# КРАТКО: ORM модель таблицы response (отклик на вакансию).
-# =============================================================================
-
 from __future__ import annotations
 
 from sqlalchemy import Integer, Enum as SAEnum, ForeignKey
@@ -32,7 +27,7 @@ class Response(Base, TimestampMixin):
     desired_role: Mapped[RoleType] = mapped_column(
         SAEnum(RoleType, name="role_type"),
         nullable=False,
-        default=RoleType.Analytics,  # совпадает с DEFAULT 'Analytics'
+        default=RoleType.Analytics,
     )
 
     status: Mapped[ResponseStatus] = mapped_column(

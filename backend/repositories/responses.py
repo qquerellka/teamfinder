@@ -30,7 +30,9 @@ class ResponsesRepo(BaseRepository):
             res = await s.execute(stmt)
             return res.scalars().all()
 
-    async def list_for_user(self, user_id: int, limit: int, offset: int) -> List[Response]:
+    async def list_for_user(
+        self, user_id: int, limit: int, offset: int
+    ) -> List[Response]:
         R = Response
         A = Application
         async with self._sm() as s:
@@ -76,7 +78,9 @@ class ResponsesRepo(BaseRepository):
             await s.refresh(obj)
             return obj
 
-    async def update_status(self, response_id: int, status: ResponseStatus) -> Optional[Response]:
+    async def update_status(
+        self, response_id: int, status: ResponseStatus
+    ) -> Optional[Response]:
         async with self._sm() as s:
             obj = await s.get(Response, response_id)
             if not obj:
@@ -85,3 +89,21 @@ class ResponsesRepo(BaseRepository):
             await s.commit()
             await s.refresh(obj)
             return obj
+
+    async def get_by_vacancy_and_application(
+        self,
+        *,
+        vacancy_id: int,
+        application_id: int,
+    ) -> Optional[Response]:
+        R = Response
+        async with self._sm() as s:
+            stmt = (
+                select(R)
+                .where(
+                    (R.vacancy_id == vacancy_id) & (R.application_id == application_id)
+                )
+                .limit(1)
+            )
+            res = await s.execute(stmt)
+            return res.scalars().first()

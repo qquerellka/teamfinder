@@ -13,48 +13,32 @@ from backend.persistend.enums import (
     ApplicationStatus,
     HackathonStatus,
 )
-from backend.repositories.teams import TeamsRepo
-from backend.repositories.vacancies import VacanciesRepo
+
+from backend.services.vacancies import VacanciesService
+from backend.services.teams import TeamsService
+from backend.services.team_members import TeamMembersService
+from backend.services.hackathons import HackathonsService
+
 from backend.repositories.responses import ResponsesRepo
-from backend.repositories.teams import TeamsRepo, TeamMembersRepo
 from backend.repositories.applications import ApplicationsRepo
-from backend.repositories.hackathons import HackathonsRepo
 from backend.repositories.users import UsersRepo
-
-# ...
-
-async def _ensure_user_is_captain(*, user_id: int, team_id: int):
-    """
-    Проверка, что текущий пользователь — капитан указанной команды.
-    Кидаем HTTP-ошибки, чтобы все ручки могли этим пользоваться.
-    """
-    team = await teams_repo.get_by_id(team_id)
-    if not team:
-        raise HTTPException(status_code=404, detail="team not found")
-
-    if team.captain_id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="forbidden: not a captain",
-        )
-
-    return team
 
 
 router = APIRouter(tags=["vacancies"])
 
-vac_repo = VacanciesRepo()
-vacancies_repo = VacanciesRepo()
-teams_repo = TeamsRepo()
+vacancies_service = VacanciesService()
+teams_service = TeamsService()
+members_service = TeamMembersService()
+hackathons_service = HackathonsService()
+
 resp_repo = ResponsesRepo()
-teams_repo = TeamsRepo()
-vacancies_repo = VacanciesRepo()
-members_repo = TeamMembersRepo()
 apps_repo = ApplicationsRepo()
-hacks_repo = HackathonsRepo()
 users_repo = UsersRepo()
 
 MAX_ACTIVE_RESPONSES = 10
+
+
+# ---- СХЕМЫ ----
 
 
 class VacancyOut(BaseModel):
@@ -80,7 +64,7 @@ class VacancyCreateIn(BaseModel):
 
 
 class VacancyUpdateIn(BaseModel):
-    role: Optional[RoleType] = None 
+    role: Optional[RoleType] = None
     description: Optional[str] = None
     status: Optional[VacancyStatus] = None
 
@@ -118,15 +102,18 @@ class ResponseStatusUpdateIn(BaseModel):
     status: ResponseStatus
 
 
+# ---- ХЕЛПЕРЫ ----
+
+
 async def _ensure_team_exists(team_id: int):
-    team = await teams_repo.get_by_id(team_id)
+    team = await teams_service.get_by_id(team_id)
     if not team:
         raise HTTPException(status_code=404, detail="team not found")
     return team
 
 
 async def _ensure_vacancy_exists(vacancy_id: int):
-    vac = await vac_repo.get_by_id(vacancy_id)
+    vac = await vacancies_service.get_by_id(vacancy_id)
     if not vac:
         raise HTTPException(status_code=404, detail="vacancy not found")
     return vac
@@ -141,11 +128,14 @@ async def _ensure_response_exists(response_id: int):
 
 async def _ensure_captain(team, user_id: int):
     if team.captain_id != user_id:
-        raise HTTPException(status_code=403, detail="forbidden: not a captain")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="forbidden: not a captain",
+        )
 
 
 async def _ensure_hackathon_open(hackathon_id: int):
-    hack = await hacks_repo.get_by_id(hackathon_id)
+    hack = await hackathons_service.get_by_id(hackathon_id)
     if not hack:
         raise HTTPException(status_code=404, detail="hackathon not found")
     if hack.status != HackathonStatus.open:
@@ -154,6 +144,7 @@ async def _ensure_hackathon_open(hackathon_id: int):
 
 
 async def _build_response_card(resp) -> ResponseOut:
+    # предполагаем, что у Response настроены отношения .application и .application.user
     app = resp.application
     user = app.user
 
@@ -174,6 +165,9 @@ async def _build_response_card(resp) -> ResponseOut:
     )
 
 
+# ---- ВАКАНСИИ КОМАНДЫ ----
+
+
 @router.get("/teams/{team_id}/vacancies", response_model=VacancyListOut)
 async def list_team_vacancies(
     team_id: int = Path(..., ge=1),
@@ -182,10 +176,13 @@ async def list_team_vacancies(
     offset: int = Query(default=0, ge=0),
     current_user_id: int = Depends(get_current_user_id),
 ):
-    team = await _ensure_team_exists(team_id)
     _ = current_user_id
+    team = await _ensure_team_exists(team_id)
 
-    vacs = await vac_repo.list_for_team(team_id=team.id, status=status_param)
+    vacs = await vacancies_service.list_for_team(
+        team_id=team.id,
+        status=status_param,
+    )
     items = [VacancyOut.model_validate(v) for v in vacs[offset : offset + limit]]
     return VacancyListOut(items=items, limit=limit, offset=offset)
 
@@ -204,12 +201,15 @@ async def create_team_vacancy(
     await _ensure_captain(team, current_user_id)
     await _ensure_hackathon_open(team.hackathon_id)
 
-    vac = await vac_repo.create(
+    vac = await vacancies_service.create(
         team_id=team.id,
         role=payload.role,
         description=payload.description,
     )
     return VacancyOut.model_validate(vac)
+
+
+# ---- ОБЩИЙ ЛИСТИНГ ВАКАНСИЙ ----
 
 
 @router.get("/vacancies", response_model=VacancyListOut)
@@ -227,7 +227,7 @@ async def list_all_vacancies(
 
     await _ensure_hackathon_open(hackathon_id)
 
-    vacs = await vac_repo.list_for_hackathon(
+    vacs = await vacancies_service.list_for_hackathon(
         hackathon_id=hackathon_id,
         role=role,
         only_open=True,
@@ -250,36 +250,33 @@ async def get_vacancy(
 
 @router.patch("/vacancies/{vacancy_id}", response_model=VacancyOut)
 async def update_vacancy(
-    vacancy_id: int,
-    payload: VacancyUpdateIn,
+    vacancy_id: int = Path(..., ge=1),
+    payload: VacancyUpdateIn = ...,
     user_id: int = Depends(get_current_user_id),
 ):
-    vacancy = await vacancies_repo.get_by_id(vacancy_id)
-    if not vacancy:
-        raise HTTPException(status_code=404, detail="vacancy not found")
+    vacancy = await _ensure_vacancy_exists(vacancy_id)
 
-    # Проверка, что текущий пользователь — капитан команды
-    await _ensure_user_is_captain(user_id=user_id, team_id=vacancy.team_id)
+    team = await _ensure_team_exists(vacancy.team_id)
+    await _ensure_captain(team, user_id)
 
-    # Применяем изменения
-    updated_fields = False
-
+    fields: dict = {}
     if payload.role is not None:
-        vacancy.role = payload.role
-        updated_fields = True
-
+        fields["role"] = payload.role
     if payload.description is not None:
-        vacancy.description = payload.description
-        updated_fields = True
-
+        fields["description"] = payload.description
     if payload.status is not None:
-        vacancy.status = payload.status
-        updated_fields = True
+        fields["status"] = payload.status
 
-    if updated_fields:
-        await vacancies_repo.save(vacancy)  # или commit в сессии, как у тебя принято
+    if not fields:
+        # ничего не изменяем — просто возвращаем текущую вакансию
+        return VacancyOut.model_validate(vacancy)
 
-    return VacancyOut.model_validate(vacancy)
+    updated = await vacancies_service.update(vacancy_id, fields)
+    if not updated:
+        # если вдруг запись удалили между GET и UPDATE
+        raise HTTPException(status_code=404, detail="vacancy not found (update)")
+
+    return VacancyOut.model_validate(updated)
 
 
 @router.delete("/vacancies/{vacancy_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -291,7 +288,7 @@ async def delete_vacancy(
     team = await _ensure_team_exists(vac.team_id)
     await _ensure_captain(team, current_user_id)
 
-    ok = await vac_repo.delete(vacancy_id)
+    ok = await vacancies_service.delete(vacancy_id)
     if not ok:
         raise HTTPException(status_code=404, detail="vacancy not found (delete)")
     return None
@@ -311,7 +308,7 @@ async def list_hackathon_vacancies(
     _ = current_user_id
     await _ensure_hackathon_open(hackathon_id)
 
-    vacs = await vac_repo.list_for_hackathon(
+    vacs = await vacancies_service.list_for_hackathon(
         hackathon_id=hackathon_id,
         role=role,
         only_open=True,
@@ -320,6 +317,9 @@ async def list_hackathon_vacancies(
     )
     items = [VacancyOut.model_validate(v) for v in vacs]
     return VacancyListOut(items=items, limit=limit, offset=offset)
+
+
+# ---- ОТКЛИКИ НА ВАКАНСИИ ----
 
 
 @router.get("/vacancies/{vacancy_id}/responses", response_model=ResponseListOut)
@@ -361,12 +361,14 @@ async def create_response(
     if app.status != ApplicationStatus.published:
         raise HTTPException(status_code=400, detail="application is not published")
 
-    already = await teams_repo.user_has_team_on_hackathon(
+    already = await teams_service.user_has_team_on_hackathon(
         user_id=current_user_id,
         hackathon_id=team.hackathon_id,
     )
     if already:
-        raise HTTPException(status_code=409, detail="user already has a team on this hackathon")
+        raise HTTPException(
+            status_code=409, detail="user already has a team on this hackathon"
+        )
 
     active_cnt = await resp_repo.count_active_for_application(app.id)
     if active_cnt >= MAX_ACTIVE_RESPONSES:
@@ -435,21 +437,23 @@ async def update_response_status(
 
     if new_status == ResponseStatus.accepted:
         user_id = app.user_id
-        already = await teams_repo.user_has_team_on_hackathon(
+        already = await teams_service.user_has_team_on_hackathon(
             user_id=user_id,
             hackathon_id=team.hackathon_id,
         )
         if already:
-            raise HTTPException(status_code=409, detail="user already has a team on this hackathon")
+            raise HTTPException(
+                status_code=409, detail="user already has a team on this hackathon"
+            )
 
-        await members_repo.add_member(
+        await members_service.add_member(
             team_id=team.id,
             user_id=user_id,
             role=resp.desired_role,
             is_captain=False,
         )
 
-        await vac_repo.update(
+        await vacancies_service.update(
             vacancy_id=vac.id,
             fields={"status": VacancyStatus.closed},
         )
@@ -462,7 +466,9 @@ async def update_response_status(
 
     updated = await resp_repo.update_status(response_id=response_id, status=new_status)
     if not updated:
-        raise HTTPException(status_code=404, detail="response not found (update_status)")
+        raise HTTPException(
+            status_code=404, detail="response not found (update_status)"
+        )
 
     return await _build_response_card(updated)
 
@@ -479,7 +485,9 @@ async def delete_response(
         raise HTTPException(status_code=403, detail="forbidden")
 
     if resp.status != ResponseStatus.pending:
-        raise HTTPException(status_code=400, detail="only pending response can be withdrawn")
+        raise HTTPException(
+            status_code=400, detail="only pending response can be withdrawn"
+        )
 
     await resp_repo.update_status(
         response_id=response_id,

@@ -1,8 +1,3 @@
-# =============================================================================
-# ФАЙЛ: backend/persistend/models/team.py
-# КРАТКО: ORM модель таблицы team.
-# =============================================================================
-
 from __future__ import annotations
 from typing import Optional, List
 
@@ -41,10 +36,6 @@ class Team(Base, TimestampMixin):
         default=TeamStatus.forming,
     )
 
-    # created_at / updated_at приходят из TimestampMixin и должны совпасть с DDL
-
-    # --- связи ---
-
     hackathon = relationship(
         "Hackathon",
         back_populates="teams",
@@ -69,5 +60,3 @@ class Team(Base, TimestampMixin):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-
-

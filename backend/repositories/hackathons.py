@@ -1,22 +1,16 @@
-# =============================================================================
-# ФАЙЛ: backend/repositories/hackathons.py
-# КРАТКО: Репозиторий для чтения хакатонов (деталь/список).
-# ЗАЧЕМ:
-#   • Инкапсулирует select-запросы к таблице hackathon.
-#   • Нужен анкетам, чтобы подцеплять registration_end_date (и не только).
-# ОСОБЕННОСТИ:
-#   • Асинхронные сессии per-operation, как у остальных реп.
-# =============================================================================
-
 from __future__ import annotations
-from typing import Optional, List
-from sqlalchemy import select, func
+
+from typing import Any, List, Optional
+
+from sqlalchemy import select
+
 from backend.repositories.base import BaseRepository
 from backend.persistend.models import hackathon as m_hack
+from backend.persistend.enums import HackathonStatus
 
 
 class HackathonsRepo(BaseRepository):
-    """Мини-репозиторий для хакатонов."""
+    """Репозиторий для работы с хакатонами."""
 
     async def get_by_id(self, hackathon_id: int) -> Optional[m_hack.Hackathon]:
         """Вернуть один хакатон по id (или None)."""
@@ -31,25 +25,26 @@ class HackathonsRepo(BaseRepository):
     ) -> List[m_hack.Hackathon]:
         """
         Список открытых хакатонов.
-          • q — текстовый фильтр по name/description (опционально, простой ILIKE).
+        Параметры:
+          • q — текстовый фильтр по name/description (ILIKE).
         """
         H = m_hack.Hackathon
+
         async with self._sm() as s:
-            stmt = select(H).where(H.status == "open")
+            stmt = select(H).where(H.status == HackathonStatus.open)
 
             if q:
                 like = f"%{q}%"
-                # простая OR-фильтрация (при желании вынести в to_tsvector полнотекст)
                 stmt = stmt.where((H.name.ilike(like)) | (H.description.ilike(like)))
 
             stmt = stmt.order_by(H.start_date.desc()).limit(limit).offset(offset)
             res = await s.execute(stmt)
             return list(res.scalars().all())
-    
+
     async def create(self, **data: Any) -> m_hack.Hackathon:
         """
         Создать новый хакатон.
-        Ожидает те же поля, что и у модели Hackathon (без id / created_at / updated_at).
+        Ожидает поля модели Hackathon (без id / created_at / updated_at).
         """
         async with self._sm() as s:
             obj = m_hack.Hackathon(**data)
@@ -58,14 +53,14 @@ class HackathonsRepo(BaseRepository):
             await s.refresh(obj)
             return obj
 
-    async def update(self, hackathon_id: int, **fields: Any) -> Optional[m_hack.Hackathon]:
+    async def update(
+        self, hackathon_id: int, **fields: Any
+    ) -> Optional[m_hack.Hackathon]:
         """
         Частично обновить хакатон.
-        fields — только те ключи, которые нужно изменить.
         Возвращает обновлённый объект или None, если не найден.
         """
         if not fields:
-            # Нечего обновлять
             return await self.get_by_id(hackathon_id)
 
         async with self._sm() as s:
