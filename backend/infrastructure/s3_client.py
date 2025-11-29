@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from typing import List
+import asyncio
+import logging
 
 import boto3
 from fastapi import UploadFile, HTTPException
 
 from backend.settings.config import settings
+
+logger = logging.getLogger(__name__)
 
 _s3 = boto3.client(
     "s3",
@@ -82,64 +86,43 @@ def _validate_image(file: UploadFile) -> None:
 
 
 def build_hackathon_key(hackathon_id: int, ext: str) -> str:
-    """
-    Формируем object key для картинки хакатона.
-    Пример: hackathons/123/cover.png
-    """
     return f"hackathons/{hackathon_id}/cover{ext}"
 
 
 def make_public_url(key: str) -> str:
-    """
-    Строим публичный URL по базовому URL бакета и ключу.
-    Пример:
-      S3_PUBLIC_BASE_URL = "https://storage.yandexcloud.net/my-bucket"
-      key = "hackathons/123/cover.png"
-      → "https://storage.yandexcloud.net/my-bucket/hackathons/123/cover.png"
-    """
     base = settings.S3_PUBLIC_BASE_URL.rstrip("/")
     return f"{base}/{key}"
 
 
-def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
+async def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
     """
-    Загрузить картинку хакатона в S3 и вернуть публичный URL.
-
-    Шаги:
-      1. Проверяем content-type и размер файла (_validate_image).
-      2. Определяем расширение по content-type.
-      3. Формируем object key (build_hackathon_key).
-      4. Отправляем файл в бакет через upload_fileobj.
-      5. Строим публичный URL (make_public_url) и возвращаем его.
+    Асинхронно загрузить картинку хакатона в S3 и вернуть публичный URL.
+    Внутри использует asyncio.to_thread, чтобы не блокировать event loop.
     """
     _validate_image(file)
 
     ext = _guess_extension(file.content_type)
-
     key = build_hackathon_key(hackathon_id, ext)
 
     try:
-        _s3.upload_fileobj(
+       await asyncio.to_thread(
+            _s3.upload_fileobj,
             Fileobj=file.file,
             Bucket=settings.S3_BUCKET,
             Key=key,
             ExtraArgs={
-                # Если бакет не целиком публичный, а права ставим по объектам:
-                # этот ACL делает объект доступным для чтения всем.
                 "ACL": "public-read",
                 "ContentType": file.content_type,
             },
         )
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail="IMAGE_UPLOAD_FAILED",
-        )
+    except Exception:
+        logger.exception("S3 upload_fileobj failed")
+        raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILED")
 
     return make_public_url(key)
 
 
-def upload_hackathon_image_from_bytes(
+async def upload_hackathon_image_from_bytes(
     hackathon_id: int,
     data: bytes,
     content_type: str | None,
@@ -148,7 +131,8 @@ def upload_hackathon_image_from_bytes(
     key = build_hackathon_key(hackathon_id, ext)
 
     try:
-        _s3.put_object(
+        await asyncio.to_thread(
+            _s3.put_object,
             Bucket=settings.S3_BUCKET,
             Key=key,
             Body=data,
