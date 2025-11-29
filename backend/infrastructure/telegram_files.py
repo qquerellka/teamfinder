@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-import requests
+import httpx
 from fastapi import HTTPException
 
 from backend.settings.config import settings
@@ -9,16 +9,17 @@ from backend.settings.config import settings
 TELEGRAM_API_BASE = "https://api.telegram.org"
 
 
-def _get_file_path(file_id: str) -> str:
+async def _get_file_path(file_id: str) -> str:
     """
-    Вызывает getFile у Telegram Bot API и возвращает file_path.
+    Асинхронно вызывает getFile у Telegram Bot API и возвращает file_path.
     Документация: https://core.telegram.org/bots/api#getfile
     """
     url = f"{TELEGRAM_API_BASE}/bot{settings.TELEGRAM_BOT_TOKEN}/getFile"
     try:
-        resp = requests.get(url, params={"file_id": file_id}, timeout=10)
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(url, params={"file_id": file_id})
         resp.raise_for_status()
-    except Exception:
+    except httpx.HTTPError:
         raise HTTPException(status_code=400, detail="TELEGRAM_GET_FILE_FAILED")
 
     data = resp.json()
@@ -39,21 +40,20 @@ def _guess_content_type_from_path(path: str) -> str | None:
     return None
 
 
-def download_telegram_file(file_id: str) -> tuple[bytes, str | None]:
+async def download_telegram_file(file_id: str) -> tuple[bytes, str | None]:
     """
-    По Telegram file_id скачиваем файл и возвращаем (байты, content_type).
+    Асинхронно скачиваем файл по Telegram file_id и возвращаем (байты, content_type).
     """
-    file_path = _get_file_path(file_id)
+    file_path = await _get_file_path(file_id)
 
     file_url = f"{TELEGRAM_API_BASE}/file/bot{settings.TELEGRAM_BOT_TOKEN}/{file_path}"
     try:
-        resp = requests.get(file_url, timeout=20)
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(file_url)
         resp.raise_for_status()
-    except Exception:
+    except httpx.HTTPError:
         raise HTTPException(status_code=400, detail="TELEGRAM_FILE_DOWNLOAD_FAILED")
 
-    # 1) пытаемся взять из заголовков
-    # 2) если там мусор/ничего — пробуем угадать по расширению в пути
     content_type = resp.headers.get("Content-Type") or _guess_content_type_from_path(
         file_path
     )
