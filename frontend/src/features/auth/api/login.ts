@@ -1,16 +1,20 @@
 import { apiClient } from "@/shared/api/client";
 import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
-import { AuthResponse, UserResponse } from "../model/types";
+import { AuthResponse } from "../model/types";
+
+
 
 const AUTH_STORAGE_KEY = "auth";
 
 export async function authDev(): Promise<AuthResponse> {
   const body = {
     telegram_id: 0,
-    username: "string",
-    first_name: "string",
-    last_name: "string",
-    avatar_url: "string",
+    username: "teamfinder",
+    first_name: "Team",
+    last_name: "Finder",
+    avatar_url:
+      "https://storage.yandexcloud.net/teamfinder-hackathons-images/hackathons/1/cover.jpg",
+
   };
 
   const response = await apiClient.post<AuthResponse>("/auth/dev-login", body);
@@ -50,10 +54,10 @@ function restoreTokenFromStorage(): string | null {
   return token;
 }
 
+async function fetchProfile(): Promise<AuthResponse["profile"]> {
+  const { data } = await apiClient.get<AuthResponse["profile"]>("/users/me");
+  return data;
 
-async function fetchProfile(): Promise<UserResponse> {
-  const resp = await apiClient.get<UserResponse>("/users/me");
-  return resp.data;
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
@@ -61,7 +65,11 @@ export async function authQueryFn(): Promise<AuthResponse> {
 
   if (token) {
     const profile = await fetchProfile();
-    return { access_token: token, profile };
+    return {
+      access_token: token,
+      profile,
+    };
+
   }
 
   const isTMA = !!window?.Telegram?.WebApp;
@@ -69,10 +77,9 @@ export async function authQueryFn(): Promise<AuthResponse> {
     import.meta.env.VITE_FORCE_DEV_LOGIN === "1" || import.meta.env.DEV;
 
   if (!isTMA && forceDevLogin) {
-    const data = await authDev();
-    return data;
+    return authDev();
   }
 
-  const data = await authTelegram();
-  return data;
+  return authTelegram();
 }
+

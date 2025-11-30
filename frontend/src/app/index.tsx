@@ -61,7 +61,8 @@ async function bootstrapTMA() {
   await init({
     debug,
     eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform),
-    mockForMacOS: false
+    mockForMacOS: false,
+
   });
 
   root.render(

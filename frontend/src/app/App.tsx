@@ -35,6 +35,7 @@ export function App({ str }: AppProps) {
     console.log("[App] initDataRaw:", lp.initDataRaw);
     // console.log("[App] user:", lp.initData?.user);
   }, [lp]);
+  console.log("App")
   return (
     <ErrorBoundary fallback={ErrorBoundaryError}>
       <AppRoot

@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import type { AuthResponse, UserResponse } from "../model/types";
+import type { AuthResponse } from "../model/types";
 import { authQueryFn } from "../api/login";
+import { UserDTO } from "@/entities/user/model/types";
+
 
 export const AUTH_QUERY_KEY = ["auth"];
 
@@ -13,7 +15,8 @@ export function useAuth() {
   });
 
   return {
-    profile: (query.data?.profile as UserResponse | null) ?? null,
+    profile: (query.data?.profile as UserDTO | null) ?? null,
+
     accessToken: query.data?.access_token ?? null,
     isLoading: query.isLoading,
     isError: query.isError,

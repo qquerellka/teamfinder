@@ -93,7 +93,6 @@ class UserPatchIn(BaseModel):
 
 class AchievementOut(BaseModel):
     id: int
-    user_id: int
     hackathon_id: int
     role: m_ach.RoleType
     place: m_ach.AchievementPlace
@@ -293,7 +292,6 @@ async def list_my_achievements(
         "items": [
             AchievementOut(
                 id=a.id,
-                user_id=a.user_id,
                 hackathon_id=a.hackathon_id,
                 role=a.role,
                 place=a.place,
@@ -326,7 +324,6 @@ async def list_user_achievements(
         "items": [
             AchievementOut(
                 id=a.id,
-                user_id=a.user_id,
                 hackathon_id=a.hackathon_id,
                 role=a.role,
                 place=a.place,
@@ -371,7 +368,6 @@ async def create_my_achievement(
 
     return AchievementOut(
         id=ach.id,
-        user_id=ach.user_id,
         hackathon_id=ach.hackathon_id,
         role=ach.role,
         place=ach.place,
