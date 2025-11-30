@@ -53,7 +53,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       },
       {
         icon: hackathonPrizeIcon,
-        text: hackathon.prizeFund.toLocaleString(),
+        text: hackathon.prizeFund?.toLocaleString(),
       },
       {
         icon: hackathonTeam,
@@ -145,13 +145,6 @@ const HackathonParam = styled.div`
   gap: 0.5rem;
   align-items: center;
 `;
-
-// const SImage = styled.img`
-//   width: 100%;
-//   height: 100%;
-//   object-fit: cover;
-//   display: block;
-// `;
 
 const ButtonContainer = styled.div`
   position: absolute;

@@ -34,7 +34,7 @@ export type SIconProps = {
 export const SIcon: React.FC<SIconProps> = ({
   icon,
   size = "m",
-  color,
+  color = "transparent",
   clickable,
   asButton,
   className,
