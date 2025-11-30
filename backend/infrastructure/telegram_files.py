@@ -16,7 +16,7 @@ async def _get_file_path(file_id: str) -> str:
     """
     url = f"{TELEGRAM_API_BASE}/bot{settings.TELEGRAM_BOT_TOKEN}/getFile"
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(timeout=10) as client:
             resp = await client.get(url, params={"file_id": file_id})
         resp.raise_for_status()
     except httpx.HTTPError:
@@ -41,20 +41,19 @@ def _guess_content_type_from_path(path: str) -> str | None:
 
 
 async def download_telegram_file(file_id: str) -> tuple[bytes, str | None]:
-    """
-    Асинхронно скачиваем файл по Telegram file_id и возвращаем (байты, content_type).
-    """
     file_path = await _get_file_path(file_id)
 
     file_url = f"{TELEGRAM_API_BASE}/file/bot{settings.TELEGRAM_BOT_TOKEN}/{file_path}"
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        async with httpx.AsyncClient(timeout=20) as client:
             resp = await client.get(file_url)
         resp.raise_for_status()
     except httpx.HTTPError:
         raise HTTPException(status_code=400, detail="TELEGRAM_FILE_DOWNLOAD_FAILED")
 
-    content_type = resp.headers.get("Content-Type") or _guess_content_type_from_path(
-        file_path
-    )
+    raw_ct = resp.headers.get("Content-Type")
+    if not raw_ct or raw_ct == "application/octet-stream":
+        content_type = _guess_content_type_from_path(file_path)
+    else:
+        content_type = raw_ct
     return resp.content, content_type
