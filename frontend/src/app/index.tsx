@@ -41,6 +41,7 @@ async function bootstrapBrowser() {
 // ---------- TMA (prod) ----------
 
 async function bootstrapTMA() {
+
   const lp = retrieveLaunchParams();
   const raw = resolveInitDataRaw();
 
@@ -60,7 +61,7 @@ async function bootstrapTMA() {
   await init({
     debug,
     eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform),
-    mockForMacOS: false,
+    mockForMacOS: false
   });
 
   root.render(
@@ -84,3 +85,4 @@ async function bootstrapTMA() {
     root.render(<EnvUnsupported />);
   }
 })();
+
