@@ -7,103 +7,93 @@ import {
   Textarea,
 } from "@telegram-apps/telegram-ui";
 import { STitle } from "@/shared/ui/STitle";
-import { useLaunchParams } from "@tma.js/sdk-react";
-import { useState, ChangeEvent, FC } from "react";
+import { useState, useEffect, ChangeEvent, FC } from "react";
 
 import { Achievement } from "@/shared/types/achievement";
 import { formatHackPlace } from "@/shared/helpers/date";
 
-type MultiSelectOptions = MultiselectProps["options"][number];
+import {
+  useAuthUser,
+  useEditUserMainInfo,
+} from "@/entities/user/api/hooks";
+import { Skill } from "@/entities/skill/model/types";
+import { useSkills } from "@/entities/skill/api/hooks";
+
+type MultiSelectOption = MultiselectProps["options"][number];
 
 const MAX_SKILLS = 10;
 const MAX_BIO = 256;
 
-const skillsOptions: MultiSelectOptions[] = [
-  { value: "js", label: "JS" },
-  { value: "react", label: "React" },
-  { value: "node", label: "Node.js" },
-  { value: "ui", label: "UI/UX Design" },
-  { value: "mobile", label: "Mobile Development" },
-  { value: "html", label: "HTML&CSS" },
-  { value: "css", label: "CSS" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "ruby", label: "Ruby" },
-  { value: "csharp", label: "C#" },
-  { value: "php", label: "PHP" },
-  { value: "typescript", label: "TypeScript" },
-  { value: "go", label: "Go" },
-  { value: "swift", label: "Swift" },
-  { value: "kotlin", label: "Kotlin" },
-  { value: "sql", label: "SQL" },
-  { value: "graphql", label: "GraphQL" },
-  { value: "rust", label: "Rust" },
-  { value: "lua", label: "Lua" },
-  { value: "vhdl", label: "VHDL" },
-  { value: "matlab", label: "MATLAB" },
-  { value: "objectivec", label: "Objective-C" },
-  { value: "dart", label: "Dart" },
-  { value: "flutter", label: "Flutter" },
-];
-
-const mockAchievements: Achievement[] = [
-  {
-    id: "qwvge02837ydb21872`dpjinsd",
-    name: "TenderHack 2025",
-    place: "1",
-    userId: "123",
-    role: "Backend",
-    hackLink: "https://github.com/qquerellka",
-  },
-  {
-    id: "qwvge02837ydb21872`dpjinh",
-    name: "МТС True Tech",
-    place: "Участие",
-    userId: "123",
-    role: "Backend",
-    hackLink: "https://github.com/qquerellka",
-  },
-  {
-    id: "qwvge02837ydb21872`dpjins",
-    name: "VTB API 2025",
-    place: "Финал",
-    userId: "123",
-    role: "Frontend",
-    hackLink: "https://github.com/qquerellka",
-  },
-  {
-    id: "qwvge02837ydb21872`dpjinq",
-    name: "Digital Spring 2024",
-    place: "4",
-    userId: "123",
-    role: "Backend",
-    hackLink: "https://github.com/qquerellka",
-  },
-];
-
 export const ProfilePage = () => {
-  const launchParams = useLaunchParams();
+  const { data: user, isLoading: isUserLoading } = useAuthUser();
+  const { data: skills = [], isLoading: isSkillsLoading } = useSkills();
+  const editMainInfoMutation = useEditUserMainInfo();
 
-  const [selectedSkills, setSelectedSkills] = useState<MultiSelectOptions[]>(
-    []
-  );
+  const [selectedSkillSlugs, setSelectedSkillSlugs] = useState<string[]>([]);
   const [skillsError, setSkillsError] = useState<string | null>(null);
-
-  const handleSkillsChange = (selected: MultiSelectOptions[]) => {
-    if (selected.length > MAX_SKILLS) {
-      setSkillsError(`Нельзя выбрать больше ${MAX_SKILLS} навыков`);
-    } else {
-      setSelectedSkills(selected);
-      setSkillsError(null);
-    }
-  };
 
   const [bio, setBio] = useState<string>("");
   const [bioError, setBioError] = useState<string | null>(null);
 
+  const [lastSavedBio, setLastSavedBio] = useState<string>("");
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const initialBio = user.bio ?? "";
+    setBio(initialBio);
+    setLastSavedBio(initialBio);
+    setSelectedSkillSlugs(user.skills.map((s) => s.slug));
+
+    setBioError(null);
+    setSkillsError(null);
+    setIsInitialized(true);
+  }, [user]);
+
+
+  function skillsToOptions(skills: Skill[]): MultiSelectOption[] {
+    return skills.map((s) => ({
+      value: s.slug,
+      label: s.name,
+    }));
+  }
+
+  const options = skillsToOptions(skills);
+
+  const selectedOptions = options.filter((opt) =>
+    selectedSkillSlugs.includes(String(opt.value)),
+  );
+
+
+  const handleSkillsChange = (selected: MultiSelectOption[]) => {
+    if (selected.length > MAX_SKILLS) {
+      setSkillsError(`Нельзя выбрать больше ${MAX_SKILLS} навыков`);
+      return;
+    }
+
+    const slugs = selected.map((o) => String(o.value));
+    setSelectedSkillSlugs(slugs);
+    setSkillsError(null);
+
+    if (!isInitialized || !user) return;
+
+    const currentFromUser = user.skills.map((s) => s.slug);
+    const same =
+      currentFromUser.length === slugs.length &&
+      currentFromUser.every((s) => slugs.includes(s));
+
+    if (same) return;
+
+    editMainInfoMutation.mutate({
+      skillSlugs: slugs,
+    });
+  };
+
+  // ---- изменение био ----
+
   const handleBioChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const newBio = event.target.value;
-
     setBio(newBio);
 
     if (newBio.length > MAX_BIO) {
@@ -113,34 +103,58 @@ export const ProfilePage = () => {
     }
   };
 
+  // ---- debounce сохранения био ----
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (!user) return;
+    if (bioError) return;
+    if (bio === lastSavedBio) return;
+
+    const timeoutId = setTimeout(() => {
+      editMainInfoMutation.mutate(
+        { bio: bio || undefined },
+        {
+          onSuccess: () => {
+            setLastSavedBio(bio);
+          },
+        },
+      );
+    }, 600);
+
+    return () => clearTimeout(timeoutId);
+  }, [bio, bioError, isInitialized, user, lastSavedBio, editMainInfoMutation]);
+
+  const isLoading = isUserLoading || isSkillsLoading;
+
   return (
     <SProfile>
       <SProfileHeader>
-        <Avatar size={96} src={launchParams.tgWebAppData?.user?.photo_url} />
+        <Avatar size={96} src={user?.avatarUrl || undefined} />
         <SFullName>
           <STitle $fs={24} $fw={600}>
-            {launchParams.tgWebAppData?.user?.first_name}
+            {user?.firstName}
           </STitle>
           <STitle $fs={24} $fw={600}>
-            {launchParams.tgWebAppData?.user?.last_name}
+            {user?.secondName}
           </STitle>
         </SFullName>
       </SProfileHeader>
 
       <SExtraInfo>
+
         <SSection header="Навыки" footer={skillsError}>
           <SMultiselect
-            // style={{
-            //   backgroundColor: `var(--tg-theme-section-bg-color, #fff)`,
-            // }}
             status={skillsError ? "error" : "default"}
-            options={skillsOptions}
-            value={selectedSkills}
+            options={options}
+            value={selectedOptions}
             onChange={handleSkillsChange}
             selectedBehavior="hide"
             closeDropdownAfterSelect={false}
-            creatable={true}
-            placeholder="Выберите до 10 навыков"
+            creatable={false}
+            placeholder={
+              isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
+            }
           />
         </SSection>
 
@@ -152,20 +166,21 @@ export const ProfilePage = () => {
             placeholder="Расскажите немного о себе..."
           />
         </SSection>
-        <SSection header="Достижения">
-          {mockAchievements.map((mockAchievement) => (
-            <AchievementCard
-              key={mockAchievement.id}
-              achievement={mockAchievement}
-            />
+
+        {/* блок достижений подключишь позже */}
+        {/* <SSection header="Достижения">
+          {achievements?.items.map((a) => (
+            <AchievementCard key={a.id} achievement={a} />
           ))}
-        </SSection>
+        </SSection> */}
       </SExtraInfo>
     </SProfile>
   );
 };
 
 export default ProfilePage;
+
+// ===== стили =====
 
 const SProfile = styled.section`
   display: flex;
@@ -186,7 +201,7 @@ const SExtraInfo = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 1rem;
+  gap: 0rem;
 `;
 
 const SFullName = styled.div`
@@ -245,5 +260,5 @@ const SAchievementCard = styled.div`
 `;
 
 const SMultiselect = styled(Multiselect)`
-  background: var(#fff);
+  background: var(--tg-theme-section-bg-color, #fff);
 `;
