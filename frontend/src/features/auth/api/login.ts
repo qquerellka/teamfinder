@@ -3,6 +3,7 @@ import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
 import { AuthResponse } from "../model/types";
 
 
+
 const AUTH_STORAGE_KEY = "auth";
 
 export async function authDev(): Promise<AuthResponse> {
@@ -13,6 +14,7 @@ export async function authDev(): Promise<AuthResponse> {
     last_name: "Finder",
     avatar_url:
       "https://storage.yandexcloud.net/teamfinder-hackathons-images/hackathons/1/cover.jpg",
+
   };
 
   const response = await apiClient.post<AuthResponse>("/auth/dev-login", body);
@@ -55,6 +57,7 @@ function restoreTokenFromStorage(): string | null {
 async function fetchProfile(): Promise<AuthResponse["profile"]> {
   const { data } = await apiClient.get<AuthResponse["profile"]>("/users/me");
   return data;
+
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
@@ -66,6 +69,7 @@ export async function authQueryFn(): Promise<AuthResponse> {
       access_token: token,
       profile,
     };
+
   }
 
   const isTMA = !!window?.Telegram?.WebApp;
@@ -78,3 +82,4 @@ export async function authQueryFn(): Promise<AuthResponse> {
 
   return authTelegram();
 }
+

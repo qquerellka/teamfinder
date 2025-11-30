@@ -38,10 +38,10 @@ async function bootstrapBrowser() {
   );
 }
 
-
 // ---------- TMA (prod) ----------
 
 async function bootstrapTMA() {
+
   const lp = retrieveLaunchParams();
   const raw = resolveInitDataRaw();
 
