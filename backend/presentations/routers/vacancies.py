@@ -356,11 +356,25 @@ async def create_response(
         user_id=current_user_id,
         hackathon_id=team.hackathon_id,
     )
-    if not app:
-        raise HTTPException(status_code=400, detail="no application for this hackathon")
-    if app.status != ApplicationStatus.published:
-        raise HTTPException(status_code=400, detail="application is not published")
 
+    if not app:
+        # СОЗДАЕМ АНКЕТУ АВТОМАТИЧЕСКИ
+        app = await apps_repo.create(
+            user_id=current_user_id,
+            hackathon_id=team.hackathon_id,
+            role=vac.role,  # роль из вакансии по умолчанию
+            status=ApplicationStatus.published,
+            joined=False,
+        )
+    else:
+        # ОБЕСПЕЧИВАЕМ ЧТО АНКЕТА ОПУБЛИКОВАНА
+        if app.status != ApplicationStatus.published:
+            app = await apps_repo.update(
+                app_id=app.id,
+                data={"status": ApplicationStatus.published}
+            )
+
+    # Продолжаем существующие проверки...
     already = await teams_service.user_has_team_on_hackathon(
         user_id=current_user_id,
         hackathon_id=team.hackathon_id,
@@ -382,7 +396,6 @@ async def create_response(
     )
 
     return await _build_response_card(resp)
-
 
 @router.get("/responses/{response_id}", response_model=ResponseOut)
 async def get_response(
@@ -413,6 +426,11 @@ async def list_my_responses(
     items = [await _build_response_card(r) for r in resps]
     return ResponseListOut(items=items, limit=limit, offset=offset)
 
+async def _ensure_hackathon_exists(hackathon_id: int):
+    hack = await hackathons_service.get_by_id(hackathon_id)
+    if not hack:
+        raise HTTPException(status_code=404, detail="hackathon not found")
+    return hack
 
 @router.patch("/responses/{response_id}", response_model=ResponseOut)
 async def update_response_status(
@@ -446,6 +464,16 @@ async def update_response_status(
                 status_code=409, detail="user already has a team on this hackathon"
             )
 
+        hackathon = await _ensure_hackathon_exists(team.hackathon_id)
+        max_team_members = hackathon.team_members_limit or 5  
+
+        current_members_count = await teams_service.get_team_members_count(team.id)
+        if current_members_count >= max_team_members:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Team is full. Maximum {max_team_members} members allowed"
+            )
+
         await members_service.add_member(
             team_id=team.id,
             user_id=user_id,
@@ -460,9 +488,8 @@ async def update_response_status(
 
         await apps_repo.update(
             app_id=app.id,
-            data={"status": ApplicationStatus.hidden, "joined": True},
+            data={"joined": True},
         )
-        # TODO: закрыть остальные отклики/инвайты и разослать уведомления.
 
     updated = await resp_repo.update_status(response_id=response_id, status=new_status)
     if not updated:
@@ -471,7 +498,6 @@ async def update_response_status(
         )
 
     return await _build_response_card(updated)
-
 
 @router.delete("/responses/{response_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_response(
