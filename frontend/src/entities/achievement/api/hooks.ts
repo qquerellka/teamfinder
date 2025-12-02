@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AchievementsList } from "../model/types";
+import { Achievement, AchievementCreate, AchievementsList } from "../model/types";
 import {
-  AchievementCreate,
   AchievementPatch,
   createAchievement,
   deleteAchievement,
@@ -34,8 +33,8 @@ export function useUserAchievements(userId: number, enabled = true) {
 export function useCreateAchievement() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (payload: AchievementCreate) => createAchievement(payload),
+  return useMutation<Achievement, Error, AchievementCreate>({
+    mutationFn: (payload) => createAchievement(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
       queryClient.invalidateQueries({ queryKey: userKeys.me });

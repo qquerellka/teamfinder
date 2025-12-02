@@ -1,8 +1,8 @@
 // ====== ACHIEVEMENTS ======
 
 import { apiClient } from "@/shared/api/client";
-import { Achievement, AchievementDTO, AchievementsList, AchievementsResponseDTO } from "../model/types";
-import { achievementsToCamelCase } from "../lib/dto";
+import { Achievement, AchievementCreate, AchievementDTO, AchievementsList, AchievementsResponseDTO } from "../model/types";
+import { achievementCreateToDTO, achievementsToCamelCase } from "../lib/dto";
 
 export async function getAuthUserAchievements(): Promise<AchievementsList> {
   const { data } =
@@ -29,20 +29,19 @@ export async function getUserAchievementsByUserId(
   };
 }
 
-export type AchievementCreate = Omit<Achievement, "id">;
 
 export async function createAchievement(
   ach: AchievementCreate,
 ): Promise<Achievement> {
-  const { data } = await apiClient.post<AchievementDTO>("/users/me/achievements", {
-    hackathon_id: ach.hackathonId,
-    role: ach.role,
-    place: ach.place,
-  });
+  const payload = achievementCreateToDTO(ach);
+
+  const { data } = await apiClient.post<AchievementDTO>(
+    "/users/me/achievements",
+    payload,
+  );
 
   return achievementsToCamelCase([data])[0];
 }
-
 
 export async function deleteAchievement(id: number): Promise<void> {
   await apiClient.delete(`/achievements/${id}`);

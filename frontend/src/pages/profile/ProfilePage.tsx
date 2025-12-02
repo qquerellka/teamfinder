@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import {
   Avatar,
+  Button,
+  IconButton,
   List,
   Multiselect,
   MultiselectProps,
@@ -13,8 +15,11 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { useAuthUser, useEditUserMainInfo } from "@/entities/user/api/hooks";
 import { Skill } from "@/entities/skill/model/types";
 import { useSkills } from "@/entities/skill/api/hooks";
-
+import plusIcon from "@/assets/icons/plusIcon.svg";
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
+import { SIcon } from "@/shared/ui/SIcon";
+import { useNavigate } from "react-router-dom";
+import { paths } from "@/app/routing/paths";
 type MultiSelectOption = MultiselectProps["options"][number];
 const MAX_BIO = 256;
 const MAX_SKILLS = 10;
@@ -32,7 +37,7 @@ export const ProfilePage = () => {
 
   const [lastSavedBio, setLastSavedBio] = useState<string>("");
   const [isInitialized, setIsInitialized] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (!user) return;
 
@@ -132,18 +137,18 @@ export const ProfilePage = () => {
 
       <SExtraInfo>
         <SSection header="Навыки" footer={skillsError}>
-            <SMultiselect
-              status={skillsError ? "error" : "default"}
-              options={options}
-              value={selectedOptions}
-              onChange={handleSkillsChange}
-              selectedBehavior="hide"
-              closeDropdownAfterSelect={false}
-              creatable={false}
-              placeholder={
-                isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
-              }
-            />
+          <SMultiselect
+            status={skillsError ? "error" : "default"}
+            options={options}
+            value={selectedOptions}
+            onChange={handleSkillsChange}
+            selectedBehavior="hide"
+            closeDropdownAfterSelect={false}
+            creatable={false}
+            placeholder={
+              isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
+            }
+          />
         </SSection>
 
         <SSection header="Обо мне" footer={bioError}>
@@ -155,7 +160,32 @@ export const ProfilePage = () => {
           />
         </SSection>
 
-        <SSection header="Достижения">
+        <SSection
+          header={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <STitle
+                $fs={15}
+                $fw={600}
+                style={{ color: "var(--tg-theme-section-header-text-color)" }}
+              >
+                Достижения
+              </STitle>
+              <IconButton
+                size="m"
+                onClick={() => navigate(paths.profileAchievement("new"))}
+              >
+                <SIcon icon={plusIcon} />
+              </IconButton>
+            </div>
+          }
+        >
           <List>
             {user?.achievements?.map((a) => (
               <AchievementItem key={a.id} achievement={a} />

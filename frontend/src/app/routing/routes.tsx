@@ -3,8 +3,8 @@ import { useRoutes, type RouteObject, Navigate } from "react-router-dom";
 import RootLayout from "../layouts/Layout";
 import { paths } from "./paths";
 
-const HackathonsPage = lazy(() => import("@/pages/hackathons/ui/Page"));
-const HackathonPage = lazy(() => import("@/pages/hackathon/ui/Page"));
+const HackathonsPage = lazy(() => import("@/pages/hackathons/HackathonsPage"));
+const HackathonPage = lazy(() => import("@/pages/hackathons/HackathonPage"));
 const NotificationsPage = lazy(() => import("@/pages/notifications/ui/Page"));
 const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 const UserTeamsPage = lazy(() => import("@/pages/user-teams/ui/Page"));
@@ -34,6 +34,7 @@ const routes: RouteObject[] = [
         path: paths.profile,
         children: [
           { index: true, element: <ProfilePage /> }, // /profile
+          { path: "achievements/new", element: <AchievementPage /> },
           { path: "achievements/:id", element: <AchievementPage /> }, // /profile/achievements/:id
         ],
       },

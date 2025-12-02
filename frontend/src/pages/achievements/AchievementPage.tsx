@@ -1,3 +1,4 @@
+// src/pages/achievement/AchievementPage.tsx
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -15,7 +16,9 @@ import type { Achievement } from "@/entities/achievement/model/types";
 import {
   useEditAchievement,
   useDeleteAchievement,
+  useCreateAchievement,
 } from "@/entities/achievement/api/hooks";
+import { useHackathonsQuery } from "@/entities/hackathon/api/hooks"; // путь проверь
 
 type AchievementPlace = Achievement["place"];
 
@@ -38,25 +41,35 @@ const roleOptions: { label: string; value: string }[] = [
 const AchievementPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const isNew = !id || id === "new";
+
   const { data: user } = useAuthUser();
+  const { data: hackathons } = useHackathonsQuery();
+
   const editAchievementMutation = useEditAchievement();
   const deleteAchievementMutation = useDeleteAchievement();
+  const createAchievementMutation = useCreateAchievement();
 
   const achievement = useMemo(
-    () => user?.achievements.find((a) => a.id === Number(id)),
-    [user, id],
+    () =>
+      isNew
+        ? null
+        : user?.achievements.find((a) => a.id === Number(id)) ?? null,
+    [user, id, isNew]
   );
 
+  const [hackathonId, setHackathonId] = useState<string>("");
   const [role, setRole] = useState<string>("");
   const [place, setPlace] = useState<AchievementPlace | "">("");
 
   useEffect(() => {
-    if (!achievement) return;
+    if (!achievement || isNew) return;
     setRole(achievement.role ?? "");
     setPlace(achievement.place ?? "");
-  }, [achievement]);
+  }, [achievement, isNew]);
 
-  if (!achievement) {
+  // если редактирование и не нашли достижение
+  if (!isNew && !achievement) {
     return (
       <section style={{ padding: "1.5rem" }}>
         <STitle $fs={20} $fw={600}>
@@ -74,22 +87,48 @@ const AchievementPage = () => {
     setPlace(e.target.value as AchievementPlace | "");
   };
 
+  const handleHackathonChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setHackathonId(e.target.value);
+  };
+
   const handleSave = () => {
-    editAchievementMutation.mutate(
-      {
-        id: achievement.id,
-        patch: {
+    // простая валидация
+    if (!role || !place || (isNew && !hackathonId)) {
+      // сюда можно добавить тост/алерт
+      return;
+    }
+
+    if (isNew) {
+      // перед этим в handleSave ты уже проверяешь, что hackathonId, role и place заданы
+      createAchievementMutation.mutate(
+        {
+          hackathonId: Number(hackathonId),
           role,
           place: place as Achievement["place"],
         },
-      },
-      {
-        onSuccess: () => navigate(-1),
-      },
-    );
+        {
+          onSuccess: () => navigate(-1),
+        }
+      );
+    } else if (achievement) {
+      // редактирование — меняем только роль и место
+      editAchievementMutation.mutate(
+        {
+          id: achievement.id,
+          patch: {
+            role,
+            place: place as Achievement["place"],
+          },
+        },
+        {
+          onSuccess: () => navigate(-1),
+        }
+      );
+    }
   };
 
   const handleDelete = () => {
+    if (!achievement) return;
     deleteAchievementMutation.mutate(achievement.id, {
       onSuccess: () => navigate(-1),
     });
@@ -99,21 +138,32 @@ const AchievementPage = () => {
     <SProfile>
       <Wrapper>
         <STitle $fs={14} $fw={"semibold"}>
-          Редактировать достижение
+          {isNew ? "Новое достижение" : "Редактировать достижение"}
         </STitle>
 
-        {/* Хакатон */}
         <SSection header="Хакатон">
           <List>
-            <Input
-              value={achievement.hackathonName ?? ""}
-              disabled
-              placeholder="Название хакатона"
-            />
+            {isNew ? (
+              <SSelect value={hackathonId} onChange={handleHackathonChange}>
+                <option value="" disabled>
+                  Выберите хакатон
+                </option>
+                {hackathons?.items.map((h) => (
+                  <option key={h.id} value={h.id}>
+                    {h.name}
+                  </option>
+                ))}
+              </SSelect>
+            ) : (
+              <Input
+                value={achievement?.hackathonName ?? ""}
+                disabled
+                placeholder="Название хакатона"
+              />
+            )}
           </List>
         </SSection>
 
-        {/* Роль */}
         <SSection header="Роль в команде">
           <List>
             <SSelect value={role} onChange={handleRoleChange}>
@@ -129,7 +179,6 @@ const AchievementPage = () => {
           </List>
         </SSection>
 
-        {/* Место */}
         <SSection header="Место">
           <List>
             <Select value={place} onChange={handlePlaceChange}>
@@ -145,15 +194,17 @@ const AchievementPage = () => {
           </List>
         </SSection>
 
-        {/* Кнопки */}
         <SSection>
           <List>
             <Button size="l" onClick={handleSave} stretched>
-              Сохранить
+              {isNew ? "Добавить" : "Сохранить"}
             </Button>
-            <DeleteButton size="l" onClick={handleDelete} stretched>
-              Удалить
-            </DeleteButton>
+
+            {!isNew && (
+              <DeleteButton size="l" onClick={handleDelete} stretched>
+                Удалить
+              </DeleteButton>
+            )}
           </List>
         </SSection>
       </Wrapper>

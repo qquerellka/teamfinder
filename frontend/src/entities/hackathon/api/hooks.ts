@@ -9,7 +9,7 @@ export function useHackathonsQuery() {
   });
 }
 
-export function useHackathonQuery(id: string) {
+export function useHackathonQuery(id: number) {
   return useQuery({
     queryKey: queryKeys.hackathons.byId(id),
     queryFn: () => fetchHackathon(id),

@@ -39,6 +39,13 @@ export interface AchievementsResponseDTO {
 // для создания ачивки
 export type AchievementCreate = Omit<Achievement, "id" | "hackathonName">;
 
+// DTO для API
+export type AchievementCreateDTO = {
+  hackathon_id: number;
+  role: string;
+  place: Achievement["place"];
+};
+
 // для частичного редактирования ачивки
 export interface AchievementPatch {
   role?: string;

@@ -25,7 +25,7 @@ export async function fetchHackathons(): Promise<FetchHackathonsResponse> {
   };
 }
 
-export async function fetchHackathon(id: string): Promise<Hackathon> {
+export async function fetchHackathon(id: number): Promise<Hackathon> {
   const { data } = await apiClient.get<HackathonApi>(`/hackathons/${id}`);
   return mapHackathon(data);
 }
@@ -37,7 +37,7 @@ export function useHackathonsQuery() {
   });
 }
 
-export function useHackathonQuery(id: string) {
+export function useHackathonQuery(id: number) {
   return useQuery({
     queryKey: ["hackathons", id],
     queryFn: () => fetchHackathon(id),
