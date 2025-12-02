@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { Button } from "@telegram-apps/telegram-ui";
 
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-import { useHackathonQuery } from "@/entities/hackathon/api/hackathon-api";
+import { useHackathonQuery } from "@/entities/hackathon/api/hackathons";
 import type { Hackathon } from "@/entities/hackathon/model/types";
 
 // Хелпер для нормализации ссылок

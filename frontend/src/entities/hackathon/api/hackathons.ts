@@ -15,7 +15,7 @@ export interface FetchHackathonsResponse {
   offset: number;
 }
 
-async function fetchHackathons(): Promise<FetchHackathonsResponse> {
+export async function fetchHackathons(): Promise<FetchHackathonsResponse> {
   const { data } = await apiClient.get<FetchHackathonsApiResponse>("/hackathons");
 
   return {
@@ -25,7 +25,7 @@ async function fetchHackathons(): Promise<FetchHackathonsResponse> {
   };
 }
 
-async function fetchHackathon(id: string): Promise<Hackathon> {
+export async function fetchHackathon(id: string): Promise<Hackathon> {
   const { data } = await apiClient.get<HackathonApi>(`/hackathons/${id}`);
   return mapHackathon(data);
 }

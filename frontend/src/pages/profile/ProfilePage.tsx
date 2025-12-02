@@ -1,28 +1,23 @@
 import styled from "styled-components";
 import {
   Avatar,
+  List,
   Multiselect,
   MultiselectProps,
   Section,
   Textarea,
 } from "@telegram-apps/telegram-ui";
 import { STitle } from "@/shared/ui/STitle";
-import { useState, useEffect, ChangeEvent, FC } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 
-import { Achievement } from "@/shared/types/achievement";
-import { formatHackPlace } from "@/shared/helpers/date";
-
-import {
-  useAuthUser,
-  useEditUserMainInfo,
-} from "@/entities/user/api/hooks";
+import { useAuthUser, useEditUserMainInfo } from "@/entities/user/api/hooks";
 import { Skill } from "@/entities/skill/model/types";
 import { useSkills } from "@/entities/skill/api/hooks";
 
+import { AchievementItem } from "@/widgets/achievements/AchievementItem";
 type MultiSelectOption = MultiselectProps["options"][number];
-
-const MAX_SKILLS = 10;
 const MAX_BIO = 256;
+const MAX_SKILLS = 10;
 
 export const ProfilePage = () => {
   const { data: user, isLoading: isUserLoading } = useAuthUser();
@@ -51,7 +46,6 @@ export const ProfilePage = () => {
     setIsInitialized(true);
   }, [user]);
 
-
   function skillsToOptions(skills: Skill[]): MultiSelectOption[] {
     return skills.map((s) => ({
       value: s.slug,
@@ -62,9 +56,8 @@ export const ProfilePage = () => {
   const options = skillsToOptions(skills);
 
   const selectedOptions = options.filter((opt) =>
-    selectedSkillSlugs.includes(String(opt.value)),
+    selectedSkillSlugs.includes(String(opt.value))
   );
-
 
   const handleSkillsChange = (selected: MultiSelectOption[]) => {
     if (selected.length > MAX_SKILLS) {
@@ -90,8 +83,6 @@ export const ProfilePage = () => {
     });
   };
 
-  // ---- изменение био ----
-
   const handleBioChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const newBio = event.target.value;
     setBio(newBio);
@@ -102,8 +93,6 @@ export const ProfilePage = () => {
       setBioError(null);
     }
   };
-
-  // ---- debounce сохранения био ----
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -118,7 +107,7 @@ export const ProfilePage = () => {
           onSuccess: () => {
             setLastSavedBio(bio);
           },
-        },
+        }
       );
     }, 600);
 
@@ -142,20 +131,19 @@ export const ProfilePage = () => {
       </SProfileHeader>
 
       <SExtraInfo>
-
         <SSection header="Навыки" footer={skillsError}>
-          <SMultiselect
-            status={skillsError ? "error" : "default"}
-            options={options}
-            value={selectedOptions}
-            onChange={handleSkillsChange}
-            selectedBehavior="hide"
-            closeDropdownAfterSelect={false}
-            creatable={false}
-            placeholder={
-              isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
-            }
-          />
+            <SMultiselect
+              status={skillsError ? "error" : "default"}
+              options={options}
+              value={selectedOptions}
+              onChange={handleSkillsChange}
+              selectedBehavior="hide"
+              closeDropdownAfterSelect={false}
+              creatable={false}
+              placeholder={
+                isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
+              }
+            />
         </SSection>
 
         <SSection header="Обо мне" footer={bioError}>
@@ -167,20 +155,19 @@ export const ProfilePage = () => {
           />
         </SSection>
 
-        {/* блок достижений подключишь позже */}
-        {/* <SSection header="Достижения">
-          {achievements?.items.map((a) => (
-            <AchievementCard key={a.id} achievement={a} />
-          ))}
-        </SSection> */}
+        <SSection header="Достижения">
+          <List>
+            {user?.achievements?.map((a) => (
+              <AchievementItem key={a.id} achievement={a} />
+            ))}
+          </List>
+        </SSection>
       </SExtraInfo>
     </SProfile>
   );
 };
 
 export default ProfilePage;
-
-// ===== стили =====
 
 const SProfile = styled.section`
   display: flex;
@@ -237,26 +224,6 @@ const SSection = styled(Section)`
       color: var(--tg-theme-destructive-text-color, #fff);
     }
   }
-`;
-
-interface AchievementCardProps {
-  achievement: Achievement;
-}
-
-export const AchievementCard: FC<AchievementCardProps> = ({ achievement }) => {
-  return (
-    <SAchievementCard>
-      <STitle>{achievement.name}</STitle>
-      <STitle>{formatHackPlace(achievement.place)}</STitle>
-    </SAchievementCard>
-  );
-};
-
-const SAchievementCard = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 1rem 0;
 `;
 
 const SMultiselect = styled(Multiselect)`

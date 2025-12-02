@@ -6,9 +6,13 @@ import { paths } from "./paths";
 const HackathonsPage = lazy(() => import("@/pages/hackathons/ui/Page"));
 const HackathonPage = lazy(() => import("@/pages/hackathon/ui/Page"));
 const NotificationsPage = lazy(() => import("@/pages/notifications/ui/Page"));
-const ProfilePage = lazy(() => import("@/pages/profile/ui/Page"));
-const NotFound = lazy(() => import("@/pages/not-found/ui/Page"));
+const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 const UserTeamsPage = lazy(() => import("@/pages/user-teams/ui/Page"));
+const AchievementPage = lazy(
+  () => import("@/pages/achievements/AchievementPage")
+); // НОВОЕ
+const NotFound = lazy(() => import("@/pages/not-found/ui/Page"));
+
 const routes: RouteObject[] = [
   {
     path: paths.root,
@@ -25,7 +29,15 @@ const routes: RouteObject[] = [
       },
 
       { path: paths.notifications, element: <NotificationsPage /> },
-      { path: paths.profile, element: <ProfilePage /> },
+
+      {
+        path: paths.profile,
+        children: [
+          { index: true, element: <ProfilePage /> }, // /profile
+          { path: "achievements/:id", element: <AchievementPage /> }, // /profile/achievements/:id
+        ],
+      },
+
       { path: paths.teams, element: <UserTeamsPage /> },
 
       { path: paths.error404, element: <NotFound /> },
@@ -35,6 +47,5 @@ const routes: RouteObject[] = [
 ];
 
 export function AppRouter() {
-  const element = useRoutes(routes);
-  return element;
+  return useRoutes(routes);
 }

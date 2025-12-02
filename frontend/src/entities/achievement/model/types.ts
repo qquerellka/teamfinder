@@ -11,6 +11,7 @@ export interface Achievement {
   id: number;
   hackathonId: number;
   role: string;
+  hackathonName: string | null; // <-- НОВОЕ ПОЛЕ
   place: AchievementPlace;
 }
 
@@ -24,6 +25,7 @@ export interface AchievementDTO {
   id: number;
   hackathon_id: number;
   role: string;
+  hackathon_name: string | null; // <-- НОВОЕ ПОЛЕ
   place: AchievementPlace;
 }
 
@@ -35,7 +37,7 @@ export interface AchievementsResponseDTO {
 }
 
 // для создания ачивки
-export type AchievementCreate = Omit<Achievement, "id">;
+export type AchievementCreate = Omit<Achievement, "id" | "hackathonName">;
 
 // для частичного редактирования ачивки
 export interface AchievementPatch {
