@@ -34,11 +34,18 @@ export interface UserDTO {
   achievements: AchievementDTO[];
 }
 
-// для PATCH /users/me
 export interface UserMainInfoPatch {
   bio?: string;
   city?: string;
   university?: string;
   link?: string;
-  skillSlugs?: string[]; // slugs для skills
+  skillSlugs?: string[];
+}
+
+export interface UserMainInfoPatch {
+  bio?: string;
+  city?: string;
+  university?: string;
+  link?: string;
+  skillSlugs?: string[];
 }

@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Achievement, AchievementCreate, AchievementsList } from "../model/types";
+import { Achievement, AchievementCreate, AchievementsList, EditAchievementArgs } from "../model/types";
 import {
-  AchievementPatch,
   createAchievement,
   deleteAchievement,
   editAchievement,
@@ -53,11 +52,6 @@ export function useDeleteAchievement() {
     },
   });
 }
-
-type EditAchievementArgs = {
-  id: number;
-  patch: AchievementPatch;
-};
 
 export function useEditAchievement() {
   const queryClient = useQueryClient();

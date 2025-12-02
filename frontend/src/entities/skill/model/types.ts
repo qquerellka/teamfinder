@@ -4,7 +4,6 @@ export interface Skill {
   name: string;
 }
 
-
 export interface SkillDTO {
   id: number;
   slug: string;

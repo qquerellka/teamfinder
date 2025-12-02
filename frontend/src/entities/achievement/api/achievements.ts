@@ -1,7 +1,5 @@
-// ====== ACHIEVEMENTS ======
-
 import { apiClient } from "@/shared/api/client";
-import { Achievement, AchievementCreate, AchievementDTO, AchievementsList, AchievementsResponseDTO } from "../model/types";
+import { Achievement, AchievementCreate, AchievementDTO, AchievementPatch, AchievementsList, AchievementsResponseDTO } from "../model/types";
 import { achievementCreateToDTO, achievementsToCamelCase } from "../lib/dto";
 
 export async function getAuthUserAchievements(): Promise<AchievementsList> {
@@ -47,12 +45,6 @@ export async function deleteAchievement(id: number): Promise<void> {
   await apiClient.delete(`/achievements/${id}`);
 }
 
-export interface AchievementPatch {
-  role?: string;
-  place?: Achievement["place"];
-  hackathonId?: number;
-}
-
 export async function editAchievement(
   id: number,
   patch: AchievementPatch,
@@ -63,3 +55,4 @@ export async function editAchievement(
     hackathon_id: patch.hackathonId,
   });
 }
+

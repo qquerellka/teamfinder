@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { paths } from "@/app/routing/paths";
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-import { useHackathonsQuery } from "@/entities/hackathon/api/hackathons";
+import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 
 export const HackathonList: FC = () => {
   const { data, isLoading, error } = useHackathonsQuery();

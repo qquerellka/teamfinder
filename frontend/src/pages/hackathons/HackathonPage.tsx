@@ -4,19 +4,16 @@ import styled from "styled-components";
 import { Button, List, Modal } from "@telegram-apps/telegram-ui";
 
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-import { useHackathonQuery } from "@/entities/hackathon/api/hackathons";
 import type { Hackathon } from "@/entities/hackathon/model/types";
 import { useAuthUser } from "@/entities/user/api/hooks";
+import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
+
 import { paths } from "@/app/routing/paths";
 
 import { SText } from "@/shared/ui/SText";
+import { normalizeUrl } from "@/shared/helpers/url";
 
-const normalizeUrl = (raw?: string | null): string | undefined => {
-  if (!raw) return undefined;
-  const trimmed = raw.trim();
-  if (!trimmed) return undefined;
-  return trimmed;
-};
+
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +37,7 @@ const HackathonPage: React.FC = () => {
   const openExternal = () => {
     if (!url) return;
 
-    const wa = (window as any).Telegram?.WebApp;
+    const wa = window.Telegram?.WebApp;
     if (wa?.openLink) {
       wa.openLink(url, { try_instant_view: true });
     } else {

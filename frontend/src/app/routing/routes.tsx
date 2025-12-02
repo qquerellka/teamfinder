@@ -33,7 +33,7 @@ const routes: RouteObject[] = [
       {
         path: paths.profile,
         children: [
-          { index: true, element: <ProfilePage /> }, // /profile
+          { index: true, element: <ProfilePage /> },
           { path: "achievements/new", element: <AchievementPage /> },
           { path: "achievements/:id", element: <AchievementPage /> }, // /profile/achievements/:id
         ],
