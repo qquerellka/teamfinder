@@ -2,9 +2,9 @@ import { FC } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-import { paths } from "@/app/routing/paths";
+import { getHackathonPath } from "@/app/routing/paths";
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-import { useHackathonsQuery } from "@/entities/hackathon/api/hackathon-api";
+import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 
 export const HackathonList: FC = () => {
   const { data, isLoading, error } = useHackathonsQuery();
@@ -16,7 +16,7 @@ export const HackathonList: FC = () => {
   return (
     <Grid>
       {data.items.map((h) => (
-        <CardLink key={h.id} to={paths.hackathon(h.id)}>
+        <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
           <HackathonCard hackathon={h} />
         </CardLink>
       ))}

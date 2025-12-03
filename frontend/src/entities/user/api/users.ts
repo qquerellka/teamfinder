@@ -2,6 +2,7 @@ import { apiClient } from "@/shared/api/client";
 import {
   User,
   UserDTO,
+  UserMainInfoPatch,
 } from "../model/types";
 import { userToCamelCase } from "../lib/dto";
 
@@ -13,14 +14,6 @@ export async function getAuthUser(): Promise<User> {
 export async function getUserById(id: number): Promise<User> {
   const { data } = await apiClient.get<UserDTO>(`/users/${id}`);
   return userToCamelCase(data);
-}
-
-export interface UserMainInfoPatch {
-  bio?: string;
-  city?: string;
-  university?: string;
-  link?: string;
-  skillSlugs?: string[]; // список slug'ов
 }
 
 export async function editUserMainInfo(

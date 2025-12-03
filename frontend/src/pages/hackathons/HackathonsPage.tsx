@@ -1,4 +1,3 @@
-// src/pages/hackathons/ui/Page.tsx
 import { FC } from "react";
 import styled from "styled-components";
 import { HackathonList } from "@/widgets/hackathon-list/ui/HackathonList";
@@ -12,6 +11,8 @@ export const HackathonsPage: FC = () => {
 };
 
 const Wrapper = styled.section`
+  flex: 1; /* растягиваемся внутри SContent */
+
   display: grid;
   gap: 12px;
 `;

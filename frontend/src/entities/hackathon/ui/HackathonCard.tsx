@@ -23,11 +23,8 @@ type HackathonCardVariant = "full" | "compact";
 
 interface HackathonCardProps {
   hackathon: Hackathon;
-  /** full — все параметры, compact — без команды и без кнопки share */
   variant?: HackathonCardVariant;
-  /** показывать ли кнопку шаринга */
   showShareButton?: boolean;
-  /** коллбек по клику на иконку share */
   onShareClick?: () => void;
 }
 
@@ -103,7 +100,6 @@ export const HackathonCard: FC<HackathonCardProps> = ({
   );
 };
 
-// ===== стили =====
 
 const SHackathonCard = styled(Card)`
   background: var(--tg-theme-section-bg-color, #fff);

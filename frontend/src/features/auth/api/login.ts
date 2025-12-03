@@ -1,6 +1,7 @@
 import { apiClient } from "@/shared/api/client";
 import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
 import { AuthResponse } from "../model/types";
+import axios from "axios";
 
 
 
@@ -60,16 +61,40 @@ async function fetchProfile(): Promise<AuthResponse["profile"]> {
 
 }
 
+function clearAuthStorage() {
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  delete apiClient.defaults.headers.common.Authorization;
+}
+
 export async function authQueryFn(): Promise<AuthResponse> {
   const token = restoreTokenFromStorage();
 
   if (token) {
-    const profile = await fetchProfile();
-    return {
-      access_token: token,
-      profile,
-    };
+    try {
+      const profile = await fetchProfile();
+      return {
+        access_token: token,
+        profile,
+      };
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        // тут err: AxiosError
+        const status = err.response?.status;
 
+        // если хочешь чистить только на 401/403:
+        if (status === 401 || status === 403) {
+          clearAuthStorage();
+        } else {
+          // например, на 500/timeout можно пробросить ошибку наверх
+          throw err;
+        }
+      } else {
+        // не axios-ошибка — пробрасываем
+        throw err;
+      }
+
+      // если дошли до сюда, значит токен протух, всё почистили и пойдём дальше по флоу
+    }
   }
 
   const isTMA = !!window?.Telegram?.WebApp;
@@ -82,4 +107,3 @@ export async function authQueryFn(): Promise<AuthResponse> {
 
   return authTelegram();
 }
-

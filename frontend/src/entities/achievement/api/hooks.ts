@@ -1,12 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AchievementsList } from "../model/types";
-import { AchievementCreate, createAchievement, deleteAchievement, getAuthUserAchievements, getUserAchievementsByUserId } from "./achievements";
+import { Achievement, AchievementCreate, AchievementsList, EditAchievementArgs } from "../model/types";
+import {
+  createAchievement,
+  deleteAchievement,
+  editAchievement,
+  getAuthUserAchievements,
+  getUserAchievementsByUserId,
+} from "./achievements";
+import { queryKeys } from "@/shared/api/queryKeys";
 
-const achievementKeys = {
-  all: ["achievements"] as const,
-  me: ["achievements", "me"] as const,
-  byUser: (id: number) => ["achievements", "user", id] as const,
-};
+const achievementKeys = queryKeys.achievements;
+const userKeys = queryKeys.user;
 
 export function useAuthUserAchievements() {
   return useQuery<AchievementsList>({
@@ -28,11 +32,11 @@ export function useUserAchievements(userId: number, enabled = true) {
 export function useCreateAchievement() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (payload: AchievementCreate) => createAchievement(payload),
+  return useMutation<Achievement, Error, AchievementCreate>({
+    mutationFn: (payload) => createAchievement(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
-      // если ачивки где-то ещё показываются, можно дополнительно инвалидировать по userId
+      queryClient.invalidateQueries({ queryKey: userKeys.me });
     },
   });
 }
@@ -44,6 +48,20 @@ export function useDeleteAchievement() {
     mutationFn: (id: number) => deleteAchievement(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
+      queryClient.invalidateQueries({ queryKey: userKeys.me });
+    },
+  });
+}
+
+export function useEditAchievement() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, patch }: EditAchievementArgs) =>
+      editAchievement(id, patch),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: achievementKeys.me });
+      queryClient.invalidateQueries({ queryKey: userKeys.me });
     },
   });
 }

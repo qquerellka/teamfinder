@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/shared/api/client";
 import { mapHackathon } from "@/shared/helpers/mapping";
 import { Hackathon, HackathonApi } from "../model/types";
@@ -15,7 +14,7 @@ export interface FetchHackathonsResponse {
   offset: number;
 }
 
-async function fetchHackathons(): Promise<FetchHackathonsResponse> {
+export async function fetchHackathons(): Promise<FetchHackathonsResponse> {
   const { data } = await apiClient.get<FetchHackathonsApiResponse>("/hackathons");
 
   return {
@@ -25,22 +24,7 @@ async function fetchHackathons(): Promise<FetchHackathonsResponse> {
   };
 }
 
-async function fetchHackathon(id: string): Promise<Hackathon> {
+export async function fetchHackathon(id: number): Promise<Hackathon> {
   const { data } = await apiClient.get<HackathonApi>(`/hackathons/${id}`);
   return mapHackathon(data);
-}
-
-export function useHackathonsQuery() {
-  return useQuery({
-    queryKey: ["hackathons"],
-    queryFn: fetchHackathons,
-  });
-}
-
-export function useHackathonQuery(id: string) {
-  return useQuery({
-    queryKey: ["hackathons", id],
-    queryFn: () => fetchHackathon(id),
-    enabled: Boolean(id),
-  });
 }
