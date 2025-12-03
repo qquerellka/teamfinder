@@ -8,15 +8,14 @@ import type { Hackathon } from "@/entities/hackathon/model/types";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
 
-import { paths } from "@/app/routing/paths";
+import { getHackathonParticipationPath, paths } from "@/app/routing/paths";
 
 import { SText } from "@/shared/ui/SText";
 import { normalizeUrl } from "@/shared/helpers/url";
-
-
+import { Page } from "@/shared/ui/Page";
 
 const HackathonPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
 
   const { data: hackathon, isLoading, isError } = useHackathonQuery(Number(id));
   const { data: user, isLoading: isUserLoading } = useAuthUser();
@@ -45,7 +44,6 @@ const HackathonPage: React.FC = () => {
     }
   };
 
-
   const handleGoToHackathon = () => {
     if (isUserLoading) return;
 
@@ -56,6 +54,9 @@ const HackathonPage: React.FC = () => {
       setIsSkillsModalOpen(true);
       return;
     }
+
+    // здесь потом добавишь переход в "участие / анкета"
+    if (id) navigate(getHackathonParticipationPath(id));
   };
 
   const handleGoToProfile = () => {
@@ -68,13 +69,18 @@ const HackathonPage: React.FC = () => {
       <Page>
         <HackathonCard hackathon={hackathon} variant="full" />
 
-        <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-          Подробнее на сайте
-        </SButton>
+        <ButtonsSection>
+          <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+            Подробнее на сайте
+          </SButton>
 
-        <SButton onClick={handleGoToHackathon} disabled={isUserLoading}>
-          Пойти на хакатон
-        </SButton>
+          <SButton onClick={handleGoToHackathon} disabled={isUserLoading}>
+            Найти команду
+          </SButton>
+          <SButton onClick={handleGoToHackathon} disabled={isUserLoading}>
+            Создать команду
+          </SButton>
+        </ButtonsSection>
       </Page>
 
       <Modal
@@ -122,13 +128,6 @@ const HackathonPage: React.FC = () => {
 
 export default HackathonPage;
 
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: stretch;
-`;
-
 const SButton = styled(Button)`
   width: 100%;
 `;
@@ -138,4 +137,21 @@ const Placeholder = styled.div`
   text-align: center;
   font-size: 14px;
   opacity: 0.8;
+`;
+
+// const SSection = styled(Section)`
+//   background: var(--tg-theme-section-bg-color, #fff);
+//   padding: 0;
+//   border-radius: 1rem;
+//   width: 100%;
+
+//   & > div {
+//     padding: 0;
+//   }
+// `;
+
+const ButtonsSection = styled(List)`
+  margin-top: auto;          /* прижимаем к низу Page */
+  display: flex;
+  flex-direction: column;
 `;

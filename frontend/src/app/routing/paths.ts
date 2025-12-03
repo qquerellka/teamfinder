@@ -1,15 +1,20 @@
 export const paths = {
   error404: "/404",
   root: "/",
-  notifications: "/notifications",
-  profile: "/profile",
-  teams: "/myTeams",
+  applications: "/applications",
+  teams: "/teams",
 
   hackathons: "/hackathons",
-  hackathon: (id: string | number = ":id") => `/hackathons/${id}`,
-  
+  hackathon: "/hackathons/:id",
+  hackathonParticipate: "/hackathons/:id/participate",
+
+  profile: "/profile",
   profileAchievementsRoot: "/profile/achievements",
-  profileAchievement: (id: string | number = ":id") =>
-    `/profile/achievements/${id}`,
-  
+  profileAchievement: "/profile/achievements/:id",
 } as const;
+
+export const getHackathonPath = (id: string) =>
+  paths.hackathon.replace(":id", String(id));
+
+export const getHackathonParticipationPath = (id: string) =>
+  paths.hackathonParticipate.replace(":id", String(id));

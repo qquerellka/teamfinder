@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 import { AchievementForm } from "@/features/achievement/edit/ui/AchievementForm";
+import { Page } from "@/widgets/Page";
 
 const AchievementPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,17 +18,19 @@ const AchievementPage = () => {
       isNew
         ? null
         : user?.achievements.find((a) => a.id === Number(id)) ?? null,
-    [user, id, isNew],
+    [user, id, isNew]
   );
 
   const hackathons = hackathonsResponse?.items ?? [];
 
   return (
-    <AchievementForm
-      isNew={isNew}
-      achievement={achievement}
-      hackathons={hackathons}
-    />
+    <Page>
+      <AchievementForm
+        isNew={isNew}
+        achievement={achievement}
+        hackathons={hackathons}
+      />
+    </Page>
   );
 };
 

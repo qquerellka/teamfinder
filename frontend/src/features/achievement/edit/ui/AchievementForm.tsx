@@ -17,6 +17,7 @@ import {
   useCreateAchievement,
 } from "@/entities/achievement/api/hooks";
 import type { Hackathon } from "@/entities/hackathon/model/types"; // или твой тип
+import { placeOptions, roleOptions } from "@/shared/types/enums";
 
 type AchievementPlace = Achievement["place"];
 
@@ -25,22 +26,6 @@ type Props = {
   achievement: Achievement | null;
   hackathons: Hackathon[]; // допустим, hackathons.items уже переданы
 };
-
-const placeOptions: { label: string; value: AchievementPlace }[] = [
-  { label: "1 место", value: "firstPlace" },
-  { label: "2 место", value: "secondPlace" },
-  { label: "3 место", value: "thirdPlace" },
-  { label: "Участник", value: "participant" },
-];
-
-const roleOptions: { label: string; value: string }[] = [
-  { label: "Backend", value: "Backend" },
-  { label: "Frontend", value: "Frontend" },
-  { label: "Fullstack", value: "Fullstack" },
-  { label: "Data / ML", value: "Data" },
-  { label: "Product", value: "Product" },
-  { label: "Designer", value: "Designer" },
-];
 
 export const AchievementForm = ({ isNew, achievement, hackathons }: Props) => {
   const navigate = useNavigate();
@@ -85,7 +70,7 @@ export const AchievementForm = ({ isNew, achievement, hackathons }: Props) => {
         },
         {
           onSuccess: () => navigate(-1),
-        },
+        }
       );
     } else if (achievement) {
       editAchievementMutation.mutate(
@@ -98,7 +83,7 @@ export const AchievementForm = ({ isNew, achievement, hackathons }: Props) => {
         },
         {
           onSuccess: () => navigate(-1),
-        },
+        }
       );
     }
   };
@@ -124,7 +109,7 @@ export const AchievementForm = ({ isNew, achievement, hackathons }: Props) => {
   return (
     <SProfile>
       <Wrapper>
-        <STitle $fs={14} $fw={"semibold"}>
+        <STitle $fs={14} $fw={"semibold"} style={{}}>
           {isNew ? "Новое достижение" : "Редактировать достижение"}
         </STitle>
 
@@ -181,7 +166,7 @@ export const AchievementForm = ({ isNew, achievement, hackathons }: Props) => {
           </List>
         </SSection>
 
-        <SSection>
+        <ButtonsSection>
           <List>
             <Button size="l" onClick={handleSave} stretched>
               {isNew ? "Добавить" : "Сохранить"}
@@ -193,7 +178,7 @@ export const AchievementForm = ({ isNew, achievement, hackathons }: Props) => {
               </DeleteButton>
             )}
           </List>
-        </SSection>
+        </ButtonsSection>
       </Wrapper>
     </SProfile>
   );
@@ -203,8 +188,9 @@ const SProfile = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5rem 0;
+  padding: 2.5rem 0 0;
   gap: 1.5rem;
+  flex: 1; /* растягиваемся внутри SContent */
 `;
 
 const Wrapper = styled.section`
@@ -213,6 +199,7 @@ const Wrapper = styled.section`
   width: 100%;
   gap: 0rem;
   align-items: center;
+  flex: 1; /* занимать всё доступное пространство */
 `;
 
 const SSection = styled(Section)`
@@ -231,6 +218,16 @@ const SSelect = styled(Select)`
 `;
 
 const DeleteButton = styled(Button)`
-  margin-top: 0.75rem;
   background-color: var(--tg-theme-destructive-text-color);
+`;
+
+const ButtonsSection = styled(SSection)`
+  margin-top: auto;
+  padding-bottom: env(
+    safe-area-inset-bottom,
+    0
+  ); /* чтобы не упиралось в нижний инсет на телефоне */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;

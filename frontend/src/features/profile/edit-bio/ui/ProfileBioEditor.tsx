@@ -55,7 +55,7 @@ export const ProfileBioEditor = () => {
 
   return (
     <SSection header="Обо мне" footer={bioError}>
-      <Textarea
+      <Textarea 
         status={bioError ? "error" : "default"}
         value={bio}
         onChange={handleChange}
