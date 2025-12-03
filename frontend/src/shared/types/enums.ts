@@ -37,3 +37,20 @@ export const roleOptions: { label: string; value: AchievementRole }[] = [
   { label: "Product", value: "Product" },
   { label: "Designer", value: "Designer" },
 ];
+
+export const ROLES = [
+  "DevOps",
+  "GameDev",
+  "MobileDev",
+  "Product manager",
+  "DS",
+  "ML",
+  "Fullstack",
+  "Backend",
+  "Frontend",
+  "Designer",
+  "Analytics",
+  "QA",
+] as const;
+
+export type Role = (typeof ROLES)[number];

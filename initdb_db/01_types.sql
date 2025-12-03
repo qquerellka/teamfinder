@@ -11,7 +11,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
-  CREATE TYPE application_status AS ENUM ('draft','published','hidden');
+  CREATE TYPE application_status AS ENUM ('published','hidden');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN

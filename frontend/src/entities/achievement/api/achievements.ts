@@ -37,7 +37,7 @@ export async function createAchievement(
     "/users/me/achievements",
     payload,
   );
-
+  
   return achievementsToCamelCase([data])[0];
 }
 

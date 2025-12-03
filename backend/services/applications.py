@@ -95,13 +95,9 @@ class ApplicationsService:
             hackathon_id=hackathon_id,
         )
 
-    async def list_my(self, user_id: int, limit: int = 50, offset: int = 0):
+    async def list_my(self, user_id: int):
         """Список всех анкет пользователя по всем хакатонам."""
-        return await self.apps.search_by_user(
-            user_id=user_id,
-            limit=limit,
-            offset=offset,
-        )
+        return await self.apps.search_by_user(user_id=user_id)
 
     async def delete(self, app_id: int) -> bool:
         """

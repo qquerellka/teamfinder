@@ -59,7 +59,7 @@ class ApplicationCreateIn(BaseModel):
 
 class ApplicationPatchIn(BaseModel):
     role: Optional[RoleType] = None
-    status: Optional[ApplicationStatus] = None
+    # status: Optional[ApplicationStatus] = None
 
 
 # ---- ВСПОМОГАТЕЛЬНАЯ СБОРКА КАРТОЧКИ ----
@@ -181,24 +181,13 @@ async def create_my_application(
 # ---- РОУТЫ: мои анкеты по всем хакатонам ----
 
 
-@router.get("/me/applications", response_model=dict)
+@router.get("/me/applications", response_model=list[ApplicationCardOut])
 async def list_my_applications(
-    limit: int = Query(default=50, ge=1, le=100, description="Размер страницы"),
-    offset: int = Query(default=0, ge=0, description="Смещение от начала списка"),
     user_id: int = Depends(get_current_user_id),
 ):
-    rows = await apps_service.list_my(
-        user_id=user_id,
-        limit=limit,
-        offset=offset,
-    )
+    rows = await apps_service.list_my(user_id=user_id)
     items = [await _pack_application_card(r) for r in rows]
-
-    return {
-        "items": [i.model_dump() for i in items],
-        "limit": limit,
-        "offset": offset,
-    }
+    return items
 
 
 # ---- РОУТЫ: работа по application_id ----
@@ -233,8 +222,8 @@ async def patch_application_by_id(
 
     if "role" in data and data["role"] is not None:
         data["role"] = data["role"].value
-    if "status" in data and data["status"] is not None:
-        data["status"] = data["status"].value
+    # if "status" in data and data["status"] is not None:
+    #     data["status"] = data["status"].value
 
     updated = await apps_service.update(application_id, data)
     if not updated:

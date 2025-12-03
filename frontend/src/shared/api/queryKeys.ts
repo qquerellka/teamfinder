@@ -20,4 +20,14 @@ export const queryKeys = {
   skills: {
     all: ["skills"] as const,
   },
+
+  applications: {
+    all: ["applications"] as const,
+    byHackathon: (hackathonId: number) =>
+      ["applications", "hackathon", hackathonId] as const,
+    me: ["applications", "me"] as const,
+    meByHackathon: (hackathonId: number) =>
+      ["applications", "me", "hackathon", hackathonId] as const,
+    byId: (id: number) => ["applications", id] as const,
+  },
 } as const;
