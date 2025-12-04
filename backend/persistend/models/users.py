@@ -12,7 +12,7 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from backend.persistend.base import (
+from persistend.base import (
     Base,
     TimestampMixin,
 )

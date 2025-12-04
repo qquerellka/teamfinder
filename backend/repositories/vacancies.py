@@ -4,10 +4,10 @@ from typing import Optional, List, Sequence, Any
 
 from sqlalchemy import select
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.enums import VacancyStatus, RoleType
-from backend.persistend.models.vacancy import Vacancy
-from backend.persistend.models.team import Team
+from repositories.base import BaseRepository
+from persistend.enums import VacancyStatus, RoleType
+from persistend.models.vacancy import Vacancy
+from persistend.models.team import Team
 
 
 class VacanciesRepo(BaseRepository):

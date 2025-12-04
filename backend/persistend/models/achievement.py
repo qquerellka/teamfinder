@@ -6,8 +6,8 @@ from datetime import datetime
 from sqlalchemy import Integer, ForeignKey, Enum, DateTime, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.persistend.base import Base, TimestampMixin
-from backend.persistend.enums import RoleType, AchievementPlace
+from persistend.base import Base, TimestampMixin
+from persistend.enums import RoleType, AchievementPlace
 
 
 class Achievement(Base, TimestampMixin):

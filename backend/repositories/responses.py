@@ -8,10 +8,10 @@ from typing import Optional, List
 
 from sqlalchemy import select, func
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.enums import ResponseStatus, RoleType
-from backend.persistend.models.response import Response
-from backend.persistend.models.application import Application
+from repositories.base import BaseRepository
+from persistend.enums import ResponseStatus, RoleType
+from persistend.models.response import Response
+from persistend.models.application import Application
 
 
 class ResponsesRepo(BaseRepository):

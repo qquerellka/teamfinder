@@ -9,11 +9,11 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from backend.persistend.base import (
+from persistend.base import (
     Base,
     TimestampMixin,
 )
-from backend.persistend.enums import (
+from persistend.enums import (
     RoleType,
     ApplicationStatus,
 )

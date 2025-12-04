@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from backend.repositories.applications import ApplicationsRepo
-from backend.repositories.users import UsersRepo
+from repositories.applications import ApplicationsRepo
+from repositories.users import UsersRepo
 
 
 class ApplicationsService:

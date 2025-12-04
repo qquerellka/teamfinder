@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import List, Optional
 
-from backend.repositories.team_members import TeamMembersRepo
-from backend.persistend.enums import RoleType
-from backend.persistend.models.team_member import TeamMember
+from repositories.team_members import TeamMembersRepo
+from persistend.enums import RoleType
+from persistend.models.team_member import TeamMember
 
 
 class TeamMembersService:

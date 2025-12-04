@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from backend.infrastructure.db import get_sessionmaker
+from infrastructure.db import get_sessionmaker
 
 
 class BaseRepository:

@@ -20,9 +20,9 @@ from fastapi import (
 )
 from pydantic import BaseModel
 
-from backend.persistend.models import achievement as m_ach
-from backend.services.achievements import AchievementsService
-from backend.presentations.routers.users import get_current_user_id
+from persistend.models import achievement as m_ach
+from services.achievements import AchievementsService
+from presentations.routers.users import get_current_user_id
 
 
 router = APIRouter(prefix="/achievements", tags=["achievements"])

@@ -4,7 +4,7 @@ from __future__ import annotations
 import requests
 from fastapi import HTTPException
 
-from backend.settings.config import settings
+from settings.config import settings
 
 TELEGRAM_API_BASE = "https://api.telegram.org"
 

@@ -5,12 +5,12 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
 from pydantic import BaseModel, Field
 
-from backend.persistend.enums import TeamStatus, RoleType, HackathonStatus
-from backend.presentations.routers.users import get_current_user_id
-from backend.services.teams import TeamsService
-from backend.services.team_members import TeamMembersService
-from backend.services.hackathons import HackathonsService
-from backend.repositories.users import UsersRepo
+from persistend.enums import TeamStatus, RoleType, HackathonStatus
+from presentations.routers.users import get_current_user_id
+from services.teams import TeamsService
+from services.team_members import TeamMembersService
+from services.hackathons import HackathonsService
+from repositories.users import UsersRepo
 
 router = APIRouter(tags=["teams"])
 

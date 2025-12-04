@@ -5,7 +5,7 @@ from typing import List
 import boto3
 from fastapi import UploadFile, HTTPException
 
-from backend.settings.config import settings
+from settings.config import settings
 
 _s3 = boto3.client(
     "s3",

@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-from backend.persistend.enums import AchievementPlace, RoleType
-from backend.persistend.models import achievement as m_ach
-from backend.repositories.achievements import AchievementsRepo
+from persistend.enums import AchievementPlace, RoleType
+from persistend.models import achievement as m_ach
+from repositories.achievements import AchievementsRepo
 
 
 @dataclass(frozen=True)

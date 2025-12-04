@@ -1,4 +1,4 @@
-from backend.persistend.base import Base
+from persistend.base import Base
 
 from .users import User
 from .hackathon import Hackathon

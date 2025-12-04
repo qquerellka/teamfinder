@@ -17,11 +17,11 @@ from fastapi import (
 )
 from pydantic import BaseModel, Field
 
-from backend.presentations.routers.users import get_current_user_id
-from backend.repositories.users import UsersRepo
-from backend.repositories.hackathons import HackathonsRepo
-from backend.persistend.enums import RoleType, ApplicationStatus
-from backend.services.applications import ApplicationsService
+from presentations.routers.users import get_current_user_id
+from repositories.users import UsersRepo
+from repositories.hackathons import HackathonsRepo
+from persistend.enums import RoleType, ApplicationStatus
+from services.applications import ApplicationsService
 
 router = APIRouter(tags=["applications"])
 

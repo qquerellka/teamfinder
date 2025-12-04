@@ -5,8 +5,8 @@ from sqlalchemy import Integer, Text, Enum as SAEnum, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.persistend.base import Base, TimestampMixin
-from backend.persistend.enums import RoleType, VacancyStatus
+from persistend.base import Base, TimestampMixin
+from persistend.enums import RoleType, VacancyStatus
 
 
 class Vacancy(Base, TimestampMixin):

@@ -4,10 +4,10 @@ from typing import Optional, List
 
 from sqlalchemy import select, func
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.enums import TeamStatus, RoleType
-from backend.persistend.models.team import Team
-from backend.persistend.models.team_member import TeamMember
+from repositories.base import BaseRepository
+from persistend.enums import TeamStatus, RoleType
+from persistend.models.team import Team
+from persistend.models.team_member import TeamMember
 
 
 class TeamsRepo(BaseRepository):

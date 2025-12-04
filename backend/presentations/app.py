@@ -5,16 +5,16 @@ import time
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.settings.config import settings
-from backend.infrastructure.db import init_db, dispose_db
-from backend.presentations.routers.system import router as system_router
-from backend.presentations.routers.auth import router as auth_router
-from backend.presentations.routers.users import router as users_router
-from backend.presentations.routers.achievements import router as achievements_router
-from backend.presentations.routers.hackathons import router as hack_router
-from backend.presentations.routers.applications import router as applications_router
-from backend.presentations.routers.teams import router as teams_router
-from backend.presentations.routers.vacancies import router as vacancies_router
+from settings.config import settings
+from infrastructure.db import init_db, dispose_db
+from presentations.routers.system import router as system_router
+from presentations.routers.auth import router as auth_router
+from presentations.routers.users import router as users_router
+from presentations.routers.achievements import router as achievements_router
+from presentations.routers.hackathons import router as hack_router
+from presentations.routers.applications import router as applications_router
+from presentations.routers.teams import router as teams_router
+from presentations.routers.vacancies import router as vacancies_router
 
 
 def create_app() -> FastAPI:

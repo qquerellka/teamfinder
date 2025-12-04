@@ -5,8 +5,8 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import BaseModel
 
-from backend.presentations.routers.users import get_current_user_id
-from backend.persistend.enums import (
+from presentations.routers.users import get_current_user_id
+from persistend.enums import (
     RoleType,
     VacancyStatus,
     ResponseStatus,
@@ -14,14 +14,14 @@ from backend.persistend.enums import (
     HackathonStatus,
 )
 
-from backend.services.vacancies import VacanciesService
-from backend.services.teams import TeamsService
-from backend.services.team_members import TeamMembersService
-from backend.services.hackathons import HackathonsService
+from services.vacancies import VacanciesService
+from services.teams import TeamsService
+from services.team_members import TeamMembersService
+from services.hackathons import HackathonsService
 
-from backend.repositories.responses import ResponsesRepo
-from backend.repositories.applications import ApplicationsRepo
-from backend.repositories.users import UsersRepo
+from repositories.responses import ResponsesRepo
+from repositories.applications import ApplicationsRepo
+from repositories.users import UsersRepo
 
 
 router = APIRouter(tags=["vacancies"])

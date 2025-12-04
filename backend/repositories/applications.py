@@ -5,9 +5,9 @@ from typing import Optional, List
 
 from sqlalchemy import select, update, delete, func
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.models import application as m_app
-from backend.persistend.models import users as m_users
+from repositories.base import BaseRepository
+from persistend.models import application as m_app
+from persistend.models import users as m_users
 
 
 class ApplicationsRepo(BaseRepository):
