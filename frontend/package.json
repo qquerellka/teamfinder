@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "homepage": "https://qquerellka.github.io/teamfinder/",
+  "homepage": "https://teamfinder.tech",
   "scripts": {
     "deploy": "gh-pages -d dist",
     "dev": "vite",
