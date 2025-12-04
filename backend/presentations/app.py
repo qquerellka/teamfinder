@@ -21,6 +21,10 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=getattr(settings, "APP_NAME", "MiniApp API"),
         version=getattr(settings, "APP_VERSION", "0.1.0"),
+        docs_url='/docs',
+        redoc_url='/redoc',
+        openapi_url='/openapi.json',
+        root_path="/api"
     )
 
     app.add_middleware(

@@ -1,0 +1,22 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: always
+    - when: never
+
+stages:
+  - build
+  - deploy
+
+variables:
+  COMPOSE_FILE: "docker-compose.prod.yaml"
+
+build-job:
+  stage: build
+  script:
+    - docker compose -f $COMPOSE_FILE build
+
+deploy-job:
+  stage: deploy
+  script:
+    - docker compose -f $COMPOSE_FILE up -d
