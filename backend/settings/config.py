@@ -1,5 +1,6 @@
 from functools import lru_cache
 from typing import List, Optional
+import os
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -21,11 +22,11 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "*"
 
     # ==== Postgres ====
-    POSTGRES_HOST: str = "localhost"
-    POSTGRES_PORT: int = 5432
-    POSTGRES_DB: str = "app_db"
-    POSTGRES_USER: str = "app_user"
-    POSTGRES_PASSWORD: str = "app_password"
+    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "localhost")
+    POSTGRES_PORT: int = os.getenv("POSTGRES_PORT", 5432)
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "app_db")
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "app_user")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "app_password")
     DATABASE_URL: Optional[str] = None
 
     # ==== Pool/Echo ====
@@ -34,9 +35,9 @@ class Settings(BaseSettings):
     DB_ECHO: bool = False
 
     # ==== Auth ====
-    TELEGRAM_BOT_TOKEN: str = ""
-    JWT_SECRET: str = "dev-secret-change-me"
-    ADMIN_API_TOKEN: str = ""
+    TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "dev-secret-change-me")
+    ADMIN_API_TOKEN: str = os.getenv("ADMIN_API_TOKEN", "")
 
     # ==== S3 ====
     S3_ENDPOINT: str = "https://storage.yandexcloud.net"
