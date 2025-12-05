@@ -25,6 +25,7 @@ const isTMA = !!window.Telegram?.WebApp;
 
 async function bootstrapBrowser() {
   const debug = true;
+  console.log("bootstrap browser")
 
   await init({
     debug,
@@ -43,6 +44,7 @@ async function bootstrapBrowser() {
 
 async function bootstrapTMA() {
 
+  console.log("bootstrap browser");
   const lp = retrieveLaunchParams();
   const raw = resolveInitDataRaw();
 
@@ -82,7 +84,8 @@ async function bootstrapTMA() {
     } else {
       await bootstrapTMA();
     }
-  } catch (e) {
+  }
+   catch (e) {
     console.error(e);
     root.render(<EnvUnsupported />);
   }
