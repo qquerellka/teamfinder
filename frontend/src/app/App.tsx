@@ -6,6 +6,7 @@ import { ReactQueryProvider } from "./providers/react-query";
 import { ErrorBoundary } from "./layouts/ErrorBoundary";
 import { AppRouter } from "./routing/routes";
 import { useEffect } from "react";
+import { AuthGate } from "@/features/auth/ui/AuthGate";
 
 function ErrorBoundaryError({ error }: { error: unknown }) {
   return (
@@ -34,6 +35,7 @@ export function App({ str }: AppProps) {
     console.log("[App] initDataRaw:", lp.initDataRaw);
     // console.log("[App] user:", lp.initData?.user);
   }, [lp]);
+  console.log("App")
   return (
     <ErrorBoundary fallback={ErrorBoundaryError}>
       <AppRoot
@@ -45,9 +47,11 @@ export function App({ str }: AppProps) {
         {""}
         {str}
         <ReactQueryProvider>
-          <HashRouter>
-            <AppRouter />
-          </HashRouter>
+          <AuthGate>
+            <HashRouter>
+              <AppRouter />
+            </HashRouter>
+          </AuthGate>
         </ReactQueryProvider>
       </AppRoot>
     </ErrorBoundary>

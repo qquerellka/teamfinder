@@ -5,7 +5,7 @@ import { paths } from "../routing/paths";
 
 const TAB_ROUTES: ReadonlySet<string> = new Set([
   paths.hackathons,
-  paths.notifications,
+  paths.applications,
   paths.profile,
   paths.teams,
 ]);

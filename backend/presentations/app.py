@@ -15,6 +15,7 @@ from presentations.routers.hackathons import router as hack_router
 from presentations.routers.applications import router as applications_router
 from presentations.routers.teams import router as teams_router
 from presentations.routers.vacancies import router as vacancies_router
+from presentations.routers.skills import router as skills_router
 
 
 def create_app() -> FastAPI:
@@ -51,6 +52,7 @@ def create_app() -> FastAPI:
     app.include_router(applications_router)
     app.include_router(teams_router)
     app.include_router(vacancies_router)
+    app.include_router(skills_router)
 
     @app.on_event("startup")
     async def _startup():

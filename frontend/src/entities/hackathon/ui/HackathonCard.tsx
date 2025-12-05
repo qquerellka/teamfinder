@@ -23,11 +23,8 @@ type HackathonCardVariant = "full" | "compact";
 
 interface HackathonCardProps {
   hackathon: Hackathon;
-  /** full — все параметры, compact — без команды и без кнопки share */
   variant?: HackathonCardVariant;
-  /** показывать ли кнопку шаринга */
   showShareButton?: boolean;
-  /** коллбек по клику на иконку share */
   onShareClick?: () => void;
 }
 
@@ -53,7 +50,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       },
       {
         icon: hackathonPrizeIcon,
-        text: hackathon.prizeFund.toLocaleString(),
+        text: hackathon.prizeFund?.toLocaleString(),
       },
       {
         icon: hackathonTeam,
@@ -103,7 +100,6 @@ export const HackathonCard: FC<HackathonCardProps> = ({
   );
 };
 
-// ===== стили =====
 
 const SHackathonCard = styled(Card)`
   background: var(--tg-theme-section-bg-color, #fff);
@@ -145,13 +141,6 @@ const HackathonParam = styled.div`
   gap: 0.5rem;
   align-items: center;
 `;
-
-// const SImage = styled.img`
-//   width: 100%;
-//   height: 100%;
-//   object-fit: cover;
-//   display: block;
-// `;
 
 const ButtonContainer = styled.div`
   position: absolute;

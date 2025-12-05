@@ -8,7 +8,7 @@ export function resolveInitDataRaw(): string | undefined {
   } catch {}
 
   // 2) Прямо из Telegram WebView
-  const fromTG = (window as any)?.Telegram?.WebApp?.initData;
+  const fromTG = window.Telegram?.WebApp?.initData;
   if (fromTG) return fromTG as string;
 
   // 3) Если Telegram открыл ВНЕШНИМ браузером — он прокидывает tgWebAppData в URL

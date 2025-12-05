@@ -17,7 +17,6 @@ export interface Hackathon {
   imageLink: string;
 }
 
-// Тип с бэка (snake_case)
 export interface HackathonApi {
   id: number;
   name: string;

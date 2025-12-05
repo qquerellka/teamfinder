@@ -23,7 +23,7 @@ class RoleType(str, Enum):
 # СТАТУС АНКЕТЫ (application_status)
 # -----------------------------------------------------------------------------
 class ApplicationStatus(str, Enum):
-    draft = "draft"
+    # draft = "draft"
     published = "published"
     hidden = "hidden"
 

@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Skeleton } from "@telegram-apps/telegram-ui";
 
-interface ImageWithSkeletonProps
-  extends React.ImgHTMLAttributes<HTMLImageElement> {}
+type ImageWithSkeletonProps = React.ImgHTMLAttributes<HTMLImageElement>
 
 export const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   src,

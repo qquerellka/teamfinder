@@ -18,12 +18,12 @@ from repositories.users import UsersRepo
 from repositories.achievements import AchievementsRepo
 from utils import jwt_simple
 from persistend.models import achievement as m_ach
-
+from repositories.hackathons import HackathonsRepo
 router = APIRouter(prefix="/users", tags=["users"])
 
 users_repo = UsersRepo()
 ach_repo = AchievementsRepo()
-
+hack_repo = HackathonsRepo()
 
 # ---- Auth helper ----
 
@@ -63,6 +63,8 @@ class UserSkillOut(BaseModel):
 class UserAchievementOut(BaseModel):
     id: int
     hackathon_id: Optional[int] = None
+    hackathon_name: Optional[str] = None  # <- НОВОЕ ПОЛЕ
+
     role: Optional[str] = None
     place: Optional[str] = None
 
@@ -93,7 +95,6 @@ class UserPatchIn(BaseModel):
 
 class AchievementOut(BaseModel):
     id: int
-    user_id: int
     hackathon_id: int
     role: m_ach.RoleType
     place: m_ach.AchievementPlace
@@ -108,26 +109,34 @@ class AchievementCreateIn(BaseModel):
 # ---- Helpers ----
 
 
-def _map_achievements(achs) -> List[UserAchievementOut]:
+async def _map_achievements(achs) -> List[UserAchievementOut]:
     def _val(x):
         return getattr(x, "value", x) if x is not None else None
 
     items: List[UserAchievementOut] = []
+
     for a in achs:
         hackathon_id = getattr(a, "hackathon_id", None)
         if hackathon_id is None:
             hackathon_id = getattr(a, "hack_id", None)
 
+        hackathon_name: Optional[str] = None
+        if hackathon_id is not None:
+            hack = await hack_repo.get_by_id(int(hackathon_id))
+            if hack is not None:
+                hackathon_name = hack.name
+
         items.append(
             UserAchievementOut(
                 id=a.id,
                 hackathon_id=int(hackathon_id) if hackathon_id is not None else None,
+                hackathon_name=hackathon_name,
                 role=_val(a.role),
                 place=_val(a.place),
             )
         )
-    return items
 
+    return items
 
 async def _pack_user(user_id: int) -> UserOut:
     user = await users_repo.get_by_id(user_id)
@@ -149,7 +158,7 @@ async def _pack_user(user_id: int) -> UserOut:
         university=user.university,
         link=user.link,
         skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
-        achievements=_map_achievements(achievements),
+        achievements=await _map_achievements(achievements),
     )
 
 
@@ -261,7 +270,7 @@ async def search_users(
                 skills=[
                     UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in usr_skills
                 ],
-                achievements=_map_achievements(usr_achs),
+                achievements=await _map_achievements(usr_achs),
                 match_count=mc,
             ).model_dump()
         )
@@ -293,7 +302,6 @@ async def list_my_achievements(
         "items": [
             AchievementOut(
                 id=a.id,
-                user_id=a.user_id,
                 hackathon_id=a.hackathon_id,
                 role=a.role,
                 place=a.place,
@@ -326,7 +334,6 @@ async def list_user_achievements(
         "items": [
             AchievementOut(
                 id=a.id,
-                user_id=a.user_id,
                 hackathon_id=a.hackathon_id,
                 role=a.role,
                 place=a.place,
@@ -371,7 +378,6 @@ async def create_my_achievement(
 
     return AchievementOut(
         id=ach.id,
-        user_id=ach.user_id,
         hackathon_id=ach.hackathon_id,
         role=ach.role,
         place=ach.place,

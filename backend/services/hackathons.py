@@ -106,8 +106,8 @@ class HackathonsService:
         hackathon = await self.repo.create(**data)
 
         if image_file_id:
-            file_bytes, content_type = download_telegram_file(image_file_id)
-            image_url = upload_hackathon_image_from_bytes(
+            file_bytes, content_type = await download_telegram_file(image_file_id)
+            image_url = await upload_hackathon_image_from_bytes(
                 hackathon_id=hackathon.id,
                 data=file_bytes,
                 content_type=content_type,
@@ -159,7 +159,7 @@ class HackathonsService:
         if not hackathon:
             return None
 
-        image_url = upload_hackathon_image_to_s3(
+        image_url = await upload_hackathon_image_to_s3(
             hackathon_id=hackathon_id,
             file=file,
         )
