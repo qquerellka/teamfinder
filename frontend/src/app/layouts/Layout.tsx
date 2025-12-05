@@ -60,7 +60,7 @@ const SRoot = styled.div`
   min-height: calc(var(--vh, 1vh) * 100);
   max-width: 640px;
   margin: 0 auto;
-  /* background: var(--tg-theme-bg-color, #fff); */
+  background: var(--tg-theme-bg-color, #fff);
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -81,6 +81,6 @@ const SFooterFixed = styled(FixedLayout).attrs({
 
 const SFooterInner = styled.div`
   border-radius: 1rem 1rem 0 0;
-  /* background: var(--tg-theme-section-bg-color, #fff); */
+  background: var(--tg-theme-secondary-bg-color, #fff);
   padding-bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
 `;
