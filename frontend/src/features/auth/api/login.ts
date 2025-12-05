@@ -119,13 +119,15 @@ export async function authQueryFn(): Promise<AuthResponse> {
 
   // ВАЖНО: если включили dev-режим — всегда идём в dev-логин
   if (forceDevLogin) {
+    console.log("dev login")
     return authDev();
   }
 
   // Если dev-логин не форсим и Telegram-окружения нет — считаем это ошибкой
   if (!isTMA) {
+    console.log("not TMA")
     throw new Error("No Telegram environment for auth");
   }
-
+  console.log("tg auth")
   return authTelegram();
 }
