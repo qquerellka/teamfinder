@@ -46,7 +46,7 @@ services:
       retries: 10
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./initdb_db:/docker-entrypoint-initdb.d
+      - initdb_db:/docker-entrypoint-initdb.d
   
   admin-bot:
     container_name: admin-bot
@@ -64,3 +64,4 @@ services:
 
 volumes:
   db-data:
+  initdb_db:
