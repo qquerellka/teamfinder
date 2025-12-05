@@ -283,10 +283,8 @@ export const ProfilePage = () => {
     <SProfile>
       <ProfileHeader />
       <SExtraInfo>
-        <Section header="Профиль">
           <ProfileSkillsEditor />
           <ProfileBioEditor />
-        </Section>
         <Section
           header={
             // <HeaderRow>
