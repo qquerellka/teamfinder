@@ -34,7 +34,9 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:16
+    build:
+      context: postgres
+      dockerfile: Dockerfile
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app_db}
       POSTGRES_USER: ${POSTGRES_USER:-app_user}
@@ -46,7 +48,6 @@ services:
       retries: 10
     volumes:
       - db-data:/var/lib/postgresql/data
-      - initdb_db:/docker-entrypoint-initdb.d
   
   admin-bot:
     container_name: admin-bot
@@ -64,4 +65,3 @@ services:
 
 volumes:
   db-data:
-  initdb_db:
