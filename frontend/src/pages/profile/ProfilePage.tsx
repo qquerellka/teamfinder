@@ -346,7 +346,7 @@ const SExtraInfo = styled(List)`
   flex-direction: column;
   width: 100%;
   gap: 0.5rem;
-  background: var(--tgui--secondary_bg_color);
+  /* background: var(--tgui--secondary_bg_color); */
 `;
 
 // const HeaderRow = styled.div`
