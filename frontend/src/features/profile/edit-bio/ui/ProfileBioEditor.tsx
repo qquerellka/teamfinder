@@ -1,8 +1,9 @@
 import { useEffect, useState, ChangeEvent } from "react";
-import styled from "styled-components";
-import { Section, Textarea } from "@telegram-apps/telegram-ui";
+// import styled from "styled-components";
+// import { Section, Textarea } from "@telegram-apps/telegram-ui";
 
 import { useAuthUser, useEditUserMainInfo } from "@/entities/user/api/hooks";
+import { Textarea } from "@telegram-apps/telegram-ui";
 
 const MAX_BIO = 256;
 

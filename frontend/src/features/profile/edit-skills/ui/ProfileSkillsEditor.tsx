@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
-import styled from "styled-components";
 import {
-  List,
   Multiselect,
   MultiselectProps,
-  Section,
 } from "@telegram-apps/telegram-ui";
 
 import { useAuthUser, useEditUserMainInfo } from "@/entities/user/api/hooks";
