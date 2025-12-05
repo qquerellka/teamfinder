@@ -113,7 +113,7 @@ export async function authQueryFn(): Promise<AuthResponse> {
     }
   }
 
-  const isTMA = !!window?.Telegram?.WebApp;
+//   const isTMA = !!window?.Telegram?.WebApp;
   const forceDevLogin =
     import.meta.env.VITE_FORCE_DEV_LOGIN === "1" || import.meta.env.DEV;
 
