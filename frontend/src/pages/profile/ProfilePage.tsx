@@ -273,7 +273,7 @@ import { ProfileBioEditor } from "@/features/profile/edit-bio/ui/ProfileBioEdito
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { List, Section } from "@telegram-apps/telegram-ui";
+import { Input, List, Section } from "@telegram-apps/telegram-ui";
 
 export const ProfilePage = () => {
   // const navigate = useNavigate();
@@ -313,6 +313,19 @@ export const ProfilePage = () => {
             ))}
           </Wrapper>
         </Section>
+        <Section
+          footer="The official Telegram app is available for Android, iPhone, iPad, Windows, macOS and Linux."
+          header="Personal Information"
+        >
+          <Input
+            header="First name"
+            placeholder="21 y.o. designer from San Francisco"
+          />
+          <Input
+            header="Last name"
+            placeholder="21 y.o. designer from San Francisco"
+          />
+        </Section>
       </SExtraInfo>
     </SProfile>
   );
@@ -328,7 +341,7 @@ const SProfile = styled.section`
   gap: 1.5rem;
 `;
 
-const SExtraInfo = styled.div`
+const SExtraInfo = styled(List)`
   display: flex;
   flex-direction: column;
   width: 100%;
