@@ -2,6 +2,7 @@ import { apiClient } from "@/shared/api/client";
 import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
 import { AuthResponse } from "../model/types";
 import axios from "axios";
+import { retrieveLaunchParams } from "@tma.js/sdk-react";
 
 const AUTH_STORAGE_KEY = "auth";
 
@@ -23,12 +24,30 @@ export async function authDev(): Promise<AuthResponse> {
 }
 
 export async function authTelegram(): Promise<AuthResponse> {
+  const lp = retrieveLaunchParams();
+  const raw = resolveInitDataRaw();
+
+  console.log("[LP] platform:", lp.tgWebAppPlatform);
+  console.log("[LP] from SDK:", lp.initDataRaw);
+  console.log("[RAW] from TG:", window.Telegram?.WebApp?.initData);
+  console.log(
+    "[RAW] from URL:",
+    new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
+      new URLSearchParams(location.search).get("tgWebAppData")
+  );
+  console.log("[RESOLVED] initDataRaw:", raw);
+  const a =
+    new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
+    new URLSearchParams(location.search).get("tgWebAppData");
+  //   const debug =
+  //     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
+
   const initDataRaw = resolveInitDataRaw();
   if (!initDataRaw) {
     throw new Error("No init_data for tgAuth");
   }
   const response = await apiClient.post<AuthResponse>("/auth/telegram", {
-    init_data: initDataRaw,
+    init_data: a,
   });
   const data = response.data;
   saveAuthToStorage(data);
