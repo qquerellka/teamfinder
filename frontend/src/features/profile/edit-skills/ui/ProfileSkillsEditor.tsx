@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
+  List,
   Multiselect,
   MultiselectProps,
   Section,
@@ -20,7 +21,7 @@ function areArraysEqual(a: string[], b: string[]) {
 }
 
 export const ProfileSkillsEditor = () => {
-  console.log("afasdgsag")
+  console.log("afasdgsag");
   const { data: user } = useAuthUser();
   const { data: skills = [], isLoading } = useSkills();
   const editMainInfoMutation = useEditUserMainInfo();
@@ -80,8 +81,9 @@ export const ProfileSkillsEditor = () => {
   };
 
   return (
-    <SSection header="Навыки" footer={skillsError}>
+    // <SSection header="Навыки" footer={skillsError}>
       <Multiselect
+      header="Навыки"
         status={skillsError ? "error" : "default"}
         options={options}
         value={selectedOptions}
@@ -93,34 +95,12 @@ export const ProfileSkillsEditor = () => {
           isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
         }
       />
-    </SSection>
+    // </SSection>
   );
 };
 
-const SSection = styled(Section)`
-  background: var(--tg-theme-section-bg-color, #fff);
-  padding: 1rem;
-  border-radius: 1rem;
-  & > div {
-    display: flex;
-    flex-direction: column;
-
-    & > header {
-      padding: 0;
-      box-shadow: none;
-    }
-    & > div {
-      padding: 0;
-      & > div {
-        background: var(--tg-theme-section-bg-color, #fff);
-        padding: 1rem 0 1rem 0;
-      }
-    }
-  }
-  & > footer {
-    padding-bottom: 0;
-    & > h6 {
-      color: var(--tg-theme-destructive-text-color, #fff);
-    }
-  }
-`;
+// const SSection = styled(Section)`
+//   background: var(--tg-theme-section-bg-color, #fff);
+//   padding: 1rem;
+//   border-radius: 1rem;
+// `;

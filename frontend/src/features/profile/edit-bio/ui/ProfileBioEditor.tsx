@@ -54,42 +54,43 @@ export const ProfileBioEditor = () => {
   }, [bio, bioError, isInitialized, user, lastSavedBio, editMainInfoMutation]);
 
   return (
-    <SSection header="Обо мне" footer={bioError}>
+    // <SSection header="Обо мне" footer={bioError}>
       <Textarea 
+      header="Обо мне"
         status={bioError ? "error" : "default"}
         value={bio}
         onChange={handleChange}
         placeholder="Расскажите немного о себе..."
       />
-    </SSection>
+    // </SSection>
   );
 };
 
 
-const SSection = styled(Section)`
-  background: var(--tg-theme-section-bg-color, #fff);
-  padding: 1rem;
-  border-radius: 1rem;
-  & > div {
-    display: flex;
-    flex-direction: column;
+// const SSection = styled(Section)`
+//   background: var(--tg-theme-section-bg-color, #fff);
+//   padding: 1rem;
+//   border-radius: 1rem;
+//   /* & > div {
+//     display: flex;
+//     flex-direction: column;
 
-    & > header {
-      padding: 0;
-      box-shadow: none;
-    }
-    & > div {
-      padding: 0;
-      & > div {
-        background: var(--tg-theme-section-bg-color, #fff);
-        padding: 1rem 0 1rem 0;
-      }
-    }
-  }
-  & > footer {
-    padding-bottom: 0;
-    & > h6 {
-      color: var(--tg-theme-destructive-text-color, #fff);
-    }
-  }
-`;
+//     & > header {
+//       padding: 0;
+//       box-shadow: none;
+//     }
+//     & > div {
+//       padding: 0;
+//       & > div {
+//         background: var(--tg-theme-section-bg-color, #fff);
+//         padding: 1rem 0 1rem 0;
+//       }
+//     }
+//   }
+//   & > footer {
+//     padding-bottom: 0;
+//     & > h6 {
+//       color: var(--tg-theme-destructive-text-color, #fff);
+//     }
+//   } */
+// `;

@@ -262,22 +262,64 @@
 import styled from "styled-components";
 import { ProfileSkillsEditor } from "@/features/profile/edit-skills/ui/ProfileSkillsEditor";
 import { ProfileBioEditor } from "@/features/profile/edit-bio/ui/ProfileBioEditor";
-import { ProfileAchievementsSection } from "@/features/achievement/manage-list/ui/ProfileAchievementsSection";
+// import { ProfileAchievementsSection } from "@/features/achievement/manage-list/ui/ProfileAchievementsSection";
+// import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
+// import { IconButton, List, Section } from "@telegram-apps/telegram-ui";
+// import { STitle } from "@/shared/ui/STitle";
+// import { SIcon } from "@/shared/ui/SIcon";
+// import plusIcon from "@/assets/icons/plusIcon.svg";
+// import { paths } from "@/app/routing/paths";
+// import { useNavigate } from "react-router-dom";
+import { AchievementItem } from "@/widgets/achievements/AchievementItem";
+import { useAuthUser } from "@/entities/user/api/hooks";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
+import { List, Section } from "@telegram-apps/telegram-ui";
 
 export const ProfilePage = () => {
+  // const navigate = useNavigate();
+  const { data: user } = useAuthUser();
+
   return (
     <SProfile>
       <ProfileHeader />
       <SExtraInfo>
-        <ProfileSkillsEditor />
-        <ProfileBioEditor />
-        <ProfileAchievementsSection />
+        <Section header="Профиль">
+          <ProfileSkillsEditor />
+          <ProfileBioEditor />
+        </Section>
+        <Section
+          header={
+            // <HeaderRow>
+            //   <STitle
+            //     $fs={15}
+            //     $fw={600}
+            //     style={{ color: "var(--tg-theme-section-header-text-color)" }}
+            //   >
+            //     Достижения
+            //   </STitle>
+            //   <IconButton
+            //     size="m"
+            //     onClick={() => navigate(paths.profileAchievementsRoot)}
+            //   >
+            //     <SIcon icon={plusIcon} />
+            //   </IconButton>
+            // </HeaderRow>
+            "ljcnbltybz"
+          }
+        >
+          <Wrapper>
+            {user?.achievements?.map((a) => (
+              <AchievementItem key={a.id} achievement={a} />
+            ))}
+          </Wrapper>
+        </Section>
       </SExtraInfo>
     </SProfile>
   );
 };
-
+const Wrapper = styled(List)`
+  padding: 20px 22px 16px;
+`;
 const SProfile = styled.section`
   display: flex;
   flex-direction: column;
@@ -290,7 +332,15 @@ const SExtraInfo = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 0rem;
+  gap: 0.5rem;
 `;
+
+// const HeaderRow = styled.div`
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: space-between;
+//   align-items: center;
+//   width: 100%;
+// `;
 
 export default ProfilePage;

@@ -84,6 +84,7 @@ async function fetchProfile(): Promise<AuthResponse["profile"]> {
 }
 
 function clearAuthStorage() {
+    console.log("remove")
   localStorage.removeItem(AUTH_STORAGE_KEY);
   delete apiClient.defaults.headers.common.Authorization;
 }
@@ -100,9 +101,10 @@ export async function authQueryFn(): Promise<AuthResponse> {
         profile,
       };
     } catch (err: unknown) {
+        console.log("error")
       if (axios.isAxiosError(err)) {
         const status = err.response?.status;
-        if (status === 401 || status === 403) {
+        if (status === 401 || status === 403 || status === 404) {
           clearAuthStorage();
         } else {
           throw err;
