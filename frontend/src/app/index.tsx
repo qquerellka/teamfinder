@@ -57,7 +57,9 @@ async function bootstrapTMA() {
       new URLSearchParams(location.search).get("tgWebAppData")
   );
   console.log("[RESOLVED] initDataRaw:", raw);
-
+  const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
+    || new URLSearchParams(location.search).get("tgWebAppData")
+  console.log("A: ", a)
   const debug =
     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
 
@@ -70,7 +72,7 @@ async function bootstrapTMA() {
 
   root.render(
     <StrictMode>
-      <App str={raw ?? ""} />
+      <App str={a ?? ""} />
     </StrictMode>
   );
 }
