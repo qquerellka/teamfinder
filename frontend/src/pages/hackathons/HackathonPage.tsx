@@ -8,7 +8,7 @@ import type { Hackathon } from "@/entities/hackathon/model/types";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
 
-import { getHackathonParticipationPath, paths } from "@/app/routing/paths";
+import { getHackathonParticipationPath, getHackathonTeamPath, paths } from "@/app/routing/paths";
 
 import { SText } from "@/shared/ui/SText";
 import { normalizeUrl } from "@/shared/helpers/url";
@@ -44,7 +44,7 @@ const HackathonPage: React.FC = () => {
     }
   };
 
-  const handleGoToHackathon = () => {
+  const handleGoToApplications = () => {
     if (isUserLoading) return;
 
     const hasSkills =
@@ -52,11 +52,26 @@ const HackathonPage: React.FC = () => {
 
     if (!hasSkills) {
       setIsSkillsModalOpen(true);
-      return;
+      return ;
     }
 
     // здесь потом добавишь переход в "участие / анкета"
     if (id) navigate(getHackathonParticipationPath(id));
+  };
+
+    const handleGoToTeam = () => {
+    if (isUserLoading) return;
+
+    const hasSkills =
+      !!user && Array.isArray(user.skills) && user.skills.length > 0;
+
+    if (!hasSkills) {
+      setIsSkillsModalOpen(true);
+      return ;
+    }
+
+    // здесь потом добавишь переход в "участие / анкета"
+    if (id) navigate(getHackathonTeamPath(id));
   };
 
   const handleGoToProfile = () => {
@@ -74,10 +89,10 @@ const HackathonPage: React.FC = () => {
             Подробнее на сайте
           </SButton>
 
-          <SButton onClick={handleGoToHackathon} disabled={isUserLoading}>
+          <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
             Найти команду
           </SButton>
-          <SButton onClick={handleGoToHackathon} disabled={isUserLoading}>
+          <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
             Создать команду
           </SButton>
         </ButtonsSection>
@@ -151,7 +166,7 @@ const Placeholder = styled.div`
 // `;
 
 const ButtonsSection = styled(List)`
-  margin-top: auto;          /* прижимаем к низу Page */
+  margin-top: auto; /* прижимаем к низу Page */
   display: flex;
   flex-direction: column;
 `;

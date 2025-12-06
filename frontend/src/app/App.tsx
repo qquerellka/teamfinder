@@ -4,52 +4,30 @@ import { AppRoot } from "@telegram-apps/telegram-ui";
 import { ReactQueryProvider } from "./providers/react-query";
 
 import { ErrorBoundary } from "./layouts/ErrorBoundary";
+import { AppErrorFallback } from "./layouts/AppErrorFallback";
 import { AppRouter } from "./routing/routes";
 import { AuthGate } from "@/features/auth/ui/AuthGate";
 
-function ErrorBoundaryError({ error }: { error: unknown }) {
-  return (
-    <div>
-      <p>An unhandled error occurred:</p>
-      <blockquote>
-        <code>
-          {error instanceof Error
-            ? error.message
-            : typeof error === "string"
-            ? error
-            : JSON.stringify(error)}
-        </code>
-      </blockquote>
-    </div>
-  );
-}
-interface AppProps {
-  str: string | undefined;
-}
-export function App({ str }: AppProps) {
+export function App() {
   const lp = useLaunchParams();
-
   const isDark = useSignal(miniApp.isDark);
 
-  console.log(lp.tgWebAppPlatform)
+  const platform =
+    lp.tgWebAppPlatform === "ios" || lp.tgWebAppPlatform === "macos"
+      ? "ios"
+      : "base";
+
   return (
-    <ErrorBoundary fallback={ErrorBoundaryError}>
-      <AppRoot
-        appearance={isDark ? "dark" : "light"}
-        platform={
-          ["macos", "ios"].includes(lp.tgWebAppPlatform) ? "ios" : "base"
-        }
-      >
-        {""}
-        {str}
-        <ReactQueryProvider>
+    <AppRoot appearance={isDark ? "dark" : "light"} platform={platform}>
+      <ReactQueryProvider>
+        <ErrorBoundary fallback={AppErrorFallback}>
           <AuthGate>
             <HashRouter>
               <AppRouter />
             </HashRouter>
           </AuthGate>
-        </ReactQueryProvider>
-      </AppRoot>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </ReactQueryProvider>
+    </AppRoot>
   );
 }

@@ -1,53 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-
-
 import { paths } from "@/app/routing/paths";
-
 import { Page } from "@/shared/ui/Page";
 import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
-import { Input, Placeholder } from "@telegram-apps/telegram-ui";
+import { SegmentedControl } from "@telegram-apps/telegram-ui";
+import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
+import { HackathonApplication } from "@/features/application/create/ui/HackathonApplication";
+import { LoaderPage } from "@/shared/ui/LoaderPage";
+
+const HackathonVacancies = ({ hackathonId }: { hackathonId: number }) => {
+  return <div>Тут список вакансий для хакатона {hackathonId}</div>;
+};
 
 const HackathonParticipatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const hackathonId = Number(id);
 
-  const { data: hackathon, isLoading, isError } = useHackathonQuery(Number(id));
+  const {
+    data: hackathon,
+    isLoading,
+    isError,
+  } = useHackathonQuery(hackathonId);
 
+  const [tab, setTab] = useState<"applications" | "vacancies">("applications");
 
   if (isLoading) {
-    return <Placeholder>Загружаем хакатон…</Placeholder>;
+    return <LoaderPage />;
   }
 
   if (isError || !hackathon) {
     return <Navigate to={paths.error404} replace />;
   }
 
-  // const url = normalizeUrl((hackathon as Hackathon).registrationLink);
-
-  // const openExternal = () => {
-  //   if (!url) return;
-
-  //   const wa = window.Telegram?.WebApp;
-  //   if (wa?.openLink) {
-  //     wa.openLink(url, { try_instant_view: true });
-  //   } else {
-  //     window.open(url, "_blank", "noopener,noreferrer");
-  //   }
-  // };
-
-
   return (
-      <Page>
-        {/* <HackathonCard hackathon={hackathon} variant="full" /> */}
+    <Page>
+      <SegmentedControl>
+        <SegmentedControlItem
+          selected={tab === "applications"}
+          onClick={() => setTab("applications")}
+        >
+          Анкеты
+        </SegmentedControlItem>
+        <SegmentedControlItem
+          selected={tab === "vacancies"}
+          onClick={() => setTab("vacancies")}
+        >
+          Вакансии
+        </SegmentedControlItem>
+      </SegmentedControl>
 
-        {/* <ButtonsSection>
-          <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-            Подробнее на сайте
-          </SButton>
+      {tab === "applications" && (
+        <HackathonApplication hackathon={hackathon} />
+      )}
 
-        </ButtonsSection> */}
-        <Input></Input>
-      </Page>
+      {tab === "vacancies" && <HackathonVacancies hackathonId={hackathonId} />}
+    </Page>
   );
 };
 

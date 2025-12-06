@@ -1,43 +1,45 @@
 import {
   Component,
   type ComponentType,
-  type GetDerivedStateFromError,
   type PropsWithChildren,
   type ReactNode,
-} from 'react';
+} from "react";
 
 export interface ErrorBoundaryProps extends PropsWithChildren {
   fallback?: ReactNode | ComponentType<{ error: unknown }>;
 }
 
 interface ErrorBoundaryState {
-  error?: unknown;
+  error: unknown | null;
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = {};
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  state: ErrorBoundaryState = { error: null };
 
-  static getDerivedStateFromError: GetDerivedStateFromError<ErrorBoundaryProps, ErrorBoundaryState> = (error) => ({ error });
+  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
+    return { error };
+  }
 
-  componentDidCatch(error: Error) {
-    this.setState({ error });
+  componentDidCatch(error: Error, info: unknown) {
+    // сюда можно повесить Sentry / логирование
+    console.error("Uncaught error in ErrorBoundary:", error, info);
   }
 
   render() {
-    const {
-      state: {
-        error,
-      },
-      props: {
-        fallback: Fallback,
-        children,
-      },
-    } = this;
+    const { error } = this.state;
+    const { fallback: Fallback, children } = this.props;
 
-    return 'error' in this.state
-      ? typeof Fallback === 'function'
-        ? <Fallback error={error} />
-        : Fallback
-      : children;
+    if (error != null && Fallback) {
+      if (typeof Fallback === "function") {
+        const FallbackComponent = Fallback as ComponentType<{ error: unknown }>;
+        return <FallbackComponent error={error} />;
+      }
+      return Fallback;
+    }
+
+    return children;
   }
 }

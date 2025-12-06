@@ -28,10 +28,13 @@ export async function getHackathonApplications(
 
 export async function getAuthUserApplicationOnHackathon(
   id: number,
-): Promise<Application> {
+): Promise<Application | null> {
   const { data } = await apiClient.get<ApplicationDTO>(
     `/hackathons/${id}/applications/me`,
   );
+  if (data === null) {
+    return null;
+  }
   return applicationsToCamelCase([data])[0];
 }
 

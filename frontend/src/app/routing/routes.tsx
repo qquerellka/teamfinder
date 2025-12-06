@@ -6,17 +6,18 @@ import { paths } from "./paths";
 const HackathonsPage = lazy(() => import("@/pages/hackathons/HackathonsPage"));
 const HackathonPage = lazy(() => import("@/pages/hackathons/HackathonPage"));
 const HackathonParticipatePage = lazy(
-  () => import("@/pages/hackathons/HackathonParticipatePage"),
+  () => import("@/pages/hackathons/HackathonParticipatePage")
 );
-const NotificationsPage = lazy(
-  () => import("@/pages/notifications/ui/Page"),
+const HackathonTeamPage = lazy(
+  () => import("@/pages/hackathons/HackathonTeamPage")
 );
+const NotificationsPage = lazy(() => import("@/pages/notifications/NotificationsPage"));
 const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
-const UserTeamsPage = lazy(() => import("@/pages/user-teams/ui/Page"));
+const UserTeamsPage = lazy(() => import("@/pages/teams/TeamsPage"));
 const AchievementPage = lazy(
-  () => import("@/pages/achievements/AchievementPage"),
+  () => import("@/pages/achievements/AchievementPage")
 );
-const NotFound = lazy(() => import("@/pages/not-found/ui/Page"));
+const NotFound = lazy(() => import("@/pages/not-found/NotFound"));
 
 const routes: RouteObject[] = [
   {
@@ -34,6 +35,10 @@ const routes: RouteObject[] = [
             path: ":id/participate",
             element: <HackathonParticipatePage />,
           },
+          {
+            path: ":id/team",
+            element: <HackathonTeamPage />,
+          },
         ],
       },
 
@@ -44,7 +49,7 @@ const routes: RouteObject[] = [
         children: [
           { index: true, element: <ProfilePage /> },
           { path: "achievements/new", element: <AchievementPage /> },
-          { path: "achievements/:id", element: <AchievementPage /> }, 
+          { path: "achievements/:id", element: <AchievementPage /> },
         ],
       },
 

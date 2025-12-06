@@ -27,13 +27,3 @@ export function applicationEditToDTO(payload: ApplicationEdit): ApplicationEditD
         role: payload.role,
     }
 }
-
-// export function achievementCreateToDTO(
-//   payload: AchievementCreate
-// ): AchievementCreateDTO {
-//   return {
-//     hackathon_id: payload.hackathonId,
-//     role: payload.role,
-//     place: payload.place,
-//   };
-// }

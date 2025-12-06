@@ -32,7 +32,7 @@ async function bootstrapBrowser() {
 
   root.render(
     <StrictMode>
-      <App str="" />
+      <App />
     </StrictMode>
   );
 }
@@ -42,8 +42,8 @@ async function bootstrapBrowser() {
 async function bootstrapTMA() {
   const lp = retrieveLaunchParams();
 
-  const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
-    || new URLSearchParams(location.search).get("tgWebAppData")
+  // const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
+  //   || new URLSearchParams(location.search).get("tgWebAppData")
   const debug =
     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
 
@@ -56,7 +56,7 @@ async function bootstrapTMA() {
 
   root.render(
     <StrictMode>
-      <App str={a ?? ""} />
+      <App />
     </StrictMode>
   );
 }

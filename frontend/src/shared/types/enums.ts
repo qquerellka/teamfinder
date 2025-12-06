@@ -1,4 +1,3 @@
-// допустимые места
 export const ACHIEVEMENT_PLACES = [
   "participant",
   "finalyst",
@@ -9,18 +8,6 @@ export const ACHIEVEMENT_PLACES = [
 
 export type AchievementPlace = (typeof ACHIEVEMENT_PLACES)[number];
 
-// роли
-export const ACHIEVEMENT_ROLES = [
-  "Backend",
-  "Frontend",
-  "Fullstack",
-  "Data",
-  "Product",
-  "Designer",
-] as const;
-
-export type AchievementRole = (typeof ACHIEVEMENT_ROLES)[number];
-
 export const placeOptions: { label: string; value: AchievementPlace }[] = [
   { label: "1 место", value: "firstPlace" },
   { label: "2 место", value: "secondPlace" },
@@ -29,13 +16,18 @@ export const placeOptions: { label: string; value: AchievementPlace }[] = [
   { label: "Финалист", value: "finalyst" },
 ];
 
-export const roleOptions: { label: string; value: AchievementRole }[] = [
+export const roleOptions: { label: string; value: Role }[] = [
   { label: "Backend", value: "Backend" },
   { label: "Frontend", value: "Frontend" },
   { label: "Fullstack", value: "Fullstack" },
-  { label: "Data / ML", value: "Data" },
-  { label: "Product", value: "Product" },
+  { label: "ML", value: "ML" },
+  { label: "Product Manager", value: "Product manager" },
   { label: "Designer", value: "Designer" },
+  { label: "DevOps", value: "DevOps" },
+  { label: "GameDev", value: "GameDev" },
+  { label: "MobileDev", value: "MobileDev" },
+  { label: "Analytics", value: "Analytics" },
+  { label: "QA", value: "QA" },
 ];
 
 export const ROLES = [

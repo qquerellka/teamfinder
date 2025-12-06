@@ -38,7 +38,7 @@ export const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;   /* КВАДРАТ 1:1 */
+  aspect-ratio: 1 / 1;
   overflow: hidden;
 `;
 

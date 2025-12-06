@@ -16,11 +16,7 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement }) => {
   const navigate = useNavigate();
 
   const handleAchievementClick = (id: number) => {
-    // Вариант 1: абсолютный путь
     navigate(`${paths.profile}/achievements/${id}`);
-
-    // или Вариант 2: относительный, если удобнее:
-    // navigate(`achievements/${id}`, { relative: "path" });
   };
   return (
     <Wrapper

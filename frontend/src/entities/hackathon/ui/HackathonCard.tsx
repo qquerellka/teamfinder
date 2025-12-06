@@ -8,8 +8,7 @@ import {
   formatRegistrationDate,
   getTeamMembersRange,
 } from "@/shared/helpers/date";
-import { STitle } from "@/shared/ui/STitle";
-import { SIcon } from "@/shared/ui/SIcon";
+import { ImageWithSkeleton, SIcon, STitle } from "@/shared/ui";
 
 import shareIcon from "@/assets/icons/shareIcon.svg?react";
 import hackathonPrizeIcon from "@/assets/icons/hackathonCard/hackathonPrizeIcon.svg?react";
@@ -17,7 +16,6 @@ import hackathonDate from "@/assets/icons/hackathonCard/hackathonDateIcon.svg?re
 import hackathonPlace from "@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
 import hackathonRegistration from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
 import hackathonTeam from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
-import { ImageWithSkeleton } from "@/shared/ui/ImageWithSkeleton";
 
 type HackathonCardVariant = "full" | "compact";
 
@@ -99,7 +97,6 @@ export const HackathonCard: FC<HackathonCardProps> = ({
     </SHackathonCard>
   );
 };
-
 
 const SHackathonCard = styled(Card)`
   background: var(--tg-theme-section-bg-color, #fff);

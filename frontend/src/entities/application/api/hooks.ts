@@ -28,7 +28,7 @@ export function useHackathonApplications(id: number, enabled = true) {
 }
 
 export function useAuthUserApplicationsOnHackathon(id: number, enabled = true) {
-  return useQuery<Application>({
+  return useQuery<Application | null>({
     queryKey: applicationKeys.meByHackathon(id),
     queryFn: () => getAuthUserApplicationOnHackathon(id),
     staleTime: 60 * 1000,

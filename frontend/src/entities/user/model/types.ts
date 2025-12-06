@@ -34,7 +34,7 @@ export interface UserDTO {
   achievements: AchievementDTO[];
 }
 
-export interface UserMainInfoPatch {
+export interface UserEdit {
   bio?: string;
   city?: string;
   university?: string;
@@ -42,10 +42,10 @@ export interface UserMainInfoPatch {
   skillSlugs?: string[];
 }
 
-export interface UserMainInfoPatch {
+export interface UserEditDTO {
   bio?: string;
   city?: string;
   university?: string;
   link?: string;
-  skillSlugs?: string[];
+  skills?: string[];
 }

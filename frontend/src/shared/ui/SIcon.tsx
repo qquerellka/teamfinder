@@ -1,4 +1,3 @@
-// src/shared/ui/TgIcon.tsx
 import React, { ComponentType, SVGProps, KeyboardEvent } from "react";
 import styled, { css } from "styled-components";
 

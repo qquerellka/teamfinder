@@ -5,7 +5,6 @@ export type AchievementPlace =
   | "secondPlace"
   | "firstPlace";
 
-
 export interface Achievement {
   id: number;
   hackathonId: number;
@@ -35,25 +34,29 @@ export interface AchievementsResponseDTO {
   items: AchievementDTO[];
 }
 
-export type AchievementCreate = Omit<Achievement, "id" | "hackathonName">;
+
+export type AchievementCreate = {
+  hackathonId: number;
+  role: string;
+  place: AchievementPlace;
+};
 
 export type AchievementCreateDTO = {
   hackathon_id: number;
   role: string;
-  place: Achievement["place"];
+  place: AchievementPlace;
 };
 
 export interface AchievementPatch {
   role?: string;
-  place?: Achievement["place"];
+  place?: AchievementPlace;
   hackathonId?: number;
 }
-
-export interface AchievementPatch {
+export type AchievementPatchDTO = {
+  hackathon_id?: number;
   role?: string;
-  place?: Achievement["place"];
-  hackathonId?: number;
-}
+  place?: AchievementPlace;
+};
 
 export type EditAchievementArgs = {
   id: number;

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAuthUser, getUserById, editUserMainInfo } from "./users";
-import type { User, UserMainInfoPatch } from "../model/types";
+import type { User, UserEdit } from "../model/types";
 import { queryKeys } from "@/shared/api/queryKeys";
 
 export function useAuthUser() {
@@ -24,7 +24,7 @@ export function useEditUserMainInfo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UserMainInfoPatch) => editUserMainInfo(payload),
+    mutationFn: (payload: UserEdit) => editUserMainInfo(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me });
     },
