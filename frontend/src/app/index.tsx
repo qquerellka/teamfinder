@@ -9,7 +9,6 @@ import { retrieveLaunchParams } from "@tma.js/sdk-react";
 import { init } from "@/app/init";
 import { App } from "./App";
 import { EnvUnsupported } from "@/app/EnvUnsupported";
-import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
 
 const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === "true";
 
@@ -19,13 +18,11 @@ if (import.meta.env.DEV || FORCE_BROWSER) {
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
-const isTMA = !!window.Telegram?.WebApp;
 
 // ---------- БРАУЗЕР (dev) ----------
 
 async function bootstrapBrowser() {
   const debug = true;
-  console.log("bootstrap browser")
 
   await init({
     debug,
@@ -46,17 +43,7 @@ async function bootstrapTMA() {
 
   console.log("bootstrap browser");
   const lp = retrieveLaunchParams();
-  const raw = resolveInitDataRaw();
 
-  console.log("[LP] platform:", lp.tgWebAppPlatform);
-  console.log("[LP] from SDK:", lp.initDataRaw);
-  console.log("[RAW] from TG:", window.Telegram?.WebApp?.initData);
-  console.log(
-    "[RAW] from URL:",
-    new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
-      new URLSearchParams(location.search).get("tgWebAppData")
-  );
-  console.log("[RESOLVED] initDataRaw:", raw);
   const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
     || new URLSearchParams(location.search).get("tgWebAppData")
   console.log("A: ", a)
@@ -81,7 +68,7 @@ async function bootstrapTMA() {
 
 (async () => {
   try {
-    if (!isTMA || FORCE_BROWSER || import.meta.env.DEV) {
+    if (FORCE_BROWSER || import.meta.env.DEV) {
       await bootstrapBrowser();
     } else {
       await bootstrapTMA();

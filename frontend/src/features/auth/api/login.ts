@@ -2,7 +2,6 @@ import { apiClient } from "@/shared/api/client";
 import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
 import { AuthResponse } from "../model/types";
 import axios from "axios";
-import { retrieveLaunchParams } from "@tma.js/sdk-react";
 
 const AUTH_STORAGE_KEY = "auth";
 
@@ -24,23 +23,12 @@ export async function authDev(): Promise<AuthResponse> {
 }
 
 export async function authTelegram(): Promise<AuthResponse> {
-  const lp = retrieveLaunchParams();
-  const raw = resolveInitDataRaw();
 
-  console.log("[LP] platform:", lp.tgWebAppPlatform);
-  console.log("[LP] from SDK:", lp.initDataRaw);
-  console.log("[RAW] from TG:", window.Telegram?.WebApp?.initData);
-  console.log(
-    "[RAW] from URL:",
-    new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
-      new URLSearchParams(location.search).get("tgWebAppData")
-  );
-  console.log("[RESOLVED] initDataRaw:", raw);
+
   const a =
     new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
     new URLSearchParams(location.search).get("tgWebAppData");
-  //   const debug =
-  //     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
+
 
   const initDataRaw = resolveInitDataRaw();
   if (!initDataRaw) {
@@ -115,21 +103,12 @@ export async function authQueryFn(): Promise<AuthResponse> {
     }
   }
 
-//   const isTMA = !!window?.Telegram?.WebApp;
   const forceDevLogin =
     import.meta.env.VITE_FORCE_DEV_LOGIN === "1" || import.meta.env.DEV;
 
   // ВАЖНО: если включили dev-режим — всегда идём в dev-логин
   if (forceDevLogin) {
-    console.log("dev login")
     return authDev();
   }
-
-  // Если dev-логин не форсим и Telegram-окружения нет — считаем это ошибкой
-//   if (!isTMA) {
-//     console.log("not TMA")
-//     throw new Error("No Telegram environment for auth");
-//   }
-  console.log("tg auth")
   return authTelegram();
 }
