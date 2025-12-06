@@ -258,72 +258,35 @@
 // const SMultiselect = styled(Multiselect)`
 //   background: var(--tg-theme-section-bg-color, #fff);
 // `;
-// pages/profile/ui/ProfilePage.tsx
+
+
+
 import styled from "styled-components";
 import { ProfileSkillsEditor } from "@/features/profile/edit-skills/ui/ProfileSkillsEditor";
 import { ProfileBioEditor } from "@/features/profile/edit-bio/ui/ProfileBioEditor";
-// import { ProfileAchievementsSection } from "@/features/achievement/manage-list/ui/ProfileAchievementsSection";
-// import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-// import { IconButton, List, Section } from "@telegram-apps/telegram-ui";
-// import { STitle } from "@/shared/ui/STitle";
-// import { SIcon } from "@/shared/ui/SIcon";
-// import plusIcon from "@/assets/icons/plusIcon.svg";
-// import { paths } from "@/app/routing/paths";
-// import { useNavigate } from "react-router-dom";
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { Input, List, Section } from "@telegram-apps/telegram-ui";
+import { List } from "@telegram-apps/telegram-ui";
+import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
 
 export const ProfilePage = () => {
-  // const navigate = useNavigate();
   const { data: user } = useAuthUser();
 
   return (
     <SProfile>
       <ProfileHeader />
       <SExtraInfo>
-          <ProfileSkillsEditor />
-          <ProfileBioEditor />
-        <Section
-          header={
-            // <HeaderRow>
-            //   <STitle
-            //     $fs={15}
-            //     $fw={600}
-            //     style={{ color: "var(--tg-theme-section-header-text-color)" }}
-            //   >
-            //     Достижения
-            //   </STitle>
-            //   <IconButton
-            //     size="m"
-            //     onClick={() => navigate(paths.profileAchievementsRoot)}
-            //   >
-            //     <SIcon icon={plusIcon} />
-            //   </IconButton>
-            // </HeaderRow>
-            "ljcnbltybz"
-          }
-        >
+        <ProfileSkillsEditor />
+        <ProfileBioEditor />
+        <div>
+          <AchievementsListHeader />
           <Wrapper>
             {user?.achievements?.map((a) => (
               <AchievementItem key={a.id} achievement={a} />
             ))}
           </Wrapper>
-        </Section>
-        <Section
-          footer="The official Telegram app is available for Android, iPhone, iPad, Windows, macOS and Linux."
-          header="Personal Information"
-        >
-          <Input
-            header="First name"
-            placeholder="21 y.o. designer from San Francisco"
-          />
-          <Input
-            header="Last name"
-            placeholder="21 y.o. designer from San Francisco"
-          />
-        </Section>
+        </div>
       </SExtraInfo>
     </SProfile>
   );
@@ -344,15 +307,5 @@ const SExtraInfo = styled(List)`
   flex-direction: column;
   width: 100%;
   gap: 0.5rem;
-  /* background: var(--tgui--secondary_bg_color); */
 `;
-
-// const HeaderRow = styled.div`
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: space-between;
-//   align-items: center;
-//   width: 100%;
-// `;
-
 export default ProfilePage;
