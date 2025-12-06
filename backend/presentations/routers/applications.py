@@ -134,7 +134,8 @@ async def list_hackathon_applications(
 
 
 @router.get(
-    "/hackathons/{hackathon_id}/applications/me", response_model=ApplicationCardOut
+    "/hackathons/{hackathon_id}/applications/me",
+    response_model=Optional[ApplicationCardOut],
 )
 async def get_my_application_on_hackathon(
     hackathon_id: int,
@@ -144,9 +145,13 @@ async def get_my_application_on_hackathon(
         user_id=user_id,
         hackathon_id=hackathon_id,
     )
-    if not app:
-        raise HTTPException(status_code=404, detail="application not found")
 
+    if not app:
+        # анкеты нет — просто возвращаем None
+        # FastAPI вернёт 200 и body: null
+        return None
+
+    # анкета есть — упаковываем и отдаём
     return await _pack_application_card(app)
 
 
