@@ -313,6 +313,16 @@ async def add_team_member(
     team = await _ensure_team_exists(team_id)
     await _ensure_captain(team, current_user_id)
 
+    hackathon = await _ensure_hackathon_exists(team.hackathon_id)
+    max_team_members = hackathon.team_members_limit 
+
+    current_members_count = await teams_service.get_team_members_count(team_id)
+    if current_members_count >= max_team_members:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Team is full. Maximum {max_team_members} members allowed"
+        )
+
     user = await users_repo.get_by_id(payload.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
