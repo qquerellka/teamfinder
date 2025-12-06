@@ -3,11 +3,10 @@ import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
 import { AuthResponse } from "../model/types";
 import axios from "axios";
 
-
-
 const AUTH_STORAGE_KEY = "auth";
 
 export async function authDev(): Promise<AuthResponse> {
+  console.log("dev");
   const body = {
     telegram_id: 0,
     username: "teamfinder",
@@ -15,7 +14,6 @@ export async function authDev(): Promise<AuthResponse> {
     last_name: "Finder",
     avatar_url:
       "https://storage.yandexcloud.net/teamfinder-hackathons-images/hackathons/1/cover.jpg",
-
   };
 
   const response = await apiClient.post<AuthResponse>("/auth/dev-login", body);
@@ -48,7 +46,13 @@ function saveAuthToStorage(data: AuthResponse) {
 }
 
 function restoreTokenFromStorage(): string | null {
-  const token = localStorage.getItem(AUTH_STORAGE_KEY);
+  if (typeof window === "undefined" || !("localStorage" in window)) {
+    console.log("[auth] no localStorage, skip restore");
+    return null;
+  }
+
+  const token = window.localStorage.getItem(AUTH_STORAGE_KEY);
+  console.log("[auth] restoreTokenFromStorage ->", token);
   if (!token) return null;
 
   saveAccessToken(token);
@@ -58,7 +62,6 @@ function restoreTokenFromStorage(): string | null {
 async function fetchProfile(): Promise<AuthResponse["profile"]> {
   const { data } = await apiClient.get<AuthResponse["profile"]>("/users/me");
   return data;
-
 }
 
 function clearAuthStorage() {
@@ -67,6 +70,7 @@ function clearAuthStorage() {
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
+  console.log("[auth]  start");
   const token = restoreTokenFromStorage();
 
   if (token) {
