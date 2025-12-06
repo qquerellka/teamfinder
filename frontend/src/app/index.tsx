@@ -40,13 +40,10 @@ async function bootstrapBrowser() {
 // ---------- TMA (prod) ----------
 
 async function bootstrapTMA() {
-
-  console.log("bootstrap browser");
   const lp = retrieveLaunchParams();
 
   const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
     || new URLSearchParams(location.search).get("tgWebAppData")
-  console.log("A: ", a)
   const debug =
     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
 

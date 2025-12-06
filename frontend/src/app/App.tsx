@@ -5,7 +5,6 @@ import { ReactQueryProvider } from "./providers/react-query";
 
 import { ErrorBoundary } from "./layouts/ErrorBoundary";
 import { AppRouter } from "./routing/routes";
-import { useEffect } from "react";
 import { AuthGate } from "@/features/auth/ui/AuthGate";
 
 function ErrorBoundaryError({ error }: { error: unknown }) {
@@ -31,11 +30,8 @@ export function App({ str }: AppProps) {
   const lp = useLaunchParams();
 
   const isDark = useSignal(miniApp.isDark);
-  useEffect(() => {
-    console.log("[App] initDataRaw:", lp.initDataRaw);
-    // console.log("[App] user:", lp.initData?.user);
-  }, [lp]);
-  console.log("App")
+
+  console.log(lp.tgWebAppPlatform)
   return (
     <ErrorBoundary fallback={ErrorBoundaryError}>
       <AppRoot

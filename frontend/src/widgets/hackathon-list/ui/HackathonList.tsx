@@ -12,7 +12,7 @@ export const HackathonList: FC = () => {
   if (isLoading) return <div>Загружаем хакатоны…</div>;
   if (error) return <div>Что-то пошло не так</div>;
   if (!data?.items.length) return <div>Пока нет активных хакатонов</div>;
-  console.log(data)
+
   return (
     <Grid>
       {data.items.map((h) => (

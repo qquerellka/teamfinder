@@ -6,7 +6,6 @@ import { UserDTO } from "@/entities/user/model/types";
 export const AUTH_QUERY_KEY = ["auth"];
 
 export function useAuth() {
-  console.log("auth");
 
   const query = useQuery<AuthResponse>({
     queryKey: AUTH_QUERY_KEY,
@@ -15,7 +14,6 @@ export function useAuth() {
     gcTime: Infinity,
     enabled: true,
   });
-  console.log(query.data?.profile);
 
   return {
     profile: (query.data?.profile as UserDTO | null) ?? null,

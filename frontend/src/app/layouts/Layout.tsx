@@ -60,7 +60,7 @@ const SRoot = styled.div`
   min-height: calc(var(--vh, 1vh) * 100);
   max-width: 640px;
   margin: 0 auto;
-  background: var(--tg-theme-bg-color, #fff);
+  background: var(--tg-theme-secondary-bg-color, #fff);
   padding: 1rem;
   display: flex;
   flex-direction: column;

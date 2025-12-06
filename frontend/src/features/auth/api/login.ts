@@ -6,7 +6,6 @@ import axios from "axios";
 const AUTH_STORAGE_KEY = "auth";
 
 export async function authDev(): Promise<AuthResponse> {
-  console.log("dev");
   const body = {
     telegram_id: 0,
     username: "teamfinder",
@@ -54,12 +53,10 @@ function saveAuthToStorage(data: AuthResponse) {
 
 function restoreTokenFromStorage(): string | null {
   if (typeof window === "undefined" || !("localStorage" in window)) {
-    console.log("[auth] no localStorage, skip restore");
     return null;
   }
 
   const token = window.localStorage.getItem(AUTH_STORAGE_KEY);
-  console.log("[auth] restoreTokenFromStorage ->", token);
   if (!token) return null;
 
   saveAccessToken(token);
@@ -72,13 +69,11 @@ async function fetchProfile(): Promise<AuthResponse["profile"]> {
 }
 
 function clearAuthStorage() {
-    console.log("remove")
   localStorage.removeItem(AUTH_STORAGE_KEY);
   delete apiClient.defaults.headers.common.Authorization;
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
-  console.log("[auth]  start");
   const token = restoreTokenFromStorage();
 
   if (token) {
@@ -89,7 +84,6 @@ export async function authQueryFn(): Promise<AuthResponse> {
         profile,
       };
     } catch (err: unknown) {
-        console.log("error")
       if (axios.isAxiosError(err)) {
         const status = err.response?.status;
         if (status === 401 || status === 403 || status === 404) {

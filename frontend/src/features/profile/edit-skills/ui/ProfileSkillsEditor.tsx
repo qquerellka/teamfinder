@@ -18,7 +18,6 @@ function areArraysEqual(a: string[], b: string[]) {
 }
 
 export const ProfileSkillsEditor = () => {
-  console.log("afasdgsag");
   const { data: user } = useAuthUser();
   const { data: skills = [], isLoading } = useSkills();
   const editMainInfoMutation = useEditUserMainInfo();
@@ -52,7 +51,6 @@ export const ProfileSkillsEditor = () => {
   );
 
   const handleChange = (selected: MultiSelectOption[]) => {
-    console.log("asdfa");
     if (selected.length > MAX_SKILLS) {
       setSkillsError(`Нельзя выбрать больше ${MAX_SKILLS} навыков`);
       return;
