@@ -1,6 +1,6 @@
 import { useLaunchParams } from "@tma.js/sdk-react";
 
-const APPLE_PLATFORMS = new Set<ReturnType<typeof lp>["tgWebAppPlatform"]>([
+const APPLE_PLATFORMS = new Set([
   "ios",
   "macos",
 ]);
