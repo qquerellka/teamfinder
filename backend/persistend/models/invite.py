@@ -43,5 +43,5 @@ class Invite(Base, TimestampMixin):
         nullable=True,
     )
 
-    team = relationship("Team", back_populates="invites", lazy="joined")
-    application = relationship("Application", back_populates="invites", lazy="joined")
+    team = relationship("Team", back_populates="invites")
+    application = relationship("Application", back_populates="invites")
