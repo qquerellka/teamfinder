@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 from typing import Optional, List
 
 from sqlalchemy import select, func, text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from persistend.db import async_session_maker
+from infrastructure.db import get_sessionmaker
 from persistend.enums import InviteStatus, RoleType
 from persistend.models.invite import Invite
 from persistend.models.team import Team
@@ -42,19 +42,21 @@ class InvitesService:
     def __init__(
         self,
         invites_repo: Optional[InvitesRepo] = None,
+        applications_repo: Optional[ApplicationsRepo] = None,
         teams_repo: Optional[TeamsRepo] = None,
-        apps_repo: Optional[ApplicationsRepo] = None,
-        hacks_repo: Optional[HackathonsRepo] = None,
+        hackathons_repo: Optional[HackathonsRepo] = None,
+        sessionmaker: Optional[async_sessionmaker[AsyncSession]] = None,
     ) -> None:
         self.invites = invites_repo or InvitesRepo()
+        self.apps = applications_repo or ApplicationsRepo()
         self.teams = teams_repo or TeamsRepo()
-        self.apps = apps_repo or ApplicationsRepo()
-        self.hacks = hacks_repo or HackathonsRepo()
+        self.hacks = hackathons_repo or HackathonsRepo()
+        self._sessionmaker = sessionmaker or get_sessionmaker()
 
     # ---- helpers (team_member) ----
 
     async def _user_is_captain(self, *, team_id: int, user_id: int) -> bool:
-        async with async_session_maker() as session:
+        async with self._sessionmaker() as session:
             res = await session.execute(
                 select(func.count())
                 .select_from(TeamMember)
@@ -67,7 +69,7 @@ class InvitesService:
             return res.scalar_one() > 0
 
     async def _user_in_team(self, *, team_id: int, user_id: int) -> bool:
-        async with async_session_maker() as session:
+        async with self._sessionmaker() as session:
             res = await session.execute(
                 select(func.count())
                 .select_from(TeamMember)
@@ -84,7 +86,7 @@ class InvitesService:
         user_id: int,
         hackathon_id: int,
     ) -> bool:
-        async with async_session_maker() as session:
+        async with self._sessionmaker() as session:
             res = await session.execute(
                 select(func.count())
                 .select_from(TeamMember)
@@ -289,19 +291,17 @@ class InvitesService:
             return updated
 
         # accepted — сложная ветка:
-        # здесь используем уже готовую SQL-функцию accept_invite(p_invite_id, p_actor_user_id),
+        # используем SQL-функцию accept_invite(p_invite_id, p_actor_user_id),
         # которая:
         #   - создаёт запись в team_member
         #   - скрывает анкету (joined/hidden)
         #   - экспайрит остальные инвайты и отклики
-        async with async_session_maker() as session:
+        async with self._sessionmaker() as session:
             async with session.begin():
-                # вызов функции БД
                 await session.execute(
                     text("SELECT accept_invite(:inv_id, :actor_id)"),
                     {"inv_id": invite_id, "actor_id": current_user_id},
                 )
-                # помечаем сам инвайт как accepted
                 await session.execute(
                     text(
                         "UPDATE invite SET status = 'accepted' "
@@ -310,7 +310,6 @@ class InvitesService:
                     {"inv_id": invite_id},
                 )
 
-            # после коммита перечитаем объект
             res = await session.execute(
                 select(Invite).where(Invite.id == invite_id)
             )

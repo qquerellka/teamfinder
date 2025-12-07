@@ -5,12 +5,13 @@ from typing import Optional, List
 from sqlalchemy import select, func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from persistend.db import async_session_maker
 from persistend.enums import InviteStatus, RoleType
 from persistend.models.invite import Invite
 from persistend.models.application import Application
 from persistend.models.team import Team
 
+from infrastructure.db import get_sessionmaker
+async_session_maker = get_sessionmaker()
 
 class InvitesRepo:
     async def get_by_id(self, invite_id: int) -> Optional[Invite]:
