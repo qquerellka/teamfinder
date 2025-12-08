@@ -30,4 +30,15 @@ export const queryKeys = {
       ["applications", "me", "hackathon", hackathonId] as const,
     byId: (id: number) => ["applications", id] as const,
   },
+
+  teams: {
+    all: ["teams"] as const,
+    byHackathon: (hackathonId: number) =>
+      ["teams", "hackathon", hackathonId] as const, // GET /hackathons/{id}/teams
+    me: ["teams", "me"] as const, // GET /me/teams
+    meByHackathon: (hackathonId: number) =>
+      ["teams", "me", "hackathon", hackathonId] as const, // GET /hackathons/{id}/teams/me
+    byId: (id: number) => ["teams", id] as const, // GET /teams/{id}
+    members: (teamId: number) => ["teams", teamId, "members"] as const,
+  },
 } as const;
