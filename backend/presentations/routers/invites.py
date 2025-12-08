@@ -32,8 +32,6 @@ class InviteOut(BaseModel):
     invited_role: RoleType
     team_id: int
     application_id: int
-    created_at: str
-    expires_at: Optional[str] = None
 
 
 class TeamInviteOut(InviteOut):
@@ -60,8 +58,6 @@ async def _pack_invite_for_team(inv, app) -> TeamInviteOut:
         invited_role=inv.invited_role,
         team_id=inv.team_id,
         application_id=inv.application_id,
-        created_at=inv.created_at.isoformat(),
-        expires_at=inv.expires_at.isoformat() if inv.expires_at else None,
         application_user_id=app.user_id,
         user_name=None,  # можно дообогатить через UsersRepo
     )
@@ -74,8 +70,6 @@ async def _pack_invite_for_application(inv, team) -> ApplicationInviteOut:
         invited_role=inv.invited_role,
         team_id=inv.team_id,
         application_id=inv.application_id,
-        created_at=inv.created_at.isoformat(),
-        expires_at=inv.expires_at.isoformat() if inv.expires_at else None,
         team_name=team.name,
     )
 
@@ -91,8 +85,6 @@ async def _pack_my_invite(ctx: InviteWithContext) -> MyInviteOut:
         invited_role=inv.invited_role,
         team_id=inv.team_id,
         application_id=inv.application_id,
-        created_at=inv.created_at.isoformat(),
-        expires_at=inv.expires_at.isoformat() if inv.expires_at else None,
         team_name=team.name,
         hackathon_id=hack.id,
     )
@@ -142,8 +134,6 @@ async def create_invite_for_team(
         invited_role=inv.invited_role,
         team_id=inv.team_id,
         application_id=inv.application_id,
-        created_at=inv.created_at.isoformat(),
-        expires_at=inv.expires_at.isoformat() if inv.expires_at else None,
     )
 
 
@@ -301,6 +291,4 @@ async def patch_invite_status(
         invited_role=inv.invited_role,
         team_id=inv.team_id,
         application_id=inv.application_id,
-        created_at=inv.created_at.isoformat(),
-        expires_at=inv.expires_at.isoformat() if inv.expires_at else None,
     )
