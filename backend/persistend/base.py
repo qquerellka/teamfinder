@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
 
-from sqlalchemy import TIMESTAMP, func
+from sqlalchemy import TIMESTAMP, DateTime, func
 
 
 # ----------------------------- БАЗОВЫЙ КЛАСС ------------------------------
@@ -39,5 +39,13 @@ class TimestampMixin:
         TIMESTAMP(timezone=True), 
         server_default=func.now(), 
         onupdate=func.now(),
+        nullable=False,
+    )
+
+class CreatedAtMixin:
+    """Миксин created_at"""
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
         nullable=False,
     )
