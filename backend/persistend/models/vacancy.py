@@ -27,11 +27,11 @@ class Vacancy(Base, TimestampMixin):
 
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    skills: Mapped[list] = mapped_column(
-        JSONB,
-        nullable=False,
-        default=list,
-    )
+    # skills: Mapped[list] = mapped_column(
+    #     JSONB,
+    #     nullable=False,
+    #     default=list,
+    # )
 
     status: Mapped[VacancyStatus] = mapped_column(
         SAEnum(VacancyStatus, name="vacancy_status"),

@@ -53,18 +53,14 @@ class Application(Base, TimestampMixin):
 
     hackathon = relationship("Hackathon", back_populates="applications")
 
+
     invites = relationship(
         "Invite",
         back_populates="application",
         cascade="all, delete-orphan",
     )
 
-    responses = relationship(
-        "Response",
-        back_populates="application",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
+
 
     __table_args__ = (
         UniqueConstraint("hackathon_id", "user_id", name="app_unique_per_hack"),

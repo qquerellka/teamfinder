@@ -65,14 +65,14 @@ class VacanciesRepo(BaseRepository):
         team_id: int,
         role: RoleType,
         description: Optional[str],
-        skills: Optional[Sequence[str]] = None,
+        # skills: Optional[Sequence[str]] = None,
     ) -> Vacancy:
         async with self._sm() as s:
             obj = Vacancy(
                 team_id=team_id,
                 role=role,
                 description=description,
-                skills=list(skills) if skills is not None else [],
+                # skills=list(skills) if skills is not None else [],
                 status=VacancyStatus.open,
             )
             s.add(obj)

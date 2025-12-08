@@ -20,3 +20,11 @@ CREATE INDEX IF NOT EXISTS ux_skill_name_ci ON skill (lower(name));
 CREATE INDEX IF NOT EXISTS idx_skill_name_prefix ON skill (lower(name) text_pattern_ops);
 CREATE INDEX IF NOT EXISTS idx_user_skill_user  ON user_skill(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_skill_skill ON user_skill(skill_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_response_vacancy_user
+  ON response (vacancy_id, user_id);
+
+CREATE INDEX IF NOT EXISTS ix_response_user
+  ON response (user_id, status);
+
+CREATE INDEX IF NOT EXISTS ix_response_vacancy
+  ON response (vacancy_id, status);

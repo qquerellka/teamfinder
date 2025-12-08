@@ -1,88 +1,121 @@
-# =============================================================================
-# ФАЙЛ: backend/repositories/responses.py
-# КРАТКО: репозиторий для Response.
-# =============================================================================
+# backend/repositories/responses.py
 
 from __future__ import annotations
+
 from typing import Optional, List
 
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update
+from sqlalchemy.orm import joinedload
 
 from repositories.base import BaseRepository
-from persistend.enums import ResponseStatus, RoleType
+from persistend.enums import ResponseStatus
 from persistend.models.response import Response
-from persistend.models.application import Application
+from persistend.models.vacancy import Vacancy
+from persistend.models.team import Team
 
 
 class ResponsesRepo(BaseRepository):
     async def get_by_id(self, response_id: int) -> Optional[Response]:
-        async with self._sm() as s:
-            return await s.get(Response, response_id)
-
-    async def list_for_vacancy(self, vacancy_id: int) -> List[Response]:
         R = Response
         async with self._sm() as s:
+            # сразу подгружаем user и vacancy, чтобы _build_response_card работал без доп. запросов
             stmt = (
                 select(R)
-                .where(R.vacancy_id == vacancy_id)
-                .order_by(R.created_at.desc())
+                .options(
+                    joinedload(R.user),
+                    joinedload(R.vacancy),
+                )
+                .where(R.id == response_id)
             )
             res = await s.execute(stmt)
-            return res.scalars().all()
+            return res.scalar_one_or_none()
 
-    async def list_for_user(
-        self, user_id: int, limit: int, offset: int
+    async def list_for_vacancy(
+        self,
+        vacancy_id: int,
+        limit: int = 50,
+        offset: int = 0,
     ) -> List[Response]:
         R = Response
-        A = Application
         async with self._sm() as s:
             stmt = (
                 select(R)
-                .join(A, A.id == R.application_id)
-                .where(A.user_id == user_id)
+                .options(
+                    joinedload(R.user),
+                    joinedload(R.vacancy),
+                )
+                .where(R.vacancy_id == vacancy_id)
                 .order_by(R.created_at.desc())
-                .offset(offset)
                 .limit(limit)
+                .offset(offset)
             )
             res = await s.execute(stmt)
-            return res.scalars().all()
+            return list(res.scalars().all())
 
-    async def count_active_for_application(self, application_id: int) -> int:
+    async def list_for_user(
+        self,
+        user_id: int,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> List[Response]:
+        R = Response
+        async with self._sm() as s:
+            stmt = (
+                select(R)
+                .options(
+                    joinedload(R.user),
+                    joinedload(R.vacancy),
+                )
+                .where(R.user_id == user_id)
+                .order_by(R.created_at.desc())
+                .limit(limit)
+                .offset(offset)
+            )
+            res = await s.execute(stmt)
+            return list(res.scalars().all())
+
+    async def exists_for_vacancy_and_user(
+        self,
+        vacancy_id: int,
+        user_id: int,
+    ) -> bool:
         R = Response
         async with self._sm() as s:
             stmt = (
                 select(func.count())
                 .select_from(R)
-                .where(R.application_id == application_id)
-                .where(R.status == ResponseStatus.pending)
+                .where(R.vacancy_id == vacancy_id)
+                .where(R.user_id == user_id)
             )
             res = await s.execute(stmt)
-            return int(res.scalar_one())
+            return res.scalar_one() > 0
 
     async def create(
         self,
-        *,
         vacancy_id: int,
-        application_id: int,
-        desired_role: RoleType,
+        user_id: int,
     ) -> Response:
+        R = Response
         async with self._sm() as s:
-            obj = Response(
+            obj = R(
                 vacancy_id=vacancy_id,
-                application_id=application_id,
-                desired_role=desired_role,
+                user_id=user_id,
                 status=ResponseStatus.pending,
             )
             s.add(obj)
             await s.commit()
+            # чтобы были заполнены .user и .vacancy
             await s.refresh(obj)
             return obj
 
     async def update_status(
-        self, response_id: int, status: ResponseStatus
+        self,
+        response_id: int,
+        status: ResponseStatus,
     ) -> Optional[Response]:
+        R = Response
         async with self._sm() as s:
-            obj = await s.get(Response, response_id)
+            obj = await s.get(R, response_id)
             if not obj:
                 return None
             obj.status = status
@@ -90,20 +123,31 @@ class ResponsesRepo(BaseRepository):
             await s.refresh(obj)
             return obj
 
-    async def get_by_vacancy_and_application(
+    async def expire_other_pending_for_user_on_hackathon(
         self,
         *,
-        vacancy_id: int,
-        application_id: int,
-    ) -> Optional[Response]:
+        user_id: int,
+        hackathon_id: int,
+        except_response_id: int,
+    ) -> None:
+        """
+        Ставит статус `expired` всем pending-откликам пользователя
+        на другие вакансии того же хакатона.
+        """
         R = Response
+        V = Vacancy
+        T = Team
+
         async with self._sm() as s:
             stmt = (
-                select(R)
-                .where(
-                    (R.vacancy_id == vacancy_id) & (R.application_id == application_id)
-                )
-                .limit(1)
+                update(R)
+                .values(status=ResponseStatus.expired)
+                .where(R.user_id == user_id)
+                .where(R.status == ResponseStatus.pending)
+                .where(R.id != except_response_id)
+                .where(R.vacancy_id == V.id)
+                .where(V.team_id == T.id)
+                .where(T.hackathon_id == hackathon_id)
             )
-            res = await s.execute(stmt)
-            return res.scalars().first()
+            await s.execute(stmt)
+            await s.commit()

@@ -89,7 +89,6 @@ CREATE TABLE IF NOT EXISTS vacancy (
   team_id      INT NOT NULL REFERENCES team(id) ON DELETE CASCADE,
   role         role_type NOT NULL,
   description  TEXT,
-  skills       JSONB DEFAULT '[]'::jsonb,
   status       vacancy_status NOT NULL DEFAULT 'open',
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -106,11 +105,12 @@ CREATE TABLE IF NOT EXISTS invite (
 );
 
 CREATE TABLE IF NOT EXISTS response (
-  id             SERIAL PRIMARY KEY,
-  vacancy_id     INT NOT NULL REFERENCES vacancy(id) ON DELETE CASCADE,
-  desired_role   role_type NOT NULL DEFAULT 'Analytics',
-  status         response_status NOT NULL DEFAULT 'pending',
-  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+  id          SERIAL PRIMARY KEY,
+  vacancy_id  INT NOT NULL REFERENCES vacancy(id) ON DELETE CASCADE,
+  user_id     INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status      response_status NOT NULL DEFAULT 'pending',
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS notification (

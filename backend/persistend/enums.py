@@ -119,3 +119,11 @@ class ResponseStatus(str, Enum):
     accepted  = "accepted"
     rejected  = "rejected"
     withdrawn = "withdrawn"
+    
+    
+class ResponseStatus(str, Enum):
+    pending   = "pending"
+    accepted  = "accepted"
+    rejected  = "rejected"
+    withdrawn = "withdrawn"
+    expired   = "expired"

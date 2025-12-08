@@ -54,4 +54,10 @@ class User(Base, TimestampMixin):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-
+    
+    responses = relationship(
+        "Response",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )

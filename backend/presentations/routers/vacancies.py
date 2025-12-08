@@ -23,7 +23,6 @@ from repositories.responses import ResponsesRepo
 from repositories.applications import ApplicationsRepo
 from repositories.users import UsersRepo
 
-
 router = APIRouter(tags=["vacancies"])
 
 vacancies_service = VacanciesService()
@@ -34,8 +33,6 @@ hackathons_service = HackathonsService()
 resp_repo = ResponsesRepo()
 apps_repo = ApplicationsRepo()
 users_repo = UsersRepo()
-
-MAX_ACTIVE_RESPONSES = 10
 
 
 # ---- СХЕМЫ ----
@@ -76,15 +73,9 @@ class ResponseUserInfo(BaseModel):
     last_name: Optional[str] = None
 
 
-class ResponseApplicationInfo(BaseModel):
-    id: int
-    role: Optional[RoleType] = None
-
-
 class ResponseOut(BaseModel):
     id: int
     vacancy_id: int
-    application: ResponseApplicationInfo
     user: ResponseUserInfo
     status: ResponseStatus
 
@@ -144,18 +135,16 @@ async def _ensure_hackathon_open(hackathon_id: int):
 
 
 async def _build_response_card(resp) -> ResponseOut:
-    # предполагаем, что у Response настроены отношения .application и .application.user
-    app = resp.application
-    user = app.user
+    # resp тут уже отсоединён от сессии, поэтому связи трогать нельзя
+    user = await users_repo.get_by_id(resp.user_id)
+    if not user:
+        # что-то совсем странное, но лучше явно уронить 500
+        raise HTTPException(status_code=500, detail="user not found for response")
 
     return ResponseOut(
         id=resp.id,
         vacancy_id=resp.vacancy_id,
         status=resp.status,
-        application=ResponseApplicationInfo(
-            id=app.id,
-            role=app.role,
-        ),
         user=ResponseUserInfo(
             id=user.id,
             username=user.username,
@@ -163,7 +152,6 @@ async def _build_response_card(resp) -> ResponseOut:
             last_name=user.last_name,
         ),
     )
-
 
 # ---- ВАКАНСИИ КОМАНДЫ ----
 
@@ -268,12 +256,10 @@ async def update_vacancy(
         fields["status"] = payload.status
 
     if not fields:
-        # ничего не изменяем — просто возвращаем текущую вакансию
         return VacancyOut.model_validate(vacancy)
 
     updated = await vacancies_service.update(vacancy_id, fields)
     if not updated:
-        # если вдруг запись удалили между GET и UPDATE
         raise HTTPException(status_code=404, detail="vacancy not found (update)")
 
     return VacancyOut.model_validate(updated)
@@ -343,6 +329,7 @@ async def list_responses_for_vacancy(
 )
 async def create_response(
     vacancy_id: int = Path(..., ge=1),
+    payload: ResponseCreateIn = ...,
     current_user_id: int = Depends(get_current_user_id),
 ):
     vac = await _ensure_vacancy_exists(vacancy_id)
@@ -352,33 +339,31 @@ async def create_response(
     team = await _ensure_team_exists(vac.team_id)
     await _ensure_hackathon_open(team.hackathon_id)
 
-    app = await apps_repo.get_by_user_and_hackathon(
-        user_id=current_user_id,
-        hackathon_id=team.hackathon_id,
-    )
-    if not app:
-        raise HTTPException(status_code=400, detail="no application for this hackathon")
-    if app.status != ApplicationStatus.published:
-        raise HTTPException(status_code=400, detail="application is not published")
-
+    # Пользователь уже в команде на этом хакатоне — откликаться нельзя
     already = await teams_service.user_has_team_on_hackathon(
         user_id=current_user_id,
         hackathon_id=team.hackathon_id,
     )
     if already:
         raise HTTPException(
-            status_code=409, detail="user already has a team on this hackathon"
+            status_code=409,
+            detail="user already has a team on this hackathon",
         )
 
-    active_cnt = await resp_repo.count_active_for_application(app.id)
-    if active_cnt >= MAX_ACTIVE_RESPONSES:
-        raise HTTPException(status_code=400, detail="too_many_active_responses")
+    # Нельзя откликнуться дважды на одну и ту же вакансию
+    exists = await resp_repo.exists_for_vacancy_and_user(
+        vacancy_id=vacancy_id,
+        user_id=current_user_id,
+    )
+    if exists:
+        raise HTTPException(
+            status_code=409,
+            detail="response already exists for this vacancy",
+        )
 
-    desired_role = app.role or vac.role
     resp = await resp_repo.create(
         vacancy_id=vacancy_id,
-        application_id=app.id,
-        desired_role=desired_role,
+        user_id=current_user_id,
     )
 
     return await _build_response_card(resp)
@@ -390,10 +375,10 @@ async def get_response(
     current_user_id: int = Depends(get_current_user_id),
 ):
     resp = await _ensure_response_exists(response_id)
-    app = resp.application
-    team = await _ensure_team_exists(resp.vacancy.team_id)
+    vac = resp.vacancy
+    team = await _ensure_team_exists(vac.team_id)
 
-    if app.user_id != current_user_id and team.captain_id != current_user_id:
+    if resp.user_id != current_user_id and team.captain_id != current_user_id:
         raise HTTPException(status_code=403, detail="forbidden")
 
     return await _build_response_card(resp)
@@ -423,20 +408,20 @@ async def update_response_status(
     resp = await _ensure_response_exists(response_id)
     vac = resp.vacancy
     team = await _ensure_team_exists(vac.team_id)
-    app = resp.application
 
     new_status = payload.status
 
     if new_status in (ResponseStatus.accepted, ResponseStatus.rejected):
         await _ensure_captain(team, current_user_id)
     elif new_status is ResponseStatus.withdrawn:
-        if app.user_id != current_user_id:
+        if resp.user_id != current_user_id:
             raise HTTPException(status_code=403, detail="forbidden")
     else:
         raise HTTPException(status_code=400, detail="unsupported status change")
 
     if new_status == ResponseStatus.accepted:
-        user_id = app.user_id
+        user_id = resp.user_id
+
         already = await teams_service.user_has_team_on_hackathon(
             user_id=user_id,
             hackathon_id=team.hackathon_id,
@@ -446,23 +431,44 @@ async def update_response_status(
                 status_code=409, detail="user already has a team on this hackathon"
             )
 
+        # добавляем пользователя в команду с ролью из вакансии
         await members_service.add_member(
             team_id=team.id,
             user_id=user_id,
-            role=resp.desired_role,
+            role=vac.role,
             is_captain=False,
         )
 
+        # закрываем вакансию
         await vacancies_service.update(
             vacancy_id=vac.id,
             fields={"status": VacancyStatus.closed},
         )
 
-        await apps_repo.update(
-            app_id=app.id,
-            data={"status": ApplicationStatus.hidden, "joined": True},
+        # скрываем анкету пользователя по этому хаку (если есть)
+        app = await apps_repo.get_by_user_and_hackathon(
+            user_id=user_id,
+            hackathon_id=team.hackathon_id,
         )
-        # TODO: закрыть остальные отклики/инвайты и разослать уведомления.
+        if app:
+            await apps_repo.update(
+                app_id=app.id,
+                data={"status": ApplicationStatus.hidden, "joined": True},
+            )
+
+        # гасим другие pending-отклики пользователя по этому хаку
+        await resp_repo.expire_other_pending_for_user_on_hackathon(
+            user_id=user_id,
+            hackathon_id=team.hackathon_id,
+            except_response_id=resp.id,
+        )
+        # TODO: погасить pending-инвайты и разослать уведомления.
+
+    if new_status == ResponseStatus.withdrawn:
+        if resp.status != ResponseStatus.pending:
+            raise HTTPException(
+                status_code=400, detail="only pending response can be withdrawn"
+            )
 
     updated = await resp_repo.update_status(response_id=response_id, status=new_status)
     if not updated:
@@ -479,9 +485,8 @@ async def delete_response(
     current_user_id: int = Depends(get_current_user_id),
 ):
     resp = await _ensure_response_exists(response_id)
-    app = resp.application
 
-    if app.user_id != current_user_id:
+    if resp.user_id != current_user_id:
         raise HTTPException(status_code=403, detail="forbidden")
 
     if resp.status != ResponseStatus.pending:
