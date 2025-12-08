@@ -53,6 +53,12 @@ class Application(Base, TimestampMixin):
 
     hackathon = relationship("Hackathon", back_populates="applications")
 
+    invites = relationship(
+        "Invite",
+        back_populates="application",
+        cascade="all, delete-orphan",
+    )
+
     responses = relationship(
         "Response",
         back_populates="application",
