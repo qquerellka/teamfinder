@@ -59,13 +59,13 @@ class VacanciesService:
         team_id: int,
         role: RoleType,
         description: Optional[str],
-        skills: Optional[Sequence[str]] = None,
+        # skills: Optional[Sequence[str]] = None,
     ) -> Vacancy:
         return await self.vacancies.create(
             team_id=team_id,
             role=role,
             description=description,
-            skills=skills,
+            # skills=skills,
         )
 
     # --- обновление ---
