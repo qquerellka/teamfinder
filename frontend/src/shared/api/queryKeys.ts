@@ -41,4 +41,11 @@ export const queryKeys = {
     byId: (id: number) => ["teams", id] as const, // GET /teams/{id}
     members: (teamId: number) => ["teams", teamId, "members"] as const,
   },
+  vacancies: {
+    all: ["vacancies"] as const,
+    byTeam: (teamId: number) => ["vacancies", "team", teamId] as const,
+    byHackathon: (hackathonId: number) =>
+      ["vacancies", "hackathon", hackathonId] as const,
+    byId: (id: number) => ["vacancies", id] as const,
+  },
 } as const;
