@@ -14,8 +14,19 @@ export interface FetchHackathonsResponse {
   offset: number;
 }
 
-export async function fetchHackathons(): Promise<FetchHackathonsResponse> {
-  const { data } = await apiClient.get<FetchHackathonsApiResponse>("/hackathons");
+export interface FetchHackathonsParams {
+  q?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export async function fetchHackathons(
+  params: FetchHackathonsParams = {}
+): Promise<FetchHackathonsResponse> {
+  const { data } = await apiClient.get<FetchHackathonsApiResponse>(
+    "/hackathons",
+    { params }
+  );
 
   return {
     limit: data.limit,

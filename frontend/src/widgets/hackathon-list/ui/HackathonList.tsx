@@ -1,29 +1,59 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 import { getHackathonPath } from "@/app/routing/paths";
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
+import { Input } from "@telegram-apps/telegram-ui";
+import { useDebouncedValue } from "@/shared/helpers/useDebounceValue";
+import { LoaderPage } from "@/shared/ui";
 
 export const HackathonList: FC = () => {
-  const { data, isLoading, error } = useHackathonsQuery();
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 800);
 
-  if (isLoading) return <div>Загружаем хакатоны…</div>;
-  if (error) return <div>Что-то пошло не так</div>;
-  if (!data?.items.length) return <div>Пока нет активных хакатонов</div>;
+  const q = debouncedSearch.trim() || undefined;
+
+  const { data, isLoading, error } = useHackathonsQuery({ q });
+
+  let content: React.ReactNode = null;
+
+  if (isLoading) {
+    content = <LoaderPage></LoaderPage>;
+  } else if (error) {
+    content = <div>Что-то пошло не так</div>;
+  } else if (!data?.items.length) {
+    content = (
+      <div>
+        {q
+          ? `По запросу «${q}» ничего не найдено`
+          : "Пока нет активных хакатонов"}
+      </div>
+    );
+  } else {
+    content = (
+      <Grid>
+        {data.items.map((h) => (
+          <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
+            <HackathonCard hackathon={h} />
+          </CardLink>
+        ))}
+      </Grid>
+    );
+  }
 
   return (
-    <Grid>
-      {data.items.map((h) => (
-        <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
-          <HackathonCard hackathon={h} />
-        </CardLink>
-      ))}
-    </Grid>
+    <>
+      <Input
+        placeholder="Название хакатона"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      {content}
+    </>
   );
 };
-
 
 const Grid = styled.section`
   display: grid;

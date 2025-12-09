@@ -8,22 +8,29 @@ import type { Hackathon } from "@/entities/hackathon/model/types";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
 
-import { getHackathonParticipationPath, getHackathonTeamPath, paths } from "@/app/routing/paths";
+import {
+  getHackathonParticipationPath,
+  getHackathonTeamPath,
+  paths,
+} from "@/app/routing/paths";
 
 import { SText } from "@/shared/ui/SText";
 import { normalizeUrl } from "@/shared/helpers/url";
 import { Page } from "@/shared/ui/Page";
+import { useAuthUserApplicationsOnHackathon } from "@/entities/application/api/hooks";
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
 
   const { data: hackathon, isLoading, isError } = useHackathonQuery(Number(id));
   const { data: user, isLoading: isUserLoading } = useAuthUser();
+  const { data: application, isLoading: isAppllicationLoading } =
+    useAuthUserApplicationsOnHackathon(Number(id));
 
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  if (isLoading) {
+  if (isLoading || isAppllicationLoading || isUserLoading) {
     return <Placeholder>Загружаем хакатон…</Placeholder>;
   }
 
@@ -52,14 +59,14 @@ const HackathonPage: React.FC = () => {
 
     if (!hasSkills) {
       setIsSkillsModalOpen(true);
-      return ;
+      return;
     }
 
     // здесь потом добавишь переход в "участие / анкета"
     if (id) navigate(getHackathonParticipationPath(id));
   };
 
-    const handleGoToTeam = () => {
+  const handleGoToTeam = () => {
     if (isUserLoading) return;
 
     const hasSkills =
@@ -67,7 +74,7 @@ const HackathonPage: React.FC = () => {
 
     if (!hasSkills) {
       setIsSkillsModalOpen(true);
-      return ;
+      return;
     }
 
     // здесь потом добавишь переход в "участие / анкета"
@@ -83,19 +90,30 @@ const HackathonPage: React.FC = () => {
     <>
       <Page>
         <HackathonCard hackathon={hackathon} variant="full" />
+        {application ? (
+          <ButtonsSection>
+            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+              Подробнее на сайте
+            </SButton>
 
-        <ButtonsSection>
-          <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-            Подробнее на сайте
-          </SButton>
+            <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
+              Моя анкета
+            </SButton>
+          </ButtonsSection>
+        ) : (
+          <ButtonsSection>
+            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+              Подробнее на сайте
+            </SButton>
 
-          <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
-            Найти команду
-          </SButton>
-          <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
-            Создать команду
-          </SButton>
-        </ButtonsSection>
+            <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
+              Найти команду
+            </SButton>
+            <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
+              Создать команду
+            </SButton>
+          </ButtonsSection>
+        )}
       </Page>
 
       <Modal
@@ -153,17 +171,6 @@ const Placeholder = styled.div`
   font-size: 14px;
   opacity: 0.8;
 `;
-
-// const SSection = styled(Section)`
-//   background: var(--tg-theme-section-bg-color, #fff);
-//   padding: 0;
-//   border-radius: 1rem;
-//   width: 100%;
-
-//   & > div {
-//     padding: 0;
-//   }
-// `;
 
 const ButtonsSection = styled(List)`
   margin-top: auto; /* прижимаем к низу Page */

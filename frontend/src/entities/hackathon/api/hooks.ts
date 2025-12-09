@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchHackathons, fetchHackathon } from "./hackathons";
+import { fetchHackathons, fetchHackathon, FetchHackathonsParams } from "./hackathons";
 import { queryKeys } from "@/shared/api/queryKeys";
 
-export function useHackathonsQuery() {
+export function useHackathonsQuery(params: FetchHackathonsParams = {}) {
+  const { q } = params;
+
   return useQuery({
-    queryKey: queryKeys.hackathons.list,
-    queryFn: fetchHackathons,
+    queryKey: [...queryKeys.hackathons.list, q ?? ""],
+    queryFn: () => fetchHackathons(params),
+    staleTime: 60_000,
   });
 }
 

@@ -37,7 +37,7 @@ export const HackathonApplication: FC<HackathonApplicationProps> = ({
         hackathon={hackathon}
         application={application}
       />
-      <ApplicationInvites appId={1} />
+      <ApplicationInvites appId={application.id} />
     </>
   );
 };

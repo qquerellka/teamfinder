@@ -1,13 +1,19 @@
-import { FC } from "react"
-
-
+import { useApplicationInvites } from "@/entities/invite/api/hooks";
+import { SText } from "@/shared/ui";
+import { FC } from "react";
 
 interface ApplicationInvites {
-    appId: number
+  appId: number;
 }
 
-export const ApplicationInvites:FC<ApplicationInvites> = () => {
-    return (
-        <div className="">Приглашения в команду</div>
-    )
-}
+export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
+  const { data } = useApplicationInvites(appId);
+  return (
+    <>
+      <SText>Приглашения в команду</SText>
+      {data?.map((i) => (
+        <SText>{i.applicationId}</SText>
+      ))}
+    </>
+  );
+};
