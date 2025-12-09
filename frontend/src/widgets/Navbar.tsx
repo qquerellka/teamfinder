@@ -6,7 +6,7 @@ import { NavLink } from "react-router-dom";
 import HackIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
 import ProfIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
 import TeamIcon from "@/assets/icons/navbarIcons/TeamsIcon.svg?react";
-import AppIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg"
+import AppIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react"
 import { paths } from "@/app/routing/paths";
 import { SIcon } from "@/shared/ui/SIcon";
 
@@ -35,7 +35,7 @@ export const Navbar: FC = () => (
           to={path}
           className={({ isActive }) => (isActive ? "active" : "")}
         >
-          <SIcon icon={icon} size={28} color={'transparent'} />
+          <SIcon icon={icon} size={28} />
         </NavLink>
       </SItem>
     ))}

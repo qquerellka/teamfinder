@@ -2,7 +2,7 @@ import { paths } from "@/app/routing/paths";
 import { SIcon } from "@/shared/ui/SIcon";
 import { STitle } from "@/shared/ui/STitle";
 import { IconButton } from "@telegram-apps/telegram-ui";
-import plusIcon from "@/assets/icons/plusIcon.svg";
+import plusIcon from "@/assets/icons/plusIcon.svg?react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 

@@ -33,7 +33,7 @@ export type SIconProps = {
 export const SIcon: React.FC<SIconProps> = ({
   icon,
   size = "m",
-  color = "transparent",
+  color,                // без значения по умолчанию
   clickable,
   asButton,
   className,
@@ -95,21 +95,29 @@ const Wrap = styled.span<{
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
 
-  color: ${({ $color }) => $color ?? "currentColor"};
+  /* цвет обводки берём из темы (или из пропса) */
+  color: ${({ $color }) => $color ?? "var(--tg-theme-text-color)"};
+
 
   & > svg {
     width: 100%;
     height: 100%;
     display: block;
-    fill: currentColor;
+  }
+
+  /* все элементы внутри svg: заливка прозрачная, обводка = currentColor */
+  & > svg * {
+    fill: transparent;
     stroke: currentColor;
   }
+
   & > img {
     width: 100%;
     height: 100%;
     display: block;
     object-fit: contain;
   }
+
 
   ${({ $clickable }) =>
     $clickable &&

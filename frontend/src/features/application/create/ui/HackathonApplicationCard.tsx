@@ -8,8 +8,8 @@ import { SIcon } from "@/shared/ui/SIcon";
 import { RoleBadge } from "@/shared/ui/RoleBadge";
 import { SText } from "@/shared/ui/SText";
 
-import editIcon from "@/assets/icons/editIcon.svg";
-import deleteIcon from "@/assets/icons/deleteIcon.svg";
+import EditIcon from "@/assets/icons/editIcon.svg?react";
+import DeleteIcon from "@/assets/icons/deleteIcon.svg?react";
 import { FC } from "react";
 
 interface HackathonApplicationCardProps {
@@ -34,10 +34,10 @@ export const HackathonApplicationCard:FC<HackathonApplicationCardProps> = ({
 
         <Icons>
           <IconButton type="button" onClick={onEditClick}>
-            <SIcon icon={editIcon} />
+            <SIcon icon={EditIcon} />
           </IconButton>
           <IconButton type="button" onClick={onDeleteClick}>
-            <SIcon icon={deleteIcon} />
+            <SIcon icon={DeleteIcon} />
           </IconButton>
         </Icons>
       </Header>
