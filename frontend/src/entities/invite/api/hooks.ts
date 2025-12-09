@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/api/queryKeys";
 import {
@@ -10,42 +10,39 @@ import {
   updateInvite,
 } from "./invites";
 import type { Invite, CreateInvite, UpdateInvite } from "../model/types";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const inviteKeys = queryKeys.invites;
 
-export function useTeamInvites(teamId: number, enabled = true) {
-  return useQuery<Invite[], Error>({
+export function useTeamInvites(teamId: number) {
+  return useAppQuery<Invite[], Error>({
     queryKey: inviteKeys.byTeam(teamId),
     queryFn: () => getTeamInvites(teamId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useApplicationInvites(applicationId: number, enabled = true) {
-  return useQuery<Invite[], Error>({
+export function useApplicationInvites(applicationId: number) {
+  return useAppQuery<Invite[], Error>({
     queryKey: inviteKeys.byApplication(applicationId),
     queryFn: () => getApplicationInvites(applicationId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useMyInvites(enabled = true) {
-  return useQuery<Invite[], Error>({
+export function useMyInvites() {
+  return useAppQuery<Invite[], Error>({
     queryKey: inviteKeys.me,
     queryFn: getAllInvites,
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useInvite(id: number, enabled = true) {
-  return useQuery<Invite, Error>({
+export function useInvite(id: number) {
+  return useAppQuery<Invite, Error>({
     queryKey: inviteKeys.byId(id),
     queryFn: () => getInvite(id),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 

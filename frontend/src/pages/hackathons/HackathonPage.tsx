@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navigate, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Button, List } from "@telegram-apps/telegram-ui";
 
@@ -16,27 +16,19 @@ import {
 } from "@/app/routing/paths";
 
 import { normalizeUrl } from "@/shared/helpers/url";
-import { LoaderPage, Page } from "@/shared/ui";
+import { Page } from "@/shared/ui";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
 
-  const { data: hackathon, isLoading, isError } = useHackathonQuery(Number(id));
+  const { data: hackathon } = useHackathonQuery(Number(id));
   const { data: user, isLoading: isUserLoading } = useAuthUser();
-  const { data: application, isLoading: isAppllicationLoading } =
+  const { data: application } =
     useAuthUserApplicationsOnHackathon(Number(id));
 
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const navigate = useNavigate();
-
-  if (isLoading || isAppllicationLoading || isUserLoading) {
-    return <LoaderPage />;
-  }
-
-  if (isError || !hackathon) {
-    return <Navigate to={paths.error404} replace />;
-  }
 
   const url = normalizeUrl((hackathon as Hackathon).registrationLink);
 

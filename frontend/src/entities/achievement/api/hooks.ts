@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Achievement, AchievementCreate, AchievementsList, EditAchievementArgs } from "../model/types";
 import {
   createAchievement,
@@ -8,23 +8,23 @@ import {
   getUserAchievementsByUserId,
 } from "./achievements";
 import { queryKeys } from "@/shared/api/queryKeys";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const achievementKeys = queryKeys.achievements;
 const userKeys = queryKeys.user;
 
 export function useAuthUserAchievements() {
-  return useQuery<AchievementsList>({
+  return useAppQuery<AchievementsList>({
     queryKey: achievementKeys.me,
     queryFn: getAuthUserAchievements,
     staleTime: 60 * 1000,
   });
 }
 
-export function useUserAchievements(userId: number, enabled = true) {
-  return useQuery<AchievementsList>({
+export function useUserAchievements(userId: number) {
+  return useAppQuery<AchievementsList>({
     queryKey: achievementKeys.byUser(userId),
     queryFn: () => getUserAchievementsByUserId(userId),
-    enabled,
     staleTime: 60 * 1000,
   });
 }

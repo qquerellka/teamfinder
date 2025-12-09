@@ -7,7 +7,7 @@ import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 import { Input } from "@telegram-apps/telegram-ui";
 import { useDebouncedValue } from "@/shared/helpers/useDebounceValue";
-import { InputSection, LoaderPage, SText } from "@/shared/ui";
+import { InputSection, SText } from "@/shared/ui";
 
 export const HackathonList: FC = () => {
   const [search, setSearch] = useState("");
@@ -15,31 +15,7 @@ export const HackathonList: FC = () => {
 
   const q = debouncedSearch.trim() || undefined;
 
-  const { data, isLoading, error } = useHackathonsQuery({ q });
-
-  let content: React.ReactNode = null;
-
-  if (isLoading) {
-    content = <LoaderPage></LoaderPage>;
-  } else if (error) {
-    content = <div>Что-то пошло не так</div>;
-  } else if (!data?.items.length) {
-    content = (
-      <NotFound>
-        <SText>Ничего не нашлось :(</SText>
-      </NotFound>
-    );
-  } else {
-    content = (
-      <Grid>
-        {data.items.map((h) => (
-          <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
-            <HackathonCard hackathon={h} />
-          </CardLink>
-        ))}
-      </Grid>
-    );
-  }
+  const { data } = useHackathonsQuery({ q });
 
   return (
     <InputSection>
@@ -48,7 +24,19 @@ export const HackathonList: FC = () => {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      {content}
+      {data.items.length === 0 ? (
+        <NotFound>
+          <SText>Ничего не нашлось :(</SText>
+        </NotFound>
+      ) : (
+        <Grid>
+          {data.items.map((h) => (
+            <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
+              <HackathonCard hackathon={h} />
+            </CardLink>
+          ))}
+        </Grid>
+      )}
     </InputSection>
   );
 };
@@ -68,4 +56,4 @@ const NotFound = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-`
+`;

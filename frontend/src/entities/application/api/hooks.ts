@@ -1,5 +1,5 @@
 import { queryKeys } from "@/shared/api/queryKeys";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createHackathonApplication,
   deleteAuthUserApplication,
@@ -15,33 +15,31 @@ import {
   ApplicationEdit,
   ApplicationsResponse,
 } from "../model/types";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const applicationKeys = queryKeys.applications;
 
-export function useHackathonApplications(id: number, enabled = true) {
-  return useQuery<ApplicationsResponse>({
+export function useHackathonApplications(id: number) {
+  return useAppQuery<ApplicationsResponse>({
     queryKey: applicationKeys.byHackathon(id),
     queryFn: () => getHackathonApplications(id),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useAuthUserApplicationsOnHackathon(id: number, enabled = true) {
-  return useQuery<Application | null>({
+export function useAuthUserApplicationsOnHackathon(id: number) {
+  return useAppQuery<Application | null>({
     queryKey: applicationKeys.meByHackathon(id),
     queryFn: () => getAuthUserApplicationOnHackathon(id),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useAuthUserApplications(enabled = true) {
-  return useQuery({
+export function useAuthUserApplications() {
+  return useAppQuery({
     queryKey: applicationKeys.me,
     queryFn: getAuthUserApplications,
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
@@ -64,11 +62,10 @@ export function useCreateHackathonApplication(hackathonId: number) {
   });
 }
 
-export function useAuthUserApplication(id: number, enabled = true) {
-  return useQuery<Application>({
+export function useAuthUserApplication(id: number) {
+  return useAppQuery<Application>({
     queryKey: applicationKeys.byId(id),
     queryFn: () => getAuthUserApplication(id),
-    enabled,
     staleTime: 60 * 1000,
   });
 }

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/api/queryKeys";
 import {
@@ -11,42 +11,39 @@ import {
   hackathonVacancies,
 } from "./vacancies";
 import type { Vacancy, EditVacancy } from "../model/types";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const vacancyKeys = queryKeys.vacancies;
 
-export function useTeamVacancies(teamId: number, enabled = true) {
-  return useQuery<Vacancy[], Error>({
+export function useTeamVacancies(teamId: number) {
+  return useAppQuery<Vacancy[], Error>({
     queryKey: vacancyKeys.byTeam(teamId),
     queryFn: () => teamVacancies(teamId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useHackathonVacancies(hackathonId: number, enabled = true) {
-  return useQuery<Vacancy[], Error>({
+export function useHackathonVacancies(hackathonId: number) {
+  return useAppQuery<Vacancy[], Error>({
     queryKey: vacancyKeys.byHackathon(hackathonId),
     queryFn: () => hackathonVacancies(hackathonId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useAllVacancies(enabled = true) {
-  return useQuery<Vacancy[], Error>({
+export function useAllVacancies() {
+  return useAppQuery<Vacancy[], Error>({
     queryKey: vacancyKeys.all,
     queryFn: getAllVacancies,
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useVacancy(id: number, enabled = true) {
-  return useQuery<Vacancy, Error>({
+export function useVacancy(id: number) {
+  return useAppQuery<Vacancy, Error>({
     queryKey: vacancyKeys.byId(id),
     queryFn: () => getVacancy(id),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 

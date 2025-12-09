@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/api/queryKeys";
 import {
@@ -16,42 +16,39 @@ import {
   CreateTeam,
   EditTeam,
 } from "../model/types";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const teamKeys = queryKeys.teams;
 
-export function useHackathonTeams(hackathonId: number, enabled = true) {
-  return useQuery<TeamsResponse, Error>({
+export function useHackathonTeams(hackathonId: number) {
+  return useAppQuery<TeamsResponse, Error>({
     queryKey: teamKeys.byHackathon(hackathonId),
     queryFn: () => getHackathonTeams(hackathonId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useMyTeams(enabled = true) {
-  return useQuery<TeamsResponse, Error>({
+export function useMyTeams() {
+  return useAppQuery<TeamsResponse, Error>({
     queryKey: teamKeys.me,
     queryFn: getMyTeams,
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useMyTeamOnHackathon(hackathonId: number, enabled = true) {
-  return useQuery<Team, Error>({
+export function useMyTeamOnHackathon(hackathonId: number) {
+  return useAppQuery<Team, Error>({
     queryKey: teamKeys.meByHackathon(hackathonId),
     queryFn: () => getMyTeamOnHackathon(hackathonId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useTeam(teamId: number, enabled = true) {
-  return useQuery<Team, Error>({
+export function useTeam(teamId: number) {
+  return useAppQuery<Team, Error>({
     queryKey: teamKeys.byId(teamId),
     queryFn: () => getTeam(teamId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/api/queryKeys";
 import {
@@ -10,36 +10,34 @@ import {
   getAllResponses,
 } from "./responses";
 import type { Response, UpdateResponse } from "../model/types";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const responseKeys = queryKeys.responses;
 
 export function useVacancyResponses(
   vacancyId: number,
-  enabled = true
 ) {
-  return useQuery<Response[], Error>({
+  return useAppQuery<Response[], Error>({
     queryKey: responseKeys.byVacancy(vacancyId),
     queryFn: () => getVacancyResponses(vacancyId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useMyResponses(enabled = true) {
-  return useQuery<Response[], Error>({
+export function useMyResponses() {
+  return useAppQuery<Response[], Error>({
     queryKey: responseKeys.me,
     queryFn: getAllResponses,
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 
-export function useResponse(id: number, enabled = true) {
-  return useQuery<Response, Error>({
+export function useResponse(id: number) {
+  return useAppQuery<Response, Error>({
     queryKey: responseKeys.byId(id),
     queryFn: () => getResponse(id),
     staleTime: 60 * 1000,
-    enabled,
+    
   });
 }
 

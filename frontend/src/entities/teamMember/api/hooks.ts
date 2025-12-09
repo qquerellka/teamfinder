@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/api/queryKeys";
 import {
@@ -13,16 +13,16 @@ import type {
   AddTeamMember,
   EditTeamMember,
 } from "../model/types";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const teamKeys = queryKeys.teams;
 
 
-export function useTeamMembers(teamId: number, enabled = true) {
-  return useQuery<TeamMember[], Error>({
+export function useTeamMembers(teamId: number) {
+  return useAppQuery<TeamMember[], Error>({
     queryKey: teamKeys.members(teamId),
     queryFn: () => getTeamMembers(teamId),
     staleTime: 60 * 1000,
-    enabled,
   });
 }
 

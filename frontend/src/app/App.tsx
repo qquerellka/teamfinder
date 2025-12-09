@@ -7,6 +7,8 @@ import { ErrorBoundary } from "./layouts/ErrorBoundary";
 import { AppErrorFallback } from "./layouts/AppErrorFallback";
 import { AppRouter } from "./routing/routes";
 import { AuthGate } from "@/features/auth/ui/AuthGate";
+import { LoaderPage } from "@/shared/ui";
+import { Suspense } from "react";
 
 export function App() {
   const lp = useLaunchParams();
@@ -20,13 +22,15 @@ export function App() {
   return (
     <AppRoot appearance={isDark ? "dark" : "light"} platform={platform}>
       <ReactQueryProvider>
-        <ErrorBoundary fallback={AppErrorFallback}>
-          <AuthGate>
-            <HashRouter>
-              <AppRouter />
-            </HashRouter>
-          </AuthGate>
-        </ErrorBoundary>
+        <Suspense fallback={<LoaderPage />}>
+          <ErrorBoundary fallback={AppErrorFallback}>
+            <AuthGate>
+              <HashRouter>
+                <AppRouter />
+              </HashRouter>
+            </AuthGate>
+          </ErrorBoundary>
+        </Suspense>
       </ReactQueryProvider>
     </AppRoot>
   );

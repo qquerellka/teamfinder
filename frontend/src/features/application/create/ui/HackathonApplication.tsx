@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
 import { Hackathon } from "@/entities/hackathon/model/types";
-import { LoaderPage } from "@/shared/ui/LoaderPage";
 import {
   useAuthUserApplicationsOnHackathon,
   useDeleteAuthUserApplication,
@@ -19,24 +18,14 @@ interface HackathonApplicationProps {
 export const HackathonApplication: FC<HackathonApplicationProps> = ({
   hackathon,
 }) => {
-  const {
-    data: application,
-    isLoading,
-    isError,
-  } = useAuthUserApplicationsOnHackathon(hackathon.id);
+  const { data: application } = useAuthUserApplicationsOnHackathon(
+    hackathon.id
+  );
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const deleteMutation = useDeleteAuthUserApplication();
-
-  if (isLoading) {
-    return <LoaderPage />;
-  }
-
-  if (isError) {
-    return <div>Не удалось загрузить анкету. Попробуйте позже.</div>;
-  }
 
   if (!application) {
     return <HackathonApplicationCreateForm hackathon={hackathon} />;
