@@ -4,7 +4,7 @@ import { STitle } from "./STitle";
 
 interface InpurSectionProps {
   children: ReactNode;
-  header: string;
+  header?: string;
 }
 
 export const InputSection: FC<InpurSectionProps> = ({ children, header }) => {

@@ -7,7 +7,7 @@ import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 import { Input } from "@telegram-apps/telegram-ui";
 import { useDebouncedValue } from "@/shared/helpers/useDebounceValue";
-import { LoaderPage, SText } from "@/shared/ui";
+import { InputSection, LoaderPage, SText } from "@/shared/ui";
 
 export const HackathonList: FC = () => {
   const [search, setSearch] = useState("");
@@ -42,14 +42,14 @@ export const HackathonList: FC = () => {
   }
 
   return (
-    <>
+    <InputSection>
       <Input
         placeholder="Название хакатона"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
       {content}
-    </>
+    </InputSection>
   );
 };
 

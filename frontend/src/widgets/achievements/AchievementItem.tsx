@@ -35,6 +35,6 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement }) => {
 };
 
 const Wrapper = styled(Cell)`
-  background-color: var(--tg-theme-secondary-bg-color);
+  background-color: var(--tg-theme-section-bg-color);
   border-radius: 1rem;
 `;
