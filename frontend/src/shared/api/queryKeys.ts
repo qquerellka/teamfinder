@@ -55,4 +55,12 @@ export const queryKeys = {
     me: ["responses", "me"] as const,
     byId: (id: number) => ["responses", id] as const,
   },
+  invites: {
+    all: ["invites"] as const,
+    byTeam: (teamId: number) => ["invites", "team", teamId] as const,
+    byApplication: (applicationId: number) =>
+      ["invites", "application", applicationId] as const,
+    me: ["invites", "me"] as const,
+    byId: (id: number) => ["invites", id] as const,
+  },
 } as const;
