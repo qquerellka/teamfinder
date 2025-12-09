@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
 import styled from "styled-components";
 import { STitle } from "./STitle";
+import { List } from "@telegram-apps/telegram-ui";
 
 interface InpurSectionProps {
   children: ReactNode;
@@ -20,7 +21,7 @@ export const InputSection: FC<InpurSectionProps> = ({ children, header }) => {
   );
 };
 
-const Wrapper = styled.section`
+const Wrapper = styled(List)`
   width: 100%;
 `;
 
@@ -39,3 +40,27 @@ const Main = styled.div`
     background-color: var(--tg-theme-secondary-bg-color);
   }
 `;
+
+// export const TgInputSection: FC<InpurSectionProps> = ({ children, header }) => {
+//   return (
+//     <TgSection header={header}>
+//       <List>{children}</List>
+//     </TgSection>
+//   );
+// };
+
+// const TgSection = styled(Section)`
+//   background: none;
+//   border-radius: 1rem;
+//   & > div {
+//     background: none;
+//     border-radius: 1rem;
+//     box-shadow: none;
+//     & > div {
+//       background-color: transparent;
+//       & > div {
+//         background-color: transparent;
+//       }
+//     }
+//   }
+// `;
