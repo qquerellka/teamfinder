@@ -48,4 +48,11 @@ export const queryKeys = {
       ["vacancies", "hackathon", hackathonId] as const,
     byId: (id: number) => ["vacancies", id] as const,
   },
+  responses: {
+    all: ["responses"] as const, // /me/responses
+    byVacancy: (vacancyId: number) =>
+      ["responses", "vacancy", vacancyId] as const,
+    me: ["responses", "me"] as const,
+    byId: (id: number) => ["responses", id] as const,
+  },
 } as const;

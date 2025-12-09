@@ -4,12 +4,15 @@ import { useAuthUserApplicationsOnHackathon } from "@/entities/application/api/h
 import { HackathonApplicationCreateForm } from "./HackathonApplicationCreateForm";
 import { HackathonApplicationCard } from "./HackathonApplicationCard";
 import { FC } from "react";
+import { ApplicationInvites } from "@/features/invite/manage-list/ui/ApplicationInvites";
 
 interface HackathonApplicationProps {
   hackathon: Hackathon;
-};
+}
 
-export const HackathonApplication:FC<HackathonApplicationProps> = ({ hackathon }) => {
+export const HackathonApplication: FC<HackathonApplicationProps> = ({
+  hackathon,
+}) => {
   const {
     data: application,
     isLoading,
@@ -29,6 +32,12 @@ export const HackathonApplication:FC<HackathonApplicationProps> = ({ hackathon }
   }
 
   return (
-    <HackathonApplicationCard hackathon={hackathon} application={application} />
+    <>
+      <HackathonApplicationCard
+        hackathon={hackathon}
+        application={application}
+      />
+      <ApplicationInvites appId={1} />
+    </>
   );
 };
