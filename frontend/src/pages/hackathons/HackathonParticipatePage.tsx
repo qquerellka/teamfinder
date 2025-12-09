@@ -34,7 +34,7 @@ const HackathonParticipatePage: React.FC = () => {
 
   return (
     <Page>
-      <SegmentedControl>
+      <SegmentedControl style={{margin: '1rem 0'}}>
         <SegmentedControlItem
           selected={tab === "applications"}
           onClick={() => setTab("applications")}

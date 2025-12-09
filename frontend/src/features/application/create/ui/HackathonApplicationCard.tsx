@@ -42,7 +42,7 @@ export const HackathonApplicationCard:FC<HackathonApplicationCardProps> = ({
         </Icons>
       </Header>
 
-      <Info>{formatRegistrationDate(hackathon.registrationEndDate)}</Info>
+      <SText $fs={14} $fw={500}>{formatRegistrationDate(hackathon.registrationEndDate)}</SText>
 
       <RoleBadge role={application.role} />
     </Wrapper>
@@ -50,11 +50,12 @@ export const HackathonApplicationCard:FC<HackathonApplicationCardProps> = ({
 };
 
 const Wrapper = styled.div`
-  background-color: var(--tg-theme-secondary-bg-color);
+  background-color: var(--tg-theme-section-bg-color);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   padding: 1rem;
+  border-radius: 1rem;
 `;
 
 const Header = styled.div`
@@ -62,6 +63,7 @@ const Header = styled.div`
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const Icons = styled.div`
@@ -75,4 +77,4 @@ const IconButton = styled(Button).attrs({ mode: "plain", size: "s" })`
   min-width: auto;
 `;
 
-const Info = styled.div``;
+// const Info = styled(SText)``;
