@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Navigate, useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Button, List, Modal } from "@telegram-apps/telegram-ui";
+import { Button, List } from "@telegram-apps/telegram-ui";
 
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import type { Hackathon } from "@/entities/hackathon/model/types";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
+import { useAuthUserApplicationsOnHackathon } from "@/entities/application/api/hooks";
 
 import {
   getHackathonParticipationPath,
@@ -14,10 +15,9 @@ import {
   paths,
 } from "@/app/routing/paths";
 
-import { SText } from "@/shared/ui/SText";
 import { normalizeUrl } from "@/shared/helpers/url";
-import { Page } from "@/shared/ui/Page";
-import { useAuthUserApplicationsOnHackathon } from "@/entities/application/api/hooks";
+import { LoaderPage, Page } from "@/shared/ui";
+import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
@@ -31,7 +31,7 @@ const HackathonPage: React.FC = () => {
   const navigate = useNavigate();
 
   if (isLoading || isAppllicationLoading || isUserLoading) {
-    return <Placeholder>Загружаем хакатон…</Placeholder>;
+    return <LoaderPage />;
   }
 
   if (isError || !hackathon) {
@@ -62,7 +62,6 @@ const HackathonPage: React.FC = () => {
       return;
     }
 
-    // здесь потом добавишь переход в "участие / анкета"
     if (id) navigate(getHackathonParticipationPath(id));
   };
 
@@ -77,7 +76,6 @@ const HackathonPage: React.FC = () => {
       return;
     }
 
-    // здесь потом добавишь переход в "участие / анкета"
     if (id) navigate(getHackathonTeamPath(id));
   };
 
@@ -116,45 +114,15 @@ const HackathonPage: React.FC = () => {
         )}
       </Page>
 
-      <Modal
+      <ConfirmModal
         open={isSkillsModalOpen}
-        onOpenChange={setIsSkillsModalOpen}
-        modal
-        dismissible
-      >
-        <List
-          style={{
-            padding: 16,
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "center",
-            gap: 0,
-          }}
-        >
-          <SText>
-            Чтобы участвовать в хакатоне, добавьте хотя бы один навык в свой
-            профиль.
-          </SText>
-          <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-            <Button
-              size="m"
-              mode="plain"
-              onClick={() => setIsSkillsModalOpen(false)}
-              style={{ flex: 1 }}
-            >
-              Потом
-            </Button>
-            <Button
-              size="m"
-              mode="bezeled"
-              onClick={handleGoToProfile}
-              style={{ flex: 1 }}
-            >
-              Заполнить профиль
-            </Button>
-          </div>
-        </List>
-      </Modal>
+        title="Чтобы участвовать в хакатоне, добавьте хотя бы один навык в свой профиль."
+        cancelText="Потом"
+        confirmText="Заполнить профиль"
+        loading={false}
+        onCancel={() => setIsSkillsModalOpen(false)}
+        onConfirm={handleGoToProfile}
+      />
     </>
   );
 };
@@ -165,15 +133,8 @@ const SButton = styled(Button)`
   width: 100%;
 `;
 
-const Placeholder = styled.div`
-  padding: 1rem;
-  text-align: center;
-  font-size: 14px;
-  opacity: 0.8;
-`;
-
 const ButtonsSection = styled(List)`
-  margin-top: auto; /* прижимаем к низу Page */
+  margin-top: auto;
   display: flex;
   flex-direction: column;
 `;

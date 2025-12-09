@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Button } from "@telegram-apps/telegram-ui";
 
 import { Hackathon } from "@/entities/hackathon/model/types";
-import type { Application } from "@/entities/application/model/types"; // подставь правильный тип
+import type { Application } from "@/entities/application/model/types";
 import { formatRegistrationDate } from "@/shared/helpers/date";
 import { SIcon } from "@/shared/ui/SIcon";
 import { RoleBadge } from "@/shared/ui/RoleBadge";
@@ -76,5 +76,3 @@ const IconButton = styled(Button).attrs({ mode: "plain", size: "s" })`
   padding: 0;
   min-width: auto;
 `;
-
-// const Info = styled(SText)``;

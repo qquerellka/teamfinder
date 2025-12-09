@@ -7,7 +7,7 @@ import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 import { Input } from "@telegram-apps/telegram-ui";
 import { useDebouncedValue } from "@/shared/helpers/useDebounceValue";
-import { LoaderPage } from "@/shared/ui";
+import { LoaderPage, SText } from "@/shared/ui";
 
 export const HackathonList: FC = () => {
   const [search, setSearch] = useState("");
@@ -25,11 +25,9 @@ export const HackathonList: FC = () => {
     content = <div>Что-то пошло не так</div>;
   } else if (!data?.items.length) {
     content = (
-      <div>
-        {q
-          ? `По запросу «${q}» ничего не найдено`
-          : "Пока нет активных хакатонов"}
-      </div>
+      <NotFound>
+        <SText>Ничего не нашлось :(</SText>
+      </NotFound>
     );
   } else {
     content = (
@@ -65,3 +63,9 @@ const CardLink = styled(Link)`
   text-decoration: none;
   color: inherit;
 `;
+
+const NotFound = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+`
