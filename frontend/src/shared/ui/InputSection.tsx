@@ -11,10 +11,11 @@ export const InputSection: FC<InpurSectionProps> = ({ children, header }) => {
   return (
     <Wrapper>
       <Header>
-        <STitle $fw={600} $fs={16}>{header}</STitle>
+        <STitle $fw={600} $fs={16}>
+          {header}
+        </STitle>
       </Header>
       <Main>{children}</Main>
-      
     </Wrapper>
   );
 };
@@ -34,4 +35,7 @@ const Header = styled.div`
 
 const Main = styled.div`
   width: 100%;
-` 
+  & > div {
+    background-color: var(--tg-theme-secondary-bg-color);
+  }
+`;
