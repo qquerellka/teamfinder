@@ -329,7 +329,6 @@ async def list_responses_for_vacancy(
 )
 async def create_response(
     vacancy_id: int = Path(..., ge=1),
-    payload: ResponseCreateIn = ...,
     current_user_id: int = Depends(get_current_user_id),
 ):
     vac = await _ensure_vacancy_exists(vacancy_id)
