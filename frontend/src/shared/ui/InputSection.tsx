@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
 import styled from "styled-components";
 import { STitle } from "./STitle";
+import { List } from "@telegram-apps/telegram-ui";
 
 interface InpurSectionProps {
   children: ReactNode;
@@ -33,7 +34,7 @@ const Header = styled.div`
   color: var(--tg-theme-accent-text-color);
 `;
 
-const Main = styled.div`
+const Main = styled(List)`
   width: 100%;
   & > div {
     background-color: var(--tg-theme-secondary-bg-color);
