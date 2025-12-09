@@ -21,7 +21,7 @@ export const InputSection: FC<InpurSectionProps> = ({ children, header }) => {
   );
 };
 
-const Wrapper = styled(List)`
+const Wrapper = styled.div`
   width: 100%;
 `;
 
