@@ -53,10 +53,11 @@ export const HackathonTeamCard: FC<HacakthonTeamCardProps> = ({
             </STitle>
           </CountTeamMembers>
         </HeaderRow>
-
-        {team?.members?.map((m) => (
-          <TeamMemberCard key={m.user.id} member={m} />
-        ))}
+        <TeamMemberCards className="">
+          {team?.members?.map((m) => (
+            <TeamMemberCard key={m.user.id} member={m} />
+          ))}
+        </TeamMemberCards>
       </TeamMembers>
     </SExtraInfo>
   );
@@ -96,6 +97,10 @@ const SExtraInfo = styled(List)`
   width: 100%;
   gap: 0.5rem;
 `;
+const TeamMemberCards = styled(List)`
+    display: flex;
+    width: 100%;
+`
 import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
 
 interface TeamMemberCardProps {
@@ -148,6 +153,8 @@ const MemberRow = styled.div`
   justify-content: space-between;
 
   width: 100%;
+  margin:0 22px;
+
   padding: 8px 22px;
   box-sizing: border-box;
 
