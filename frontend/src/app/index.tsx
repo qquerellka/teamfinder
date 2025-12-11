@@ -42,8 +42,10 @@ async function bootstrapBrowser() {
 async function bootstrapTMA() {
   const lp = retrieveLaunchParams();
 
-  // const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
-  //   || new URLSearchParams(location.search).get("tgWebAppData")
+  const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
+    || new URLSearchParams(location.search).get("tgWebAppData")
+
+    console.log("ahahha: ", a)
   const debug =
     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
 
