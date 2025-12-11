@@ -2,13 +2,13 @@ import { Hackathon } from "@/entities/hackathon/model/types";
 import { TeamWithMembers } from "@/entities/team/model/types";
 import { InputSection, SIcon, SText, STitle } from "@/shared/ui";
 import { Avatar, Button, Input, List, Textarea } from "@telegram-apps/telegram-ui";
-import { FC, useState } from "react";              // + useState
+import { FC, useState } from "react";
 import styled from "styled-components";
 import editIcon from "@/assets/icons/editIcon.svg?react";
 import inviteIcon from "@/assets/icons/inviteIcon.svg?react";
 import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
 import { TeamMember } from "@/entities/teamMember/model/types";
-import { getTeamJoinLink } from "@/entities/team/api/teams"; // <- импорт API
+import { getTeamJoinLink } from "@/entities/team/api/teams";
 
 interface TeamCardProps {
   team: TeamWithMembers;
@@ -33,7 +33,6 @@ export const TeamCard: FC<TeamCardProps> = ({
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
       } else {
-        // fallback для старых webview
         const textarea = document.createElement("textarea");
         textarea.value = url;
         textarea.style.position = "fixed";
@@ -48,7 +47,6 @@ export const TeamCard: FC<TeamCardProps> = ({
       setTimeout(() => setCopied(false), 2000);
     } catch (e) {
       console.error("[TeamCard] failed to copy invite link", e);
-      // тут можно повесить toast/alert
     } finally {
       setIsCopying(false);
     }
@@ -111,6 +109,7 @@ export const TeamCard: FC<TeamCardProps> = ({
     </>
   );
 };
+
 
 const ButtonsSection = styled.div`
   margin-top: auto;
