@@ -29,6 +29,9 @@ export const ProfilePage = () => {
 };
 const Wrapper = styled.div`
   padding: 20px 22px 16px;
+  display: flex;
+  flex-direction: column;
+  gap:1rem;
 `;
 const SProfile = styled.section`
   display: flex;
