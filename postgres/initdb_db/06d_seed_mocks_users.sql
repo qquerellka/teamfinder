@@ -194,30 +194,24 @@ VALUES
 
 -- VACANCIES (вакансии в командах, skills = массив slug'ов)
 
-INSERT INTO vacancy (team_id, role, description, skills)
+INSERT INTO vacancy (team_id, role, description)
 VALUES
   (1, 'Backend',
-      'Backend-разработчик для сервисов МосТех (Go + FastAPI + PostgreSQL).',
-      '["go","python","fastapi","postgres","docker"]'::jsonb),
+      'Backend-разработчик для сервисов МосТех (Go + FastAPI + PostgreSQL).'),
   (1, 'Analytics',
-      'Аналитик по городским данным и метрикам (BI).',
-      '["sql","powerbi","excel"]'::jsonb),
+      'Аналитик по городским данным и метрикам (BI).'),
 
   (2, 'Frontend',
-      'Frontend-разработчик для дашбордов Neva Data Challenge.',
-      '["react","typescript","redux","javascript"]'::jsonb),
+      'Frontend-разработчик для дашбордов Neva Data Challenge.'),
 
   (3, 'Backend',
-      'Backend-разработчик для AI-сервисов (Python + ML).',
-      '["python","fastapi","pandas","numpy"]'::jsonb),
+      'Backend-разработчик для AI-сервисов (Python + ML).'),
 
   (4, 'Analytics',
-      'Аналитик по метрикам и мониторингу (логирование, APM).',
-      '["sql","tableau","superset"]'::jsonb),
+      'Аналитик по метрикам и мониторингу (логирование, APM).'),
 
   (5, 'Frontend',
-      'Фронтенд/мобильный разработчик для суперприложения.',
-      '["react-native","typescript","figma"]'::jsonb);
+      'Фронтенд/мобильный разработчик для суперприложения.');
 
 
 -- ACHIEVEMENTS (ачивки по хакатонам)

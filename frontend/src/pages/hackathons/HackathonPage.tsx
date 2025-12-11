@@ -18,15 +18,16 @@ import {
 import { normalizeUrl } from "@/shared/helpers/url";
 import { Page } from "@/shared/ui";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
+import { useMyTeamOnHackathon } from "@/entities/team/api/hooks";
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
 
   const { data: hackathon } = useHackathonQuery(Number(id));
   const { data: user, isLoading: isUserLoading } = useAuthUser();
-  const { data: application } =
-    useAuthUserApplicationsOnHackathon(Number(id));
-
+  const { data: application } = useAuthUserApplicationsOnHackathon(Number(id));
+  const { data: team } = useMyTeamOnHackathon(Number(id));
+  
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -88,6 +89,16 @@ const HackathonPage: React.FC = () => {
 
             <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
               Моя анкета
+            </SButton>
+          </ButtonsSection>
+        ) : team ? (
+          <ButtonsSection>
+            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+              Подробнее на сайте
+            </SButton>
+
+            <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
+              Моя команда
             </SButton>
           </ButtonsSection>
         ) : (

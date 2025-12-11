@@ -1,7 +1,13 @@
 import { Hackathon } from "@/entities/hackathon/model/types";
 import { TeamWithMembers } from "@/entities/team/model/types";
 import { InputSection, SIcon, SText, STitle } from "@/shared/ui";
-import { Avatar, Button, Input, List, Textarea } from "@telegram-apps/telegram-ui";
+import {
+  Avatar,
+  Button,
+  Input,
+  List,
+  Textarea,
+} from "@telegram-apps/telegram-ui";
 import { FC, useState } from "react";
 import styled from "styled-components";
 import editIcon from "@/assets/icons/editIcon.svg?react";
@@ -23,7 +29,7 @@ export const TeamCard: FC<TeamCardProps> = ({
 }) => {
   const [isCopying, setIsCopying] = useState(false);
   const [copied, setCopied] = useState(false);
-
+  const navigate = useNavigate();
   const handleCopyInviteLink = async () => {
     try {
       setIsCopying(true);
@@ -94,22 +100,28 @@ export const TeamCard: FC<TeamCardProps> = ({
             ))}
           </TeamMemberCards>
         </TeamMembers>
+        <ButtonsSection>
+          <Button
+            size="l"
+            onClick={handleCopyInviteLink}
+            stretched
+            disabled={isCopying}
+          >
+            {copied ? "Ссылка скопирована" : "Пригласить по ссылке"}
+          </Button>
+          <Button
+            size="l"
+            onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
+            stretched
+            disabled={isCopying}
+          >
+            {"Найти участников"}
+          </Button>
+        </ButtonsSection>
       </SExtraInfo>
-
-      <ButtonsSection>
-        <Button
-          size="l"
-          onClick={handleCopyInviteLink}
-          stretched
-          disabled={isCopying}
-        >
-          {copied ? "Ссылка скопирована" : "Пригласить по ссылке"}
-        </Button>
-      </ButtonsSection>
     </>
   );
 };
-
 
 const ButtonsSection = styled.div`
   margin-top: auto;
@@ -153,9 +165,14 @@ const SExtraInfo = styled(List)`
 `;
 const TeamMemberCards = styled.div`
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 100%;
 `;
 import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
+import { useNavigate } from "react-router-dom";
+import { getFindTeamMembersPath } from "@/app/routing/paths";
 
 interface TeamMemberCardProps {
   member: TeamMember;
@@ -207,7 +224,7 @@ const MemberRow = styled.div`
   justify-content: space-between;
 
   width: 100%;
-  margin: 0 22px;
+  /* margin: 0 22px; */
 
   padding: 8px 22px;
   box-sizing: border-box;

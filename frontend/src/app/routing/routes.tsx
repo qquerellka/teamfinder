@@ -2,6 +2,9 @@ import { lazy } from "react";
 import { useRoutes, type RouteObject, Navigate } from "react-router-dom";
 import RootLayout from "../layouts/Layout";
 import { paths } from "./paths";
+const FindTeamMemberPage = lazy(
+  () => import("@/pages/teams/FindTeamMemberPage")
+);
 
 const HackathonsPage = lazy(() => import("@/pages/hackathons/HackathonsPage"));
 const HackathonPage = lazy(() => import("@/pages/hackathons/HackathonPage"));
@@ -11,7 +14,9 @@ const HackathonParticipatePage = lazy(
 const HackathonTeamPage = lazy(
   () => import("@/pages/hackathons/HackathonTeamPage")
 );
-const NotificationsPage = lazy(() => import("@/pages/notifications/NotificationsPage"));
+const NotificationsPage = lazy(
+  () => import("@/pages/notifications/NotificationsPage")
+);
 const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 const UserTeamsPage = lazy(() => import("@/pages/teams/TeamsPage"));
 const AchievementPage = lazy(
@@ -53,7 +58,13 @@ const routes: RouteObject[] = [
         ],
       },
 
-      { path: paths.teams, element: <UserTeamsPage /> },
+      {
+        path: paths.teams,
+        children: [
+          { index: true, element: <UserTeamsPage /> },
+          { path: ":id/find", element: <FindTeamMemberPage /> },
+        ],
+      },
 
       { path: paths.error404, element: <NotFound /> },
 

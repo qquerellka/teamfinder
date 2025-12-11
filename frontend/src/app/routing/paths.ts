@@ -12,6 +12,8 @@ export const paths = {
   profile: "/profile",
   profileAchievementsRoot: "/profile/achievements/new",
   profileAchievement: "/profile/achievements/:id",
+
+  findNewTeamMembers: `/teams/:id/find`
 } as const;
 
 export const getHackathonPath = (id: string) =>
@@ -22,3 +24,6 @@ export const getHackathonParticipationPath = (id: string) =>
 
 export const getHackathonTeamPath = (id: string) =>
   paths.hackathonTeam.replace(":id", String(id));
+
+export const getFindTeamMembersPath = (id: string) =>
+  paths.findNewTeamMembers.replace(":id", String(id));

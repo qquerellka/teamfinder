@@ -13,6 +13,8 @@ import deleteIcon from "@/assets/icons/deleteIcon.svg?react";
 import leaveTeamIcon from "@/assets/icons/leaveTeamIcon.svg?react";
 import { TeamMemberCard } from "./TeamCard";
 import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
+import { useDeleteTeamForm } from "../hooks/useDeleteTeamFrom";
+import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 
 interface TeamEditFormProps {
   hackathon: Hackathon;
@@ -57,69 +59,81 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
   const onCancel = () => {
     navigate(-1);
   };
+  const {
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    cancel: cancelDelete,
+    confirm: confirmDelete,
+    isLoading: isDeleting,
+  } = useDeleteTeamForm({
+    hackathonId: hackathon.id,
+    teamId: team.id,
+    onDeleted: () => navigate(-1),
+  });
 
   return (
-    <SExtraInfo>
-      <Header>
-        <SIcon icon={deleteIcon}></SIcon>
-        <STitle $fs={14} $fw={500}>
-          {"Моя команда"}
-        </STitle>
-        <SIcon onClick={() => {}} icon={leaveTeamIcon}></SIcon>
-      </Header>
-      <InputSection header={"Хакатон"}>
-        <Input type="text" value={hackathon.name} disabled />
-      </InputSection>
-      <InputSection header={"Название"}>
-        <Input type="text" value={name} onChange={handleNameChange} />
-      </InputSection>
-      <InputSection header={"Описание"}>
-        <Textarea value={description} onChange={handleDescriptionChange} />
-      </InputSection>
-      <TeamMembers>
-        <HeaderRow>
-          <STitle
-            $fs={16}
-            $fw={600}
-            style={{ color: "var(--tg-theme-section-header-text-color)" }}
-          >
-            Участники
+    <>
+      <SExtraInfo>
+        <Header>
+          <SIcon onClick={openDeleteModal} icon={deleteIcon}></SIcon>
+          <STitle $fs={14} $fw={500}>
+            {"Моя команда"}
           </STitle>
-          <CountTeamMembers className="">
-            <SIcon icon={profileIcon} />
-            <STitle $fs={16} $fw={700}>
-              {team.members.length} / {hackathon.teamMembersLimit}
+          <SIcon onClick={() => {}} icon={leaveTeamIcon}></SIcon>
+        </Header>
+        <InputSection header={"Хакатон"}>
+          <Input type="text" value={hackathon.name} disabled />
+        </InputSection>
+        <InputSection header={"Название"}>
+          <Input type="text" value={name} onChange={handleNameChange} />
+        </InputSection>
+        <InputSection header={"Описание"}>
+          <Textarea value={description} onChange={handleDescriptionChange} />
+        </InputSection>
+        <TeamMembers>
+          <HeaderRow>
+            <STitle
+              $fs={16}
+              $fw={600}
+              style={{ color: "var(--tg-theme-section-header-text-color)" }}
+            >
+              Участники
             </STitle>
-          </CountTeamMembers>
-        </HeaderRow>
-        <TeamMemberCards className="">
-          {team?.members?.map((m) => (
-            <TeamMemberCard key={m.user.id} member={m} />
-          ))}
-        </TeamMemberCards>
-      </TeamMembers>
-      <ButtonsSection>
-        <Button
-          size="l"
-          onClick={handleSaveClick}
-          stretched
-          disabled={!canSubmit || isSubmitting}
-        >
-          {"Изменить команду"}
-        </Button>
-        {onCancel && (
+            <CountTeamMembers className="">
+              <SIcon icon={profileIcon} />
+              <STitle $fs={16} $fw={700}>
+                {team.members.length} / {hackathon.teamMembersLimit}
+              </STitle>
+            </CountTeamMembers>
+          </HeaderRow>
+          <TeamMemberCards className="">
+            {team?.members?.map((m) => (
+              <TeamMemberCard key={m.user.id} member={m} />
+            ))}
+          </TeamMemberCards>
+        </TeamMembers>
+        <ButtonsSection>
           <Button
             size="l"
-            mode="bezeled"
+            onClick={handleSaveClick}
             stretched
-            onClick={onCancel}
-            disabled={isSubmitting}
+            disabled={!canSubmit || isSubmitting}
           >
-            Отмена
+            {"Изменить команду"}
           </Button>
-        )}
-      </ButtonsSection>
-      {/* <HackathonTeamForm
+          {onCancel && (
+            <Button
+              size="l"
+              mode="bezeled"
+              stretched
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              Отмена
+            </Button>
+          )}
+        </ButtonsSection>
+        {/* <HackathonTeamForm
         hackathon={hackathon}
         name={name}
         description={description}
@@ -130,7 +144,17 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
         onDescriptionChange={handleDescriptionChange}
         onSubmit={handleSave}
       /> */}
-    </SExtraInfo>
+      </SExtraInfo>
+      <ConfirmModal
+        open={isDeleteModalOpen}
+        title="Удалить команду?"
+        confirmText="Удалить"
+        cancelText="Отмена"
+        loading={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+    </>
   );
 };
 

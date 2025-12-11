@@ -22,7 +22,7 @@ export function invitesToCamelCase(invites: InviteDTO[]): Invite[] {
 
 export function createInviteToDTO(invite: CreateInvite): CreateInviteDTO {
   return {
-    role: invite.role,
+    invited_role: invite.role,
     application_id: invite.applicationId,
   };
 }

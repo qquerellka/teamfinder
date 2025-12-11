@@ -30,7 +30,7 @@ export interface CreateInvite {
 }
 
 export interface CreateInviteDTO {
-    role: Role,
+    invited_role: Role,
     application_id: number,
 }
 
