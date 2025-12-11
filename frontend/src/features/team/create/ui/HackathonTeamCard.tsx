@@ -1,7 +1,7 @@
 import { Hackathon } from "@/entities/hackathon/model/types";
 import { TeamWithMembers } from "@/entities/team/model/types";
 import { InputSection, SIcon, SText, STitle } from "@/shared/ui";
-import { Avatar, Input, Textarea } from "@telegram-apps/telegram-ui";
+import { Avatar, Input, List, Textarea } from "@telegram-apps/telegram-ui";
 import { FC } from "react";
 import styled from "styled-components";
 import editIcon from "@/assets/icons/editIcon.svg?react";
@@ -19,7 +19,7 @@ export const HackathonTeamCard: FC<HacakthonTeamCardProps> = ({
   hackathon,
 }) => {
   return (
-    <div className="">
+    <SExtraInfo>
       <Header>
         <SIcon icon={inviteIcon}></SIcon>
         <STitle $fs={14} $fw={500}>
@@ -58,7 +58,7 @@ export const HackathonTeamCard: FC<HacakthonTeamCardProps> = ({
           <TeamMemberCard key={m.user.id} member={m} />
         ))}
       </TeamMembers>
-    </div>
+    </SExtraInfo>
   );
 };
 
@@ -90,7 +90,12 @@ const CountTeamMembers = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
-
+const SExtraInfo = styled(List)`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.5rem;
+`;
 import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
 
 interface TeamMemberCardProps {
