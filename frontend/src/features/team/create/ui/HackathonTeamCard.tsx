@@ -97,7 +97,7 @@ const SExtraInfo = styled(List)`
   width: 100%;
   gap: 0.5rem;
 `;
-const TeamMemberCards = styled(List)`
+const TeamMemberCards = styled.div`
     display: flex;
     width: 100%;
 `
