@@ -48,7 +48,8 @@ export function resolveInitDataRaw(): string | undefined {
       );
     }
   }
-
+  const { initDataRaw, initData } = retrieveLaunchParams();
+  return initDataRaw;
   // 4) Ничего не нашли
   return undefined;
 }
