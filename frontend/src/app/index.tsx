@@ -18,7 +18,6 @@ if (import.meta.env.DEV || FORCE_BROWSER) {
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
-
 // ---------- БРАУЗЕР (dev) ----------
 
 async function bootstrapBrowser() {
@@ -42,10 +41,13 @@ async function bootstrapBrowser() {
 async function bootstrapTMA() {
   const lp = retrieveLaunchParams();
 
-  const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
-    || new URLSearchParams(location.search).get("tgWebAppData")
+  const a =
+    new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
+    new URLSearchParams(location.search).get("tgWebAppData");
 
-    console.log("ahahha: ", a)
+  console.log("ahahha: ", a);
+  console.log(lp.initDataRaw);
+  console.log(lp.initData);
   const debug =
     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
 
@@ -53,7 +55,6 @@ async function bootstrapTMA() {
     debug,
     eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform),
     mockForMacOS: false,
-
   });
 
   root.render(
@@ -72,10 +73,8 @@ async function bootstrapTMA() {
     } else {
       await bootstrapTMA();
     }
-  }
-   catch (e) {
+  } catch (e) {
     console.error(e);
     root.render(<EnvUnsupported />);
   }
 })();
-
