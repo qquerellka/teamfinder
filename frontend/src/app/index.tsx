@@ -9,6 +9,7 @@ import { retrieveLaunchParams } from "@tma.js/sdk-react";
 import { init } from "@/app/init";
 import { App } from "./App";
 import { EnvUnsupported } from "@/app/EnvUnsupported";
+import { setInitDataRaw } from "@/shared/initDataStore";
 
 const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === "true";
 
@@ -39,21 +40,37 @@ async function bootstrapBrowser() {
 // ---------- TMA (prod) ----------
 
 async function bootstrapTMA() {
-  const lp = retrieveLaunchParams();
+  // 1) Явно описываем то, что нам нужно из launch params
+  const lp = retrieveLaunchParams() as {
+    initDataRaw?: string;
+    initData?: string;
+    tgWebAppStartParam?: string;
+    tgWebAppPlatform?: string;
+  };
 
   const a =
     new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
     new URLSearchParams(location.search).get("tgWebAppData");
 
   console.log("ahahha: ", a);
-  console.log(lp.initDataRaw);
-  console.log(lp.initData);
+  console.log("lp.initDataRaw:", lp.initDataRaw);
+  console.log("lp.initData:", lp.initData);
+
+  // 2) Жёстко задаём тип initDataRaw как string | undefined
+  const initDataRaw: string | undefined =
+    lp.initDataRaw ??
+    lp.initData ??
+    ((window)?.Telegram?.WebApp?.initData as string | undefined) ??
+    (a ? decodeURIComponent(a) : undefined);
+
+  setInitDataRaw(initDataRaw);
+
   const debug =
     (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
 
   await init({
     debug,
-    eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform),
+    eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform || ""),
     mockForMacOS: false,
   });
 
