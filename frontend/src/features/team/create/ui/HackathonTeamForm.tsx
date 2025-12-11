@@ -8,22 +8,23 @@ import { InputSection } from "@/shared/ui";
 
 interface HackathonTeamFormProps {
   hackathon: Hackathon;
-  role: Role | "";
+  role?: Role | "";
   name: string | "";
   description: string | "";
   submitLabel: string;
   loading?: boolean;
   canSubmit: boolean;
-  onRoleChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onRoleChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: () => void;
   onCancel?: () => void;
+  isEditing?: boolean;
 }
 
 export const HackathonTeamForm: FC<HackathonTeamFormProps> = ({
   hackathon,
-  role,
+  role = "",
   name,
   description,
   submitLabel,
@@ -31,15 +32,13 @@ export const HackathonTeamForm: FC<HackathonTeamFormProps> = ({
   canSubmit,
   onNameChange,
   onDescriptionChange,
-  onRoleChange,
+  onRoleChange = () => {},
   onSubmit,
   onCancel,
+  isEditing = false,
 }) => {
   const handleSaveClick = () => {
-    console.log(1);
-    console.log(canSubmit)
     if (!canSubmit) return;
-    console.log(onSubmit);
     onSubmit();
   };
 
@@ -59,17 +58,18 @@ export const HackathonTeamForm: FC<HackathonTeamFormProps> = ({
           onChange={onDescriptionChange}
           header={"Название"}
         />
-
-        <Select value={role} onChange={onRoleChange} header="Роль">
-          <option value="" disabled>
-            Выберите роль
-          </option>
-          {roleOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
+        {!isEditing && (
+          <Select value={role} onChange={onRoleChange} header="Роль">
+            <option value="" disabled>
+              Выберите роль
             </option>
-          ))}
-        </Select>
+            {roleOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </Select>
+        )}
       </InputSection>
 
       <ButtonsSection>

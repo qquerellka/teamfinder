@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
 from pydantic import BaseModel, Field
 
 from persistend.enums import TeamStatus, RoleType, HackathonStatus
@@ -11,6 +10,8 @@ from services.teams import TeamsService
 from services.team_members import TeamMembersService
 from services.hackathons import HackathonsService
 from repositories.users import UsersRepo
+from fastapi import APIRouter, Depends, HTTPException, Query, Path, status, Body
+from settings.config import settings
 
 router = APIRouter(tags=["teams"])
 
@@ -31,7 +32,8 @@ class TeamOut(BaseModel):
     class Config:
         from_attributes = True
 
-
+class TeamSelfJoinIn(BaseModel):
+    role: RoleType
 class TeamListOut(BaseModel):
     items: List[TeamOut]
     limit: int
@@ -83,6 +85,10 @@ class TeamMembersListOut(BaseModel):
 
 class TeamWithMembersOut(TeamOut):
     members: List[TeamMemberOut]
+
+
+class TeamJoinLinkOut(BaseModel):
+    url: str
 
 
 # ---- Хелперы ----
@@ -239,7 +245,6 @@ async def get_my_team_on_hackathon(
 
     team = teams[0]
 
-
     members = await members_service.list_members(team.id)
     member_items: List[TeamMemberOut] = []
     for m in members:
@@ -378,6 +383,61 @@ async def add_team_member(
     )
 
 
+@router.post(
+    "/teams/{team_id}/members/me",
+    response_model=TeamMemberOut,
+    status_code=status.HTTP_201_CREATED,
+)
+async def join_team_by_link(
+    team_id: int = Path(..., ge=1),
+    payload: TeamSelfJoinIn = Body(...),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    team = await _ensure_team_exists(team_id)
+
+    # уже состоит именно в этой команде
+    existing = await members_service.get_membership(team_id, current_user_id)
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="you are already a member of this team",
+        )
+
+    # есть команда на этом же хакатоне
+    already = await teams_service.user_has_team_on_hackathon(
+        user_id=current_user_id,
+        hackathon_id=team.hackathon_id,
+    )
+    if already:
+        raise HTTPException(
+            status_code=409,
+            detail="user already has a team on this hackathon",
+        )
+
+    user = await users_repo.get_by_id(current_user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="user not found")
+
+    membership = await members_service.add_member(
+        team_id=team_id,
+        user_id=current_user_id,
+        role=payload.role,
+        is_captain=False,
+    )
+
+    return TeamMemberOut(
+        user=TeamMemberUserOut(
+            id=user.id,
+            username=user.username,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            avatar_url=user.avatar_url,
+        ),
+        role=membership.role,
+        is_captain=membership.is_captain,
+    )
+
+
 @router.patch("/teams/{team_id}/members/{user_id}", response_model=TeamMemberOut)
 async def update_team_member(
     team_id: int = Path(..., ge=1),
@@ -451,8 +511,7 @@ async def leave_team(
         raise HTTPException(status_code=404, detail="team member not found (leave)")
     return None
 
-class TeamJoinLinkOut(BaseModel):
-    url: str
+
 @router.get(
     "/teams/{team_id}/join-link",
     response_model=TeamJoinLinkOut,
@@ -464,10 +523,7 @@ async def get_team_join_link(
     team = await _ensure_team_exists(team_id)
     await _ensure_captain(team, current_user_id)
 
-    # старт-параметр, который ты потом разбираешь в TWA
     start_param = f"join_team_{team.id}"
-
-    # username бота держишь в settings, чтобы не хардкодить
-    url = f"https://t.me/{settings.TG_BOT_USERNAME}/app?startapp={start_param}"
+    url = f"https://t.me/{settings.TG_BOT_USERNAME}/{settings.TG_APP_NAME}?startapp={start_param}"
 
     return TeamJoinLinkOut(url=url)

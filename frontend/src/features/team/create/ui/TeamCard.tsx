@@ -1,68 +1,124 @@
 import { Hackathon } from "@/entities/hackathon/model/types";
 import { TeamWithMembers } from "@/entities/team/model/types";
 import { InputSection, SIcon, SText, STitle } from "@/shared/ui";
-import { Avatar, Input, List, Textarea } from "@telegram-apps/telegram-ui";
-import { FC } from "react";
+import { Avatar, Button, Input, List, Textarea } from "@telegram-apps/telegram-ui";
+import { FC, useState } from "react";              // + useState
 import styled from "styled-components";
 import editIcon from "@/assets/icons/editIcon.svg?react";
 import inviteIcon from "@/assets/icons/inviteIcon.svg?react";
 import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
 import { TeamMember } from "@/entities/teamMember/model/types";
+import { getTeamJoinLink } from "@/entities/team/api/teams"; // <- импорт API
 
-interface HacakthonTeamCardProps {
+interface TeamCardProps {
   team: TeamWithMembers;
   hackathon: Hackathon;
+  onEditClick: () => void;
 }
 
-export const HackathonTeamCard: FC<HacakthonTeamCardProps> = ({
+export const TeamCard: FC<TeamCardProps> = ({
   team,
   hackathon,
+  onEditClick,
 }) => {
-  return (
-    <SExtraInfo>
-      <Header>
-        <SIcon icon={inviteIcon}></SIcon>
-        <STitle $fs={14} $fw={500}>
-          {"Моя команда"}
-        </STitle>
-        <SIcon icon={editIcon}></SIcon>
-      </Header>
-      <InputSection header={"Название"}>
-        <Input value={team.name} disabled />
-      </InputSection>
-      <InputSection header={"Хакатон"}>
-        <Input value={hackathon.name} disabled />
-      </InputSection>
-      <InputSection header={"Описание"}>
-        <Textarea value={team.description} disabled />
-      </InputSection>
+  const [isCopying, setIsCopying] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-      <TeamMembers>
-        <HeaderRow>
-          <STitle
-            $fs={16}
-            $fw={600}
-            style={{ color: "var(--tg-theme-section-header-text-color)" }}
-          >
-            Участники
+  const handleCopyInviteLink = async () => {
+    try {
+      setIsCopying(true);
+
+      const url = await getTeamJoinLink(team.id);
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        // fallback для старых webview
+        const textarea = document.createElement("textarea");
+        textarea.value = url;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.error("[TeamCard] failed to copy invite link", e);
+      // тут можно повесить toast/alert
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
+  return (
+    <>
+      <SExtraInfo>
+        <Header>
+          <SIcon icon={inviteIcon} />
+          <STitle $fs={14} $fw={500}>
+            {"Моя команда"}
           </STitle>
-          <CountTeamMembers className="">
-            <SIcon icon={profileIcon} />
-            <STitle $fs={16} $fw={700}>
-              {team.members.length} / {hackathon.teamMembersLimit}
+          <SIcon onClick={onEditClick} icon={editIcon} />
+        </Header>
+        <InputSection header={"Хакатон"}>
+          <Input value={hackathon.name} disabled />
+        </InputSection>
+        <InputSection header={"Название"}>
+          <Input value={team.name} disabled />
+        </InputSection>
+        <InputSection header={"Описание"}>
+          <Textarea value={team.description} disabled />
+        </InputSection>
+
+        <TeamMembers>
+          <HeaderRow>
+            <STitle
+              $fs={16}
+              $fw={600}
+              style={{ color: "var(--tg-theme-section-header-text-color)" }}
+            >
+              Участники
             </STitle>
-          </CountTeamMembers>
-        </HeaderRow>
-        <TeamMemberCards className="">
-          {team?.members?.map((m) => (
-            <TeamMemberCard key={m.user.id} member={m} />
-          ))}
-        </TeamMemberCards>
-      </TeamMembers>
-    </SExtraInfo>
+            <CountTeamMembers>
+              <SIcon icon={profileIcon} />
+              <STitle $fs={16} $fw={700}>
+                {team.members.length} / {hackathon.teamMembersLimit}
+              </STitle>
+            </CountTeamMembers>
+          </HeaderRow>
+          <TeamMemberCards>
+            {team?.members?.map((m) => (
+              <TeamMemberCard key={m.user.id} member={m} />
+            ))}
+          </TeamMemberCards>
+        </TeamMembers>
+      </SExtraInfo>
+
+      <ButtonsSection>
+        <Button
+          size="l"
+          onClick={handleCopyInviteLink}
+          stretched
+          disabled={isCopying}
+        >
+          {copied ? "Ссылка скопирована" : "Пригласить по ссылке"}
+        </Button>
+      </ButtonsSection>
+    </>
   );
 };
 
+const ButtonsSection = styled.div`
+  margin-top: auto;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
 const HeaderRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -95,12 +151,11 @@ const SExtraInfo = styled(List)`
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 0.5rem;
 `;
 const TeamMemberCards = styled.div`
-    display: flex;
-    width: 100%;
-`
+  display: flex;
+  width: 100%;
+`;
 import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
 
 interface TeamMemberCardProps {
@@ -153,7 +208,7 @@ const MemberRow = styled.div`
   justify-content: space-between;
 
   width: 100%;
-  margin:0 22px;
+  margin: 0 22px;
 
   padding: 8px 22px;
   box-sizing: border-box;

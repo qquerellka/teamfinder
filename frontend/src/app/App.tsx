@@ -9,6 +9,7 @@ import { AppRouter } from "./routing/routes";
 import { AuthGate } from "@/features/auth/ui/AuthGate";
 import { LoaderPage } from "@/shared/ui";
 import { Suspense } from "react";
+import { StartParamJoinHandler } from "@/features/team/join/StartParamJoinHandler";
 
 export function App() {
   const lp = useLaunchParams();
@@ -25,6 +26,7 @@ export function App() {
         <Suspense fallback={<LoaderPage />}>
           <ErrorBoundary fallback={AppErrorFallback}>
             <AuthGate>
+              <StartParamJoinHandler />
               <HashRouter>
                 <AppRouter />
               </HashRouter>

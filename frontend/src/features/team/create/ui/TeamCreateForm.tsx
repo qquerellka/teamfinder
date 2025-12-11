@@ -3,22 +3,19 @@ import { FC } from "react";
 import { Hackathon } from "@/entities/hackathon/model/types";
 import { HackathonTeamForm } from "./HackathonTeamForm";
 import { useCreateTeam } from "@/entities/team/api/hooks";
-import { useHackathonTeamForm } from "../hooks/useHackathonTeamForm";
+import { useCreateTeamForm } from "../hooks/useCreateTeamForm";
 
 interface HackathonTeamCreateFormProps {
   hackathon: Hackathon;
 }
 
-export const HackathonTeamCreateForm: FC<
+export const CreateTeamForm: FC<
   HackathonTeamCreateFormProps
 > = ({ hackathon }) => {
   const createMutation = useCreateTeam(hackathon.id);
 
   const { role, name, description, handleRoleChange, handleNameChange, handleDescriptionChange, handleSave, isSubmitting, canSubmit } =
-    useHackathonTeamForm({
-      initialRole: "",
-      initialName: "",
-      initialDescription: "",
+    useCreateTeamForm({
       onSubmit: (role, name, description) => createMutation.mutateAsync({ role, name, description }),
     });
 

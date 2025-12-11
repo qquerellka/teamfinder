@@ -57,13 +57,13 @@ export interface CreateTeam {
 export interface EditTeamDTO {
   name: string;
   description: string;
-  status: TeamStatus;
+  status?: TeamStatus;
 }
 
 export interface EditTeam {
   name: string;
   description: string;
-  status: TeamStatus;
+  status?: TeamStatus;
 }
 
 export interface TeamsDTOResponse {

@@ -2,9 +2,6 @@ import { Role } from "@/shared/types/enums";
 import { ChangeEvent, useState } from "react";
 
 interface UseHackathonTeamFormProps {
-  initialRole: Role | "";
-  initialName: string;
-  initialDescription: string;
   onSubmit: (
     role: Role,
     name: string,
@@ -12,15 +9,14 @@ interface UseHackathonTeamFormProps {
   ) => Promise<unknown> | unknown;
 }
 
-export function useHackathonTeamForm({
-  initialRole,
-  initialName,
-  initialDescription,
+export function useCreateTeamForm({
   onSubmit,
 }: UseHackathonTeamFormProps) {
-  const [name, setName] = useState<string>(initialName);
-  const [description, setDescription] = useState<string>(initialDescription);
-  const [role, setRole] = useState<Role | "">(initialRole);
+
+
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [role, setRole] = useState<Role | "">("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 

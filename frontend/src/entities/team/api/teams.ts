@@ -7,6 +7,7 @@ import {
   teamsToCamelCase,
   teamWithMembersToCamelCase,
 } from "../lib/dto";
+import { Role } from "@/shared/types/enums";
 
 interface TeamsDTOResponse {
   offset: number;
@@ -68,4 +69,15 @@ export async function editTeam(id: number, payload: EditTeam): Promise<Team> {
 
 export async function deleteTeam(id: number): Promise<void> {
   await apiClient.delete<void>(`/teams/${id}`);
+}
+
+export async function getTeamJoinLink(id: number): Promise<string> {
+  const { data } = await apiClient.get<{ url: string }>(
+    `/teams/${id}/join-link`
+  );
+  return data.url;
+}
+
+export async function joinTeamMe(id: number, role: Role): Promise<void> {
+  await apiClient.post(`/teams/${id}/members/me`, { role });
 }
