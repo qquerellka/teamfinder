@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Button, List } from "@telegram-apps/telegram-ui";
+import { Button } from "@telegram-apps/telegram-ui";
 
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import type { Hackathon } from "@/entities/hackathon/model/types";
@@ -136,7 +136,7 @@ const SButton = styled(Button)`
   width: 100%;
 `;
 
-const ButtonsSection = styled(List)`
+const ButtonsSection = styled.div`
   margin-top: auto;
   display: flex;
   flex-direction: column;

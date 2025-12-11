@@ -203,5 +203,6 @@ const CountTeamMembers = styled.div`
 
 const TeamMemberCards = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
 `;
