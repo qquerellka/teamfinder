@@ -4,7 +4,6 @@ import { ProfileBioEditor } from "@/features/profile/edit-bio/ui/ProfileBioEdito
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { List } from "@telegram-apps/telegram-ui";
 import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
 
 export const ProfilePage = () => {
@@ -28,7 +27,7 @@ export const ProfilePage = () => {
     </SProfile>
   );
 };
-const Wrapper = styled(List)`
+const Wrapper = styled.div`
   padding: 20px 22px 16px;
 `;
 const SProfile = styled.section`
@@ -39,7 +38,7 @@ const SProfile = styled.section`
   gap: 1.5rem;
 `;
 
-const SExtraInfo = styled(List)`
+const SExtraInfo = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
