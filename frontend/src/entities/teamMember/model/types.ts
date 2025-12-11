@@ -7,6 +7,7 @@ export interface TeamMemberDTO {
         username: string,
         first_name: string,
         last_name: string,
+        avatar_url?: string,
     },
     role: Role,
     is_captain: boolean,
@@ -18,6 +19,7 @@ export interface TeamMember {
         username: string,
         firstName: string,
         lastName: string,
+        avatarUrl?: string
     },
     role: Role,
     isCaptain: boolean,

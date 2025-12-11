@@ -1,15 +1,11 @@
 import { apiClient } from "@/shared/api/client";
-import {
-  CreateTeam,
-  EditTeam,
-  Team,
-  TeamDTO,
-} from "../model/types";
+import { CreateTeam, EditTeam, Team, TeamDTO, TeamWithMembers, TeamWithMembersDTO } from "../model/types";
 import {
   createTeamToDTO,
   editTeamToDTO,
   teamsResponseToCamelCase,
   teamsToCamelCase,
+  teamWithMembersToCamelCase,
 } from "../lib/dto";
 
 interface TeamsDTOResponse {
@@ -47,11 +43,14 @@ export async function getMyTeams(): Promise<TeamsResponse> {
   return teamsResponseToCamelCase(data);
 }
 
-export async function getMyTeamOnHackathon(hackId: number): Promise<Team> {
-  const { data } = await apiClient.get<TeamDTO>(
+export async function getMyTeamOnHackathon(hackId: number): Promise<TeamWithMembers | null> {
+  const { data } = await apiClient.get<TeamWithMembersDTO | null>(
     `/hackathons/${hackId}/teams/me`
   );
-  return teamsToCamelCase([data])[0];
+  if (data === null) {
+    return null;
+  }
+  return teamWithMembersToCamelCase(data);
 }
 
 export async function getTeam(id: number): Promise<Team> {

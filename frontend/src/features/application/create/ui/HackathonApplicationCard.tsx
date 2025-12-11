@@ -17,9 +17,9 @@ interface HackathonApplicationCardProps {
   application: Application;
   onEditClick?: () => void;
   onDeleteClick?: () => void;
-};
+}
 
-export const HackathonApplicationCard:FC<HackathonApplicationCardProps> = ({
+export const HackathonApplicationCard: FC<HackathonApplicationCardProps> = ({
   hackathon,
   application,
   onEditClick,
@@ -42,7 +42,9 @@ export const HackathonApplicationCard:FC<HackathonApplicationCardProps> = ({
         </Icons>
       </Header>
 
-      <SText $fs={14} $fw={500}>{formatRegistrationDate(hackathon.registrationEndDate)}</SText>
+      <SText $fs={14} $fw={500}>
+        {formatRegistrationDate(hackathon.registrationEndDate)}
+      </SText>
 
       <RoleBadge role={application.role} />
     </Wrapper>

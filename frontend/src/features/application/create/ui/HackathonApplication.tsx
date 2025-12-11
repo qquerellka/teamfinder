@@ -1,15 +1,14 @@
 import { FC, useState } from "react";
 import { Hackathon } from "@/entities/hackathon/model/types";
-import {
-  useAuthUserApplicationsOnHackathon,
-  useDeleteAuthUserApplication,
-} from "@/entities/application/api/hooks";
+import { useAuthUserApplicationsOnHackathon } from "@/entities/application/api/hooks";
 import { HackathonApplicationCreateForm } from "./HackathonApplicationCreateForm";
 import { HackathonApplicationCard } from "./HackathonApplicationCard";
 import { HackathonApplicationEditForm } from "./HackathonApplicationEditForm";
 import { ApplicationInvites } from "@/features/invite/manage-list/ui/ApplicationInvites";
 
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
+import { useHackathonApplicationDelete } from "../hooks/useHackathonApplicationDelete";
+import { useNavigate } from "react-router-dom";
 
 interface HackathonApplicationProps {
   hackathon: Hackathon;
@@ -18,18 +17,28 @@ interface HackathonApplicationProps {
 export const HackathonApplication: FC<HackathonApplicationProps> = ({
   hackathon,
 }) => {
+  const navigate = useNavigate();
   const { data: application } = useAuthUserApplicationsOnHackathon(
     hackathon.id
   );
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  const deleteMutation = useDeleteAuthUserApplication();
 
   if (!application) {
     return <HackathonApplicationCreateForm hackathon={hackathon} />;
   }
+
+  const {
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    cancel: cancelDelete,
+    confirm: confirmDelete,
+    isLoading: isDeleting,
+  } = useHackathonApplicationDelete({
+    hackathonId: hackathon.id,
+    applicationId: application.id,
+    onDeleted: () => navigate(-1),
+  });
 
   if (isEditing) {
     return (
@@ -41,31 +50,15 @@ export const HackathonApplication: FC<HackathonApplicationProps> = ({
     );
   }
 
-  const handleDeleteClick = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    await deleteMutation.mutateAsync({
-      id: application.id,
-      hackathonId: hackathon.id,
-    });
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleCancelDelete = () => {
-    if (deleteMutation.isPending) return;
-    setIsDeleteModalOpen(false);
-  };
-
   return (
     <>
       <HackathonApplicationCard
         hackathon={hackathon}
         application={application}
         onEditClick={() => setIsEditing(true)}
-        onDeleteClick={handleDeleteClick}
+        onDeleteClick={openDeleteModal}
       />
+
       <ApplicationInvites appId={application.id} />
 
       <ConfirmModal
@@ -73,9 +66,9 @@ export const HackathonApplication: FC<HackathonApplicationProps> = ({
         title="Удалить анкету?"
         confirmText="Удалить"
         cancelText="Отмена"
-        loading={deleteMutation.isPending}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
+        loading={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
     </>
   );

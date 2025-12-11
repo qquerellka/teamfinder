@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
 export const AchievementsListHeader = () => {
-  const navigate =useNavigate();
+  const navigate = useNavigate();
   return (
     <HeaderRow>
       <STitle

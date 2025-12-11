@@ -7,6 +7,8 @@ import {
   TeamDTO,
   TeamsDTOResponse,
   TeamsResponse,
+  TeamWithMembers,
+  TeamWithMembersDTO,
 } from "../model/types";
 
 export function teamsToCamelCase(teamsDTO: TeamDTO[]): Team[] {
@@ -40,5 +42,29 @@ export function createTeamToDTO(payload: CreateTeam): CreateTeamDTO {
     role: payload.role,
     description: payload.description,
     name: payload.name,
+  };
+}
+
+export function teamWithMembersToCamelCase(
+  payload: TeamWithMembersDTO
+): TeamWithMembers {
+  return {
+    id: payload.id,
+    hackathonId: payload.hackathon_id,
+    name: payload.name,
+    description: payload.description,
+    captainId: payload.captain_id,
+    status: payload.status,
+    members: payload.members.map((m) => ({
+      user: {
+        id: m.user.id,
+        username: m.user.username,
+        firstName: m.user.first_name,
+        lastName: m.user.last_name,
+        avatarUrl: m.user.avatar_url,
+      },
+      role: m.role,
+      isCaptain: m.is_captain,
+    })),
   };
 }

@@ -55,6 +55,7 @@ class TeamMemberUserOut(BaseModel):
     username: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    avatar_url: Optional[str] = None
 
 
 class TeamMemberOut(BaseModel):
@@ -66,10 +67,6 @@ class TeamMemberOut(BaseModel):
         from_attributes = True
 
 
-class TeamMembersListOut(BaseModel):
-    items: List[TeamMemberOut]
-
-
 class TeamMemberCreateIn(BaseModel):
     user_id: int
     role: RoleType
@@ -78,6 +75,14 @@ class TeamMemberCreateIn(BaseModel):
 class TeamMemberUpdateIn(BaseModel):
     role: Optional[RoleType] = None
     is_captain: Optional[bool] = None
+
+
+class TeamMembersListOut(BaseModel):
+    items: List[TeamMemberOut]
+
+
+class TeamWithMembersOut(TeamOut):
+    members: List[TeamMemberOut]
 
 
 # ---- Хелперы ----
@@ -207,28 +212,56 @@ async def list_my_teams(
     )
 
 
-@router.get("/hackathons/{hackathon_id}/teams/me", response_model=TeamListOut)
-async def list_my_teams_on_hackathon(
+@router.get(
+    "/hackathons/{hackathon_id}/teams/me",
+    response_model=Optional[TeamWithMembersOut],
+)
+async def get_my_team_on_hackathon(
     hackathon_id: int = Path(..., ge=1),
-    limit: int = Query(default=50, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
     user_id: int = Depends(get_current_user_id),
 ):
     await _ensure_hackathon_exists(hackathon_id)
+
     teams = await teams_service.list_by_hackathon(
         hackathon_id=hackathon_id,
         status=None,
         q=None,
         owner_id=None,
         member_user_id=user_id,
-        limit=limit,
-        offset=offset,
+        limit=1,
+        offset=0,
         sort="-created_at",
     )
-    return TeamListOut(
-        items=[TeamOut.model_validate(t) for t in teams],
-        limit=limit,
-        offset=offset,
+
+    if not teams:
+        # 200 OK, body: null
+        return None
+
+    team = teams[0]
+
+
+    members = await members_service.list_members(team.id)
+    member_items: List[TeamMemberOut] = []
+    for m in members:
+        u = m.user
+        member_items.append(
+            TeamMemberOut(
+                user=TeamMemberUserOut(
+                    id=u.id,
+                    username=u.username,
+                    first_name=u.first_name,
+                    last_name=u.last_name,
+                    avatar_url=u.avatar_url,  # <<< добавили
+                ),
+                role=m.role,
+                is_captain=m.is_captain,
+            )
+        )
+
+    base_team = TeamOut.model_validate(team)
+    return TeamWithMembersOut(
+        **base_team.model_dump(),
+        members=member_items,
     )
 
 
@@ -417,3 +450,24 @@ async def leave_team(
     if not ok:
         raise HTTPException(status_code=404, detail="team member not found (leave)")
     return None
+
+class TeamJoinLinkOut(BaseModel):
+    url: str
+@router.get(
+    "/teams/{team_id}/join-link",
+    response_model=TeamJoinLinkOut,
+)
+async def get_team_join_link(
+    team_id: int = Path(..., ge=1),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    team = await _ensure_team_exists(team_id)
+    await _ensure_captain(team, current_user_id)
+
+    # старт-параметр, который ты потом разбираешь в TWA
+    start_param = f"join_team_{team.id}"
+
+    # username бота держишь в settings, чтобы не хардкодить
+    url = f"https://t.me/{settings.TG_BOT_USERNAME}/app?startapp={start_param}"
+
+    return TeamJoinLinkOut(url=url)

@@ -1,3 +1,4 @@
+import { TeamMember, TeamMemberDTO } from "@/entities/teamMember/model/types";
 import { Role } from "@/shared/types/enums";
 
 export type TeamStatus = "forming" | "ready";
@@ -19,6 +20,27 @@ export interface Team {
   captainId: number;
   status: TeamStatus;
 }
+
+export interface TeamWithMembers {
+  id: number;
+  hackathonId: number;
+  name: string;
+  description: string;
+  captainId: number;
+  status: TeamStatus;
+  members: Array<TeamMember>;
+}
+
+export interface TeamWithMembersDTO {
+  id: number;
+  hackathon_id: number;
+  name: string;
+  description: string;
+  captain_id: number;
+  status: TeamStatus;
+  members: Array<TeamMemberDTO>;
+}
+
 
 export interface CreateTeamDTO {
   role: Role;

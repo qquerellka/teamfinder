@@ -1,46 +1,45 @@
 import styled from "styled-components";
 import { Button, Input, List, Select } from "@telegram-apps/telegram-ui";
-import { FC, useState } from "react";
+import { FC } from "react";
 
 import { Hackathon } from "@/entities/hackathon/model/types";
 import { roleOptions } from "@/shared/types/enums";
 import type { Role } from "@/shared/types/enums";
+import { InputSection } from "@/shared/ui";
 
 interface HackathonApplicationFormProps {
   hackathon: Hackathon;
-  initialRole: Role | "";
+  role: Role | "";
   submitLabel: string;
   loading?: boolean;
-  onSubmit: (role: Role) => void | Promise<void>;
+  canSubmit: boolean;
+  onRoleChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onSubmit: () => void;
   onCancel?: () => void;
 }
 
 export const HackathonApplicationForm: FC<HackathonApplicationFormProps> = ({
   hackathon,
-  initialRole,
+  role,
   submitLabel,
   loading = false,
+  canSubmit,
+  onRoleChange,
   onSubmit,
   onCancel,
 }) => {
-  const [role, setRole] = useState<Role | "">(initialRole);
-
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRole(e.target.value as Role);
-  };
-
-  const canSubmit = Boolean(role) && !loading;
-
   const handleSaveClick = () => {
-    if (!role) return;
-    onSubmit(role);
+    if (!canSubmit) return;
+    onSubmit();
   };
 
   return (
     <>
-      <List>
+      <InputSection header={"Хакатон"}>
         <Input type="text" value={hackathon.name} disabled />
-        <Select value={role} onChange={handleRoleChange} header="Роль">
+      </InputSection>
+      <InputSection header={"Роль"}>
+        <Select value={role} onChange={onRoleChange}>
           <option value="" disabled>
             Выберите роль
           </option>
@@ -50,14 +49,14 @@ export const HackathonApplicationForm: FC<HackathonApplicationFormProps> = ({
             </option>
           ))}
         </Select>
-      </List>
+      </InputSection>
 
       <ButtonsSection>
         <Button
           size="l"
           onClick={handleSaveClick}
           stretched
-          disabled={!canSubmit}
+          disabled={!canSubmit || loading}
         >
           {submitLabel}
         </Button>
@@ -85,3 +84,4 @@ const ButtonsSection = styled(List)`
   flex-direction: column;
   gap: 0.5rem;
 `;
+

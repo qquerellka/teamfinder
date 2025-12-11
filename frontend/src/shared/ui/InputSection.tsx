@@ -36,6 +36,7 @@ const Header = styled.div`
 
 const Main = styled(List)`
   width: 100%;
+  background-color: var(--tg-theme-secondary-bg-color);
   & > div {
     background-color: var(--tg-theme-secondary-bg-color);
   }
