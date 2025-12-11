@@ -29,10 +29,10 @@ export async function authTelegram(): Promise<AuthResponse> {
     new URLSearchParams(location.search).get("tgWebAppData");
 
 
-  const initDataRaw = resolveInitDataRaw();
-  if (!initDataRaw) {
-    throw new Error("No init_data for tgAuth");
-  }
+  // const initDataRaw = resolveInitDataRaw();
+  // if (!initDataRaw) {
+  //   throw new Error("No init_data for tgAuth");
+  // }
   const response = await apiClient.post<AuthResponse>("/auth/telegram", {
     init_data: a,
   });
