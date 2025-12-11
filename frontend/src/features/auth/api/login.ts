@@ -1,5 +1,4 @@
 import { apiClient } from "@/shared/api/client";
-import { resolveInitDataRaw } from "@/shared/resolveInitDataRow";
 import { AuthResponse } from "../model/types";
 import axios from "axios";
 
