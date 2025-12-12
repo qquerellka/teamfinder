@@ -469,25 +469,6 @@ async def update_team_member(
         role=membership.role,
         is_captain=membership.is_captain,
     )
-
-
-@router.delete(
-    "/teams/{team_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT
-)
-async def remove_team_member(
-    team_id: int = Path(..., ge=1),
-    user_id: int = Path(..., ge=1),
-    current_user_id: int = Depends(get_current_user_id),
-):
-    team = await _ensure_team_exists(team_id)
-    await _ensure_captain(team, current_user_id)
-
-    ok = await members_service.delete_member(team_id, user_id)
-    if not ok:
-        raise HTTPException(status_code=404, detail="team member not found (delete)")
-    return None
-
-
 @router.delete("/teams/{team_id}/members/me", status_code=status.HTTP_204_NO_CONTENT)
 async def leave_team(
     team_id: int = Path(..., ge=1),
@@ -508,6 +489,25 @@ async def leave_team(
     if not ok:
         raise HTTPException(status_code=404, detail="team member not found (leave)")
     return None
+
+@router.delete(
+    "/teams/{team_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT
+)
+async def remove_team_member(
+    team_id: int = Path(..., ge=1),
+    user_id: int = Path(..., ge=1),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    team = await _ensure_team_exists(team_id)
+    await _ensure_captain(team, current_user_id)
+
+    ok = await members_service.delete_member(team_id, user_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="team member not found (delete)")
+    return None
+
+
+
 
 
 @router.get(
