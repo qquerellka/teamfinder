@@ -13,6 +13,7 @@ import styled from "styled-components";
 import editIcon from "@/assets/icons/editIcon.svg?react";
 import inviteIcon from "@/assets/icons/inviteIcon.svg?react";
 import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
+import leaveIcon from "@/assets/icons/leaveTeamIcon.svg?react"
 import { TeamMember } from "@/entities/teamMember/model/types";
 import { getTeamJoinLink } from "@/entities/team/api/teams";
 
@@ -30,6 +31,7 @@ export const TeamCard: FC<TeamCardProps> = ({
   const [isCopying, setIsCopying] = useState(false);
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+  const { data: user } = useAuthUser();
   const handleCopyInviteLink = async () => {
     try {
       setIsCopying(true);
@@ -57,17 +59,34 @@ export const TeamCard: FC<TeamCardProps> = ({
       setIsCopying(false);
     }
   };
+  const leaveMutaion = useLeaveTeam(team.id);
+
+  const onLeaveTeam = async () => {
+     await leaveMutaion.mutateAsync();
+     navigate(-1);
+  }
 
   return (
     <>
       <SExtraInfo>
-        <Header>
-          <SIcon icon={inviteIcon} />
-          <STitle $fs={14} $fw={500}>
-            {"Моя команда"}
-          </STitle>
-          <SIcon onClick={onEditClick} icon={editIcon} />
-        </Header>
+        {team.captainId === user.id ? (
+          <Header>
+            <SIcon icon={inviteIcon} />
+            <STitle $fs={14} $fw={500}>
+              {"Моя команда"}
+            </STitle>
+            <SIcon onClick={onEditClick} icon={editIcon} />
+          </Header>
+        ) : (
+          <Header>
+            <SIcon icon={""} />
+            <STitle $fs={14} $fw={500}>
+              {"Моя команда"}
+            </STitle>
+            <SIcon onClick={onLeaveTeam} icon={leaveIcon} />
+          </Header>
+        )}
+
         <InputSection header={"Хакатон"}>
           <Input value={hackathon.name} disabled />
         </InputSection>
@@ -173,6 +192,8 @@ const TeamMemberCards = styled.div`
 import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
 import { useNavigate } from "react-router-dom";
 import { getFindTeamMembersPath } from "@/app/routing/paths";
+import { useAuthUser } from "@/entities/user/api/hooks";
+import { useLeaveTeam } from "@/entities/teamMember/api/hooks";
 
 interface TeamMemberCardProps {
   member: TeamMember;
