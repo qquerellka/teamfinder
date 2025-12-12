@@ -46,7 +46,7 @@ export function useMyTeamOnHackathon(hackathonId: number) {
 }
 
 export function useTeam(teamId: number) {
-  return useAppQuery<Team, Error>({
+  return useAppQuery<TeamWithMembers, Error>({
     queryKey: teamKeys.byId(teamId),
     queryFn: () => getTeam(teamId),
     staleTime: 60 * 1000,

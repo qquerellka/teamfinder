@@ -9,7 +9,7 @@ import {
   getInvite,
   updateInvite,
 } from "./invites";
-import type { Invite, CreateInvite, UpdateInvite } from "../model/types";
+import type { Invite, CreateInvite, UpdateInvite, MegaInvite } from "../model/types";
 import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const inviteKeys = queryKeys.invites;
@@ -23,7 +23,7 @@ export function useTeamInvites(teamId: number) {
 }
 
 export function useApplicationInvites(applicationId: number) {
-  return useAppQuery<Invite[], Error>({
+  return useAppQuery<MegaInvite[], Error>({
     queryKey: inviteKeys.byApplication(applicationId),
     queryFn: () => getApplicationInvites(applicationId),
     staleTime: 60 * 1000,

@@ -11,43 +11,70 @@ import { SText } from "@/shared/ui/SText";
 import EditIcon from "@/assets/icons/editIcon.svg?react";
 import DeleteIcon from "@/assets/icons/deleteIcon.svg?react";
 import { FC } from "react";
+import { useHackathonApplicationDelete } from "../hooks/useHackathonApplicationDelete";
+import { useNavigate } from "react-router-dom";
+import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 
 interface HackathonApplicationCardProps {
   hackathon: Hackathon;
   application: Application;
   onEditClick?: () => void;
-  onDeleteClick?: () => void;
+  // onDeleteClick?: () => void;
 }
 
 export const HackathonApplicationCard: FC<HackathonApplicationCardProps> = ({
   hackathon,
   application,
   onEditClick,
-  onDeleteClick,
+  // onDeleteClick,
 }) => {
+  const navigate = useNavigate();
+  const {
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    cancel: cancelDelete,
+    confirm: confirmDelete,
+    isLoading: isDeleting,
+  } = useHackathonApplicationDelete({
+    hackathonId: hackathon.id,
+    applicationId: application.id,
+    onDeleted: () => navigate(-1),
+  });
   return (
-    <Wrapper>
-      <Header>
-        <SText $fs={16} $fw={600}>
-          {hackathon.name}
+    <>
+      <Wrapper>
+        <Header>
+          <SText $fs={16} $fw={600}>
+            {hackathon.name}
+          </SText>
+
+          <Icons>
+            <IconButton type="button" onClick={onEditClick}>
+              <SIcon icon={EditIcon} />
+            </IconButton>
+            <IconButton type="button" onClick={openDeleteModal}>
+              <SIcon icon={DeleteIcon} />
+            </IconButton>
+          </Icons>
+        </Header>
+
+        <SText $fs={14} $fw={500}>
+          {formatRegistrationDate(hackathon.registrationEndDate)}
         </SText>
 
-        <Icons>
-          <IconButton type="button" onClick={onEditClick}>
-            <SIcon icon={EditIcon} />
-          </IconButton>
-          <IconButton type="button" onClick={onDeleteClick}>
-            <SIcon icon={DeleteIcon} />
-          </IconButton>
-        </Icons>
-      </Header>
+        <RoleBadge role={application.role} />
+      </Wrapper>
 
-      <SText $fs={14} $fw={500}>
-        {formatRegistrationDate(hackathon.registrationEndDate)}
-      </SText>
-
-      <RoleBadge role={application.role} />
-    </Wrapper>
+      <ConfirmModal
+        open={isDeleteModalOpen}
+        title="Удалить анкету?"
+        confirmText="Удалить"
+        cancelText="Отмена"
+        loading={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+    </>
   );
 };
 

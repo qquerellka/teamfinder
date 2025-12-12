@@ -24,6 +24,30 @@ export interface InviteDTO {
     team_name?: string
 }
 
+export interface MegaInvite {
+    id: number,
+    status: InviteStatus,
+    role: Role,
+    teamId: number,
+    applicationId: number,
+    teamName: number,
+    hackathonId: number,
+    teamMembersCount: number,
+    teamMembersLimit: number,
+}
+
+export interface MegaInviteDTO {
+    id: number,
+    status: InviteStatus,
+    invited_role: Role,
+    team_id: number,
+    application_id: number,
+    team_name: number,
+    hackathon_id: number,
+    team_members_count: number,
+    team_members_limit: number,
+}
+
 export interface CreateInvite {
     role: Role,
     applicationId: number,

@@ -54,9 +54,9 @@ export async function getMyTeamOnHackathon(hackId: number): Promise<TeamWithMemb
   return teamWithMembersToCamelCase(data);
 }
 
-export async function getTeam(id: number): Promise<Team> {
-  const { data } = await apiClient.get<TeamDTO>(`/teams/${id}`);
-  return teamsToCamelCase([data])[0];
+export async function getTeam(id: number): Promise<TeamWithMembers> {
+  const { data } = await apiClient.get<TeamWithMembersDTO>(`/teams/${id}`);
+  return teamWithMembersToCamelCase(data);
 }
 
 export async function editTeam(id: number, payload: EditTeam): Promise<Team> {

@@ -11,12 +11,14 @@ from presentations.routers.users import get_current_user_id
 
 from repositories.teams import TeamsRepo
 from repositories.applications import ApplicationsRepo
+from services.team_members import TeamMembersService
 
 router = APIRouter(tags=["invites"])
 
 invites_service = InvitesService()
 teams_repo = TeamsRepo()
 apps_repo = ApplicationsRepo()
+members_service = TeamMembersService()
 
 
 # ---- схемы ----
@@ -39,14 +41,11 @@ class TeamInviteOut(InviteOut):
     user_name: Optional[str] = None
 
 
-class ApplicationInviteOut(InviteOut):
-    team_name: str
-
-
 class MyInviteOut(InviteOut):
     team_name: str
     hackathon_id: int
-
+    team_members_count: int          # текущее количество участников
+    team_members_limit: int          # максимальное количество участников
 
 # ---- helpers ----
 
@@ -63,21 +62,15 @@ async def _pack_invite_for_team(inv, app) -> TeamInviteOut:
     )
 
 
-async def _pack_invite_for_application(inv, team) -> ApplicationInviteOut:
-    return ApplicationInviteOut(
-        id=inv.id,
-        status=inv.status,
-        invited_role=inv.invited_role,
-        team_id=inv.team_id,
-        application_id=inv.application_id,
-        team_name=team.name,
-    )
 
 
 async def _pack_my_invite(ctx: InviteWithContext) -> MyInviteOut:
     inv = ctx.invite
     team = ctx.team
     hack = ctx.hackathon
+
+    members = await members_service.list_members(team.id)
+    team_members_count = len(members)
 
     return MyInviteOut(
         id=inv.id,
@@ -87,6 +80,8 @@ async def _pack_my_invite(ctx: InviteWithContext) -> MyInviteOut:
         application_id=inv.application_id,
         team_name=team.name,
         hackathon_id=hack.id,
+        team_members_count=team_members_count,
+        team_members_limit=hack.team_members_limit,
     )
 
 
@@ -176,7 +171,7 @@ async def list_team_invites(
 
 @router.get(
     "/applications/{application_id}/invites",
-    response_model=List[ApplicationInviteOut],
+    response_model=List[MyInviteOut],
 )
 async def list_application_invites(
     application_id: int,
@@ -198,13 +193,13 @@ async def list_application_invites(
     except PermissionError:
         raise HTTPException(status_code=403, detail="forbidden")
 
-    out: List[ApplicationInviteOut] = []
+    out: List[MyInviteOut] = []
     for inv in invites:
-        team = await teams_repo.get_by_id(inv.team_id)
-        if not team:
-            continue
-        out.append(await _pack_invite_for_application(inv, team))
-
+        ctx = await invites_service.get_for_user(
+            current_user_id=current_user_id,
+            invite_id=inv.id,
+        )
+        out.append(await _pack_my_invite(ctx))
     return out
 
 

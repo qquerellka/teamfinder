@@ -112,6 +112,30 @@ async def _ensure_captain(team, user_id: int):
     if team.captain_id != user_id:
         raise HTTPException(status_code=403, detail="forbidden: not a captain")
 
+async def _build_team_with_members(team) -> TeamWithMembersOut:
+    members = await members_service.list_members(team.id)
+    member_items: List[TeamMemberOut] = []
+    for m in members:
+        u = m.user
+        member_items.append(
+            TeamMemberOut(
+                user=TeamMemberUserOut(
+                    id=u.id,
+                    username=u.username,
+                    first_name=u.first_name,
+                    last_name=u.last_name,
+                    avatar_url=u.avatar_url,
+                ),
+                role=m.role,
+                is_captain=m.is_captain,
+            )
+        )
+
+    base_team = TeamOut.model_validate(team)
+    return TeamWithMembersOut(
+        **base_team.model_dump(),
+        members=member_items,
+    )
 
 # ---- Список команд по хакатону ----
 
@@ -217,7 +241,6 @@ async def list_my_teams(
         offset=offset,
     )
 
-
 @router.get(
     "/hackathons/{hackathon_id}/teams/me",
     response_model=Optional[TeamWithMembersOut],
@@ -240,45 +263,20 @@ async def get_my_team_on_hackathon(
     )
 
     if not teams:
-        # 200 OK, body: null
         return None
 
     team = teams[0]
-
-    members = await members_service.list_members(team.id)
-    member_items: List[TeamMemberOut] = []
-    for m in members:
-        u = m.user
-        member_items.append(
-            TeamMemberOut(
-                user=TeamMemberUserOut(
-                    id=u.id,
-                    username=u.username,
-                    first_name=u.first_name,
-                    last_name=u.last_name,
-                    avatar_url=u.avatar_url,  # <<< добавили
-                ),
-                role=m.role,
-                is_captain=m.is_captain,
-            )
-        )
-
-    base_team = TeamOut.model_validate(team)
-    return TeamWithMembersOut(
-        **base_team.model_dump(),
-        members=member_items,
-    )
+    return await _build_team_with_members(team)
 
 
 # ---- Детали/обновление/удаление команды ----
 
-
-@router.get("/teams/{team_id}", response_model=TeamOut)
+@router.get("/teams/{team_id}", response_model=TeamWithMembersOut)
 async def get_team(team_id: int = Path(..., ge=1)):
     team = await teams_service.get_by_id(team_id)
     if not team:
         raise HTTPException(status_code=404, detail="team not found")
-    return TeamOut.model_validate(team)
+    return await _build_team_with_members(team)
 
 
 @router.patch("/teams/{team_id}", response_model=TeamOut)
