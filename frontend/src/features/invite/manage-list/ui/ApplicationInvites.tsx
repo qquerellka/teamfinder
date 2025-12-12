@@ -4,20 +4,26 @@ import { SIcon, SText, STitle } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import { FC } from "react";
 import styled from "styled-components";
-import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react"
-import crossIcon from "@/assets/icons/crossIcon.svg?react"
-import plusIcon from "@/assets/icons/plusIcon.svg?react"
+import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
+import crossIcon from "@/assets/icons/crossIcon.svg?react";
+import plusIcon from "@/assets/icons/plusIcon.svg?react";
+import { useAnswerOnInvite } from "../hooks/useAnswerOnInvite";
 interface ApplicationInvites {
   appId: number;
 }
 
 export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
   const { data: invites } = useApplicationInvites(appId);
+
+  if (!invites || invites.length === 0) {
+    return <STitle>{"Нет приглашений :("}</STitle>; // или плейсхолдер
+  }
+
   return (
     <>
       <SText>Приглашения в команду</SText>
       {invites.map((i) => (
-        <InviteCard invite={i}/>
+        <InviteCard key={i.id} invite={i} />
       ))}
     </>
   );
@@ -27,7 +33,13 @@ interface InviteCardProps {
   invite: MegaInvite;
 }
 export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
-
+    const { answer, isLoading } = useAnswerOnInvite({
+    inviteId: invite.id,
+    // опционально: закрыть модалку / показать тост
+    onAnswered: () => {
+      // console.log("answered", status);
+    },
+  })
   return (
     <Wrapper>
       <FirstCol>
@@ -35,12 +47,21 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
         <SText>{invite.teamName}</SText>
       </FirstCol>
       <SecondRow>
-        <Buttons>
-          <IconButton>
-            <SIcon icon={crossIcon}></SIcon>
+         <Buttons>
+          {/* Отклонить */}
+          <IconButton
+            disabled={isLoading}
+            onClick={() => answer("rejected")} // или "rejected"
+          >
+            <SIcon icon={crossIcon} />
           </IconButton>
-          <IconButton>
-            <SIcon icon={plusIcon}></SIcon>
+
+          {/* Принять */}
+          <IconButton
+            disabled={isLoading}
+            onClick={() => answer("accepted")} // или "accepted"
+          >
+            <SIcon icon={plusIcon} />
           </IconButton>
         </Buttons>
         <CountTeamMembers>
