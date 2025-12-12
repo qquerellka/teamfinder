@@ -15,6 +15,7 @@ import { TeamMemberCard } from "./TeamCard";
 import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
 import { useDeleteTeamForm } from "../hooks/useDeleteTeamFrom";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
+import { useLeaveTeam } from "@/entities/teamMember/api/hooks";
 
 interface TeamEditFormProps {
   hackathon: Hackathon;
@@ -70,6 +71,13 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
     teamId: team.id,
     onDeleted: () => navigate(-1),
   });
+    const leaveMutaion = useLeaveTeam(team.id);
+  
+    const onLeaveTeam = async () => {
+       await leaveMutaion.mutateAsync();
+       navigate(-1);
+    }
+
 
   return (
     <>
@@ -79,7 +87,7 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
           <STitle $fs={14} $fw={500}>
             {"Моя команда"}
           </STitle>
-          <SIcon onClick={() => {}} icon={leaveTeamIcon}></SIcon>
+          <SIcon onClick={onLeaveTeam} icon={leaveTeamIcon}></SIcon>
         </Header>
         <InputSection header={"Хакатон"}>
           <Input type="text" value={hackathon.name} disabled />
@@ -108,7 +116,7 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
           </HeaderRow>
           <TeamMemberCards className="">
             {team?.members?.map((m) => (
-              <TeamMemberCard key={m.user.id} member={m} />
+              <TeamMemberCard key={m.user.id} member={m} team={team}/>
             ))}
           </TeamMemberCards>
         </TeamMembers>

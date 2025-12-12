@@ -44,8 +44,8 @@ export async function editTeamMember(
   return teamMembersToCamelCase([data])[0];
 }
 
-export async function deleteTeamMember(id: number): Promise<void> {
-  await apiClient.delete<void>(`/teams/${id}/members`);
+export async function deleteTeamMember(teamId: number, userId: number): Promise<void> {
+  await apiClient.delete<void>(`/teams/${teamId}/members/${userId}`);
 }
 
 export async function leaveTeam(id: number): Promise<void> {

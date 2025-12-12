@@ -61,11 +61,11 @@ export function useEditTeamMember(teamId: number) {
   });
 }
 
-export function useDeleteTeamMember(teamId: number) {
+export function useDeleteTeamMember(teamId: number, userId: number) {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, void>({
-    mutationFn: () => deleteTeamMember(teamId),
+    mutationFn: () => deleteTeamMember(teamId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: teamKeys.members(teamId),

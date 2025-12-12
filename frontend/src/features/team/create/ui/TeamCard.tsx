@@ -13,7 +13,7 @@ import styled from "styled-components";
 import editIcon from "@/assets/icons/editIcon.svg?react";
 import inviteIcon from "@/assets/icons/inviteIcon.svg?react";
 import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
-import leaveIcon from "@/assets/icons/leaveTeamIcon.svg?react"
+import leaveIcon from "@/assets/icons/leaveTeamIcon.svg?react";
 import { TeamMember } from "@/entities/teamMember/model/types";
 import { getTeamJoinLink } from "@/entities/team/api/teams";
 
@@ -62,9 +62,9 @@ export const TeamCard: FC<TeamCardProps> = ({
   const leaveMutaion = useLeaveTeam(team.id);
 
   const onLeaveTeam = async () => {
-     await leaveMutaion.mutateAsync();
-     navigate(-1);
-  }
+    await leaveMutaion.mutateAsync();
+    navigate(-1);
+  };
 
   return (
     <>
@@ -115,7 +115,7 @@ export const TeamCard: FC<TeamCardProps> = ({
           </HeaderRow>
           <TeamMemberCards>
             {team?.members?.map((m) => (
-              <TeamMemberCard key={m.user.id} member={m} />
+              <TeamMemberCard key={m.user.id} member={m} team={team} />
             ))}
           </TeamMemberCards>
         </TeamMembers>
@@ -189,20 +189,35 @@ const TeamMemberCards = styled.div`
   align-items: center;
   width: 100%;
 `;
+import crossIcon from "@/assets/icons/crossIcon.svg?react";
 import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
 import { useNavigate } from "react-router-dom";
 import { getFindTeamMembersPath } from "@/app/routing/paths";
 import { useAuthUser } from "@/entities/user/api/hooks";
-import { useLeaveTeam } from "@/entities/teamMember/api/hooks";
+import {
+  useDeleteTeamMember,
+  useLeaveTeam,
+} from "@/entities/teamMember/api/hooks";
 
 interface TeamMemberCardProps {
+  team: TeamWithMembers;
   member: TeamMember;
 }
 
-export const TeamMemberCard: FC<TeamMemberCardProps> = ({ member }) => {
+export const TeamMemberCard: FC<TeamMemberCardProps> = ({
+  member,
+  team,
+}) => {
+  const navigate = useNavigate();
   const fullName = `${member.user.firstName ?? ""} ${
     member.user.lastName ?? ""
   }`.trim();
+  const removeMemberMutation = useDeleteTeamMember(team.id, member.user.id);
+
+  const onDelete = async () => {
+    await removeMemberMutation.mutateAsync();
+    navigate(-1);
+  };
 
   return (
     <MemberRow>
@@ -229,9 +244,13 @@ export const TeamMemberCard: FC<TeamMemberCardProps> = ({ member }) => {
         </ExtraInfo>
       </Info>
 
-      {member.isCaptain && (
+      {member.isCaptain ? (
         <CaptainWrapper>
           <SIcon icon={captainIcon} color={"#F3BD28"} />
+        </CaptainWrapper>
+      ) : (
+        <CaptainWrapper>
+          <SIcon onClick={onDelete} icon={crossIcon} color={"#F55A5A"} />
         </CaptainWrapper>
       )}
     </MemberRow>
