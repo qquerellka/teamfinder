@@ -5,6 +5,7 @@ from __future__ import (
 from sqlalchemy import (
     Text,
     Integer,
+    BigInteger
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -22,7 +23,7 @@ class User(Base, TimestampMixin):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    telegram_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
     username: Mapped[str | None] = mapped_column(Text)
     first_name: Mapped[str | None] = mapped_column(Text)
     last_name: Mapped[str | None] = mapped_column(Text)
