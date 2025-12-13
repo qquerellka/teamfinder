@@ -6,13 +6,15 @@ import { UserDTO } from "@/entities/user/model/types";
 export const AUTH_QUERY_KEY = ["auth"];
 
 export function useAuth() {
-
   const query = useQuery<AuthResponse>({
     queryKey: AUTH_QUERY_KEY,
     queryFn: authQueryFn,
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: true,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   return {

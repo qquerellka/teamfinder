@@ -23,7 +23,7 @@ export async function authDev(): Promise<AuthResponse> {
 
 export async function authTelegram(): Promise<AuthResponse> {
   const initDataRaw = resolveInitDataRaw();
-  console.log("initDataRaw in authTelegram:", initDataRaw);
+  // console.log("initDataRaw in authTelegram:", initDataRaw);
 
   if (!initDataRaw) {
     throw new Error("No init_data for tgAuth");
@@ -48,7 +48,6 @@ function saveAuthToStorage(data: AuthResponse) {
 }
 
 function restoreTokenFromStorage(): string | null {
-
   const token = localStorage.getItem(AUTH_STORAGE_KEY);
   if (!token) return null;
 
@@ -67,8 +66,15 @@ function clearAuthStorage() {
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
-  let token = restoreTokenFromStorage();
-  token = null;
+  const forceDevLogin =
+    import.meta.env.VITE_FORCE_DEV_LOGIN === "1" || import.meta.env.DEV;
+
+  if (forceDevLogin) {
+    return authDev();
+  }
+
+  const token = restoreTokenFromStorage();
+
   if (token) {
     try {
       const profile = await fetchProfile();
@@ -90,12 +96,5 @@ export async function authQueryFn(): Promise<AuthResponse> {
     }
   }
 
-  const forceDevLogin =
-    import.meta.env.VITE_FORCE_DEV_LOGIN === "1" || import.meta.env.DEV;
-
-  // ВАЖНО: если включили dev-режим — всегда идём в dev-логин
-  if (forceDevLogin) {
-    return authDev();
-  }
   return authTelegram();
 }
