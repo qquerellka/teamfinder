@@ -67,8 +67,8 @@ function clearAuthStorage() {
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
-  const token = restoreTokenFromStorage();
-
+  let token = restoreTokenFromStorage();
+  token = null;
   if (token) {
     try {
       const profile = await fetchProfile();
