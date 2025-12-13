@@ -1,10 +1,9 @@
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import { FixedLayout } from "@telegram-apps/telegram-ui";
 import { Navbar } from "../../widgets/Navbar";
 import BackButtonController from "./BackButtonController";
-import { LoaderPage } from "@/shared/ui/LoaderPage";
 
 export default function RootLayout() {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -38,7 +37,7 @@ export default function RootLayout() {
     }
   };
   return (
-    <Suspense fallback={<LoaderPage />}>
+    <>
       <BackButtonController />
       <SRoot>
         <SContent $top={0} $bottom={footerHeight}>
@@ -51,7 +50,7 @@ export default function RootLayout() {
           </SFooterInner>
         </SFooterFixed>
       </SRoot>
-    </Suspense>
+    </>
   );
 }
 

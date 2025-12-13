@@ -9,7 +9,7 @@ export interface Invite {
   teamId: number;
   applicationId: number;
   userId?: number;
-  username?: number;
+  username?: string;
   teamName?: string;
 }
 
@@ -20,7 +20,7 @@ export interface InviteDTO {
   team_id: number;
   application_id: number;
   application_user_id?: number;
-  user_name?: number;
+  user_name?: string;
   team_name?: string;
 }
 

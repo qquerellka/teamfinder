@@ -1,4 +1,3 @@
-// resolveInitDataRaw.ts
 import { getInitDataRaw } from "./initDataStore";
 import { retrieveLaunchParams } from "@tma.js/sdk-react";
 

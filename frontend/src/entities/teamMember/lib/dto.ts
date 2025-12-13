@@ -16,6 +16,7 @@ export function teamMembersToCamelCase(
       username: t.user.username,
       firstName: t.user.first_name,
       lastName: t.user.last_name,
+      avatarUrl: t.user.avatar_url
     },
     role: t.role,
     isCaptain: t.is_captain,

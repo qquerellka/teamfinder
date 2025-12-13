@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 import { AchievementForm } from "@/features/achievement/edit/ui/AchevementForm";
-import { Page } from "@/widgets/Page";
+import { Page } from "@/shared/ui";
 
 const AchievementPage = () => {
   const { id } = useParams<{ id: string }>();
