@@ -1,6 +1,6 @@
 import { useTeam } from "@/entities/team/api/hooks";
 import { TeamApplications } from "@/features/team/applications/TeamApplications";
-import { Page, STitle } from "@/shared/ui";
+import { Page, SText } from "@/shared/ui";
 import { SegmentedControl } from "@telegram-apps/telegram-ui";
 import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
 import { useState } from "react";
@@ -31,7 +31,7 @@ const { data: team } = useTeam(Number(id));
 
       {tab === "applications" && <TeamApplications team={team} />}
 
-      {tab === "vacancy" && <STitle>{"Вакансия"}</STitle>}
+      {tab === "vacancy" && <SText>{"Вакансия"}</SText>}
     </Page>
   );
 };

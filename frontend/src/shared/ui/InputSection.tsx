@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import styled from "styled-components";
-import { STitle } from "./STitle";
+import { SText } from "./SText";
 import { List } from "@telegram-apps/telegram-ui";
 
 interface InpurSectionProps {
@@ -12,9 +12,9 @@ export const InputSection: FC<InpurSectionProps> = ({ children, header }) => {
   return (
     <Wrapper>
       <Header>
-        <STitle $fw={600} $fs={16}>
+        <SText $fw={600} $fs={16}>
           {header}
-        </STitle>
+        </SText>
       </Header>
       <Main>{children}</Main>
     </Wrapper>

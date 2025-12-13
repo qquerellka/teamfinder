@@ -8,7 +8,7 @@ import {
   formatRegistrationDate,
   getTeamMembersRange,
 } from "@/shared/helpers/date";
-import { ImageWithSkeleton, SIcon, STitle } from "@/shared/ui";
+import { ImageWithSkeleton, SIcon, SText } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
 type HackathonCardVariant = "full" | "compact";
 
@@ -69,7 +69,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       </SHackathonImage>
 
       <SHackathonInfo>
-        <STitle weight="2">{hackathon.name}</STitle>
+        <SText weight="2">{hackathon.name}</SText>
 
         <HackathonParams>
           {visibleParams.map(({ icon, text }, index) => (

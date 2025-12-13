@@ -2,15 +2,16 @@ import type { Achievement } from "@/entities/achievement/model/types";
 import type { Hackathon } from "@/entities/hackathon/model/types";
 import { useAchievementForm } from "@/features/achievement/edit/hooks/useAchievementForm";
 import { AchievementFormView } from "@/features/achievement/edit/ui/AchievementFormVeiw";
+import { FC } from "react";
 
-type Props = {
+interface AchevementFormProps {
   isNew: boolean;
   achievement: Achievement | null;
   hackathons: Hackathon[];
 };
 
-export const AchievementForm = (props: Props) => {
-  const form = useAchievementForm(props);
+export const AchievementForm:FC<AchevementFormProps> = ({isNew, achievement, hackathons}) => {
+  const form = useAchievementForm({isNew, achievement, hackathons});
 
   return (
     <AchievementFormView

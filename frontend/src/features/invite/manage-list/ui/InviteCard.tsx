@@ -3,7 +3,7 @@ import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAnswerOnInvite } from "../hooks/useAnswerOnInvite";
 import { getHackathonTeamPath } from "@/shared/routing/paths";
-import { SIcon, SText, STitle } from "@/shared/ui";
+import { SIcon, SText } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 
@@ -23,9 +23,9 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
   return (
     <Wrapper>
       <FirstRow>
-        <STitle $fs={16} $fw={700}>
+        <SText $fs={16} $fw={700}>
           {"Приглашение"}
-        </STitle>
+        </SText>
         <Buttons>
           <IconButton disabled={isLoading} onClick={() => answer("rejected")}>
             <SIcon name={"cross"} color={"#F55A5A"} />
@@ -43,9 +43,9 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
 
         <CountTeamMembers>
           <SIcon name={"profile"} />
-          <STitle $fs={14} $fw={500}>
+          <SText $fs={14} $fw={500}>
             {invite.teamMembersCount} / {invite.teamMembersLimit}
-          </STitle>
+          </SText>
         </CountTeamMembers>
       </SecondRow>
     </Wrapper>

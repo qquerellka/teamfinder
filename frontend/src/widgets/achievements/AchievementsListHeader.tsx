@@ -1,6 +1,6 @@
 import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui/SIcon";
-import { STitle } from "@/shared/ui/STitle";
+import { SText } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -9,13 +9,13 @@ export const AchievementsListHeader = () => {
   const navigate = useNavigate();
   return (
     <HeaderRow>
-      <STitle
+      <SText
         $fs={15}
         $fw={600}
         style={{ color: "var(--tg-theme-section-header-text-color)" }}
       >
         Достижения
-      </STitle>
+      </SText>
       <IconButton
         size="m"
         onClick={() => navigate(paths.profileAchievementsRoot)}

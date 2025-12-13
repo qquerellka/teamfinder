@@ -1,5 +1,5 @@
 import { useApplicationInvites } from "@/entities/invite/api/hooks";
-import { SText, STitle } from "@/shared/ui";
+import { SText } from "@/shared/ui";
 import { FC } from "react";
 import styled from "styled-components";
 
@@ -27,7 +27,7 @@ export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
   if (!filteredInvites || filteredInvites.length === 0) {
     return (
       <Wrapper>
-        <STitle>{"Нет приглашений :("}</STitle>
+        <SText>{"Нет приглашений :("}</SText>
       </Wrapper>
     );
   }

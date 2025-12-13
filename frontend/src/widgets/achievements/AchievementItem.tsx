@@ -2,7 +2,6 @@ import { paths } from "@/shared/routing/paths";
 import { Achievement } from "@/entities/achievement/model/types";
 import { formatHackPlace } from "@/shared/helpers/date";
 import { SText } from "@/shared/ui/SText";
-import { STitle } from "@/shared/ui/STitle";
 import { Cell } from "@telegram-apps/telegram-ui";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,9 +26,9 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement }) => {
         </SText>
       }
     >
-      <STitle $fs={16} $fw={500}>
+      <SText $fs={16} $fw={500}>
         {achievement.hackathonName}
-      </STitle>
+      </SText>
     </Wrapper>
   );
 };

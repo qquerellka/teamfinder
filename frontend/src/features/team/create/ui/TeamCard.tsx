@@ -1,6 +1,6 @@
 import { Hackathon } from "@/entities/hackathon/model/types";
 import { TeamWithMembers } from "@/entities/team/model/types";
-import { InputSection, SIcon, SText, STitle } from "@/shared/ui";
+import { InputSection, SIcon, SText } from "@/shared/ui";
 import {
   Avatar,
   Button,
@@ -68,17 +68,17 @@ export const TeamCard: FC<TeamCardProps> = ({
         {team.captainId === user.id ? (
           <Header>
             <SIcon name={"invite"} />
-            <STitle $fs={14} $fw={500}>
+            <SText $fs={14} $fw={500}>
               {"Моя команда"}
-            </STitle>
+            </SText>
             <SIcon onClick={onEditClick} name={"edit"} />
           </Header>
         ) : (
           <Header>
             <div className=""></div>
-            <STitle $fs={14} $fw={500}>
+            <SText $fs={14} $fw={500}>
               {"Моя команда"}
-            </STitle>
+            </SText>
             <SIcon onClick={onLeaveTeam} name={"leaveTeam"} />
           </Header>
         )}
@@ -95,18 +95,18 @@ export const TeamCard: FC<TeamCardProps> = ({
 
         <TeamMembers>
           <HeaderRow>
-            <STitle
+            <SText
               $fs={16}
               $fw={600}
               style={{ color: "var(--tg-theme-section-header-text-color)" }}
             >
               Участники
-            </STitle>
+            </SText>
             <CountTeamMembers>
               <SIcon name={"profile"} />
-              <STitle $fs={16} $fw={700}>
+              <SText $fs={16} $fw={700}>
                 {team.members.length} / {hackathon.teamMembersLimit}
-              </STitle>
+              </SText>
             </CountTeamMembers>
           </HeaderRow>
           <TeamMemberCards>
@@ -224,9 +224,9 @@ export const TeamMemberCard: FC<TeamMemberCardProps> = ({ member, team }) => {
 
       <Info>
         <Names>
-          <STitle $fs={16} $fw={600}>
+          <SText $fs={16} $fw={600}>
             {fullName || "Без имени"}
-          </STitle>
+          </SText>
         </Names>
         <ExtraInfo>
           <SText $fs={14}>{member.role}</SText>

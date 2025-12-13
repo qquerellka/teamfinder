@@ -1,17 +1,17 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, FC } from "react";
 import styled from "styled-components";
 import { Button, Input, Select } from "@telegram-apps/telegram-ui";
 
-import { STitle, InputSection  } from "@/shared/ui";
+import { SText, InputSection } from "@/shared/ui";
 import type { Hackathon } from "@/entities/hackathon/model/types";
 import {
   AchievementPlace,
   placeOptions,
   roleOptions,
 } from "@/shared/types/enums";
-import type { AchievementFormValues } from "../hooks/useAchievementForm";
+import type { AchievementFormValues } from "@/features/achievement/edit/hooks/useAchievementForm";
 
-type Props = {
+interface AchievementFormViewProps {
   isNew: boolean;
   achievementName?: string;
   hackathons: Hackathon[];
@@ -25,9 +25,9 @@ type Props = {
   canSubmit: boolean;
   isSaving: boolean;
   isDeleting: boolean;
-};
+}
 
-export function AchievementFormView({
+export const AchievementFormView: FC<AchievementFormViewProps> = ({
   isNew,
   achievementName,
   hackathons,
@@ -38,13 +38,13 @@ export function AchievementFormView({
   canSubmit,
   isSaving,
   isDeleting,
-}: Props) {
+}) => {
   if (!isNew && !achievementName) {
     return (
       <section style={{ padding: "1.5rem" }}>
-        <STitle $fs={20} $fw={600}>
+        <SText $fs={20} $fw={600}>
           Достижение не найдено
-        </STitle>
+        </SText>
       </section>
     );
   }
@@ -58,9 +58,9 @@ export function AchievementFormView({
   return (
     <SProfile>
       <Wrapper>
-        <STitle $fs={14} $fw="semibold">
+        <SText $fs={14} $fw="semibold">
           {isNew ? "Новое достижение" : "Редактировать достижение"}
-        </STitle>
+        </SText>
 
         <InputSection header={"Хакатон"}>
           {isNew ? (
@@ -132,7 +132,7 @@ export function AchievementFormView({
       </Wrapper>
     </SProfile>
   );
-}
+};
 
 const SProfile = styled.section`
   display: flex;

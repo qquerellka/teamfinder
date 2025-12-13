@@ -1,4 +1,3 @@
-
 import { Text } from "@telegram-apps/telegram-ui";
 import styled, { css } from "styled-components";
 

@@ -4,7 +4,6 @@ export * from "./PlatformInputsBorder";
 export * from "./RoleBadge";
 export * from "./SIcon";
 export * from "./SText";
-export * from "./STitle";
 export * from "./ImageWithSkeleton";
 export * from './InputSection';
 export * from './ErrorText';

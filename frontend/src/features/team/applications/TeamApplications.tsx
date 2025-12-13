@@ -1,7 +1,7 @@
 import { useHackathonApplications } from "@/entities/application/api/hooks";
 import { Application } from "@/entities/application/model/types";
 import { Team } from "@/entities/team/model/types";
-import { RoleBadge, SIcon, SText, STitle } from "@/shared/ui";
+import { RoleBadge, SIcon, SText } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import { FC, useMemo } from "react";
 import styled from "styled-components";
@@ -63,9 +63,9 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
   return (
     <Wrapper>
       <FirstRow>
-        <STitle $fs={16} $fw={600}>
+        <SText $fs={16} $fw={600}>
           {application.firstName} {application.lastName}
-        </STitle>
+        </SText>
         <RoleBadge role={application.role} />
       </FirstRow>
 

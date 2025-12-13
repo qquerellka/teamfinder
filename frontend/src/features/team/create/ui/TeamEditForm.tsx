@@ -4,7 +4,7 @@ import { Hackathon } from "@/entities/hackathon/model/types";
 import { TeamWithMembers } from "@/entities/team/model/types";
 import { useEditTeamForm } from "../hooks/useEditTeamForm";
 import { useEditTeam } from "@/entities/team/api/hooks";
-import { InputSection, SIcon, STitle, ConfirmModal } from "@/shared/ui";
+import { InputSection, SIcon, SText, ConfirmModal } from "@/shared/ui";
 import { Button, Input, Textarea } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -78,9 +78,9 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
       <SExtraInfo>
         <Header>
           <SIcon onClick={openDeleteModal} name={"delete"}></SIcon>
-          <STitle $fs={14} $fw={500}>
+          <SText $fs={14} $fw={500}>
             {"Моя команда"}
-          </STitle>
+          </SText>
           <SIcon onClick={onLeaveTeam} name={"leaveTeam"}></SIcon>
         </Header>
         <InputSection header={"Хакатон"}>
@@ -94,18 +94,18 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
         </InputSection>
         <TeamMembers>
           <HeaderRow>
-            <STitle
+            <SText
               $fs={16}
               $fw={600}
               style={{ color: "var(--tg-theme-section-header-text-color)" }}
             >
               Участники
-            </STitle>
+            </SText>
             <CountTeamMembers className="">
               <SIcon name={"profile"} />
-              <STitle $fs={16} $fw={700}>
+              <SText $fs={16} $fw={700}>
                 {team.members.length} / {hackathon.teamMembersLimit}
-              </STitle>
+              </SText>
             </CountTeamMembers>
           </HeaderRow>
           <TeamMemberCards className="">

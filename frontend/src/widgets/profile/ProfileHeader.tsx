@@ -1,6 +1,6 @@
 import { Avatar } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
-import { STitle } from "@/shared/ui/STitle";
+import { SText } from "@/shared/ui";
 import { useAuthUser } from "@/entities/user/api/hooks";
 
 export const ProfileHeader = () => {
@@ -10,8 +10,8 @@ export const ProfileHeader = () => {
     <SProfileHeader>
       <Avatar size={96} src={user?.avatarUrl || undefined} />
       <SFullName>
-        <STitle $fs={24} $fw={600}>{user?.firstName}</STitle>
-        <STitle $fs={24} $fw={600}>{user?.secondName}</STitle>
+        <SText $fs={24} $fw={600}>{user?.firstName}</SText>
+        <SText $fs={24} $fw={600}>{user?.secondName}</SText>
       </SFullName>
     </SProfileHeader>
   );
