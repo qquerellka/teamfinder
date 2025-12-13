@@ -24,15 +24,10 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
   });
   return (
     <Wrapper>
-      <FirstCol>
+      <FirstRow>
         <STitle $fs={16} $fw={700}>
           {"Приглашение"}
         </STitle>
-        <SText $fs={14} $fw={500}>
-          {invite.teamName}
-        </SText>
-      </FirstCol>
-      <SecondRow>
         <Buttons>
           <IconButton disabled={isLoading} onClick={() => answer("rejected")}>
             <SIcon icon={crossIcon} color={"#F55A5A"} />
@@ -42,6 +37,12 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
             <SIcon icon={plusIcon} />
           </IconButton>
         </Buttons>
+      </FirstRow>
+      <SecondRow>
+        <SText $fs={14} $fw={500}>
+          {invite.teamName}
+        </SText>
+
         <CountTeamMembers>
           <SIcon icon={profileIcon} />
           <STitle $fs={14} $fw={500}>
@@ -61,29 +62,30 @@ const CountTeamMembers = styled.div`
 `;
 const Wrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+    gap: 0.5rem;
   padding: 0.75rem;
   border-radius: 1rem;
   background-color: var(--tg-theme-section-bg-color);
 `;
 
-const FirstCol = styled.div`
+const FirstRow = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const SecondRow = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const Buttons = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 `;

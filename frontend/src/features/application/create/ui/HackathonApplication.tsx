@@ -5,6 +5,7 @@ import { HackathonApplicationCreateForm } from "./HackathonApplicationCreateForm
 import { HackathonApplicationCard } from "./HackathonApplicationCard";
 import { HackathonApplicationEditForm } from "./HackathonApplicationEditForm";
 import { ApplicationInvites } from "@/features/invite/manage-list/ui/ApplicationInvites";
+import styled from "styled-components";
 
 // import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 // import { useHackathonApplicationDelete } from "../hooks/useHackathonApplicationDelete";
@@ -35,7 +36,6 @@ export const HackathonApplication: FC<HackathonApplicationProps> = ({
   //   onDeleted: () => navigate(-1),
   // });
 
-
   if (!application) {
     return <HackathonApplicationCreateForm hackathon={hackathon} />;
   }
@@ -51,7 +51,7 @@ export const HackathonApplication: FC<HackathonApplicationProps> = ({
   }
 
   return (
-    <>
+    <Wrapper>
       <HackathonApplicationCard
         hackathon={hackathon}
         application={application}
@@ -60,8 +60,12 @@ export const HackathonApplication: FC<HackathonApplicationProps> = ({
       />
 
       <ApplicationInvites appId={application.id} />
-
-
-    </>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;

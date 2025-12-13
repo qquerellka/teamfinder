@@ -1,6 +1,6 @@
 import { Role } from "@/shared/types/enums";
 
-export type InviteStatus = 'pending' | 'accepted' | 'rejected' | 'expired'
+export type InviteStatus = 'pending' | 'accepted' | 'rejected' | 'expired';
 
 export interface Invite {
     id: number,
@@ -30,7 +30,7 @@ export interface MegaInvite {
     role: Role,
     teamId: number,
     applicationId: number,
-    teamName: number,
+    teamName: string,
     hackathonId: number,
     teamMembersCount: number,
     teamMembersLimit: number,
