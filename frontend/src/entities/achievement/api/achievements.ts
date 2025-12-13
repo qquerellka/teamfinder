@@ -1,10 +1,18 @@
 import { apiClient } from "@/shared/api/client";
-import { Achievement, AchievementCreate, AchievementDTO, AchievementPatch, AchievementsList, AchievementsResponseDTO } from "../model/types";
+import {
+  Achievement,
+  AchievementCreate,
+  AchievementDTO,
+  AchievementPatch,
+  AchievementsList,
+  AchievementsResponseDTO,
+} from "../model/types";
 import { achievementCreateToDTO, achievementsToCamelCase } from "../lib/dto";
 
 export async function getAuthUserAchievements(): Promise<AchievementsList> {
-  const { data } =
-    await apiClient.get<AchievementsResponseDTO>("/users/me/achievements");
+  const { data } = await apiClient.get<AchievementsResponseDTO>(
+    "/users/me/achievements"
+  );
 
   return {
     offset: data.offset,
@@ -14,10 +22,10 @@ export async function getAuthUserAchievements(): Promise<AchievementsList> {
 }
 
 export async function getUserAchievementsByUserId(
-  id: number,
+  id: number
 ): Promise<AchievementsList> {
   const { data } = await apiClient.get<AchievementsResponseDTO>(
-    `/users/${id}/achievements`,
+    `/users/${id}/achievements`
   );
 
   return {
@@ -27,17 +35,16 @@ export async function getUserAchievementsByUserId(
   };
 }
 
-
 export async function createAchievement(
-  ach: AchievementCreate,
+  ach: AchievementCreate
 ): Promise<Achievement> {
   const payload = achievementCreateToDTO(ach);
 
   const { data } = await apiClient.post<AchievementDTO>(
     "/users/me/achievements",
-    payload,
+    payload
   );
-  
+
   return achievementsToCamelCase([data])[0];
 }
 
@@ -47,7 +54,7 @@ export async function deleteAchievement(id: number): Promise<void> {
 
 export async function editAchievement(
   id: number,
-  patch: AchievementPatch,
+  patch: AchievementPatch
 ): Promise<void> {
   await apiClient.patch(`/achievements/${id}`, {
     role: patch.role,
@@ -55,4 +62,3 @@ export async function editAchievement(
     hackathon_id: patch.hackathonId,
   });
 }
-

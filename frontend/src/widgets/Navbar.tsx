@@ -2,29 +2,31 @@ import { FC } from "react";
 import styled from "styled-components";
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { NavLink } from "react-router-dom";
-
-import HackIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
-import ProfIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
-import TeamIcon from "@/assets/icons/navbarIcons/TeamsIcon.svg?react";
-import AppIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react"
 import { paths } from "@/app/routing/paths";
 import { SIcon } from "@/shared/ui/SIcon";
+import type { IconName } from "@/shared/ui/SIcon";
 
-const NAV = [
-  { id: 1, name: "hackathons", icon: HackIcon, path: paths.hackathons },
+interface NavItem {
+  id: number;
+  name: string;
+  icon: IconName;
+  path: string;
+}
+const NAV: NavItem[] = [
+  { id: 1, name: "hackathons", icon: "hackNav", path: paths.hackathons },
   {
     id: 2,
     name: "applications",
-    icon: TeamIcon,
+    icon: "teamNav",
     path: paths.teams,
   },
   {
     id: 3,
     name: "teams",
-    icon: AppIcon,
+    icon: "appNav",
     path: paths.applications,
   },
-  { id: 4, name: "profile", icon: ProfIcon, path: paths.profile },
+  { id: 4, name: "profile", icon: "profile", path: paths.profile },
 ];
 
 export const Navbar: FC = () => (
@@ -35,7 +37,7 @@ export const Navbar: FC = () => (
           to={path}
           className={({ isActive }) => (isActive ? "active" : "")}
         >
-          <SIcon icon={icon} size={28} />
+          <SIcon name={icon} size={28} />
         </NavLink>
       </SItem>
     ))}

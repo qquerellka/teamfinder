@@ -9,14 +9,7 @@ import {
   getTeamMembersRange,
 } from "@/shared/helpers/date";
 import { ImageWithSkeleton, SIcon, STitle } from "@/shared/ui";
-
-import shareIcon from "@/assets/icons/shareIcon.svg?react";
-import hackathonPrizeIcon from "@/assets/icons/hackathonCard/hackathonPrizeIcon.svg?react";
-import hackathonDate from "@/assets/icons/hackathonCard/hackathonDateIcon.svg?react";
-import hackathonPlace from "@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
-import hackathonRegistration from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
-import hackathonTeam from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
-
+import type { IconName } from "@/shared/ui/SIcon";
 type HackathonCardVariant = "full" | "compact";
 
 interface HackathonCardProps {
@@ -25,33 +18,36 @@ interface HackathonCardProps {
   showShareButton?: boolean;
   onShareClick?: () => void;
 }
-
+interface HackathonParamConfig {
+  icon: IconName,
+  text: string,
+}
 export const HackathonCard: FC<HackathonCardProps> = ({
   hackathon,
   variant = "full",
   showShareButton = false,
   onShareClick,
 }) => {
-  const params = useMemo(
+  const params: HackathonParamConfig[] = useMemo(
     () => [
       {
-        icon: hackathonDate,
+        icon: "hackathonDate",
         text: formatDateRange(hackathon.startDate, hackathon.endDate),
       },
       {
-        icon: hackathonRegistration,
+        icon: "hackathonRegistration",
         text: formatRegistrationDate(hackathon.registrationEndDate),
       },
       {
-        icon: hackathonPlace,
+        icon: "hackathonPlace",
         text: `${hackathon.city} • ${hackathon.mode}`,
       },
       {
-        icon: hackathonPrizeIcon,
+        icon: "hackathonPrize",
         text: hackathon.prizeFund?.toLocaleString(),
       },
       {
-        icon: hackathonTeam,
+        icon: "hackathonTeam",
         text: getTeamMembersRange(
           hackathon.teamMembersLimit,
           hackathon.teamMembersMinimum
@@ -63,7 +59,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
 
   const visibleParams =
     variant === "compact"
-      ? params.filter(({ icon }) => icon !== hackathonTeam)
+      ? params.filter(({ icon }) => icon !== "hackathonTeam")
       : params;
 
   return (
@@ -78,7 +74,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
         <HackathonParams>
           {visibleParams.map(({ icon, text }, index) => (
             <HackathonParam key={`${index}-${text}`}>
-              <SIcon icon={icon} size={16} />
+              <SIcon name={icon} size={16} />
               <SubTitle level="2" weight="3">
                 {text}
               </SubTitle>
@@ -89,7 +85,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
         {showShareButton && (
           <ButtonContainer>
             <SInlineButtons mode="plain" onClick={onShareClick}>
-              <SIcon icon={shareIcon} />
+              <SIcon name={"share"} />
             </SInlineButtons>
           </ButtonContainer>
         )}

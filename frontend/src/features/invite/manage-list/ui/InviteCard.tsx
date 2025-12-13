@@ -6,9 +6,7 @@ import { getHackathonTeamPath } from "@/app/routing/paths";
 import { SIcon, SText, STitle } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
-import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
-import crossIcon from "@/assets/icons/crossIcon.svg?react";
-import plusIcon from "@/assets/icons/plusIcon.svg?react";
+
 interface InviteCardProps {
   invite: MegaInvite;
 }
@@ -30,11 +28,11 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
         </STitle>
         <Buttons>
           <IconButton disabled={isLoading} onClick={() => answer("rejected")}>
-            <SIcon icon={crossIcon} color={"#F55A5A"} />
+            <SIcon name={"cross"} color={"#F55A5A"} />
           </IconButton>
 
           <IconButton disabled={isLoading} onClick={() => answer("accepted")}>
-            <SIcon icon={plusIcon} />
+            <SIcon name={"plus"} />
           </IconButton>
         </Buttons>
       </FirstRow>
@@ -44,7 +42,7 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
         </SText>
 
         <CountTeamMembers>
-          <SIcon icon={profileIcon} />
+          <SIcon name={"profile"} />
           <STitle $fs={14} $fw={500}>
             {invite.teamMembersCount} / {invite.teamMembersLimit}
           </STitle>

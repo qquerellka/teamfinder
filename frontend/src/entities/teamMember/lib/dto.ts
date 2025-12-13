@@ -1,9 +1,14 @@
-import { AddTeamMember, AddTeamMemberDTO, EditTeamMember, EditTeamMemberDTO, TeamMember, TeamMemberDTO } from "../model/types";
-
-
+import {
+  AddTeamMember,
+  AddTeamMemberDTO,
+  EditTeamMember,
+  EditTeamMemberDTO,
+  TeamMember,
+  TeamMemberDTO,
+} from "../model/types";
 
 export function teamMembersToCamelCase(
-  teamMembers: TeamMemberDTO[],
+  teamMembers: TeamMemberDTO[]
 ): TeamMember[] {
   return teamMembers.map((t) => ({
     user: {
@@ -17,18 +22,14 @@ export function teamMembersToCamelCase(
   }));
 }
 
-export function addTeamMemberToDTO(
-  member: AddTeamMember,
-): AddTeamMemberDTO {
+export function addTeamMemberToDTO(member: AddTeamMember): AddTeamMemberDTO {
   return {
     user_id: member.userId,
     role: member.role,
   };
 }
 
-export function editTeamMemberToDTO(
-  member: EditTeamMember,
-): EditTeamMemberDTO {
+export function editTeamMemberToDTO(member: EditTeamMember): EditTeamMemberDTO {
   return {
     role: member.role,
     is_captain: member.isCaptain,

@@ -4,29 +4,24 @@ import { Button } from "@telegram-apps/telegram-ui";
 import { Hackathon } from "@/entities/hackathon/model/types";
 import type { Application } from "@/entities/application/model/types";
 import { formatRegistrationDate } from "@/shared/helpers/date";
-import { SIcon } from "@/shared/ui/SIcon";
-import { RoleBadge } from "@/shared/ui/RoleBadge";
-import { SText } from "@/shared/ui/SText";
 
-import EditIcon from "@/assets/icons/editIcon.svg?react";
-import DeleteIcon from "@/assets/icons/deleteIcon.svg?react";
+
 import { FC } from "react";
 import { useHackathonApplicationDelete } from "../hooks/useHackathonApplicationDelete";
 import { useNavigate } from "react-router-dom";
+import { RoleBadge, SIcon, SText } from "@/shared/ui";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 
 interface HackathonApplicationCardProps {
   hackathon: Hackathon;
   application: Application;
   onEditClick?: () => void;
-  // onDeleteClick?: () => void;
 }
 
 export const HackathonApplicationCard: FC<HackathonApplicationCardProps> = ({
   hackathon,
   application,
   onEditClick,
-  // onDeleteClick,
 }) => {
   const navigate = useNavigate();
   const {
@@ -50,10 +45,10 @@ export const HackathonApplicationCard: FC<HackathonApplicationCardProps> = ({
 
           <Icons>
             <IconButton type="button" onClick={onEditClick}>
-              <SIcon icon={EditIcon} />
+              <SIcon name={"edit"} />
             </IconButton>
             <IconButton type="button" onClick={openDeleteModal}>
-              <SIcon icon={DeleteIcon} />
+              <SIcon name={"delete"} />
             </IconButton>
           </Icons>
         </Header>

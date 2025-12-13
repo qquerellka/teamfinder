@@ -14,10 +14,10 @@ import {
 } from "../lib/dto";
 
 export async function getHackathonApplications(
-  id: number,
+  id: number
 ): Promise<ApplicationsResponse> {
   const { data } = await apiClient.get<ApplicationsResponseDTO>(
-    `/hackathons/${id}/applications`,
+    `/hackathons/${id}/applications`
   );
   return {
     offset: data.offset,
@@ -27,10 +27,10 @@ export async function getHackathonApplications(
 }
 
 export async function getAuthUserApplicationOnHackathon(
-  id: number,
+  id: number
 ): Promise<Application | null> {
   const { data } = await apiClient.get<ApplicationDTO>(
-    `/hackathons/${id}/applications/me`,
+    `/hackathons/${id}/applications/me`
   );
   if (data === null) {
     return null;
@@ -45,12 +45,12 @@ export async function getAuthUserApplications(): Promise<Application[]> {
 
 export async function createHackathonApplication(
   id: number,
-  app: ApplicationCreate,
+  app: ApplicationCreate
 ): Promise<Application> {
   const payload = applicationCreateToDTO(app);
   const { data } = await apiClient.post<ApplicationDTO>(
     `/hackathons/${id}/applications`,
-    payload,
+    payload
   );
   return applicationsToCamelCase([data])[0];
 }
@@ -66,12 +66,12 @@ export async function deleteAuthUserApplication(id: number): Promise<void> {
 
 export async function editAuthUserApplication(
   id: number,
-  app: ApplicationEdit,
+  app: ApplicationEdit
 ): Promise<Application> {
   const payload = applicationEditToDTO(app);
   const { data } = await apiClient.patch<ApplicationDTO>(
     `/applications/${id}`,
-    payload,
+    payload
   );
   return applicationsToCamelCase([data])[0];
 }

@@ -1,47 +1,45 @@
 import { Role } from "@/shared/types/enums";
 
-
 export interface TeamMemberDTO {
-    user: {
-        id: number,
-        username: string,
-        first_name: string,
-        last_name: string,
-        avatar_url?: string,
-    },
-    role: Role,
-    is_captain: boolean,
+  user: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    avatar_url?: string;
+  };
+  role: Role;
+  is_captain: boolean;
 }
 
 export interface TeamMember {
-    user: {
-        id: number,
-        username: string,
-        firstName: string,
-        lastName: string,
-        avatarUrl?: string
-    },
-    role: Role,
-    isCaptain: boolean,
+  user: {
+    id: number;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl?: string;
+  };
+  role: Role;
+  isCaptain: boolean;
 }
 
 export interface AddTeamMemberDTO {
-    user_id: number,
-    role: Role,
+  user_id: number;
+  role: Role;
 }
 
 export interface AddTeamMember {
-    userId: number,
-    role: Role,
+  userId: number;
+  role: Role;
 }
 
 export interface EditTeamMemberDTO {
-  role: Role,
-  is_captain: boolean,
+  role: Role;
+  is_captain: boolean;
 }
 
 export interface EditTeamMember {
-  role: Role,
-  isCaptain: boolean,
+  role: Role;
+  isCaptain: boolean;
 }
-

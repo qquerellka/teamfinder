@@ -1,4 +1,8 @@
-import { fetchHackathons, fetchHackathon, FetchHackathonsParams } from "./hackathons";
+import {
+  fetchHackathons,
+  fetchHackathon,
+  FetchHackathonsParams,
+} from "./hackathons";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { useAppQuery } from "@/shared/api/useAppQuery";
 

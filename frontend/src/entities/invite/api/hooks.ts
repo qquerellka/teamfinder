@@ -9,7 +9,12 @@ import {
   getInvite,
   updateInvite,
 } from "./invites";
-import type { Invite, CreateInvite, UpdateInvite, MegaInvite } from "../model/types";
+import type {
+  Invite,
+  CreateInvite,
+  UpdateInvite,
+  MegaInvite,
+} from "../model/types";
 import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const inviteKeys = queryKeys.invites;

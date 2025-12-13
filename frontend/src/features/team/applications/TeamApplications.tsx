@@ -4,8 +4,6 @@ import { Team } from "@/entities/team/model/types";
 import { RoleBadge, SIcon, SText, STitle } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import { FC, useMemo } from "react";
-import sentInviteIcon from "@/assets/icons/sentInvite.svg?react";
-import plusIcon from "@/assets/icons/plusIcon.svg?react";
 import styled from "styled-components";
 import { useCreateInvite, useTeamInvites } from "@/entities/invite/api/hooks";
 interface TeamApplicationsProps {
@@ -73,10 +71,10 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
 
       <SecondRow>
         {inviteIds.find((i) => application.id === i) ? (
-          <SIcon icon={sentInviteIcon} />
+          <SIcon name={"invite"} />
         ) : (
           <IconButton onClick={handleInvite}>
-            <SIcon icon={plusIcon} />
+            <SIcon name={"plus"} />
           </IconButton>
         )}
 

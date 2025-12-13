@@ -8,3 +8,4 @@ export * from "./STitle";
 export * from "./ImageWithSkeleton";
 export * from './InputSection';
 export * from './ErrorText';
+export * from './ConfirmModal'

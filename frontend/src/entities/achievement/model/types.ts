@@ -34,7 +34,6 @@ export interface AchievementsResponseDTO {
   items: AchievementDTO[];
 }
 
-
 export type AchievementCreate = {
   hackathonId: number;
   role: string;

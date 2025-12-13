@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Achievement, AchievementCreate, AchievementsList, EditAchievementArgs } from "../model/types";
+import {
+  Achievement,
+  AchievementCreate,
+  AchievementsList,
+  EditAchievementArgs,
+} from "../model/types";
 import {
   createAchievement,
   deleteAchievement,

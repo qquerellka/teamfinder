@@ -14,9 +14,9 @@ export interface ApplicationDTO {
 }
 
 export interface ApplicationsResponseDTO {
-  items: ApplicationDTO[],
-  offset: number,
-  limit: number,
+  items: ApplicationDTO[];
+  offset: number;
+  limit: number;
 }
 
 export interface Application {
@@ -32,9 +32,9 @@ export interface Application {
 }
 
 export interface ApplicationsResponse {
-  offset: number,
-  limit: number,
-  items: Application[],
+  offset: number;
+  limit: number;
+  items: Application[];
 }
 
 export interface ApplicationCreate {
@@ -42,7 +42,7 @@ export interface ApplicationCreate {
 }
 
 export interface ApplicationCreateDTO {
-  role: Role
+  role: Role;
 }
 
 export interface ApplicationEdit {

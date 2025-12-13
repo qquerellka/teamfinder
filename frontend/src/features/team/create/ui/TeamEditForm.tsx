@@ -4,17 +4,12 @@ import { Hackathon } from "@/entities/hackathon/model/types";
 import { TeamWithMembers } from "@/entities/team/model/types";
 import { useEditTeamForm } from "../hooks/useEditTeamForm";
 import { useEditTeam } from "@/entities/team/api/hooks";
-// import { HackathonTeamForm } from "./HackathonTeamForm";
-import { InputSection, SIcon, STitle } from "@/shared/ui";
+import { InputSection, SIcon, STitle, ConfirmModal } from "@/shared/ui";
 import { Button, Input, Textarea } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import deleteIcon from "@/assets/icons/deleteIcon.svg?react";
-import leaveTeamIcon from "@/assets/icons/leaveTeamIcon.svg?react";
 import { TeamMemberCard } from "./TeamCard";
-import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
 import { useDeleteTeamForm } from "../hooks/useDeleteTeamFrom";
-import { ConfirmModal } from "@/shared/ui/ConfirmModal";
 import { useLeaveTeam } from "@/entities/teamMember/api/hooks";
 
 interface TeamEditFormProps {
@@ -58,7 +53,7 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
   };
 
   const onCancel = () => {
-    navigate(-1);
+    onClose();
   };
   const {
     isOpen: isDeleteModalOpen,
@@ -82,11 +77,11 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
     <>
       <SExtraInfo>
         <Header>
-          <SIcon onClick={openDeleteModal} icon={deleteIcon}></SIcon>
+          <SIcon onClick={openDeleteModal} name={"delete"}></SIcon>
           <STitle $fs={14} $fw={500}>
             {"Моя команда"}
           </STitle>
-          <SIcon onClick={onLeaveTeam} icon={leaveTeamIcon}></SIcon>
+          <SIcon onClick={onLeaveTeam} name={"leaveTeam"}></SIcon>
         </Header>
         <InputSection header={"Хакатон"}>
           <Input type="text" value={hackathon.name} disabled />
@@ -107,7 +102,7 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
               Участники
             </STitle>
             <CountTeamMembers className="">
-              <SIcon icon={profileIcon} />
+              <SIcon name={"profile"} />
               <STitle $fs={16} $fw={700}>
                 {team.members.length} / {hackathon.teamMembersLimit}
               </STitle>
@@ -121,7 +116,6 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
         </TeamMembers>
         <ButtonsSection>
           <Button
-            size="l"
             onClick={handleSaveClick}
             stretched
             disabled={!canSubmit || isSubmitting}
@@ -130,7 +124,6 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
           </Button>
           {onCancel && (
             <Button
-              size="l"
               mode="bezeled"
               stretched
               onClick={onCancel}
@@ -213,4 +206,5 @@ const TeamMemberCards = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  gap: 0.5rem;
 `;

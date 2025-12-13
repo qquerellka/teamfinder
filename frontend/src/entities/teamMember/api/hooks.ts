@@ -8,15 +8,10 @@ import {
   deleteTeamMember,
   leaveTeam,
 } from "./teamMembers";
-import type {
-  TeamMember,
-  AddTeamMember,
-  EditTeamMember,
-} from "../model/types";
+import type { TeamMember, AddTeamMember, EditTeamMember } from "../model/types";
 import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const teamKeys = queryKeys.teams;
-
 
 export function useTeamMembers(teamId: number) {
   return useAppQuery<TeamMember[], Error>({

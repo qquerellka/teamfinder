@@ -10,10 +10,7 @@ import {
 } from "@telegram-apps/telegram-ui";
 import { FC, useState } from "react";
 import styled from "styled-components";
-import editIcon from "@/assets/icons/editIcon.svg?react";
-import inviteIcon from "@/assets/icons/inviteIcon.svg?react";
-import profileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
-import leaveIcon from "@/assets/icons/leaveTeamIcon.svg?react";
+
 import { TeamMember } from "@/entities/teamMember/model/types";
 import { getTeamJoinLink } from "@/entities/team/api/teams";
 
@@ -71,19 +68,19 @@ export const TeamCard: FC<TeamCardProps> = ({
       <SExtraInfo>
         {team.captainId === user.id ? (
           <Header>
-            <SIcon icon={inviteIcon} />
+            <SIcon name={"invite"} />
             <STitle $fs={14} $fw={500}>
               {"Моя команда"}
             </STitle>
-            <SIcon onClick={onEditClick} icon={editIcon} />
+            <SIcon onClick={onEditClick} name={"edit"} />
           </Header>
         ) : (
           <Header>
-            <SIcon icon={""} />
+            <div className=""></div>
             <STitle $fs={14} $fw={500}>
               {"Моя команда"}
             </STitle>
-            <SIcon onClick={onLeaveTeam} icon={leaveIcon} />
+            <SIcon onClick={onLeaveTeam} name={"leaveTeam"} />
           </Header>
         )}
 
@@ -107,7 +104,7 @@ export const TeamCard: FC<TeamCardProps> = ({
               Участники
             </STitle>
             <CountTeamMembers>
-              <SIcon icon={profileIcon} />
+              <SIcon name={"profile"} />
               <STitle $fs={16} $fw={700}>
                 {team.members.length} / {hackathon.teamMembersLimit}
               </STitle>
@@ -119,6 +116,7 @@ export const TeamCard: FC<TeamCardProps> = ({
             ))}
           </TeamMemberCards>
         </TeamMembers>
+
         <ButtonsSection>
           <SButton
             mode="bezeled"
@@ -189,8 +187,7 @@ const TeamMemberCards = styled.div`
   width: 100%;
   gap: 0.5rem;
 `;
-import crossIcon from "@/assets/icons/crossIcon.svg?react";
-import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
+
 import { useNavigate } from "react-router-dom";
 import { getFindTeamMembersPath } from "@/app/routing/paths";
 import { useAuthUser } from "@/entities/user/api/hooks";
@@ -243,11 +240,11 @@ export const TeamMemberCard: FC<TeamMemberCardProps> = ({ member, team }) => {
 
       {member.isCaptain ? (
         <CaptainWrapper>
-          <SIcon icon={captainIcon} color={"#F3BD28"} />
+          <SIcon name={"captain"} color={"#F3BD28"} />
         </CaptainWrapper>
       ) : (
         <CaptainWrapper>
-          <SIcon onClick={onDelete} icon={crossIcon} color={"#F55A5A"} />
+          <SIcon onClick={onDelete} name={"cross"} color={"#F55A5A"} />
         </CaptainWrapper>
       )}
     </MemberRow>

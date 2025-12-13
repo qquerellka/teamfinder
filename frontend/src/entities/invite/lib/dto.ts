@@ -18,7 +18,7 @@ export function invitesToCamelCase(invites: InviteDTO[]): Invite[] {
     applicationId: i.application_id,
     userId: i.application_user_id,
     username: i.user_name,
-    teamName: i.team_name
+    teamName: i.team_name,
   }));
 }
 
@@ -32,7 +32,7 @@ export function megaInvitesToCamelCase(invites: MegaInviteDTO[]): MegaInvite[] {
     teamName: i.team_name,
     hackathonId: i.hackathon_id,
     teamMembersCount: i.team_members_count,
-    teamMembersLimit: i.team_members_limit
+    teamMembersLimit: i.team_members_limit,
   }));
 }
 
@@ -44,7 +44,7 @@ export function createInviteToDTO(invite: CreateInvite): CreateInviteDTO {
 }
 
 export function updateInviteToDTO(payload: UpdateInvite): UpdateInviteDTO {
-    return {
-        status: payload.status
-    }
+  return {
+    status: payload.status,
+  };
 }

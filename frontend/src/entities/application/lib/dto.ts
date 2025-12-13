@@ -1,5 +1,12 @@
 import { Role } from "@/shared/types/enums";
-import { Application, ApplicationCreate, ApplicationCreateDTO, ApplicationDTO, ApplicationEdit, ApplicationEditDTO } from "../model/types";
+import {
+  Application,
+  ApplicationCreate,
+  ApplicationCreateDTO,
+  ApplicationDTO,
+  ApplicationEdit,
+  ApplicationEditDTO,
+} from "../model/types";
 
 export function applicationsToCamelCase(
   applications: ApplicationDTO[]
@@ -17,13 +24,17 @@ export function applicationsToCamelCase(
   }));
 }
 
-export function applicationCreateToDTO(payload: ApplicationCreate): ApplicationCreateDTO {
-    return {
-        role: payload.role,
-    }
+export function applicationCreateToDTO(
+  payload: ApplicationCreate
+): ApplicationCreateDTO {
+  return {
+    role: payload.role,
+  };
 }
-export function applicationEditToDTO(payload: ApplicationEdit): ApplicationEditDTO {
-    return {
-        role: payload.role,
-    }
+export function applicationEditToDTO(
+  payload: ApplicationEdit
+): ApplicationEditDTO {
+  return {
+    role: payload.role,
+  };
 }

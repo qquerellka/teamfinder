@@ -41,7 +41,6 @@ export interface TeamWithMembersDTO {
   members: Array<TeamMemberDTO>;
 }
 
-
 export interface CreateTeamDTO {
   role: Role;
   name: string;
