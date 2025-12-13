@@ -44,6 +44,7 @@ class ApplicationCardOut(BaseModel):
     hackathon_id: int
     user_id: int
     role: Optional[RoleType] = None
+    status: ApplicationStatus
 
     username: Optional[str] = None
     first_name: Optional[str] = None
@@ -87,6 +88,7 @@ async def _pack_application_card(app_obj) -> ApplicationCardOut:
         hackathon_id=app_obj.hackathon_id,
         user_id=app_obj.user_id,
         role=app_obj.role,
+        status=app_obj.status,
         username=usr.username,
         first_name=usr.first_name,
         last_name=usr.last_name,
