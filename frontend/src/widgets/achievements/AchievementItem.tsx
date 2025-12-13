@@ -1,4 +1,4 @@
-import { paths } from "@/app/routing/paths";
+import { paths } from "@/shared/routing/paths";
 import { Achievement } from "@/entities/achievement/model/types";
 import { formatHackPlace } from "@/shared/helpers/date";
 import { SText } from "@/shared/ui/SText";

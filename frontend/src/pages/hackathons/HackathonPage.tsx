@@ -13,7 +13,7 @@ import {
   getHackathonParticipationPath,
   getHackathonTeamPath,
   paths,
-} from "@/app/routing/paths";
+} from "@/shared/routing/paths";
 
 import { normalizeUrl } from "@/shared/helpers/url";
 import { Page } from "@/shared/ui";

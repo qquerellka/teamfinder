@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { paths } from "../routing/paths";
+import { paths } from "@/shared/routing/paths";
 import { backButton, type BackButton } from "@tma.js/sdk-react";
 
 const TAB_ROUTES: ReadonlySet<string> = new Set([

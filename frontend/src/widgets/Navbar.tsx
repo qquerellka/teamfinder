@@ -2,7 +2,7 @@ import { FC } from "react";
 import styled from "styled-components";
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { NavLink } from "react-router-dom";
-import { paths } from "@/app/routing/paths";
+import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui/SIcon";
 import type { IconName } from "@/shared/ui/SIcon";
 

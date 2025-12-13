@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-import { getHackathonPath } from "@/app/routing/paths";
+import { getHackathonPath } from "@/shared/routing/paths";
 import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
 import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
 import { Input } from "@telegram-apps/telegram-ui";

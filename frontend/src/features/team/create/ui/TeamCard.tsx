@@ -189,7 +189,7 @@ const TeamMemberCards = styled.div`
 `;
 
 import { useNavigate } from "react-router-dom";
-import { getFindTeamMembersPath } from "@/app/routing/paths";
+import { getFindTeamMembersPath } from "@/shared/routing/paths";
 import { useAuthUser } from "@/entities/user/api/hooks";
 import {
   useDeleteTeamMember,

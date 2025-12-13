@@ -1,8 +1,7 @@
-import { paths } from "@/app/routing/paths";
+import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui/SIcon";
 import { STitle } from "@/shared/ui/STitle";
 import { IconButton } from "@telegram-apps/telegram-ui";
-import plusIcon from "@/assets/icons/plusIcon.svg?react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +20,7 @@ export const AchievementsListHeader = () => {
         size="m"
         onClick={() => navigate(paths.profileAchievementsRoot)}
       >
-        <SIcon icon={plusIcon} />
+        <SIcon name={"plus"} />
       </IconButton>
     </HeaderRow>
   );

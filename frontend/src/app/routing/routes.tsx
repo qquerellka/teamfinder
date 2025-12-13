@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { useRoutes, type RouteObject, Navigate } from "react-router-dom";
 import RootLayout from "../layouts/Layout";
-import { paths } from "./paths";
+import { paths } from "@/shared/routing/paths";
 const FindTeamMemberPage = lazy(
   () => import("@/pages/teams/FindTeamMemberPage")
 );

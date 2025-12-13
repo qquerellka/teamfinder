@@ -2,7 +2,7 @@ import { MegaInvite } from "@/entities/invite/model/types";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAnswerOnInvite } from "../hooks/useAnswerOnInvite";
-import { getHackathonTeamPath } from "@/app/routing/paths";
+import { getHackathonTeamPath } from "@/shared/routing/paths";
 import { SIcon, SText, STitle } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
