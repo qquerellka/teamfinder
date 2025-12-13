@@ -5,7 +5,6 @@ import {
   Avatar,
   Button,
   Input,
-  List,
   Textarea,
 } from "@telegram-apps/telegram-ui";
 import { FC, useState } from "react";
@@ -139,6 +138,12 @@ export const TeamCard: FC<TeamCardProps> = ({
   );
 };
 
+const SExtraInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
 const ButtonsSection = styled.div`
   margin-top: auto;
   padding-bottom: env(safe-area-inset-bottom, 0);
@@ -174,11 +179,7 @@ const CountTeamMembers = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
-const SExtraInfo = styled(List)`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
+
 const TeamMemberCards = styled.div`
   display: flex;
   flex-direction: column;
@@ -217,7 +218,6 @@ export const TeamMemberCard: FC<TeamMemberCardProps> = ({ member, team }) => {
     <MemberRow>
       <AvatarWrapper>
         <Avatar size={40} src={member.user.avatarUrl}>
-          {/* fallback — инициалы, если нужно */}
           {member.user.firstName?.[0]}
         </Avatar>
       </AvatarWrapper>

@@ -158,6 +158,13 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
   );
 };
 
+const SExtraInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.5rem;
+`;
+
 const ButtonsSection = styled.div`
   margin-top: auto;
   padding-bottom: env(safe-area-inset-bottom, 0);
@@ -171,12 +178,7 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-const SExtraInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 0.5rem;
-`;
+
 
 const HeaderRow = styled.div`
   display: flex;

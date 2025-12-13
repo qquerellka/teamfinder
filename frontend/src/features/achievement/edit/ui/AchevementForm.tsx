@@ -1,7 +1,7 @@
 import type { Achievement } from "@/entities/achievement/model/types";
 import type { Hackathon } from "@/entities/hackathon/model/types";
-import { useAchievementForm } from "../hooks/useAchievementForm";
-import { AchievementFormView } from "./AchievementFormVeiw";
+import { useAchievementForm } from "@/features/achievement/edit/hooks/useAchievementForm";
+import { AchievementFormView } from "@/features/achievement/edit/ui/AchievementFormVeiw";
 
 type Props = {
   isNew: boolean;
