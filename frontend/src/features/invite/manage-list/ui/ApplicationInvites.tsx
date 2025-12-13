@@ -94,13 +94,13 @@ const Wrapper = styled.div`
 const FirstCol = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  align-items: start;
 `;
 
 const SecondRow = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  align-items: end;
 `;
 
 const Buttons = styled.div`
