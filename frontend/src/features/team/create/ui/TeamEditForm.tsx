@@ -71,13 +71,12 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
     teamId: team.id,
     onDeleted: () => navigate(-1),
   });
-    const leaveMutaion = useLeaveTeam(team.id);
-  
-    const onLeaveTeam = async () => {
-       await leaveMutaion.mutateAsync();
-       navigate(-1);
-    }
+  const leaveMutaion = useLeaveTeam(team.id);
 
+  const onLeaveTeam = async () => {
+    await leaveMutaion.mutateAsync();
+    navigate(-1);
+  };
 
   return (
     <>
@@ -116,7 +115,7 @@ export const TeamEditForm: FC<TeamEditFormProps> = ({
           </HeaderRow>
           <TeamMemberCards className="">
             {team?.members?.map((m) => (
-              <TeamMemberCard key={m.user.id} member={m} team={team}/>
+              <TeamMemberCard key={m.user.id} member={m} team={team} />
             ))}
           </TeamMemberCards>
         </TeamMembers>
@@ -199,6 +198,7 @@ const HeaderRow = styled.div`
 const TeamMembers = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 `;
 
 const CountTeamMembers = styled.div`

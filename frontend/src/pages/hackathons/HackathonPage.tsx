@@ -79,7 +79,7 @@ const HackathonPage: React.FC = () => {
 
   return (
     <>
-      <Page>
+      <SPage>
         <HackathonCard hackathon={hackathon} variant="full" />
         {application ? (
           <ButtonsSection>
@@ -115,7 +115,7 @@ const HackathonPage: React.FC = () => {
             </SButton>
           </ButtonsSection>
         )}
-      </Page>
+      </SPage>
 
       <ConfirmModal
         open={isSkillsModalOpen}
@@ -140,4 +140,9 @@ const ButtonsSection = styled.div`
   margin-top: auto;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 `;
+
+const SPage = styled(Page)`
+  gap: 0.5rem;
+`

@@ -120,22 +120,21 @@ export const TeamCard: FC<TeamCardProps> = ({
           </TeamMemberCards>
         </TeamMembers>
         <ButtonsSection>
-          <Button
-            size="l"
+          <SButton
+            mode="bezeled"
             onClick={handleCopyInviteLink}
             stretched
             disabled={isCopying}
           >
             {copied ? "Ссылка скопирована" : "Пригласить по ссылке"}
-          </Button>
-          <Button
-            size="l"
+          </SButton>
+          <SButton
             onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
             stretched
             disabled={isCopying}
           >
             {"Найти участников"}
-          </Button>
+          </SButton>
         </ButtonsSection>
       </SExtraInfo>
     </>
@@ -188,6 +187,7 @@ const TeamMemberCards = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  gap: 0.5rem;
 `;
 import crossIcon from "@/assets/icons/crossIcon.svg?react";
 import captainIcon from "@/assets/icons/captainIcon.svg?react"; // или твой реальный путь
@@ -204,10 +204,7 @@ interface TeamMemberCardProps {
   member: TeamMember;
 }
 
-export const TeamMemberCard: FC<TeamMemberCardProps> = ({
-  member,
-  team,
-}) => {
+export const TeamMemberCard: FC<TeamMemberCardProps> = ({ member, team }) => {
   const navigate = useNavigate();
   const fullName = `${member.user.firstName ?? ""} ${
     member.user.lastName ?? ""
@@ -277,7 +274,9 @@ const MemberRow = styled.div`
 const AvatarWrapper = styled.div`
   flex-shrink: 0;
 `;
-
+const SButton = styled(Button)`
+  width: 100%;
+`;
 const Info = styled.div`
   display: flex;
   flex-direction: column;
