@@ -6,12 +6,12 @@ import { ReactQueryProvider } from "./providers/react-query";
 import { ErrorBoundary } from "./layouts/ErrorBoundary";
 import { AppErrorFallback } from "./layouts/AppErrorFallback";
 import { AppRouter } from "./routing/routes";
-import { AuthGate } from "@/features/auth/ui/AuthGate";
+import { AuthGate } from "@/features/auth";
 import { LoaderPage } from "@/shared/ui";
 import { Suspense } from "react";
-import { StartParamJoinHandler } from "@/features/team/join/StartParamJoinHandler";
 
 import { QueryErrorResetBoundary, useQueryClient } from "@tanstack/react-query";
+import { StartParamJoinHandler } from "./StartParamJoinHandler";
 
 function AppInner() {
   const location = useLocation();

@@ -5,11 +5,10 @@ import { Button, Input, Select } from "@telegram-apps/telegram-ui";
 import { SText, InputSection } from "@/shared/ui";
 import type { Hackathon } from "@/entities/hackathon";
 import {
-  AchievementPlace,
-  placeOptions,
   roleOptions,
 } from "@/shared/types/enums";
 import type { AchievementFormValues } from "@/features/achievement/edit/hooks/useAchievementForm";
+import { AchievementPlace, placeOptions } from "@/entities/achievement";
 
 interface AchievementFormViewProps {
   isNew: boolean;

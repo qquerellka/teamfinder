@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLaunchParams } from "@tma.js/sdk-react";
 import { joinTeamMe } from "@/entities/team";
 import { Role } from "@/shared/types/enums";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/features/auth";
 
 export const StartParamJoinHandler = () => {
   const lp = useLaunchParams();

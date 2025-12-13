@@ -61,3 +61,10 @@ export type EditAchievementArgs = {
   id: number;
   patch: AchievementPatch;
 };
+export const placeOptions: { label: string; value: AchievementPlace }[] = [
+  { label: "1 место", value: "firstPlace" },
+  { label: "2 место", value: "secondPlace" },
+  { label: "3 место", value: "thirdPlace" },
+  { label: "Участник", value: "participant" },
+  { label: "Финалист", value: "finalyst" },
+];

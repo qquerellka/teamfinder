@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Achievement } from "@/entities/achievement";
+import type { Achievement, AchievementPlace } from "@/entities/achievement";
 import type { Hackathon } from "@/entities/hackathon";
-import { AchievementPlace, Role } from "@/shared/types/enums";
+import { Role } from "@/shared/types/enums";
 import {
   useEditAchievement,
   useDeleteAchievement,

@@ -1,21 +1,3 @@
-export const ACHIEVEMENT_PLACES = [
-  "participant",
-  "finalyst",
-  "thirdPlace",
-  "secondPlace",
-  "firstPlace",
-] as const;
-
-export type AchievementPlace = (typeof ACHIEVEMENT_PLACES)[number];
-
-export const placeOptions: { label: string; value: AchievementPlace }[] = [
-  { label: "1 место", value: "firstPlace" },
-  { label: "2 место", value: "secondPlace" },
-  { label: "3 место", value: "thirdPlace" },
-  { label: "Участник", value: "participant" },
-  { label: "Финалист", value: "finalyst" },
-];
-
 export const roleOptions: { label: string; value: Role }[] = [
   { label: "Backend", value: "Backend" },
   { label: "Frontend", value: "Frontend" },
