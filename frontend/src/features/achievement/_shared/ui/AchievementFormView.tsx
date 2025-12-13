@@ -1,83 +1,97 @@
-import { ChangeEvent, FC } from "react";
-import styled from "styled-components";
+import type { FC, ChangeEvent } from "react";
 import { Button, Input, Select } from "@telegram-apps/telegram-ui";
+import styled from "styled-components";
 
-import { SText, InputSection } from "@/shared/ui";
 import type { Hackathon } from "@/entities/hackathon";
-import {
-  roleOptions,
-} from "@/shared/types/enums";
-import type { AchievementFormValues } from "@/features/achievement/edit/hooks/useAchievementForm";
-import { AchievementPlace, placeOptions } from "@/entities/achievement";
+import { placeOptions } from "@/entities/achievement";
+import { roleOptions } from "@/shared/types/enums";
+import type {
+  AchievementFormValues,
+  AchievementFormField,
+} from "../model/types";
+import { SText, InputSection } from "@/shared/ui";
 
-interface AchievementFormViewProps {
-  isNew: boolean;
-  achievementName?: string;
-  hackathons: Hackathon[];
+type BaseProps = {
   values: AchievementFormValues;
   onChange: (
-    field: keyof AchievementFormValues,
-    value: string | AchievementPlace | ""
+    field: AchievementFormField,
+    value: AchievementFormValues[AchievementFormField]
   ) => void;
   onSave: () => void;
-  onDelete?: () => void;
   canSubmit: boolean;
   isSaving: boolean;
-  isDeleting: boolean;
-}
+};
 
-export const AchievementFormView: FC<AchievementFormViewProps> = ({
-  isNew,
-  achievementName,
-  hackathons,
-  values,
-  onChange,
-  onSave,
-  onDelete,
-  canSubmit,
-  isSaving,
-  isDeleting,
-}) => {
-  if (!isNew && !achievementName) {
-    return (
-      <section style={{ padding: "1.5rem" }}>
-        <SText $fs={20} $fw={600}>
-          Достижение не найдено
-        </SText> 
-      </section>
-    );
-  }
+type CreateProps = BaseProps & {
+  mode: "create";
+  hackathons: Hackathon[];
+};
+
+type EditProps = BaseProps & {
+  mode: "edit";
+  hackathonName: string;
+  onDelete: () => void;
+  isDeleting: boolean;
+};
+
+type Props = CreateProps | EditProps;
+
+export const AchievementFormView: FC<Props> = (props) => {
+  const { values, onChange, onSave, canSubmit, isSaving } = props;
+
+  const parseSelectValue = <K extends AchievementFormField>(
+    field: K,
+    raw: string
+  ): AchievementFormValues[K] => {
+    switch (field) {
+      case "hackathonId":
+        return (raw ? Number(raw) : null) as AchievementFormValues[K];
+
+      case "role":
+        return raw as AchievementFormValues[K]; // Role | ""
+
+      case "place":
+        return raw as AchievementFormValues[K]; // AchievementPlace | ""
+
+      default: {
+        const _exhaustive: never = field;
+        return _exhaustive;
+      }
+    }
+  };
 
   const handleSelect =
-    (field: keyof AchievementFormValues) =>
+    <K extends AchievementFormField>(field: K) =>
     (e: ChangeEvent<HTMLSelectElement>) => {
-      onChange(field, e.target.value);
+      onChange(field, parseSelectValue(field, e.target.value));
     };
 
   return (
     <SProfile>
       <Wrapper>
         <SText $fs={14} $fw="semibold">
-          {isNew ? "Новое достижение" : "Редактировать достижение"}
+          {props.mode === "create"
+            ? "Новое достижение"
+            : "Редактировать достижение"}
         </SText>
 
         <InputSection header={"Хакатон"}>
-          {isNew ? (
+          {props.mode === "create" ? (
             <Select
-              value={values.hackathonId}
+              value={values.hackathonId ?? ""}
               onChange={handleSelect("hackathonId")}
             >
               <option value="" disabled>
                 Выберите хакатон
               </option>
-              {hackathons.map((h) => (
+              {props.hackathons.map((h) => (
                 <option key={h.id} value={h.id}>
                   {h.name}
                 </option>
               ))}
             </Select>
           ) : (
-            <Input value={achievementName ?? ""} disabled />
+            <Input value={props.hackathonName} disabled />
           )}
         </InputSection>
 
@@ -114,15 +128,15 @@ export const AchievementFormView: FC<AchievementFormViewProps> = ({
             stretched
             disabled={!canSubmit || isSaving}
           >
-            {isNew ? "Добавить" : "Сохранить"}
+            {props.mode === "create" ? "Добавить" : "Сохранить"}
           </Button>
 
-          {!isNew && onDelete && (
+          {props.mode === "edit" && (
             <DeleteButton
               size="l"
-              onClick={onDelete}
+              onClick={props.onDelete}
               stretched
-              disabled={isDeleting}
+              disabled={props.isDeleting}
             >
               Удалить
             </DeleteButton>

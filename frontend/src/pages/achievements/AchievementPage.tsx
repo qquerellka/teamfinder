@@ -1,35 +1,51 @@
 import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuthUser } from "@/entities/user";
 import { useHackathonsQuery } from "@/entities/hackathon";
-import { AchievementForm } from "@/features/achievement/edit/ui/AchevementForm";
-import { Page } from "@/shared/ui";
+import { AchievementCreateForm } from "@/features/achievement/create";
+import { AchievementEditForm } from "@/features/achievement/edit";
+import { Page, SText } from "@/shared/ui";
 
 const AchievementPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const isNew = !id || id === "new";
+
+  const isCreate = !id || id === "new";
 
   const { data: user } = useAuthUser();
   const { data: hackathonsResponse } = useHackathonsQuery();
 
-  const achievement = useMemo(
-    () =>
-      isNew
-        ? null
-        : user?.achievements.find((a) => a.id === Number(id)) ?? null,
-    [user, id, isNew]
-  );
-
   const hackathons = hackathonsResponse?.items ?? [];
+
+  const achievement = useMemo(() => {
+    if (isCreate) return null;
+
+    const achievementId = Number(id);
+    if (!Number.isFinite(achievementId)) return null;
+
+    return user?.achievements.find((a) => a.id === achievementId) ?? null;
+  }, [isCreate, id, user]);
 
   return (
     <Page>
-      <AchievementForm
-        isNew={isNew}
-        achievement={achievement}
-        hackathons={hackathons}
-      />
+      {isCreate ? (
+        <AchievementCreateForm
+          hackathons={hackathons}
+          onDone={() => navigate(-1)}
+        />
+      ) : achievement ? (
+        <AchievementEditForm
+          achievement={achievement}
+          onDone={() => navigate(-1)}
+        />
+      ) : (
+        <section style={{ padding: "1.5rem" }}>
+          <SText $fs={20} $fw={600}>
+            Достижение не найдено
+          </SText>
+        </section>
+      )}
     </Page>
   );
 };
