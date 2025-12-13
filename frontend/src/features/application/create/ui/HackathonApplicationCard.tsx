@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { Button } from "@telegram-apps/telegram-ui";
 
-import { Hackathon } from "@/entities/hackathon/model/types";
-import type { Application } from "@/entities/application/model/types";
+import { Hackathon } from "@/entities/hackathon";
+import type { Application } from "@/entities/application";
 import { formatRegistrationDate } from "@/shared/helpers/date";
 
 

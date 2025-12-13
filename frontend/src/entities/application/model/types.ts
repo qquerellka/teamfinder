@@ -1,4 +1,4 @@
-import { Skill, SkillDTO } from "@/entities/skill/model/types";
+import { Skill, SkillDTO } from "@/entities/skill";
 import { Role } from "@/shared/types/enums";
 
 export interface ApplicationDTO {

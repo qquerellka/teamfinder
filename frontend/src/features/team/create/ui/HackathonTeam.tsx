@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
-import { Hackathon } from "@/entities/hackathon/model/types";
-import { useMyTeamOnHackathon } from "@/entities/team/api/hooks";
+import { Hackathon } from "@/entities/hackathon";
+import { useMyTeamOnHackathon } from "@/entities/team";
 import { CreateTeamForm } from "./TeamCreateForm";
 import { TeamEditForm } from "./TeamEditForm";
 import { TeamCard } from "./TeamCard";

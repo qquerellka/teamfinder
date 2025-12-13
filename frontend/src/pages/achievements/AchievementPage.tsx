@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-import { useAuthUser } from "@/entities/user/api/hooks";
-import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
+import { useAuthUser } from "@/entities/user";
+import { useHackathonsQuery } from "@/entities/hackathon";
 import { AchievementForm } from "@/features/achievement/edit/ui/AchevementForm";
 import { Page } from "@/shared/ui";
 

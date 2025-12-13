@@ -1,11 +1,11 @@
-import { useHackathonApplications } from "@/entities/application/api/hooks";
-import { Application } from "@/entities/application/model/types";
-import { Team } from "@/entities/team/model/types";
+import { useHackathonApplications } from "@/entities/application";
+import { Application } from "@/entities/application";
+import { Team } from "@/entities/team";
 import { RoleBadge, SIcon, SText } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import { FC, useMemo } from "react";
 import styled from "styled-components";
-import { useCreateInvite, useTeamInvites } from "@/entities/invite/api/hooks";
+import { useCreateInvite, useTeamInvites } from "@/entities/invite";
 
 interface TeamApplicationsProps {
   team: Team;

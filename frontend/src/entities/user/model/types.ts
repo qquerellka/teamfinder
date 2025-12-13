@@ -1,8 +1,8 @@
 import {
   Achievement,
   AchievementDTO,
-} from "@/entities/achievement/model/types";
-import { Skill, SkillDTO } from "@/entities/skill/model/types";
+} from "@/entities/achievement";
+import { Skill, SkillDTO } from "@/entities/skill";
 
 export interface User {
   id: number;

@@ -31,7 +31,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import type { AuthResponse } from "../model/types";
 import { authQueryFn } from "../api/login";
-import { UserDTO } from "@/entities/user/model/types";
+import { UserDTO } from "@/entities/user";
 
 export const AUTH_QUERY_KEY = ["auth"];
 

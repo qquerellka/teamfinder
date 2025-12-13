@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useLaunchParams } from "@tma.js/sdk-react";
-import { joinTeamMe } from "@/entities/team/api/teams";
+import { joinTeamMe } from "@/entities/team";
 import { Role } from "@/shared/types/enums";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 

@@ -1,5 +1,5 @@
-import { Hackathon } from "@/entities/hackathon/model/types";
-import { TeamWithMembers } from "@/entities/team/model/types";
+import { Hackathon } from "@/entities/hackathon";
+import { TeamWithMembers } from "@/entities/team";
 import { InputSection, SIcon, SText } from "@/shared/ui";
 import {
   Avatar,
@@ -10,8 +10,8 @@ import {
 import { FC, useState } from "react";
 import styled from "styled-components";
 
-import { TeamMember } from "@/entities/teamMember/model/types";
-import { getTeamJoinLink } from "@/entities/team/api/teams";
+import { TeamMember } from "@/entities/teamMember";
+import { getTeamJoinLink } from "@/entities/team";
 
 interface TeamCardProps {
   team: TeamWithMembers;
@@ -191,11 +191,11 @@ const TeamMemberCards = styled.div`
 
 import { useNavigate } from "react-router-dom";
 import { getFindTeamMembersPath } from "@/shared/routing/paths";
-import { useAuthUser } from "@/entities/user/api/hooks";
+import { useAuthUser } from "@/entities/user";
 import {
   useDeleteTeamMember,
   useLeaveTeam,
-} from "@/entities/teamMember/api/hooks";
+} from "@/entities/teamMember";
 
 interface TeamMemberCardProps {
   team: TeamWithMembers;

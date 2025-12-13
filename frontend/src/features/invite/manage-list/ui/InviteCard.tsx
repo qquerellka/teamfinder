@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 
-import { MegaInvite } from "@/entities/invite/model/types";
+import { MegaInvite } from "@/entities/invite";
 import { useAnswerOnInvite } from "@/features/invite/manage-list/hooks/useAnswerOnInvite";
 import { getHackathonTeamPath } from "@/shared/routing/paths";
 import { SIcon, SText } from "@/shared/ui";

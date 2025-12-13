@@ -1,4 +1,4 @@
-import { useDeleteTeam } from "@/entities/team/api/hooks";
+import { useDeleteTeam } from "@/entities/team";
 import { useState } from "react";
 
 interface UseHackathonApplicationDeleteParams {

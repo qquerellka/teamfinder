@@ -1,5 +1,5 @@
-import type { Achievement } from "@/entities/achievement/model/types";
-import type { Hackathon } from "@/entities/hackathon/model/types";
+import type { Achievement } from "@/entities/achievement";
+import type { Hackathon } from "@/entities/hackathon";
 import { useAchievementForm } from "@/features/achievement/edit/hooks/useAchievementForm";
 import { AchievementFormView } from "@/features/achievement/edit/ui/AchievementFormVeiw";
 import { FC } from "react";

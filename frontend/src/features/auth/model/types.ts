@@ -1,4 +1,4 @@
-import { UserDTO } from "@/entities/user/model/types";
+import { UserDTO } from "@/entities/user";
 
 export interface AuthResponse {
   access_token: string;

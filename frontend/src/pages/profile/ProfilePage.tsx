@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { ProfileSkillsEditor } from "@/features/profile/edit-skills/ui/ProfileSkillsEditor";
 import { ProfileBioEditor } from "@/features/profile/edit-bio/ui/ProfileBioEditor";
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
-import { useAuthUser } from "@/entities/user/api/hooks";
+import { useAuthUser } from "@/entities/user";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
 import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
 

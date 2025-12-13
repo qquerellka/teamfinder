@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Button, Input, List, Select } from "@telegram-apps/telegram-ui";
 
-import { Hackathon } from "@/entities/hackathon/model/types";
+import { Hackathon } from "@/entities/hackathon";
 import { Role, roleOptions } from "@/shared/types/enums";
 import { FC } from "react";
 import { InputSection } from "@/shared/ui";

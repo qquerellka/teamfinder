@@ -1,7 +1,7 @@
 import { FC } from "react";
 
-import { Hackathon } from "@/entities/hackathon/model/types";
-import { useCreateHackathonApplication } from "@/entities/application/api/hooks";
+import { Hackathon } from "@/entities/hackathon";
+import { useCreateHackathonApplication } from "@/entities/application";
 import { HackathonApplicationForm } from "./HackathonApplicationForm";
 import { useHackathonApplicationForm } from "../hooks/useHacakthonApplicationForm";
 

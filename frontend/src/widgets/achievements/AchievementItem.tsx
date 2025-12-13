@@ -1,5 +1,5 @@
 import { paths } from "@/shared/routing/paths";
-import { Achievement } from "@/entities/achievement/model/types";
+import { Achievement } from "@/entities/achievement";
 import { SText } from "@/shared/ui/SText";
 import { Cell } from "@telegram-apps/telegram-ui";
 import { FC } from "react";

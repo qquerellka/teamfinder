@@ -2,7 +2,7 @@ import { FC, useMemo } from "react";
 import styled from "styled-components";
 import { Card, InlineButtons, Title } from "@telegram-apps/telegram-ui";
 
-import type { Hackathon } from "@/entities/hackathon/model/types";
+import type { Hackathon } from "@/entities/hackathon";
 import {
   formatDateRange,
   formatRegistrationDate,

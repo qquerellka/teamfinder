@@ -1,4 +1,4 @@
-import { Skill, SkillDTO } from "@/entities/skill/model/types";
+import { Skill, SkillDTO } from "@/entities/skill";
 import { User, UserDTO, UserEdit, UserEditDTO } from "../model/types";
 import { achievementsToCamelCase } from "@/entities/achievement/lib/dto";
 

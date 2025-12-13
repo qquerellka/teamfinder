@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Page } from "@/shared/ui/Page";
-import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
+import { useHackathonQuery } from "@/entities/hackathon";
 import { SegmentedControl } from "@telegram-apps/telegram-ui";
 import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
 import { HackathonApplication } from "@/features/application/create/ui/HackathonApplication";

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import type { MultiselectProps } from "@telegram-apps/telegram-ui";
 
-import { useAuthUser, useEditUserMainInfo } from "@/entities/user/api/hooks";
-import { useSkills } from "@/entities/skill/api/hooks";
-import type { Skill } from "@/entities/skill/model/types";
+import { useAuthUser, useEditUserMainInfo } from "@/entities/user";
+import { useSkills, Skill } from "@/entities/skill";
 
 const MAX_SKILLS = 10;
 
@@ -45,7 +44,7 @@ export function useProfileSkillsEditor() {
 
   const options = skillsToOptions(skills);
   const selectedOptions: MultiSelectOption[] = options.filter((opt) =>
-    selectedSkillSlugs.includes(String(opt.value)),
+    selectedSkillSlugs.includes(String(opt.value))
   );
 
   const handleChange = (selected: MultiSelectOption[]) => {
@@ -69,7 +68,7 @@ export function useProfileSkillsEditor() {
         onSuccess: () => {
           setLastSavedSlugs(slugs);
         },
-      },
+      }
     );
   };
 

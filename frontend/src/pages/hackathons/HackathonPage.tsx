@@ -3,11 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Button } from "@telegram-apps/telegram-ui";
 
-import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-import type { Hackathon } from "@/entities/hackathon/model/types";
-import { useAuthUser } from "@/entities/user/api/hooks";
-import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
-import { useAuthUserApplicationsOnHackathon } from "@/entities/application/api/hooks";
+import { HackathonCard, useHackathonQuery, Hackathon } from "@/entities/hackathon";
+import { useAuthUser } from "@/entities/user";
+import { useAuthUserApplicationsOnHackathon } from "@/entities/application";
 
 import {
   getHackathonParticipationPath,
@@ -18,7 +16,7 @@ import {
 import { normalizeUrl } from "@/shared/helpers/url";
 import { Page } from "@/shared/ui";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
-import { useMyTeamOnHackathon } from "@/entities/team/api/hooks";
+import { useMyTeamOnHackathon } from "@/entities/team";
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();

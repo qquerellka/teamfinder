@@ -1,4 +1,4 @@
-import { useTeam } from "@/entities/team/api/hooks";
+import { useTeam } from "@/entities/team";
 import { TeamApplications } from "@/features/team/applications/TeamApplications";
 import { Page, SText } from "@/shared/ui";
 import { SegmentedControl } from "@telegram-apps/telegram-ui";

@@ -1,5 +1,5 @@
 import { useEffect, useState, ChangeEvent } from "react";
-import { useAuthUser, useEditUserMainInfo } from "@/entities/user/api/hooks";
+import { useAuthUser, useEditUserMainInfo } from "@/entities/user";
 
 const MAX_BIO = 256;
 

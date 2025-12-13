@@ -1,4 +1,4 @@
-import { TeamMember, TeamMemberDTO } from "@/entities/teamMember/model/types";
+import { TeamMember, TeamMemberDTO } from "@/entities/teamMember";
 import { Role } from "@/shared/types/enums";
 
 export type TeamStatus = "forming" | "ready";

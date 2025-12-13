@@ -1,6 +1,5 @@
 import { useCallback } from "react";
-import { InviteStatus } from "@/entities/invite/model/types";
-import { useUpdateInvite } from "@/entities/invite/api/hooks";
+import { InviteStatus, useUpdateInvite } from "@/entities/invite";
 
 interface UseAnswerOnInviteParams {
   inviteId: number;

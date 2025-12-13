@@ -1,4 +1,4 @@
-import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
+import { useHackathonQuery } from "@/entities/hackathon";
 import { HackathonTeam } from "@/features/team/create/ui/HackathonTeam";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";

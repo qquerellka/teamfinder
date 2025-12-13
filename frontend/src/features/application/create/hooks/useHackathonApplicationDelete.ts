@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   useDeleteAuthUserApplication,
-} from "@/entities/application/api/hooks";
+} from "@/entities/application";
 
 interface UseHackathonApplicationDeleteParams {
   hackathonId: number;

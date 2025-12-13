@@ -1,16 +1,15 @@
 import { FC } from "react";
 
-import { Hackathon } from "@/entities/hackathon/model/types";
-import { TeamWithMembers } from "@/entities/team/model/types";
+import { Hackathon } from "@/entities/hackathon";
+import { TeamWithMembers, useEditTeam } from "@/entities/team";
 import { useEditTeamForm } from "../hooks/useEditTeamForm";
-import { useEditTeam } from "@/entities/team/api/hooks";
 import { InputSection, SIcon, SText, ConfirmModal } from "@/shared/ui";
 import { Button, Input, Textarea } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { TeamMemberCard } from "./TeamCard";
 import { useDeleteTeamForm } from "../hooks/useDeleteTeamFrom";
-import { useLeaveTeam } from "@/entities/teamMember/api/hooks";
+import { useLeaveTeam } from "@/entities/teamMember";
 
 interface TeamEditFormProps {
   hackathon: Hackathon;

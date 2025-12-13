@@ -1,7 +1,7 @@
 import { FC } from "react";
 import styled from "styled-components";
 
-import { useApplicationInvites } from "@/entities/invite/api/hooks";
+import { useApplicationInvites } from "@/entities/invite";
 import { SText } from "@/shared/ui";
 import { InviteCard } from "@/features/invite/manage-list/ui/InviteCard";
 

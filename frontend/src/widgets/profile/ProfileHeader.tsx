@@ -1,7 +1,7 @@
 import { Avatar } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 import { SText } from "@/shared/ui";
-import { useAuthUser } from "@/entities/user/api/hooks";
+import { useAuthUser } from "@/entities/user";
 
 export const ProfileHeader = () => {
   const { data: user } = useAuthUser();
