@@ -34,7 +34,7 @@ export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
   return (
     <Wrapper>
       <SText style={{ marginBottom: "1rem" }}>Приглашения в команду</SText>
-      {invites.map((i) => (
+      {invites.filter((i) => i.status === 'pending').map((i) => (
         <InviteCard key={i.id} invite={i} />
       ))}
     </Wrapper>
