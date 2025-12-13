@@ -4,7 +4,7 @@ import { Page } from "@/shared/ui/Page";
 import { useHackathonQuery } from "@/entities/hackathon";
 import { SegmentedControl } from "@telegram-apps/telegram-ui";
 import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
-import { HackathonApplication } from "@/features/application/create/ui/HackathonApplication";
+import { MyHackathonApplication } from "@/widgets/hackathon/my-application/ui/MyHackathonApplication";
 
 const HackathonVacancies = ({ hackathonId }: { hackathonId: number }) => {
   return <div>Тут список вакансий для хакатона {hackathonId}</div>;
@@ -35,7 +35,7 @@ const HackathonParticipatePage: React.FC = () => {
         </SegmentedControlItem>
       </SegmentedControl>
 
-      {tab === "applications" && <HackathonApplication hackathon={hackathon} />}
+      {tab === "applications" && <MyHackathonApplication hackathon={hackathon} />}
 
       {tab === "vacancies" && <HackathonVacancies hackathonId={hackathonId} />}
     </Page>

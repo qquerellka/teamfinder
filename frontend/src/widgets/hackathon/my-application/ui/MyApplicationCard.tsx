@@ -1,40 +1,39 @@
 import styled from "styled-components";
 import { Button } from "@telegram-apps/telegram-ui";
+import type { FC } from "react";
 
-import { Hackathon } from "@/entities/hackathon";
+import type { Hackathon } from "@/entities/hackathon";
 import type { Application } from "@/entities/application";
 import { formatRegistrationDate } from "@/shared/helpers/date";
-
-
-import { FC } from "react";
-import { useHackathonApplicationDelete } from "../hooks/useHackathonApplicationDelete";
-import { useNavigate } from "react-router-dom";
 import { RoleBadge, SIcon, SText } from "@/shared/ui";
 import { ConfirmModal } from "@/shared/ui/ConfirmModal";
+import { useDeleteApplication } from "@/features/application/delete";
 
-interface HackathonApplicationCardProps {
+interface MyApplicationCardProps {
   hackathon: Hackathon;
   application: Application;
   onEditClick?: () => void;
+  onDeleted?: () => void; // важно
 }
 
-export const HackathonApplicationCard: FC<HackathonApplicationCardProps> = ({
+export const MyApplicationCard: FC<MyApplicationCardProps> = ({
   hackathon,
   application,
   onEditClick,
+  onDeleted,
 }) => {
-  const navigate = useNavigate();
   const {
     isOpen: isDeleteModalOpen,
     open: openDeleteModal,
     cancel: cancelDelete,
     confirm: confirmDelete,
-    isLoading: isDeleting,
-  } = useHackathonApplicationDelete({
+    isDeleting,
+  } = useDeleteApplication({
     hackathonId: hackathon.id,
     applicationId: application.id,
-    onDeleted: () => navigate(-1),
+    onDone: onDeleted, // единый стиль
   });
+
   return (
     <>
       <Wrapper>
@@ -45,10 +44,10 @@ export const HackathonApplicationCard: FC<HackathonApplicationCardProps> = ({
 
           <Icons>
             <IconButton type="button" onClick={onEditClick}>
-              <SIcon name={"edit"} />
+              <SIcon name="edit" />
             </IconButton>
             <IconButton type="button" onClick={openDeleteModal}>
-              <SIcon name={"delete"} />
+              <SIcon name="delete" />
             </IconButton>
           </Icons>
         </Header>
@@ -72,6 +71,7 @@ export const HackathonApplicationCard: FC<HackathonApplicationCardProps> = ({
     </>
   );
 };
+
 
 const Wrapper = styled.div`
   background-color: var(--tg-theme-section-bg-color);

@@ -1,25 +1,25 @@
 import styled from "styled-components";
 import { Button, Input, List, Select } from "@telegram-apps/telegram-ui";
-import { FC } from "react";
+import type { FC, ChangeEvent } from "react";
 
-import { Hackathon } from "@/entities/hackathon";
-import { roleOptions } from "@/shared/types/enums";
-import type { Role } from "@/shared/types/enums";
+import { roleOptions, type Role } from "@/shared/types/enums";
 import { InputSection } from "@/shared/ui";
 
-interface HackathonApplicationFormProps {
-  hackathon: Hackathon;
+type Props = {
+  hackathonName: string;
   role: Role | "";
   submitLabel: string;
   loading?: boolean;
   canSubmit: boolean;
-  onRoleChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onRoleChange: (role: Role | "") => void;
   onSubmit: () => void;
   onCancel?: () => void;
-}
+};
 
-export const HackathonApplicationForm: FC<HackathonApplicationFormProps> = ({
-  hackathon,
+const parseRole = (raw: string): Role | "" => (raw ? (raw as Role) : "");
+
+export const ApplicationFormView: FC<Props> = ({
+  hackathonName,
   role,
   submitLabel,
   loading = false,
@@ -33,13 +33,18 @@ export const HackathonApplicationForm: FC<HackathonApplicationFormProps> = ({
     onSubmit();
   };
 
+  const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    onRoleChange(parseRole(e.target.value));
+  };
+
   return (
     <>
       <InputSection header={"Хакатон"}>
-        <Input type="text" value={hackathon.name} disabled />
+        <Input type="text" value={hackathonName} disabled />
       </InputSection>
+
       <InputSection header={"Роль"}>
-        <Select value={role} onChange={onRoleChange}>
+        <Select value={role} onChange={handleSelect}>
           <option value="" disabled>
             Выберите роль
           </option>
@@ -52,21 +57,12 @@ export const HackathonApplicationForm: FC<HackathonApplicationFormProps> = ({
       </InputSection>
 
       <ButtonsSection>
-        <Button
-          onClick={handleSaveClick}
-          stretched
-          disabled={!canSubmit || loading}
-        >
+        <Button onClick={handleSaveClick} stretched disabled={!canSubmit || loading}>
           {submitLabel}
         </Button>
 
         {onCancel && (
-          <Button
-            mode="bezeled"
-            stretched
-            onClick={onCancel}
-            disabled={loading}
-          >
+          <Button mode="bezeled" stretched onClick={onCancel} disabled={loading}>
             Отмена
           </Button>
         )}
