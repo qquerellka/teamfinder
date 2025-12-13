@@ -23,7 +23,8 @@ export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
   //       teamMembersCount: 1,
   //       teamMembersLimit: 4,
   // }]
-  if (!invites || invites.length === 0) {
+  const filteredInvites = invites.filter((i) => i.status === 'pending');
+  if (!filteredInvites || filteredInvites.length === 0) {
     return (
       <Wrapper>
         <STitle>{"Нет приглашений :("}</STitle>
@@ -34,7 +35,7 @@ export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
   return (
     <Wrapper>
       <SText style={{ marginBottom: "1rem" }}>Приглашения в команду</SText>
-      {invites.filter((i) => i.status === 'pending').map((i) => (
+      {filteredInvites.map((i) => (
         <InviteCard key={i.id} invite={i} />
       ))}
     </Wrapper>
