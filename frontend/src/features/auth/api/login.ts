@@ -48,11 +48,8 @@ function saveAuthToStorage(data: AuthResponse) {
 }
 
 function restoreTokenFromStorage(): string | null {
-  if (typeof window === "undefined" || !("localStorage" in window)) {
-    return null;
-  }
 
-  const token = window.localStorage.getItem(AUTH_STORAGE_KEY);
+  const token = localStorage.getItem(AUTH_STORAGE_KEY);
   if (!token) return null;
 
   saveAccessToken(token);
