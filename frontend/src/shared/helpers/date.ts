@@ -1,5 +1,3 @@
-import { AchievementPlace } from "@/entities/achievement/model/types";
-
 export function formatDateRange(startDate: Date, endDate: Date): string {
   const months = [
     "января",
@@ -16,10 +14,9 @@ export function formatDateRange(startDate: Date, endDate: Date): string {
     "декабря",
   ];
 
-  // Форматируем обе даты
   const formatDate = (date: Date): string => {
     const day = date.getDate();
-    const month = months[date.getMonth()]; // Получаем месяц из массива
+    const month = months[date.getMonth()];
     return `${day} ${month}`;
   };
 
@@ -60,21 +57,4 @@ export function getTeamMembersRange(
   }
 
   return `${teamMembersMinimum} - ${teamMembersLimit} участников`;
-}
-
-export function formatHackPlace(place: AchievementPlace): string {
-  switch (place) {
-    case "finalyst":
-      return "финалист"
-    case "participant":
-      return "участник"
-    case "firstPlace":
-      return "1 место"
-    case "secondPlace":
-      return "2 место"
-    case "thirdPlace":
-      return "3 место"
-    
-  }
-
 }

@@ -1,11 +1,11 @@
 import { paths } from "@/shared/routing/paths";
 import { Achievement } from "@/entities/achievement/model/types";
-import { formatHackPlace } from "@/shared/helpers/date";
 import { SText } from "@/shared/ui/SText";
 import { Cell } from "@telegram-apps/telegram-ui";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { formatHackPlace } from "@/entities/achievement/lib/formatters";
 
 interface AchievementItemProps {
   achievement: Achievement;

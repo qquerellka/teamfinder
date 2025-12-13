@@ -1,5 +1,5 @@
-type Mode = "online" | "offline" | "hybrid";
-
+type HackathonMode = "online" | "offline" | "hybrid";
+type HackathonStatus = "open" | "closed"
 export interface Hackathon {
   id: number;
   name: string;
@@ -7,9 +7,9 @@ export interface Hackathon {
   startDate: Date;
   endDate: Date;
   registrationEndDate: Date;
-  mode: Mode;
+  mode: HackathonMode;
   city: string;
-  status: "open" | "closed";
+  status: HackathonStatus;
   teamMembersMinimum: number;
   teamMembersLimit: number;
   registrationLink: string;
@@ -17,7 +17,7 @@ export interface Hackathon {
   imageLink: string;
 }
 
-export interface HackathonApi {
+export interface HackathonDTO {
   id: number;
   name: string;
   description: string;
@@ -25,9 +25,9 @@ export interface HackathonApi {
   start_date: string;
   end_date: string;
   registration_end_date: string;
-  mode: "online" | "offline" | "hybrid";
+  mode: HackathonMode;
   city: string;
-  status: "open" | "closed";
+  status: HackathonStatus;
   team_members_minimum: number;
   team_members_limit: number;
   registration_link: string;
