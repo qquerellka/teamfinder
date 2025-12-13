@@ -6,6 +6,7 @@ import { IconButton } from "@telegram-apps/telegram-ui";
 import { FC, useMemo } from "react";
 import styled from "styled-components";
 import { useCreateInvite, useTeamInvites } from "@/entities/invite/api/hooks";
+
 interface TeamApplicationsProps {
   team: Team;
 }

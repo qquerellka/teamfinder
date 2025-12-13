@@ -1,15 +1,16 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, FC } from "react";
 import styled from "styled-components";
 import { Textarea } from "@telegram-apps/telegram-ui";
+
 import { ErrorText, InputSection } from "@/shared/ui";
 
-type Props = {
+interface ProfileBioEditorViewProps {
   bio: string;
   bioError: string | null;
   onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
 };
 
-export function ProfileBioEditorView({ bio, bioError, onChange }: Props) {
+export const ProfileBioEditorView:FC<ProfileBioEditorViewProps> = ({ bio, bioError, onChange }) => {
   return (
     <InputSection header="Обо мне">
       <StyledTextarea

@@ -1,7 +1,7 @@
 import { Multiselect, type MultiselectProps } from "@telegram-apps/telegram-ui";
+import { FC } from "react";
 
 import { ErrorText, InputSection } from "@/shared/ui";
-import { FC } from "react";
 
 type MultiSelectOption = MultiselectProps["options"][number];
 

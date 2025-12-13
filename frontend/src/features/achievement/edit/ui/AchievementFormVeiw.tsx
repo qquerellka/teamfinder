@@ -44,7 +44,7 @@ export const AchievementFormView: FC<AchievementFormViewProps> = ({
       <section style={{ padding: "1.5rem" }}>
         <SText $fs={20} $fw={600}>
           Достижение не найдено
-        </SText>
+        </SText> 
       </section>
     );
   }

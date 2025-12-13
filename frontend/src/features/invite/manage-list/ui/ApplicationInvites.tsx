@@ -1,28 +1,17 @@
-import { useApplicationInvites } from "@/entities/invite/api/hooks";
-import { SText } from "@/shared/ui";
 import { FC } from "react";
 import styled from "styled-components";
 
-import { InviteCard } from "./InviteCard";
-// import { InviteStatus } from "@/entities/invite/model/types";
-// import { Role } from "@/shared/types/enums";
+import { useApplicationInvites } from "@/entities/invite/api/hooks";
+import { SText } from "@/shared/ui";
+import { InviteCard } from "@/features/invite/manage-list/ui/InviteCard";
+
 interface ApplicationInvites {
   appId: number;
 }
 
 export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
   const { data: invites } = useApplicationInvites(appId);
-  // const mockInvites = [{
-  //       id: 1,
-  //       status: 'accepted' as InviteStatus,
-  //       role: "DevOps" as Role,
-  //       teamId: 1,
-  //       applicationId: 1,
-  //       teamName: "MISIS X MISIS",
-  //       hackathonId: 1,
-  //       teamMembersCount: 1,
-  //       teamMembersLimit: 4,
-  // }]
+
   const filteredInvites = invites.filter((i) => i.status === 'pending');
   if (!filteredInvites || filteredInvites.length === 0) {
     return (

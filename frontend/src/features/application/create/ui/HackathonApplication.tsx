@@ -40,7 +40,6 @@ export const HackathonApplication: FC<HackathonApplicationProps> = ({
         application={application}
         onEditClick={() => setIsEditing(true)}
       />
-
       <ApplicationInvites appId={application.id} />
     </Wrapper>
   );

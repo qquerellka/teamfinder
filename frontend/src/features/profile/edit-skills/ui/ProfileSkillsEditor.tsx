@@ -1,5 +1,5 @@
-import { useProfileSkillsEditor } from "../hooks/useProfileSkillsEditor";
-import { ProfileSkillsEditorView } from "./ProfileSkillsEditorView";
+import { useProfileSkillsEditor } from "@/features/profile/edit-skills/hooks/useProfileSkillsEditor";
+import { ProfileSkillsEditorView } from "@/features/profile/edit-skills/ui/ProfileSkillsEditorView";
 
 export const ProfileSkillsEditor = () => {
   const { options, selectedOptions, isLoading, skillsError, handleChange } =

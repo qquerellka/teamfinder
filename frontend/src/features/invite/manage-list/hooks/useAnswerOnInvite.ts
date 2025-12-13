@@ -26,7 +26,7 @@ export function useAnswerOnInvite({
   );
 
   return {
-    answer,                    // (status: InviteStatus) => Promise<void>
+    answer,
     isLoading: mutation.isPending,
     error: mutation.error,
   };

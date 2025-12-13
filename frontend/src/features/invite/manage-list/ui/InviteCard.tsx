@@ -1,11 +1,13 @@
-import { MegaInvite } from "@/entities/invite/model/types";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAnswerOnInvite } from "../hooks/useAnswerOnInvite";
-import { getHackathonTeamPath } from "@/shared/routing/paths";
-import { SIcon, SText } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
+
+import { MegaInvite } from "@/entities/invite/model/types";
+import { useAnswerOnInvite } from "@/features/invite/manage-list/hooks/useAnswerOnInvite";
+import { getHackathonTeamPath } from "@/shared/routing/paths";
+import { SIcon, SText } from "@/shared/ui";
+
 
 interface InviteCardProps {
   invite: MegaInvite;
@@ -14,10 +16,8 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
   const navigate = useNavigate();
   const { answer, isLoading } = useAnswerOnInvite({
     inviteId: invite.id,
-    // опционально: закрыть модалку / показать тост
     onAnswered: () => {
       navigate(getHackathonTeamPath(String(invite.teamId)));
-      // console.log("answered", status);
     },
   });
   return (
@@ -51,6 +51,7 @@ export const InviteCard: FC<InviteCardProps> = ({ invite }) => {
     </Wrapper>
   );
 };
+
 const CountTeamMembers = styled.div`
   display: flex;
   flex-direction: row;
@@ -58,10 +59,11 @@ const CountTeamMembers = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-    gap: 0.5rem;
+  gap: 0.5rem;
   padding: 0.75rem;
   border-radius: 1rem;
   background-color: var(--tg-theme-section-bg-color);

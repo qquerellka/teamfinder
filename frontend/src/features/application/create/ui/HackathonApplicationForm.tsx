@@ -53,7 +53,6 @@ export const HackathonApplicationForm: FC<HackathonApplicationFormProps> = ({
 
       <ButtonsSection>
         <Button
-          size="l"
           onClick={handleSaveClick}
           stretched
           disabled={!canSubmit || loading}
@@ -63,7 +62,6 @@ export const HackathonApplicationForm: FC<HackathonApplicationFormProps> = ({
 
         {onCancel && (
           <Button
-            size="l"
             mode="bezeled"
             stretched
             onClick={onCancel}
@@ -84,4 +82,3 @@ const ButtonsSection = styled(List)`
   flex-direction: column;
   gap: 0.5rem;
 `;
-
