@@ -72,12 +72,13 @@ const Wrapper = styled.div`
 const FirstCol = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 `;
 
 const SecondRow = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: end;
+  justify-content: space-between;
 `;
 
 const Buttons = styled.div`
