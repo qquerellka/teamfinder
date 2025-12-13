@@ -4,10 +4,10 @@ import { Team } from "@/entities/team/model/types";
 import { RoleBadge, SIcon, SText, STitle } from "@/shared/ui";
 import { IconButton } from "@telegram-apps/telegram-ui";
 import { FC, useMemo } from "react";
-
+import sentInviteIcon from "@/assets/icons/sentInvite.svg?react";
 import plusIcon from "@/assets/icons/plusIcon.svg?react";
 import styled from "styled-components";
-import { useCreateInvite } from "@/entities/invite/api/hooks";
+import { useCreateInvite, useTeamInvites } from "@/entities/invite/api/hooks";
 interface TeamApplicationsProps {
   team: Team;
 }
@@ -16,7 +16,7 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
   return (
     <ApplicationsList>
       {applications.items.map((a) => (
-        <ApplicationCard application={a} team={team}/>
+        <ApplicationCard application={a} team={team} />
       ))}
     </ApplicationsList>
   );
@@ -30,32 +30,37 @@ const ApplicationsList = styled.div`
 
 interface ApplicationCardProps {
   application: Application;
-  team: Team,
+  team: Team;
 }
 
-export const ApplicationCard: FC<ApplicationCardProps> = ({ application, team }) => {
-const skillsString = useMemo(() => {
-  const skills = application.skills.length < 5
-    ? application.skills
-    : application.skills.slice(0, 4);
+export const ApplicationCard: FC<ApplicationCardProps> = ({
+  application,
+  team,
+}) => {
+  const skillsString = useMemo(() => {
+    const skills =
+      application.skills.length < 5
+        ? application.skills
+        : application.skills.slice(0, 4);
 
-  return skills.map((s) => s.name).join(", ");
-}, [application.skills]);
-
+    return skills.map((s) => s.name).join(", ");
+  }, [application.skills]);
 
   console.log(application.skills.join());
-const inviteMutation = useCreateInvite();
+  const inviteMutation = useCreateInvite();
+  const { data: invites } = useTeamInvites(team.id);
 
-const handleInvite = async () => {
-  await inviteMutation.mutateAsync({
-    teamId: team.id,
-    payload: {
-      applicationId: application.id,
-      role: application.role,
-    },
-  });
-};
+  const inviteIds = invites.map((i) => i.applicationId);
 
+  const handleInvite = async () => {
+    await inviteMutation.mutateAsync({
+      teamId: team.id,
+      payload: {
+        applicationId: application.id,
+        role: application.role,
+      },
+    });
+  };
 
   return (
     <Wrapper>
@@ -67,9 +72,14 @@ const handleInvite = async () => {
       </FirstRow>
 
       <SecondRow>
-        <IconButton onClick={handleInvite}>
-          <SIcon icon={plusIcon} />
-        </IconButton>
+        {inviteIds.find((i) => application.id === i) ? (
+          <SIcon icon={sentInviteIcon} />
+        ) : (
+          <IconButton onClick={handleInvite}>
+            <SIcon icon={plusIcon} />
+          </IconButton>
+        )}
+
         <SText>{String(skillsString)}</SText>
       </SecondRow>
     </Wrapper>
