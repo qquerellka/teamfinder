@@ -1,12 +1,12 @@
-
 import { Button, Placeholder } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 
 type AppErrorFallbackProps = {
   error: unknown;
+  resetErrorBoundary?: () => void;
 };
 
-export function AppErrorFallback({ error }: AppErrorFallbackProps) {
+export function AppErrorFallback({ error, resetErrorBoundary }: AppErrorFallbackProps) {
   const message =
     error instanceof Error
       ? error.message
@@ -18,15 +18,30 @@ export function AppErrorFallback({ error }: AppErrorFallbackProps) {
     window.location.reload();
   };
 
+  const handleRetry = () => {
+    resetErrorBoundary?.();
+  };
+
   return (
     <Root>
       <Placeholder
         header="Что-то пошло не так"
-        description="Попробуйте перезапустить приложение. Если ошибка повторяется, напишите нам."
+        description="Попробуйте повторить. Если ошибка повторяется, перезапустите приложение."
       >
-        <Button mode="bezeled" size="m" onClick={handleReload}>
-          Обновить
-        </Button>
+        <Buttons>
+          <Button
+            mode="bezeled"
+            size="m"
+            onClick={handleRetry}
+            disabled={!resetErrorBoundary}
+          >
+            Повторить
+          </Button>
+
+          <Button mode="plain" size="m" onClick={handleReload}>
+            Обновить
+          </Button>
+        </Buttons>
 
         <ErrorDetails>
           <DetailsTitle>Техническая информация</DetailsTitle>
@@ -48,6 +63,12 @@ const Root = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 `;
 
 const ErrorDetails = styled.div`

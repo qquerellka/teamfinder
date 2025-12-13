@@ -1,4 +1,4 @@
-import { HashRouter } from "react-router-dom";
+import { HashRouter, useLocation } from "react-router-dom";
 import { useLaunchParams, useSignal, miniApp } from "@tma.js/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { ReactQueryProvider } from "./providers/react-query";
@@ -11,6 +11,38 @@ import { LoaderPage } from "@/shared/ui";
 import { Suspense } from "react";
 import { StartParamJoinHandler } from "@/features/team/join/StartParamJoinHandler";
 
+import { QueryErrorResetBoundary, useQueryClient } from "@tanstack/react-query";
+
+function AppInner() {
+  const location = useLocation();
+  const queryClient = useQueryClient();
+
+  return (
+    <QueryErrorResetBoundary>
+      {({ reset }) => (
+        <ErrorBoundary
+          fallback={AppErrorFallback}
+          resetKeys={[location.key]}
+          onReset={() => {
+            reset();
+            // чтобы “повторить” реально перезапускало запросы
+            queryClient.invalidateQueries({
+              predicate: (q) => q.queryKey[0] !== "auth",
+            });
+          }}
+        >
+          <Suspense fallback={<LoaderPage />}>
+            <AuthGate>
+              <StartParamJoinHandler />
+              <AppRouter />
+            </AuthGate>
+          </Suspense>
+        </ErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
+  );
+}
+
 export function App() {
   const lp = useLaunchParams();
   const isDark = useSignal(miniApp.isDark);
@@ -22,18 +54,11 @@ export function App() {
 
   return (
     <AppRoot appearance={isDark ? "dark" : "light"} platform={platform}>
-      <ReactQueryProvider>
-        <Suspense fallback={<LoaderPage />}>
-          <ErrorBoundary fallback={AppErrorFallback}>
-            <AuthGate>
-              <StartParamJoinHandler />
-              <HashRouter>
-                <AppRouter />
-              </HashRouter>
-            </AuthGate>
-          </ErrorBoundary>
-        </Suspense>
-      </ReactQueryProvider>
+      <HashRouter>
+        <ReactQueryProvider>
+          <AppInner />
+        </ReactQueryProvider>
+      </HashRouter>
     </AppRoot>
   );
 }
