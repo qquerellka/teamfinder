@@ -42,7 +42,7 @@ export interface MegaInviteDTO {
     invited_role: Role,
     team_id: number,
     application_id: number,
-    team_name: number,
+    team_name: string,
     hackathon_id: number,
     team_members_count: number,
     team_members_limit: number,
