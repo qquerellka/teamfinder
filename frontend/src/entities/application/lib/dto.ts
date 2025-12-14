@@ -21,6 +21,7 @@ export function applicationsToCamelCase(
     lastName: a.last_name,
     skills: a.skills,
     registrationEndDate: a.registration_end_date,
+    status: a.status
   }));
 }
 

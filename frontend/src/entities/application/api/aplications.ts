@@ -32,7 +32,7 @@ export async function getAuthUserApplicationOnHackathon(
   const { data } = await apiClient.get<ApplicationDTO>(
     `/hackathons/${id}/applications/me`
   );
-  if (data === null) {
+  if (data === null || data.status === 'hidden') {
     return null;
   }
   return applicationsToCamelCase([data])[0];

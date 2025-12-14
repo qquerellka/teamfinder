@@ -25,7 +25,7 @@ const HackathonParticipatePage: React.FC = () => {
           selected={tab === "applications"}
           onClick={() => setTab("applications")}
         >
-          Анкеты
+          Анкета
         </SegmentedControlItem>
         <SegmentedControlItem
           selected={tab === "vacancies"}

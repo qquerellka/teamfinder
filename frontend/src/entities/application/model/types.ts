@@ -1,6 +1,7 @@
 import { Skill, SkillDTO } from "@/entities/skill";
 import { Role } from "@/shared/types/enums";
 
+type ApplicationStatus = "published" | "hidden";
 export interface ApplicationDTO {
   id: number;
   hackathon_id: number;
@@ -11,6 +12,7 @@ export interface ApplicationDTO {
   last_name: string;
   skills: SkillDTO[];
   registration_end_date: string;
+  status: ApplicationStatus;
 }
 
 export interface ApplicationsResponseDTO {
@@ -29,6 +31,7 @@ export interface Application {
   lastName: string;
   skills: Skill[];
   registrationEndDate: string;
+  status: ApplicationStatus;
 }
 
 export interface ApplicationsResponse {
