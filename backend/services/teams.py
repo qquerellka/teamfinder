@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 from repositories.teams import TeamsRepo
 from persistend.enums import TeamStatus
@@ -50,6 +50,19 @@ class TeamsService:
         offset: int,
     ) -> List[Team]:
         return await self.repo.list_by_user(
+            user_id=user_id,
+            limit=limit,
+            offset=offset,
+        )
+
+    async def list_by_user_with_meta(
+        self,
+        *,
+        user_id: int,
+        limit: int,
+        offset: int,
+    ) -> List[Tuple[Team, str, Optional[int], int]]:
+        return await self.repo.list_by_user_with_meta(
             user_id=user_id,
             limit=limit,
             offset=offset,

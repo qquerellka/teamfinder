@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Optional, List
 
 from sqlalchemy import select, func
+from sqlalchemy.orm import aliased
 
 from repositories.base import BaseRepository
 from persistend.enums import TeamStatus, RoleType
+from persistend.models.hackathon import Hackathon
 from persistend.models.team import Team
 from persistend.models.team_member import TeamMember
 
@@ -132,6 +134,47 @@ class TeamsRepo(BaseRepository):
             )
             res = await s.execute(stmt)
             return res.scalars().unique().all()
+
+    async def list_by_user_with_meta(
+        self,
+        *,
+        user_id: int,
+        limit: int,
+        offset: int,
+    ) -> List[tuple[Team, str, Optional[int], int]]:
+        """Список команд пользователя + мета для /me/teams.
+
+        Возвращает кортежи:
+          (team, hackathon_name, team_members_limit, team_members_count)
+        """
+        T = Team
+        TM_filter = TeamMember
+        TM_count = aliased(TeamMember)
+        H = Hackathon
+
+        members_count_sq = (
+            select(func.count(TM_count.user_id))
+            .where(TM_count.team_id == T.id)
+            .scalar_subquery()
+        )
+
+        async with self._sm() as s:
+            stmt = (
+                select(
+                    T,
+                    H.name.label("hackathon_name"),
+                    H.team_members_limit.label("team_members_limit"),
+                    members_count_sq.label("team_members_count"),
+                )
+                .join(TM_filter, TM_filter.team_id == T.id)
+                .join(H, H.id == T.hackathon_id)
+                .where(TM_filter.user_id == user_id)
+                .order_by(T.created_at.desc())
+                .offset(offset)
+                .limit(limit)
+            )
+            res = await s.execute(stmt)
+            return list(res.all())
 
     async def user_has_team_on_hackathon(
         self,

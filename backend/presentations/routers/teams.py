@@ -40,6 +40,19 @@ class TeamListOut(BaseModel):
     offset: int
 
 
+class TeamMeOut(TeamOut):
+    hackathon_name: str
+    team_members_count: int
+    team_members_limit: Optional[int] = None
+    is_captain: bool
+
+
+class TeamMeListOut(BaseModel):
+    items: List[TeamMeOut]
+    limit: int
+    offset: int
+
+
 class TeamCreateIn(BaseModel):
     name: str = Field(..., max_length=255)
     description: Optional[str] = None
@@ -226,20 +239,32 @@ async def create_team(
 # ---- Мои команды ----
 
 
-@router.get("/me/teams", response_model=TeamListOut)
+@router.get("/me/teams", response_model=TeamMeListOut)
 async def list_my_teams(
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     user_id: int = Depends(get_current_user_id),
 ):
-    teams = await teams_service.list_by_user(
-        user_id=user_id, limit=limit, offset=offset
-    )
-    return TeamListOut(
-        items=[TeamOut.model_validate(t) for t in teams],
+    rows = await teams_service.list_by_user_with_meta(
+        user_id=user_id,
         limit=limit,
         offset=offset,
     )
+
+    items: List[TeamMeOut] = []
+    for team, hackathon_name, team_members_limit, team_members_count in rows:
+        base = TeamOut.model_validate(team)
+        items.append(
+            TeamMeOut(
+                **base.model_dump(),
+                hackathon_name=hackathon_name,
+                team_members_limit=team_members_limit,
+                team_members_count=team_members_count,
+                is_captain=(team.captain_id == user_id),
+            )
+        )
+
+    return TeamMeListOut(items=items, limit=limit, offset=offset)
 
 @router.get(
     "/hackathons/{hackathon_id}/teams/me",
