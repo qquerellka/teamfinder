@@ -5,7 +5,7 @@ import type { FC, ChangeEvent } from "react";
 import { roleOptions, type Role } from "@/shared/types/enums";
 import { InputSection } from "@/shared/ui";
 
-type Props = {
+interface ApplicationFormViewProps {
   hackathonName: string;
   role: Role | "";
   submitLabel: string;
@@ -18,7 +18,7 @@ type Props = {
 
 const parseRole = (raw: string): Role | "" => (raw ? (raw as Role) : "");
 
-export const ApplicationFormView: FC<Props> = ({
+export const ApplicationFormView: FC<ApplicationFormViewProps> = ({
   hackathonName,
   role,
   submitLabel,

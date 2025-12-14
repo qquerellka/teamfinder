@@ -1,22 +1,31 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import { useApplicationInvites } from "@/entities/invite";
+import { InviteCardView } from "@/entities/invite/ui/InviteCardView";
+import { InviteRespondButtons } from "@/features/invite/respond";
+import { getHackathonTeamPath } from "@/shared/routing/paths";
 import { SText } from "@/shared/ui";
-import { InviteCard } from "@/features/invite/manage-list/ui/InviteCard";
 
-interface ApplicationInvites {
+interface ApplicationInvitesProps {
   appId: number;
 }
 
-export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
-  const { data: invites } = useApplicationInvites(appId);
+export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
+  const navigate = useNavigate();
+  const { data } = useApplicationInvites(appId);
 
-  const filteredInvites = invites.filter((i) => i.status === 'pending');
-  if (!filteredInvites || filteredInvites.length === 0) {
+  const invites = data ?? [];
+  const pending = useMemo(
+    () => invites.filter((i) => i.status === "pending"),
+    [invites],
+  );
+
+  if (pending.length === 0) {
     return (
       <Wrapper>
-        <SText>{"Нет приглашений :("}</SText>
+        <SText>Нет приглашений :(</SText>
       </Wrapper>
     );
   }
@@ -24,8 +33,24 @@ export const ApplicationInvites: FC<ApplicationInvites> = ({ appId }) => {
   return (
     <Wrapper>
       <SText style={{ marginBottom: "1rem" }}>Приглашения в команду</SText>
-      {filteredInvites.map((i) => (
-        <InviteCard key={i.id} invite={i} />
+
+      {pending.map((i) => (
+        <InviteCardView
+          key={i.id}
+          teamName={i.teamName}
+          teamMembersCount={i.teamMembersCount}
+          teamMembersLimit={i.teamMembersLimit}
+          actions={
+            <InviteRespondButtons
+              inviteId={i.id}
+              onAnswered={(status) => {
+                if (status === "accepted") {
+                  navigate(getHackathonTeamPath(String(i.teamId)));
+                }
+              }}
+            />
+          }
+        />
       ))}
     </Wrapper>
   );
@@ -36,4 +61,5 @@ const Wrapper = styled.div`
   flex-direction: column;
   text-align: center;
   width: 100%;
+  gap: 0.75rem;
 `;
