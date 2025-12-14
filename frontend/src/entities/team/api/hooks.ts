@@ -16,6 +16,7 @@ import {
   CreateTeam,
   EditTeam,
   TeamWithMembers,
+  MyTeam,
 } from "../model/types";
 import { useAppQuery } from "@/shared/api/useAppQuery";
 
@@ -30,7 +31,7 @@ export function useHackathonTeams(hackathonId: number) {
 }
 
 export function useMyTeams() {
-  return useAppQuery<TeamsResponse, Error>({
+  return useAppQuery<MyTeam[], Error>({
     queryKey: teamKeys.me,
     queryFn: getMyTeams,
     staleTime: 60 * 1000,

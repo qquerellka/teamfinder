@@ -3,6 +3,8 @@ import {
   CreateTeamDTO,
   EditTeam,
   EditTeamDTO,
+  MyTeam,
+  MyTeamDTO,
   Team,
   TeamDTO,
   TeamsDTOResponse,
@@ -67,4 +69,19 @@ export function teamWithMembersToCamelCase(
       isCaptain: m.is_captain,
     })),
   };
+}
+
+export function myTeamsToCamelCase(teamsDTO: MyTeamDTO[]): MyTeam[] {
+  return teamsDTO.map((t) => ({
+    id: t.id,
+    hackathonId: t.hackathon_id,
+    name: t.name,
+    description: t.description,
+    captainId: t.captain_id,
+    status: t.status,
+    hackathonName: t.hackathon_name,
+    isCaptain: t.is_captain,
+    teamMembersCount: t.team_members_count,
+    teamMembersLimit: t.team_members_limit,
+  }));
 }

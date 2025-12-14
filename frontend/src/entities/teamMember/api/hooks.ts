@@ -33,6 +33,7 @@ export function useAddTeamMember(teamId: number) {
       queryClient.invalidateQueries({
         queryKey: teamKeys.byId(teamId),
       });
+      queryClient.invalidateQueries({ queryKey: teamKeys.all });
     },
   });
 }
@@ -52,6 +53,7 @@ export function useEditTeamMember(teamId: number) {
       queryClient.invalidateQueries({
         queryKey: teamKeys.byId(teamId),
       });
+      queryClient.invalidateQueries({ queryKey: teamKeys.all });
     },
   });
 }
@@ -68,6 +70,7 @@ export function useDeleteTeamMember(teamId: number, userId: number) {
       queryClient.invalidateQueries({
         queryKey: teamKeys.byId(teamId),
       });
+      queryClient.invalidateQueries({ queryKey: teamKeys.all });
     },
   });
 }
@@ -78,6 +81,8 @@ export function useLeaveTeam(teamId: number) {
   return useMutation<void, Error, void>({
     mutationFn: () => leaveTeam(teamId),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: teamKeys.all });
+
       queryClient.invalidateQueries({
         queryKey: teamKeys.members(teamId),
       });

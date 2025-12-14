@@ -18,7 +18,8 @@ import HackathonTeamIcon from "@/assets/icons/hackathonCard/hackathonTeamIcon.sv
 import ProfileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
 import HackathonNavIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
 import TeamNavIcon from "@/assets/icons/navbarIcons/TeamsIcon.svg?react";
-import ApplicationsNavIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react"
+import ApplicationsNavIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react";
+import ArrowIcon from "@/assets/icons/arrowIcon.svg?react";
 // type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 type SizeToken = "s" | "m" | "l" | "xl";
 
@@ -55,7 +56,8 @@ const iconsMap = {
   profile: ProfileIcon,
   hackNav: HackathonNavIcon,
   appNav: ApplicationsNavIcon,
-  teamNav: TeamNavIcon
+  teamNav: TeamNavIcon,
+  arrow: ArrowIcon,
 };
 
 export type IconName = keyof typeof iconsMap;

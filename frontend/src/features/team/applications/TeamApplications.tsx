@@ -1,21 +1,65 @@
-import { useHackathonApplications } from "@/entities/application";
-import { Application } from "@/entities/application";
-import { Team } from "@/entities/team";
-import { RoleBadge, SIcon, SText } from "@/shared/ui";
-import { IconButton } from "@telegram-apps/telegram-ui";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import styled from "styled-components";
-import { useCreateInvite, useTeamInvites } from "@/entities/invite";
+import { IconButton } from "@telegram-apps/telegram-ui";
+
+import type { Application } from "@/entities/application";
+import { useHackathonApplications } from "@/entities/application";
+import type { Team } from "@/entities/team";
+import { RoleBadge, SIcon, SText } from "@/shared/ui";
+import { useTeamInvites } from "@/entities/invite";
+import { useSendInviteAction } from "@/features/invite/send";
 
 interface TeamApplicationsProps {
   team: Team;
 }
+
 export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
-  const { data: applications } = useHackathonApplications(team.hackathonId);
+  const { data: applicationsData } = useHackathonApplications(team.hackathonId);
+  const applications = applicationsData?.items ?? [];
+
+  const { data: invitesData, isFetching: isInvitesFetching } = useTeamInvites(
+    team.id
+  );
+
+  const invites = invitesData ?? [];
+  const invitedIds = useMemo(
+    () => new Set(invites.map((i) => i.applicationId)),
+    [invites]
+  );
+
+  const { send, isSending } = useSendInviteAction(team.id);
+
+  const [invitingAppId, setInvitingAppId] = useState<number | null>(null);
+
+  const handleInvite = async (application: Application) => {
+    if (invitedIds.has(application.id)) return;
+
+    setInvitingAppId(application.id);
+    try {
+      await send(application.id, application.role);
+    } finally {
+      setInvitingAppId(null);
+    }
+  };
+  
+  if (applications.length === 0) {
+    return (
+      <ApplicationsList>
+        <SText>Заявок пока нет</SText>
+      </ApplicationsList>
+    );
+  }
+
   return (
     <ApplicationsList>
-      {applications.items.map((a) => (
-        <ApplicationCard application={a} team={team} />
+      {applications.map((a) => (
+        <ApplicationCard
+          key={a.id}
+          application={a}
+          invited={invitedIds.has(a.id)}
+          onInvite={() => handleInvite(a)}
+          isInviting={invitingAppId === a.id || isSending || isInvitesFetching}
+        />
       ))}
     </ApplicationsList>
   );
@@ -29,37 +73,21 @@ const ApplicationsList = styled.div`
 
 interface ApplicationCardProps {
   application: Application;
-  team: Team;
+  invited: boolean;
+  isInviting: boolean;
+  onInvite: () => void;
 }
 
-export const ApplicationCard: FC<ApplicationCardProps> = ({
+const ApplicationCard: FC<ApplicationCardProps> = ({
   application,
-  team,
+  invited,
+  isInviting,
+  onInvite,
 }) => {
   const skillsString = useMemo(() => {
-    const skills =
-      application.skills.length < 5
-        ? application.skills
-        : application.skills.slice(0, 4);
-
+    const skills = application.skills?.slice(0, 4) ?? [];
     return skills.map((s) => s.name).join(", ");
   }, [application.skills]);
-
-  console.log(application.skills.join());
-  const inviteMutation = useCreateInvite();
-  const { data: invites } = useTeamInvites(team.id);
-
-  const inviteIds = invites.map((i) => i.applicationId);
-
-  const handleInvite = async () => {
-    await inviteMutation.mutateAsync({
-      teamId: team.id,
-      payload: {
-        applicationId: application.id,
-        role: application.role,
-      },
-    });
-  };
 
   return (
     <Wrapper>
@@ -71,15 +99,15 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
       </FirstRow>
 
       <SecondRow>
-        {inviteIds.find((i) => application.id === i) ? (
-          <SIcon name={"invite"} />
+        {invited ? (
+          <SIcon name="invite" />
         ) : (
-          <IconButton onClick={handleInvite}>
-            <SIcon name={"plus"} />
+          <IconButton onClick={onInvite} disabled={isInviting}>
+            <SIcon name="plus" />
           </IconButton>
         )}
 
-        <SText>{String(skillsString)}</SText>
+        <SText>{skillsString}</SText>
       </SecondRow>
     </Wrapper>
   );

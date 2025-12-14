@@ -1,5 +1,5 @@
 import { useHackathonQuery } from "@/entities/hackathon";
-import { HackathonTeam } from "@/features/team/create/ui/HackathonTeam";
+import { MyHackathonTeam } from "@/widgets/hackathon/my-team";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
@@ -9,7 +9,7 @@ export const HackathonTeamPage = () => {
 
   return (
     <Wrapper>
-      <HackathonTeam hackathon={hackathon} />
+      <MyHackathonTeam hackathon={hackathon} />
     </Wrapper>
   );
 };

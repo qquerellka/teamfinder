@@ -12,6 +12,19 @@ export interface TeamDTO {
   status: TeamStatus;
 }
 
+export interface MyTeamDTO {
+  id: number;
+  hackathon_id: number;
+  name: string;
+  description: string;
+  captain_id: number;
+  status: TeamStatus;
+  hackathon_name: string;
+  team_members_count: number;
+  team_members_limit: number;
+  is_captain: boolean;
+}
+
 export interface Team {
   id: number;
   hackathonId: number;
@@ -19,6 +32,19 @@ export interface Team {
   description: string;
   captainId: number;
   status: TeamStatus;
+}
+
+export interface MyTeam {
+  id: number;
+  hackathonId: number;
+  name: string;
+  description: string;
+  captainId: number;
+  status: TeamStatus;
+  hackathonName: string;
+  teamMembersCount: number;
+  teamMembersLimit: number;
+  isCaptain: boolean;
 }
 
 export interface TeamWithMembers {
@@ -75,4 +101,10 @@ export interface TeamsResponse {
   offset: number;
   limit: number;
   items: Team[];
+}
+
+export interface MyTeamsRsponse {
+  offset: number;
+  limit: number;
+  items: MyTeam[];
 }

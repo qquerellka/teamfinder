@@ -67,7 +67,7 @@ const HackathonPage: React.FC = () => {
       return;
     }
 
-    if (id) navigate(getHackathonTeamPath(id));
+    if (id) navigate(getHackathonTeamPath(Number(id)));
   };
 
   const handleGoToProfile = () => {

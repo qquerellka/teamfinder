@@ -47,7 +47,7 @@ export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
               inviteId={i.id}
               onAnswered={(status) => {
                 if (status === "accepted") {
-                  navigate(getHackathonTeamPath(String(i.teamId)));
+                  navigate(getHackathonTeamPath(i.teamId));
                 }
               }}
             />
