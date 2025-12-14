@@ -9,7 +9,7 @@ import { CreateApplicationForm } from "@/features/application/create";
 import { EditApplicationForm } from "@/features/application/edit";
 
 import { MyApplicationCard } from "./MyApplicationCard";
-import { ApplicationInvites } from "@/widgets/invites/application-invites"; // важно: widget, не feature
+import { ApplicationInvites } from "@/widgets/invites/application-invites";
 import { useNavigate } from "react-router-dom";
 
 export const MyHackathonApplication: FC<{ hackathon: Hackathon }> = ({

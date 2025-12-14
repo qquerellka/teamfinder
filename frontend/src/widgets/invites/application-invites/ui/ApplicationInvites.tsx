@@ -3,7 +3,8 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
 import { useApplicationInvites } from "@/entities/invite";
-import { InviteCardView } from "@/entities/invite/ui/InviteCardView";
+import type { MegaInvite } from "@/entities/invite";
+import { InviteCardView } from "@/entities/invite";
 import { InviteRespondButtons } from "@/features/invite/respond";
 import { getHackathonTeamPath } from "@/shared/routing/paths";
 import { SText } from "@/shared/ui";
@@ -16,10 +17,11 @@ export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
   const navigate = useNavigate();
   const { data } = useApplicationInvites(appId);
 
-  const invites = data ?? [];
+  const invites: MegaInvite[] = data ?? [];
+
   const pending = useMemo(
     () => invites.filter((i) => i.status === "pending"),
-    [invites],
+    [invites]
   );
 
   if (pending.length === 0) {
