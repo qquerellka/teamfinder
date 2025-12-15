@@ -6,10 +6,11 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import aliased
 
 from repositories.base import BaseRepository
-from persistend.enums import TeamStatus, RoleType
+from persistend.enums import TeamStatus, RoleType, InviteStatus
 from persistend.models.hackathon import Hackathon
 from persistend.models.team import Team
 from persistend.models.team_member import TeamMember
+from persistend.models.invite import Invite
 
 
 class TeamsRepo(BaseRepository):
@@ -141,11 +142,11 @@ class TeamsRepo(BaseRepository):
         user_id: int,
         limit: int,
         offset: int,
-    ) -> List[tuple[Team, str, Optional[int], int]]:
+    ) -> List[tuple[Team, str, Optional[int], int, int]]:
         """Список команд пользователя + мета для /me/teams.
 
         Возвращает кортежи:
-          (team, hackathon_name, team_members_limit, team_members_count)
+        (team, hackathon_name, team_members_limit, team_members_count, invites_count)
         """
         T = Team
         TM_filter = TeamMember
@@ -158,6 +159,13 @@ class TeamsRepo(BaseRepository):
             .scalar_subquery()
         )
 
+        invites_count_sq = (
+            select(func.count(Invite.id))
+            .where(Invite.team_id == T.id)
+            .scalar_subquery()
+            .where(Invite.status == InviteStatus.pending)
+        )
+
         async with self._sm() as s:
             stmt = (
                 select(
@@ -165,6 +173,7 @@ class TeamsRepo(BaseRepository):
                     H.name.label("hackathon_name"),
                     H.team_members_limit.label("team_members_limit"),
                     members_count_sq.label("team_members_count"),
+                    invites_count_sq.label("invites_count"),
                 )
                 .join(TM_filter, TM_filter.team_id == T.id)
                 .join(H, H.id == T.hackathon_id)
@@ -175,23 +184,3 @@ class TeamsRepo(BaseRepository):
             )
             res = await s.execute(stmt)
             return list(res.all())
-
-    async def user_has_team_on_hackathon(
-        self,
-        *,
-        user_id: int,
-        hackathon_id: int,
-    ) -> bool:
-        T = Team
-        TM = TeamMember
-
-        async with self._sm() as s:
-            stmt = (
-                select(func.count())
-                .select_from(TM)
-                .join(T, TM.team_id == T.id)
-                .where(T.hackathon_id == hackathon_id)
-                .where(TM.user_id == user_id)
-            )
-            res = await s.execute(stmt)
-            return res.scalar_one() > 0

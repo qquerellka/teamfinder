@@ -83,5 +83,6 @@ export function myTeamsToCamelCase(teamsDTO: MyTeamDTO[]): MyTeam[] {
     isCaptain: t.is_captain,
     teamMembersCount: t.team_members_count,
     teamMembersLimit: t.team_members_limit,
+    countInvites: t.count_invites
   }));
 }

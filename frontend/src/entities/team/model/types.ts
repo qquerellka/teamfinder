@@ -23,6 +23,7 @@ export interface MyTeamDTO {
   team_members_count: number;
   team_members_limit: number;
   is_captain: boolean;
+  count_invites: number,
 }
 
 export interface Team {
@@ -45,6 +46,7 @@ export interface MyTeam {
   teamMembersCount: number;
   teamMembersLimit: number;
   isCaptain: boolean;
+  countInvites: number,
 }
 
 export interface TeamWithMembers {

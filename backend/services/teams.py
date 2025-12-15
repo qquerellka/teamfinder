@@ -61,7 +61,7 @@ class TeamsService:
         user_id: int,
         limit: int,
         offset: int,
-    ) -> List[Tuple[Team, str, Optional[int], int]]:
+    ) -> List[Tuple[Team, str, Optional[int], int, int]]:
         return await self.repo.list_by_user_with_meta(
             user_id=user_id,
             limit=limit,

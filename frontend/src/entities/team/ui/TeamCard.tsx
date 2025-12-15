@@ -8,6 +8,7 @@ interface TeamCardProps {
   teamMembersCount: number;
   teamMembersLimit: number;
   isCaptain: boolean;
+  invitesCount: number;
   onNavigate: () => void;
 }
 
@@ -18,23 +19,39 @@ export const TeamCard: FC<TeamCardProps> = ({
   teamMembersLimit,
   teamName,
   onNavigate,
+  invitesCount,
 }) => {
   return (
     <Wrapper>
-      <FirstRow>
+      <Row>
         <Name>
           <SText>{teamName}</SText>
           {isCaptain && <SIcon name={"captain"} color={"#F3BD28"}></SIcon>}
         </Name>
         <SIcon onClick={onNavigate} name={"arrow"} />
-      </FirstRow>
-      <SecondRow>
-        <SText>{hackathonName}</SText>
-        <TeamLoad
-          teamMembersCount={teamMembersCount}
-          teamMembersLimit={teamMembersLimit}
-        />
-      </SecondRow>
+      </Row>
+      {invitesCount > 0 ? (
+        <>
+          <Row>
+            <SText>{hackathonName}</SText>
+          </Row>
+          <Row>
+            <InvitesBadge count={invitesCount} />
+            <TeamLoad
+              teamMembersCount={teamMembersCount}
+              teamMembersLimit={teamMembersLimit}
+            />
+          </Row>
+        </>
+      ) : (
+        <Row>
+          <SText>{hackathonName}</SText>
+          <TeamLoad
+            teamMembersCount={teamMembersCount}
+            teamMembersLimit={teamMembersLimit}
+          />
+        </Row>
+      )}
     </Wrapper>
   );
 };
@@ -53,13 +70,21 @@ const Name = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
-const FirstRow = styled.div`
+const Row = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 `;
-const SecondRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+
+interface InvitesBadgeProps {
+  count: number;
+}
+export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
+  return <Badge>{count} хотят вступить</Badge>;
+};
+
+const Badge = styled(SText)`
+  border-radius: 1.5rem;
+  padding: 0 0.5rem;
+  background-color: var(--tg-theme-section-header-text-color);
 `;

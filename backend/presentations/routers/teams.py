@@ -44,6 +44,7 @@ class TeamMeOut(TeamOut):
     hackathon_name: str
     team_members_count: int
     team_members_limit: Optional[int] = None
+    invites_count: int
     is_captain: bool
 
 
@@ -252,7 +253,7 @@ async def list_my_teams(
     )
 
     items: List[TeamMeOut] = []
-    for team, hackathon_name, team_members_limit, team_members_count in rows:
+    for team, hackathon_name, team_members_limit, team_members_count, invites_count in rows:
         base = TeamOut.model_validate(team)
         items.append(
             TeamMeOut(
@@ -260,9 +261,11 @@ async def list_my_teams(
                 hackathon_name=hackathon_name,
                 team_members_limit=team_members_limit,
                 team_members_count=team_members_count,
+                invites_count=invites_count,
                 is_captain=(team.captain_id == user_id),
             )
         )
+
 
     return TeamMeListOut(items=items, limit=limit, offset=offset)
 
