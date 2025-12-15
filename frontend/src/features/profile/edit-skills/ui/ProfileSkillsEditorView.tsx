@@ -1,31 +1,32 @@
+import type { FC } from "react";
 import { Multiselect, type MultiselectProps } from "@telegram-apps/telegram-ui";
-import { FC } from "react";
-
 import { ErrorText, InputSection } from "@/shared/ui";
 
-type MultiSelectOption = MultiselectProps["options"][number];
+type Option = MultiselectProps["options"][number];
 
 interface ProfileSkillsEditorViewProps {
-  options: MultiSelectOption[];
-  selectedOptions: MultiSelectOption[];
+  options: Option[];
+  value: Option[];
   isLoading: boolean;
-  skillsError: string | null;
-  onChange: (selected: MultiSelectOption[]) => void;
+  error: string | null;
+  onChange: (selected: Option[]) => void;
+  disabled?: boolean;
 }
 
 export const ProfileSkillsEditorView: FC<ProfileSkillsEditorViewProps> = ({
   options,
-  selectedOptions,
+  value,
   isLoading,
-  skillsError,
+  error,
   onChange,
+  disabled,
 }) => {
   return (
     <InputSection header="Навыки">
       <Multiselect
-        status={skillsError ? "error" : "default"}
+        status={error ? "error" : "default"}
         options={options}
-        value={selectedOptions}
+        value={value}
         onChange={onChange}
         selectedBehavior="hide"
         closeDropdownAfterSelect={false}
@@ -33,8 +34,9 @@ export const ProfileSkillsEditorView: FC<ProfileSkillsEditorViewProps> = ({
         placeholder={
           isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
         }
+        disabled={disabled}
       />
-      {skillsError && <ErrorText>{skillsError}</ErrorText>}
+      {error && <ErrorText>{error}</ErrorText>}
     </InputSection>
   );
 };

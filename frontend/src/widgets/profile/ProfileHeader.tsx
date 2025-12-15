@@ -1,17 +1,22 @@
 import { Avatar } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 import { SText } from "@/shared/ui";
-import { useAuthUser } from "@/entities/user";
-
-export const ProfileHeader = () => {
-  const { data: user } = useAuthUser();
-
+import { User } from "@/entities/user";
+import { FC } from "react";
+interface ProfileHeaderProps {
+  user: User;
+}
+export const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
   return (
     <SProfileHeader>
       <Avatar size={96} src={user?.avatarUrl || undefined} />
       <SFullName>
-        <SText $fs={24} $fw={600}>{user?.firstName}</SText>
-        <SText $fs={24} $fw={600}>{user?.secondName}</SText>
+        <SText $fs={24} $fw={600}>
+          {user?.firstName}
+        </SText>
+        <SText $fs={24} $fw={600}>
+          {user?.secondName}
+        </SText>
       </SFullName>
     </SProfileHeader>
   );

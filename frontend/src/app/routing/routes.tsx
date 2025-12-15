@@ -54,7 +54,7 @@ const routes: RouteObject[] = [
       { path: paths.applications, element: <ApplicationsPage /> },
 
       {
-        path: paths.user,
+        path: paths.userRoot,
         children: [
           { index: true, element: <ProfilePage /> },
           { path: ":id", element: <ProfilePage /> },

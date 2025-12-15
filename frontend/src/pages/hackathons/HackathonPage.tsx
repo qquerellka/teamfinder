@@ -10,7 +10,7 @@ import { useAuthUserApplicationsOnHackathon } from "@/entities/application";
 import {
   getHackathonParticipationPath,
   getHackathonTeamPath,
-  getUserPath,
+  paths,
 } from "@/shared/routing/paths";
 
 import { normalizeUrl } from "@/shared/helpers/url";
@@ -72,7 +72,7 @@ const HackathonPage: React.FC = () => {
 
   const handleGoToProfile = () => {
     setIsSkillsModalOpen(false);
-    navigate(getUserPath(user.id));
+    navigate(paths.userRoot);
   };
 
   return (

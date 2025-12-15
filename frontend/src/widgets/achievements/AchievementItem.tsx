@@ -9,17 +9,35 @@ import { formatHackPlace } from "@/entities/achievement/lib/formatters";
 
 interface AchievementItemProps {
   achievement: Achievement;
+  canEdit: boolean;
 }
 
-export const AchievementItem: FC<AchievementItemProps> = ({ achievement }) => {
+export const AchievementItem: FC<AchievementItemProps> = ({
+  achievement,
+  canEdit,
+}) => {
   const navigate = useNavigate();
 
   const handleAchievementClick = (id: number) => {
-    navigate(`${paths.user}/achievements/${id}`);
+    navigate(`${paths.userRoot}/achievements/${id}`);
   };
+  if (canEdit)
+    return (
+      <Wrapper
+        onClick={() => handleAchievementClick(achievement.id)}
+        after={
+          <SText $fs={16} $fw={500}>
+            {formatHackPlace(achievement.place)}
+          </SText>
+        }
+      >
+        <SText $fs={16} $fw={500}>
+          {achievement.hackathonName}
+        </SText>
+      </Wrapper>
+    );
   return (
     <Wrapper
-      onClick={() => handleAchievementClick(achievement.id)}
       after={
         <SText $fs={16} $fw={500}>
           {formatHackPlace(achievement.place)}

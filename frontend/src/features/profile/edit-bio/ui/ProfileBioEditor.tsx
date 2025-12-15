@@ -1,10 +1,7 @@
-import { ProfileBioEditorView } from "@/features/profile/edit-bio/ui/ProfileBioEditorView";
-import { useProfileBioEditor } from "@/features/profile/edit-bio/hooks/useProfileBioEditor";
+import { useProfileBioEditor } from "../model/useProfileBioEditor";
+import { ProfileBioEditorView } from "./ProfileBioEditorView";
 
 export const ProfileBioEditor = () => {
-  const { bio, bioError, handleChange } = useProfileBioEditor();
-
-  return (
-    <ProfileBioEditorView bio={bio} bioError={bioError} onChange={handleChange} />
-  );
+  const vm = useProfileBioEditor();
+  return <ProfileBioEditorView value={vm.bio} error={vm.error} onChange={vm.onChange} />;
 };

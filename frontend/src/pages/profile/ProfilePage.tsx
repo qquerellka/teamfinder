@@ -1,38 +1,55 @@
-import styled from "styled-components";
-import { ProfileSkillsEditor } from "@/features/profile/edit-skills/ui/ProfileSkillsEditor";
-import { ProfileBioEditor } from "@/features/profile/edit-bio/ui/ProfileBioEditor";
-import { AchievementItem } from "@/widgets/achievements/AchievementItem";
-import { useUser } from "@/entities/user";
-import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
 import { useParams } from "react-router-dom";
+import { useAuthUser, useUser } from "@/entities/user";
+import { ProfileBioEditor } from "@/features/profile/edit-bio";
+import { ProfileSkillsEditor } from "@/features/profile/edit-skills";
+import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
+import { InputSection } from "@/shared/ui";
+import { Input, Textarea } from "@telegram-apps/telegram-ui";
+import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
+import styled from "styled-components";
+import { AchievementItem } from "@/widgets/achievements/AchievementItem";
 
 export const ProfilePage = () => {
+  const { id } = useParams<{ id?: string }>();
 
-  const { id } = useParams<{ id: string }>();
-  const { data: user } = useUser(Number(id));
+  const { data: me } = useAuthUser();
 
-  if (user.id !== Number(id)) {
-    return <div className="">{id}</div>;
-  }
+  const viewedId = id ? Number(id) : me?.id; // /user -> me
+  const { data: user } = useUser(viewedId ?? 0); // лучше enabled, если хочешь
+
+  if (!me || !user) return null; // Loader
+
+  const isOwner = me.id === user.id;
+
   return (
     <SProfile>
-      <ProfileHeader />
+      <ProfileHeader user={user} />
+
       <SExtraInfo>
-        <ProfileSkillsEditor />
-        <ProfileBioEditor />
-        <div>
-          <AchievementsListHeader />
-          <Wrapper>
-            {user?.achievements?.map((a) => (
-              <AchievementItem key={a.id} achievement={a} />
-            ))}
-          </Wrapper>
-        </div>
+        {isOwner ? (
+          <>
+            <ProfileSkillsEditor />
+            <ProfileBioEditor />
+          </>
+        ) : (
+          <>
+            <ProfileSkillsReadonly skills={user.skills} />
+            <ProfileBioReadonly bio={user.bio ?? ""} />
+          </>
+        )}
+
+        <AchievementsListHeader showAdd={isOwner} />
+        {/* achievements list */}
+        <Wrapper>
+          {user?.achievements?.map((a) => (
+            <AchievementItem key={a.id} canEdit={isOwner} achievement={a} />
+          ))}
+        </Wrapper>
       </SExtraInfo>
     </SProfile>
   );
 };
+
 const Wrapper = styled.div`
   padding: 20px 22px 16px;
   display: flex;
@@ -54,3 +71,15 @@ const SExtraInfo = styled.div`
   gap: 0.5rem;
 `;
 export default ProfilePage;
+
+const ProfileBioReadonly = ({ bio }: { bio: string }) => (
+  <InputSection header="Обо мне">
+    <Textarea value={bio} disabled />
+  </InputSection>
+);
+
+const ProfileSkillsReadonly = ({ skills }: { skills: { name: string }[] }) => (
+  <InputSection header="Навыки">
+    <Input value={skills.map((s) => s.name).join(", ")} disabled />
+  </InputSection>
+);

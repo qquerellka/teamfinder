@@ -5,6 +5,8 @@ import { Avatar } from "@telegram-apps/telegram-ui";
 import type { TeamWithMembers } from "@/entities/team";
 import { SIcon, SText } from "@/shared/ui";
 import { useRemoveTeamMember } from "@/features/team-member/remove";
+import { useNavigate } from "react-router-dom";
+import { getUserPath } from "@/shared/routing/paths";
 
 type Member = TeamWithMembers["members"][number];
 
@@ -14,6 +16,7 @@ export const TeamMembersSection: FC<{
   membersLimit: number;
   canRemoveMembers: boolean; // капитан может удалять не-капитанов
 }> = ({ teamId, members, membersLimit, canRemoveMembers }) => {
+  const navigate = useNavigate();
   return (
     <Block>
       <HeaderRow>
@@ -36,6 +39,7 @@ export const TeamMembersSection: FC<{
             teamId={teamId}
             member={m}
             canRemove={canRemoveMembers && !m.isCaptain}
+            onNavigate={() => navigate(getUserPath(m.user.id))}
           />
         ))}
       </List>
@@ -47,7 +51,8 @@ const TeamMemberRow: FC<{
   teamId: number;
   member: Member;
   canRemove: boolean;
-}> = ({ teamId, member, canRemove }) => {
+  onNavigate: () => void;
+}> = ({ teamId, member, canRemove, onNavigate }) => {
   const fullName = `${member.user.firstName ?? ""} ${member.user.lastName ?? ""}`.trim();
   const { remove, isRemoving } = useRemoveTeamMember({
     teamId,
@@ -55,7 +60,7 @@ const TeamMemberRow: FC<{
   });
 
   return (
-    <Row>
+    <Row onClick={onNavigate}>
       <AvatarWrapper>
         <Avatar size={40} src={member.user.avatarUrl}>
           {member.user.firstName?.[0]}

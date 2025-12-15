@@ -1,28 +1,34 @@
-import { ChangeEvent, FC } from "react";
+import type { ChangeEvent, FC } from "react";
 import styled from "styled-components";
 import { Textarea } from "@telegram-apps/telegram-ui";
-
 import { ErrorText, InputSection } from "@/shared/ui";
 
 interface ProfileBioEditorViewProps {
-  bio: string;
-  bioError: string | null;
-  onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
-};
+  value: string;
+  error: string | null;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  disabled?: boolean;
+}
 
-export const ProfileBioEditorView:FC<ProfileBioEditorViewProps> = ({ bio, bioError, onChange }) => {
+export const ProfileBioEditorView: FC<ProfileBioEditorViewProps> = ({
+  value,
+  error,
+  onChange,
+  disabled,
+}) => {
   return (
     <InputSection header="Обо мне">
       <StyledTextarea
-        status={bioError ? "error" : "default"}
-        value={bio}
+        status={error ? "error" : "default"}
+        value={value}
         onChange={onChange}
         placeholder="Расскажите немного о себе..."
+        disabled={disabled}
       />
-      {bioError && <ErrorText>{bioError}</ErrorText>}
+      {error && <ErrorText>{error}</ErrorText>}
     </InputSection>
   );
-}
+};
 
 const StyledTextarea = styled(Textarea)`
   background-color: var(--tg-theme-secondary-bg-color);

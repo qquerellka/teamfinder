@@ -1,17 +1,15 @@
-import { useProfileSkillsEditor } from "@/features/profile/edit-skills/hooks/useProfileSkillsEditor";
-import { ProfileSkillsEditorView } from "@/features/profile/edit-skills/ui/ProfileSkillsEditorView";
+import { useProfileSkillsEditor } from "../model/useProfileSkillsEditor";
+import { ProfileSkillsEditorView } from "./ProfileSkillsEditorView";
 
 export const ProfileSkillsEditor = () => {
-  const { options, selectedOptions, isLoading, skillsError, handleChange } =
-    useProfileSkillsEditor();
-
+  const vm = useProfileSkillsEditor();
   return (
     <ProfileSkillsEditorView
-      options={options}
-      selectedOptions={selectedOptions}
-      isLoading={isLoading}
-      skillsError={skillsError}
-      onChange={handleChange}
+      options={vm.options}
+      value={vm.value}
+      isLoading={vm.isLoading}
+      error={vm.error}
+      onChange={vm.onChange}
     />
   );
 };

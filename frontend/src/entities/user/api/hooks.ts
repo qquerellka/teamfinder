@@ -27,6 +27,11 @@ export function useEditUserMainInfo() {
     mutationFn: (payload: UserEdit) => editUserMainInfo(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me });
+
+      const me = queryClient.getQueryData<User>(queryKeys.user.me);
+      if (me?.id) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.byId(me.id) });
+      }
     },
   });
 }
