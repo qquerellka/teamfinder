@@ -47,7 +47,7 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
       {invitesCount > 0 && <InvitesBadge count={invitesCount} />}
       <RoleBadge role={role}></RoleBadge>
     </Wrapper>
-  ); n 
+  );
 };
 
 const Wrapper = styled.div`
