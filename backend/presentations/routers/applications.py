@@ -20,14 +20,17 @@ from pydantic import BaseModel, Field
 from presentations.routers.users import get_current_user_id
 from repositories.users import UsersRepo
 from repositories.hackathons import HackathonsRepo
-from persistend.enums import RoleType, ApplicationStatus
+from persistend.enums import RoleType, ApplicationStatus, HackathonMode
 from services.applications import ApplicationsService
+from repositories.invites import InvitesRepo
+from persistend.enums import InviteStatus
 
 router = APIRouter(tags=["applications"])
 
 users_repo = UsersRepo()
 hacks_repo = HackathonsRepo()
 apps_service = ApplicationsService()
+invites_repo = InvitesRepo()
 
 
 # ---- СХЕМЫ ----
@@ -52,6 +55,14 @@ class ApplicationCardOut(BaseModel):
 
     skills: List[SkillOut] = Field(default_factory=list)
     registration_end_date: Optional[str] = None
+
+
+class MyApplicationCardOut(ApplicationCardOut):
+    """Расширенная карточка для /me/applications."""
+    hackathon_name: Optional[str] = None
+    city: Optional[str] = None
+    mode: Optional[HackathonMode] = None
+    invites_count: int = 0
 
 
 class ApplicationCreateIn(BaseModel):
@@ -95,6 +106,45 @@ async def _pack_application_card(app_obj) -> ApplicationCardOut:
         skills=skills_out,
         registration_end_date=reg_end,
     )
+
+
+async def _pack_my_application_card(app_obj) -> MyApplicationCardOut:
+    """Карточка для /me/applications с полями хакатона и количеством инвайтов."""
+    usr = await users_repo.get_by_id(app_obj.user_id)
+    if not usr:
+        raise HTTPException(
+            status_code=500, detail="dangling application: user not found"
+        )
+
+    u_skills = await users_repo.get_user_skills(usr.id)
+    skills_out = [SkillOut(id=s.id, slug=s.slug, name=s.name) for s in u_skills]
+
+    hack = await hacks_repo.get_by_id(app_obj.hackathon_id)
+    reg_end = (
+        hack.registration_end_date.isoformat()
+        if (hack and hack.registration_end_date)
+        else None
+    )
+
+    invites_count = await invites_repo.count_for_application(app_obj.id, status=InviteStatus.pending)
+
+    return MyApplicationCardOut(
+        id=app_obj.id,
+        hackathon_id=app_obj.hackathon_id,
+        user_id=app_obj.user_id,
+        role=app_obj.role,
+        status=app_obj.status,
+        username=usr.username,
+        first_name=usr.first_name,
+        last_name=usr.last_name,
+        skills=skills_out,
+        registration_end_date=reg_end,
+        city=(hack.city if hack else None),
+        mode=(hack.mode if hack else None),
+        hackathon_name=(hack.name if hack else None),
+        invites_count=invites_count,
+    )
+
 
 
 # ---- РОУТЫ: список по хакатону ----
@@ -149,11 +199,8 @@ async def get_my_application_on_hackathon(
     )
 
     if not app:
-        # анкеты нет — просто возвращаем None
-        # FastAPI вернёт 200 и body: null
         return None
 
-    # анкета есть — упаковываем и отдаём
     return await _pack_application_card(app)
 
 
@@ -188,12 +235,12 @@ async def create_my_application(
 # ---- РОУТЫ: мои анкеты по всем хакатонам ----
 
 
-@router.get("/me/applications", response_model=list[ApplicationCardOut])
+@router.get("/me/applications", response_model=list[MyApplicationCardOut])
 async def list_my_applications(
     user_id: int = Depends(get_current_user_id),
 ):
     rows = await apps_service.list_my(user_id=user_id)
-    items = [await _pack_application_card(r) for r in rows]
+    items = [await _pack_my_application_card(r) for r in rows]
     return items
 
 
@@ -229,8 +276,6 @@ async def patch_application_by_id(
 
     if "role" in data and data["role"] is not None:
         data["role"] = data["role"].value
-    # if "status" in data and data["status"] is not None:
-    #     data["status"] = data["status"].value
 
     updated = await apps_service.update(application_id, data)
     if not updated:

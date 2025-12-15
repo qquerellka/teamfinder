@@ -1,5 +1,5 @@
-type HackathonMode = "online" | "offline" | "hybrid";
-type HackathonStatus = "open" | "closed"
+import { HackathonMode, HackathonStatus } from "@/shared/types/enums";
+
 export interface Hackathon {
   id: number;
   name: string;

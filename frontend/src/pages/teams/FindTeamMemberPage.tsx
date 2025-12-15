@@ -8,8 +8,7 @@ import { useParams } from "react-router-dom";
 
 export const FindTeamMemberPage = () => {
   const { id } = useParams<{ id: string }>();
-//   const teamId = Number(id);
-const { data: team } = useTeam(Number(id));
+  const { data: team } = useTeam(Number(id));
   const [tab, setTab] = useState<"vacancy" | "applications">("vacancy");
 
   return (

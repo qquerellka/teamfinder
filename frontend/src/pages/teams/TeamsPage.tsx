@@ -1,6 +1,3 @@
-// import { TeamWithMembers } from "@/entities/team/model/types";
-// import { FC } from "react";
-
 import { useMyTeams } from "@/entities/team";
 import { TeamCard } from "@/entities/team/ui/TeamCard";
 import { getHackathonTeamPath } from "@/shared/routing/paths";
@@ -40,16 +37,6 @@ export const UserTeamsPage = () => {
 
 export default UserTeamsPage;
 
-// interface TeamCardProps {
-//   team: TeamWithMembers;
-// }
-
-// export const TeamCard: FC<TeamCardProps> = ({ team }) => {
-//   return (<Wrapper>
-//     <div className=""></div>
-//     <div className=""></div>
-//   </Wrapper>);
-// };
 const NotFound = styled.div`
   display: flex;
   flex-direction: row;

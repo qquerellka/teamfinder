@@ -17,13 +17,13 @@ const NAV: NavItem[] = [
   {
     id: 2,
     name: "applications",
-    icon: "teamNav",
+    icon: "appNav",
     path: paths.applications,
   },
   {
     id: 3,
     name: "teams",
-    icon: "appNav",
+    icon: "teamNav",
     path: paths.teams,
   },
   { id: 4, name: "profile", icon: "profile", path: paths.profile },

@@ -38,6 +38,8 @@ export async function getAuthUserApplicationOnHackathon(
   return applicationsToCamelCase([data])[0];
 }
 
+
+
 export async function getAuthUserApplications(): Promise<Application[]> {
   const { data } = await apiClient.get<ApplicationDTO[]>(`/me/applications`);
   return applicationsToCamelCase(data);

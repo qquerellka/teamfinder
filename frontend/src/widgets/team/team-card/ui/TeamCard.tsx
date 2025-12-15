@@ -69,7 +69,7 @@ const { leave, isLeaving } = useLeaveTeamAction(team.id, { onDone: onExit });
         membersLimit={hackathon.teamMembersLimit}
         canRemoveMembers={isCaptain}
       />
-
+      
       <Buttons>
         {isCaptain && (
           <SButton mode="bezeled" onClick={copy} stretched disabled={isCopying}>

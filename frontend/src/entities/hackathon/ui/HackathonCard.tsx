@@ -28,6 +28,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
   showShareButton = false,
   onShareClick,
 }) => {
+  console.log(typeof hackathon.registrationEndDate)
   const params: HackathonParamConfig[] = useMemo(
     () => [
       {

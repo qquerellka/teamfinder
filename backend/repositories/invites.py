@@ -16,9 +16,7 @@ async_session_maker = get_sessionmaker()
 class InvitesRepo:
     async def get_by_id(self, invite_id: int) -> Optional[Invite]:
         async with async_session_maker() as session:
-            res = await session.execute(
-                select(Invite).where(Invite.id == invite_id)
-            )
+            res = await session.execute(select(Invite).where(Invite.id == invite_id))
             return res.scalar_one_or_none()
 
     async def get_by_team_and_application(
@@ -71,9 +69,7 @@ class InvitesRepo:
         self, invite_id: int, status: InviteStatus
     ) -> Optional[Invite]:
         async with async_session_maker() as session:
-            res = await session.execute(
-                select(Invite).where(Invite.id == invite_id)
-            )
+            res = await session.execute(select(Invite).where(Invite.id == invite_id))
             inv = res.scalar_one_or_none()
             if not inv:
                 return None
@@ -132,3 +128,20 @@ class InvitesRepo:
             stmt = stmt.order_by(Invite.created_at.desc())
             res = await session.execute(stmt)
             return list(res.scalars().all())
+
+    async def count_for_application(
+        self,
+        application_id: int,
+        status: Optional[InviteStatus] = None,
+    ) -> int:
+        """Количество инвайтов по анкете (опционально по статусу)."""
+        async with async_session_maker() as session:
+            stmt = (
+                select(func.count())
+                .select_from(Invite)
+                .where(Invite.application_id == application_id)
+            )
+            if status is not None:
+                stmt = stmt.where(Invite.status == status)
+            res = await session.execute(stmt)
+            return int(res.scalar_one())

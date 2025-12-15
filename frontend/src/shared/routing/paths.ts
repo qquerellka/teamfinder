@@ -19,7 +19,7 @@ export const paths = {
 export const getHackathonPath = (id: string) =>
   paths.hackathon.replace(":id", String(id));
 
-export const getHackathonParticipationPath = (id: string) =>
+export const getHackathonParticipationPath = (id: number) =>
   paths.hackathonParticipate.replace(":id", String(id));
 
 export const getHackathonTeamPath = (id: number) =>

@@ -1,5 +1,5 @@
 import { Skill, SkillDTO } from "@/entities/skill";
-import { Role } from "@/shared/types/enums";
+import { HackathonMode, Role } from "@/shared/types/enums";
 
 type ApplicationStatus = "published" | "hidden";
 export interface ApplicationDTO {
@@ -13,6 +13,10 @@ export interface ApplicationDTO {
   skills: SkillDTO[];
   registration_end_date: string;
   status: ApplicationStatus;
+  mode: HackathonMode;
+  city: string;
+  hackathon_name: string;
+  invites_count: number;
 }
 
 export interface ApplicationsResponseDTO {
@@ -30,7 +34,11 @@ export interface Application {
   firstName: string;
   lastName: string;
   skills: Skill[];
-  registrationEndDate: string;
+  registrationEndDate: Date;
+  mode: HackathonMode;
+  city: string;
+  invitesCount: number;
+  hackathonName: string;
   status: ApplicationStatus;
 }
 

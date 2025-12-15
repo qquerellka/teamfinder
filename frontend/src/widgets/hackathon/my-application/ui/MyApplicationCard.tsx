@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Button } from "@telegram-apps/telegram-ui";
-import type { FC } from "react";
+import { useMemo, type FC } from "react";
 
 import type { Hackathon } from "@/entities/hackathon";
 import type { Application } from "@/entities/application";
@@ -33,7 +33,10 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
     applicationId: application.id,
     onDone: onDeleted, // единый стиль
   });
-
+  const skillsString = useMemo(() => {
+    const skills = application.skills?.slice(0, 4) ?? [];
+    return skills.map((s) => s.name).join(", ");
+  }, [application.skills]);
   return (
     <>
       <Wrapper>
@@ -51,10 +54,19 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
             </IconButton>
           </Icons>
         </Header>
-
-        <SText $fs={14} $fw={500}>
-          {formatRegistrationDate(hackathon.registrationEndDate)}
-        </SText>
+        <Info>
+          <InfoItem>
+            <SIcon name="hackathonRegistration" />
+            <SText $fs={14} $fw={500}>
+              {formatRegistrationDate(hackathon.registrationEndDate)}
+            </SText>
+          </InfoItem>
+          <InfoItem>
+            <SText $fs={14} $fw={500}>
+              {skillsString}
+            </SText>
+          </InfoItem>
+        </Info>
 
         <RoleBadge role={application.role} />
       </Wrapper>
@@ -72,7 +84,6 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
   );
 };
 
-
 const Wrapper = styled.div`
   background-color: var(--tg-theme-section-bg-color);
   display: flex;
@@ -81,7 +92,18 @@ const Wrapper = styled.div`
   padding: 1rem;
   border-radius: 1rem;
 `;
+const Info = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
 
+const InfoItem = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+`;
 const Header = styled.div`
   display: flex;
   flex-direction: row;

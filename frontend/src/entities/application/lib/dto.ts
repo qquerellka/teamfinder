@@ -8,6 +8,8 @@ import {
   ApplicationEditDTO,
 } from "../model/types";
 
+const parseDate = (value: string): Date => new Date(value.replace(" ", "T"));
+
 export function applicationsToCamelCase(
   applications: ApplicationDTO[]
 ): Application[] {
@@ -20,8 +22,12 @@ export function applicationsToCamelCase(
     firstName: a.first_name,
     lastName: a.last_name,
     skills: a.skills,
-    registrationEndDate: a.registration_end_date,
-    status: a.status
+    registrationEndDate: parseDate(a.registration_end_date),
+    status: a.status,
+    city: a.city,
+    mode: a.mode,
+    invitesCount: a.invites_count,
+    hackathonName: a.hackathon_name,
   }));
 }
 
@@ -39,3 +45,4 @@ export function applicationEditToDTO(
     role: payload.role,
   };
 }
+
