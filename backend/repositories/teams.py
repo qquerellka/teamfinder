@@ -162,9 +162,10 @@ class TeamsRepo(BaseRepository):
         invites_count_sq = (
             select(func.count(Invite.id))
             .where(Invite.team_id == T.id)
-            .scalar_subquery()
             .where(Invite.status == InviteStatus.pending)
+            .scalar_subquery()
         )
+
 
         async with self._sm() as s:
             stmt = (
@@ -184,3 +185,23 @@ class TeamsRepo(BaseRepository):
             )
             res = await s.execute(stmt)
             return list(res.all())
+        
+    async def user_has_team_on_hackathon(
+        self,
+        *,
+        user_id: int,
+        hackathon_id: int,
+    ) -> bool:
+        T = Team
+        TM = TeamMember
+
+        async with self._sm() as s:
+            stmt = (
+                select(func.count())
+                .select_from(TM)
+                .join(T, TM.team_id == T.id)
+                .where(T.hackathon_id == hackathon_id)
+                .where(TM.user_id == user_id)
+            )
+            res = await s.execute(stmt)
+            return res.scalar_one() > 0

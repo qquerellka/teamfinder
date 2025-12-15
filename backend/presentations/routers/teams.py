@@ -10,6 +10,7 @@ from services.teams import TeamsService
 from services.team_members import TeamMembersService
 from services.hackathons import HackathonsService
 from repositories.users import UsersRepo
+from repositories.teams import TeamsRepo
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, status, Body
 from settings.config import settings
 
@@ -18,6 +19,7 @@ router = APIRouter(tags=["teams"])
 teams_service = TeamsService()
 members_service = TeamMembersService()
 hacks_service = HackathonsService()
+users_repo = UsersRepo()
 users_repo = UsersRepo()
 
 
