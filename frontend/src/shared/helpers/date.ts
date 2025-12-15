@@ -52,9 +52,6 @@ export function getTeamMembersRange(
   teamMembersLimit: number,
   teamMembersMinimum: number
 ): string {
-  if (isNaN(teamMembersMinimum) || isNaN(teamMembersLimit)) {
-    throw new Error("Invalid input values");
-  }
 
   return `${teamMembersMinimum} - ${teamMembersLimit} участников`;
 }

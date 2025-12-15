@@ -100,7 +100,7 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
 
       <SecondRow>
         {invited ? (
-          <SIcon name="invite" />
+          <SIcon name="sentInvite" />
         ) : (
           <IconButton onClick={onInvite} disabled={isInviting}>
             <SIcon name="plus" />

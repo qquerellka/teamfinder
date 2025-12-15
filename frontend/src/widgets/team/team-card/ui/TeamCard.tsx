@@ -25,7 +25,7 @@ export const TeamCard: FC<TeamCardProps> = ({
   team,
   hackathon,
   onEditClick,
-  onExit
+  onExit,
 }) => {
   const navigate = useNavigate();
   const { data: user } = useAuthUser();
@@ -33,8 +33,7 @@ export const TeamCard: FC<TeamCardProps> = ({
   const isCaptain = team.captainId === user.id;
 
   const { copy, isCopying, copied } = useCopyTeamInviteLink(team.id);
-const { leave, isLeaving } = useLeaveTeamAction(team.id, { onDone: onExit });
-
+  const { leave, isLeaving } = useLeaveTeamAction(team.id, { onDone: onExit });
 
   return (
     <Root>
@@ -69,7 +68,7 @@ const { leave, isLeaving } = useLeaveTeamAction(team.id, { onDone: onExit });
         membersLimit={hackathon.teamMembersLimit}
         canRemoveMembers={isCaptain}
       />
-      
+
       <Buttons>
         {isCaptain && (
           <SButton mode="bezeled" onClick={copy} stretched disabled={isCopying}>
