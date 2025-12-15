@@ -1,20 +1,22 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { paths } from "@/shared/routing/paths";
+import { getUserPath, paths } from "@/shared/routing/paths";
 import { backButton, type BackButton } from "@tma.js/sdk-react";
-
-const TAB_ROUTES: ReadonlySet<string> = new Set([
-  paths.hackathons,
-  paths.applications,
-  paths.user,
-  paths.teams,
-]);
+import { useAuthUser } from "@/entities/user";
 
 export default function BackButtonController() {
+  const { data: user } = useAuthUser();
+  const TAB_ROUTES: ReadonlySet<string> = new Set([
+    paths.hackathons,
+    paths.applications,
+    getUserPath(user.id),
+    paths.teams,
+  ]);
+
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const bb: BackButton = backButton;
-  
+
   useEffect(() => {
     const isTab = TAB_ROUTES.has(pathname);
     if (!bb.isSupported()) return;

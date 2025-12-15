@@ -29,6 +29,5 @@ export const getFindTeamMembersPath = (id: string) =>
   paths.findNewTeamMembers.replace(":id", String(id));
 
 export const getUserPath = (id: number) => {
-  console.log(paths.user.replace(":id", String(id)))
   return paths.user.replace(":id", String(id));
 };
