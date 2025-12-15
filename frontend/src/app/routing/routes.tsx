@@ -18,7 +18,9 @@ const HackathonTeamPage = lazy(
 //   () => import("@/pages/notifications/NotificationsPage")
 // );
 
-const ApplicationsPage = lazy(() => import("@/pages/applications/ApplicationsPage"))
+const ApplicationsPage = lazy(
+  () => import("@/pages/applications/ApplicationsPage")
+);
 const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 const UserTeamsPage = lazy(() => import("@/pages/teams/TeamsPage"));
 const AchievementPage = lazy(
@@ -52,9 +54,10 @@ const routes: RouteObject[] = [
       { path: paths.applications, element: <ApplicationsPage /> },
 
       {
-        path: paths.profile,
+        path: paths.user,
         children: [
           { index: true, element: <ProfilePage /> },
+          { path: ":id", element: <ProfilePage /> },
           { path: "achievements/new", element: <AchievementPage /> },
           { path: "achievements/:id", element: <AchievementPage /> },
         ],

@@ -72,7 +72,7 @@ const HackathonPage: React.FC = () => {
 
   const handleGoToProfile = () => {
     setIsSkillsModalOpen(false);
-    navigate(paths.profile);
+    navigate(paths.user);
   };
 
   return (

@@ -47,6 +47,11 @@ async function bootstrapTMA() {
     tgWebAppStartParam?: string;
     tgWebAppPlatform?: string;
   };
+  console.log("window.Telegram.WebApp:", window.Telegram?.WebApp);
+  console.log(
+    "window.Telegram.WebApp.initData:",
+    window.Telegram?.WebApp?.initData
+  );
 
   const a =
     new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
@@ -60,7 +65,7 @@ async function bootstrapTMA() {
   const initDataRaw: string | undefined =
     lp.initDataRaw ??
     lp.initData ??
-    ((window)?.Telegram?.WebApp?.initData as string | undefined) ??
+    (window?.Telegram?.WebApp?.initData as string | undefined) ??
     (a ? decodeURIComponent(a) : undefined);
 
   setInitDataRaw(initDataRaw);

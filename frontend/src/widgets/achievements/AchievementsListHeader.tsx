@@ -18,7 +18,7 @@ export const AchievementsListHeader = () => {
       </SText>
       <IconButton
         size="m"
-        onClick={() => navigate(paths.profileAchievementsRoot)}
+        onClick={() => navigate(paths.userAchievementsRoot)}
       >
         <SIcon name={"plus"} />
       </IconButton>

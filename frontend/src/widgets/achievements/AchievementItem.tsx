@@ -15,7 +15,7 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement }) => {
   const navigate = useNavigate();
 
   const handleAchievementClick = (id: number) => {
-    navigate(`${paths.profile}/achievements/${id}`);
+    navigate(`${paths.user}/achievements/${id}`);
   };
   return (
     <Wrapper

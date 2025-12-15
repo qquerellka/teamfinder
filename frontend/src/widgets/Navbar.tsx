@@ -2,9 +2,10 @@ import { FC } from "react";
 import styled from "styled-components";
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { NavLink } from "react-router-dom";
-import { paths } from "@/shared/routing/paths";
-import { SIcon } from "@/shared/ui/SIcon";
+import { getUserPath, paths } from "@/shared/routing/paths";
+import { SIcon } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
+import { useAuthUser } from "@/entities/user";
 
 interface NavItem {
   id: number;
@@ -12,37 +13,57 @@ interface NavItem {
   icon: IconName;
   path: string;
 }
-const NAV: NavItem[] = [
-  { id: 1, name: "hackathons", icon: "hackNav", path: paths.hackathons },
-  {
-    id: 2,
-    name: "applications",
-    icon: "appNav",
-    path: paths.applications,
-  },
-  {
-    id: 3,
-    name: "teams",
-    icon: "teamNav",
-    path: paths.teams,
-  },
-  { id: 4, name: "profile", icon: "profile", path: paths.profile },
-];
+// const NAV: NavItem[] = [
+//   { id: 1, name: "hackathons", icon: "hackNav", path: paths.hackathons },
+//   {
+//     id: 2,
+//     name: "applications",
+//     icon: "appNav",
+//     path: paths.applications,
+//   },
+//   {
+//     id: 3,
+//     name: "teams",
+//     icon: "teamNav",
+//     path: paths.teams,
+//   },
+//   { id: 4, name: "profile", icon: "profile", path: getUserPath(user.id) },
+// ];
 
-export const Navbar: FC = () => (
-  <STabbar>
-    {NAV.map(({ id, icon, path }) => (
-      <SItem key={id}>
-        <NavLink
-          to={path}
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          <SIcon name={icon} size={28} />
-        </NavLink>
-      </SItem>
-    ))}
-  </STabbar>
-);
+export const Navbar: FC = () => {
+  const { data: user } = useAuthUser();
+  console.log(user.id)
+  const NAV: NavItem[] = [
+    { id: 1, name: "hackathons", icon: "hackNav", path: paths.hackathons },
+    {
+      id: 2,
+      name: "applications",
+      icon: "appNav",
+      path: paths.applications,
+    },
+    {
+      id: 3,
+      name: "teams",
+      icon: "teamNav",
+      path: paths.teams,
+    },
+    { id: 4, name: "profile", icon: "profile", path: getUserPath(user.id) },
+  ];
+  return (
+    <STabbar>
+      {NAV.map(({ id, icon, path }) => (
+        <SItem key={id}>
+          <NavLink
+            to={path}
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <SIcon name={icon} size={28} />
+          </NavLink>
+        </SItem>
+      ))}
+    </STabbar>
+  );
+};
 
 const STabbar = styled(Tabbar)`
   position: static;

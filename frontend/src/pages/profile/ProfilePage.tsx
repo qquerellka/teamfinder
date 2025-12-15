@@ -2,13 +2,19 @@ import styled from "styled-components";
 import { ProfileSkillsEditor } from "@/features/profile/edit-skills/ui/ProfileSkillsEditor";
 import { ProfileBioEditor } from "@/features/profile/edit-bio/ui/ProfileBioEditor";
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
-import { useAuthUser } from "@/entities/user";
+import { useUser } from "@/entities/user";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
 import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
+import { useParams } from "react-router-dom";
 
 export const ProfilePage = () => {
-  const { data: user } = useAuthUser();
 
+  const { id } = useParams<{ id: string }>();
+  const { data: user } = useUser(Number(id));
+
+  if (user.id !== Number(id)) {
+    return <div className="">{id}</div>;
+  }
   return (
     <SProfile>
       <ProfileHeader />
@@ -31,7 +37,7 @@ const Wrapper = styled.div`
   padding: 20px 22px 16px;
   display: flex;
   flex-direction: column;
-  gap:1rem;
+  gap: 1rem;
 `;
 const SProfile = styled.section`
   display: flex;

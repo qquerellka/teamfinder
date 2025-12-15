@@ -6,7 +6,7 @@ import { backButton, type BackButton } from "@tma.js/sdk-react";
 const TAB_ROUTES: ReadonlySet<string> = new Set([
   paths.hackathons,
   paths.applications,
-  paths.profile,
+  paths.user,
   paths.teams,
 ]);
 
