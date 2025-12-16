@@ -36,7 +36,7 @@ export const TeamEditPanel: FC<Props> = ({
   const { leave } = useLeaveTeamAction(team.id, { onDone: onExit });
 
   return (
-    <>
+    <Root>
       <Header>
         {isCaptain ? <SIcon onClick={del.open} name="delete" /> : <div />}
         <SText $fs={14} $fw={500}>
@@ -68,9 +68,15 @@ export const TeamEditPanel: FC<Props> = ({
         onConfirm={del.confirm}
         onCancel={del.cancel}
       />
-    </>
+    </Root>
   );
 };
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.5rem;
+`;
 
 const Header = styled.div`
   display: flex;
