@@ -14,13 +14,17 @@ export const TeamMembersSection: FC<{
   teamId: number;
   members: Member[];
   membersLimit: number;
-  canRemoveMembers: boolean; // капитан может удалять не-капитанов
+  canRemoveMembers: boolean;
 }> = ({ teamId, members, membersLimit, canRemoveMembers }) => {
   const navigate = useNavigate();
   return (
     <Block>
       <HeaderRow>
-        <SText $fs={16} $fw={600} style={{ color: "var(--tg-theme-section-header-text-color)" }}>
+        <SText
+          $fs={16}
+          $fw={600}
+          style={{ color: "var(--tg-theme-section-header-text-color)" }}
+        >
           Участники
         </SText>
 
@@ -53,7 +57,9 @@ const TeamMemberRow: FC<{
   canRemove: boolean;
   onNavigate: () => void;
 }> = ({ teamId, member, canRemove, onNavigate }) => {
-  const fullName = `${member.user.firstName ?? ""} ${member.user.lastName ?? ""}`.trim();
+  const fullName = `${member.user.firstName ?? ""} ${
+    member.user.lastName ?? ""
+  }`.trim();
   const { remove, isRemoving } = useRemoveTeamMember({
     teamId,
     userId: member.user.id,
@@ -90,7 +96,10 @@ const TeamMemberRow: FC<{
         <SIcon
           name="cross"
           color="#F55A5A"
-          onClick={() => !isRemoving && remove()}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isRemoving) remove();
+          }}
         />
       ) : (
         <Spacer />
