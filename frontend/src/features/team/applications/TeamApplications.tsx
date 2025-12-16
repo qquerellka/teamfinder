@@ -21,7 +21,7 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
     team.id
   );
 
-  const invites = invitesData ?? [];
+  const invites = invitesData.filter((i) => i.status === 'pending') ?? [];
   const invitedIds = useMemo(
     () => new Set(invites.map((i) => i.applicationId)),
     [invites]

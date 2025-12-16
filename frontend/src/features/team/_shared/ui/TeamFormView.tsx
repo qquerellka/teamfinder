@@ -92,25 +92,23 @@ export const TeamFormView: FC<Props> = (props) => {
       {props.extra}
 
       <ButtonsSection>
-        <Button
-          size="l"
+        <SButton
           onClick={onSubmit}
           stretched
           disabled={!canSubmit || loading}
         >
           {submitLabel}
-        </Button>
+        </SButton>
 
         {onCancel && (
-          <Button
-            size="l"
+          <SButton
             mode="bezeled"
             stretched
             onClick={onCancel}
             disabled={loading}
           >
             Отмена
-          </Button>
+          </SButton>
         )}
       </ButtonsSection>
     </>
@@ -123,4 +121,8 @@ const ButtonsSection = styled(List)`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+const SButton = styled(Button)`
+  width: 100%;
 `;
