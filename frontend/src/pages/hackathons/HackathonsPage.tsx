@@ -12,7 +12,6 @@ export const HackathonsPage: FC = () => {
 
 const Wrapper = styled.section`
   flex: 1; /* растягиваемся внутри SContent */
-
   display: grid;
   gap: 12px;
 `;

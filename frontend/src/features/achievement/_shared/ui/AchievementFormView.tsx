@@ -68,7 +68,6 @@ export const AchievementFormView: FC<Props> = (props) => {
 
   return (
     <SProfile>
-      <Wrapper>
         <SText $fs={14} $fw="semibold">
           {props.mode === "create"
             ? "Новое достижение"
@@ -142,7 +141,6 @@ export const AchievementFormView: FC<Props> = (props) => {
             </DeleteButton>
           )}
         </ButtonsSection>
-      </Wrapper>
     </SProfile>
   );
 };
@@ -151,19 +149,11 @@ const SProfile = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5rem 0 0;
+  padding: 0;
   gap: 1.5rem;
   flex: 1;
 `;
 
-const Wrapper = styled.section`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 0;
-  align-items: center;
-  flex: 1;
-`;
 
 const DeleteButton = styled(Button)`
   background-color: var(--tg-theme-destructive-text-color);

@@ -5,6 +5,7 @@ import { useHackathonQuery } from "@/entities/hackathon";
 import { SegmentedControl } from "@telegram-apps/telegram-ui";
 import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
 import { MyHackathonApplication } from "@/widgets/hackathon/my-application/ui/MyHackathonApplication";
+import styled from "styled-components";
 
 const HackathonVacancies = ({ hackathonId }: { hackathonId: number }) => {
   return <div>Тут список вакансий для хакатона {hackathonId}</div>;
@@ -20,26 +21,40 @@ const HackathonParticipatePage: React.FC = () => {
 
   return (
     <Page>
-      <SegmentedControl style={{ margin: "1rem 0" }}>
-        <SegmentedControlItem
-          selected={tab === "applications"}
-          onClick={() => setTab("applications")}
-        >
-          Анкета
-        </SegmentedControlItem>
-        <SegmentedControlItem
-          selected={tab === "vacancies"}
-          onClick={() => setTab("vacancies")}
-        >
-          Вакансии
-        </SegmentedControlItem>
-      </SegmentedControl>
+      <Wrapper>
+        <SegmentedControl style={{ margin: "1rem 0" }}>
+          <SegmentedControlItem
+            selected={tab === "applications"}
+            onClick={() => setTab("applications")}
+          >
+            Анкета
+          </SegmentedControlItem>
+          <SegmentedControlItem
+            selected={tab === "vacancies"}
+            onClick={() => setTab("vacancies")}
+          >
+            Вакансии
+          </SegmentedControlItem>
+        </SegmentedControl>
 
-      {tab === "applications" && <MyHackathonApplication hackathon={hackathon} />}
+        {tab === "applications" && (
+          <MyHackathonApplication hackathon={hackathon} />
+        )}
 
-      {tab === "vacancies" && <HackathonVacancies hackathonId={hackathonId} />}
+        {tab === "vacancies" && (
+          <HackathonVacancies hackathonId={hackathonId} />
+        )}
+      </Wrapper>
     </Page>
   );
 };
 
+const Wrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1.5rem;
+  height: 100%;
+`;
 export default HackathonParticipatePage;

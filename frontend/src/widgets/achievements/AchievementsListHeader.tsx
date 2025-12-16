@@ -45,5 +45,5 @@ const HeaderRow = styled.div`
   align-items: center;
   text-align: left;
   width: 100%;
-  padding: 0 22px;
+  padding: 0 0;
 `;

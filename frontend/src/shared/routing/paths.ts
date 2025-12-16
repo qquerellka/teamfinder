@@ -11,7 +11,7 @@ export const paths = {
 
   userRoot: "/user",
   userById: "/user/:id",
-  userAchievementsRoot: "/profile/achievements/new",
+  userAchievementsRoot: "/user/achievements/new",
   userAchievement: "/profile/achievements/:id",
 
   findNewTeamMembers: `/teams/:id/find`,

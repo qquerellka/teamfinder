@@ -2,7 +2,6 @@ import type { FC, ChangeEvent } from "react";
 import {
   Button,
   Input,
-  List,
   Select,
   Textarea,
 } from "@telegram-apps/telegram-ui";
@@ -115,7 +114,7 @@ export const TeamFormView: FC<Props> = (props) => {
   );
 };
 
-const ButtonsSection = styled(List)`
+const ButtonsSection = styled.div`
   margin-top: auto;
   padding-bottom: env(safe-area-inset-bottom, 0);
   display: flex;
@@ -125,4 +124,5 @@ const ButtonsSection = styled(List)`
 
 const SButton = styled(Button)`
   width: 100%;
+  margin: 0;
 `;

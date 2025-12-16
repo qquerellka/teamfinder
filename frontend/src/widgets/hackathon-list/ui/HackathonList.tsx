@@ -17,12 +17,16 @@ export const HackathonList: FC = () => {
   const { data } = useHackathonsQuery({ q });
 
   return (
-    <InputSection>
-      <Input
-        placeholder="Название хакатона"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+    <>
+      <InputSection>
+        <Input
+          placeholder="Название хакатона"
+          value={search}
+          // style={{width: '100%', boxSizing:'border-box'}}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </InputSection>
+
       {data.items.length === 0 ? (
         <NotFound>
           <SText>Ничего не нашлось :(</SText>
@@ -36,7 +40,7 @@ export const HackathonList: FC = () => {
           ))}
         </Grid>
       )}
-    </InputSection>
+    </>
   );
 };
 

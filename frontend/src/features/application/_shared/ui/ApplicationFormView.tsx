@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Button, Input, List, Select } from "@telegram-apps/telegram-ui";
+import { Button, Input, Select } from "@telegram-apps/telegram-ui";
 import type { FC, ChangeEvent } from "react";
 
 import { roleOptions, type Role } from "@/shared/types/enums";
@@ -71,7 +71,7 @@ export const ApplicationFormView: FC<ApplicationFormViewProps> = ({
   );
 };
 
-const ButtonsSection = styled(List)`
+const ButtonsSection = styled.div`
   margin-top: auto;
   padding-bottom: env(safe-area-inset-bottom, 0);
   display: flex;

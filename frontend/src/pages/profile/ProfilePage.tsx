@@ -37,21 +37,28 @@ export const ProfilePage = () => {
             <ProfileBioReadonly bio={user.bio ?? ""} />
           </>
         )}
-
-        <AchievementsListHeader showAdd={isOwner} />
-        {/* achievements list */}
-        <Wrapper>
-          {user?.achievements?.map((a) => (
-            <AchievementItem key={a.id} canEdit={isOwner} achievement={a} />
-          ))}
-        </Wrapper>
+        <Achievements>
+          <AchievementsListHeader showAdd={isOwner} />
+          {/* achievements list */}
+          <Wrapper>
+            {user?.achievements?.map((a) => (
+              <AchievementItem key={a.id} canEdit={isOwner} achievement={a} />
+            ))}
+          </Wrapper>
+        </Achievements>
       </SExtraInfo>
     </SProfile>
   );
 };
 
+const Achievements = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
 const Wrapper = styled.div`
-  padding: 20px 22px 16px;
+  /* padding: 20px 22px 16px; */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -68,7 +75,7 @@ const SExtraInfo = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 0.5rem;
+  gap: 1.5rem;
 `;
 export default ProfilePage;
 

@@ -6,6 +6,7 @@ import { useHackathonsQuery } from "@/entities/hackathon";
 import { AchievementCreateForm } from "@/features/achievement/create";
 import { AchievementEditForm } from "@/features/achievement/edit";
 import { Page, SText } from "@/shared/ui";
+import styled from "styled-components";
 
 const AchievementPage = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const AchievementPage = () => {
   }, [isCreate, id, user]);
 
   return (
-    <Page>
+    <SPage>
       {isCreate ? (
         <AchievementCreateForm
           hackathons={hackathons}
@@ -46,8 +47,12 @@ const AchievementPage = () => {
           </SText>
         </section>
       )}
-    </Page>
+    </SPage>
   );
 };
+
+const SPage = styled(Page)`
+  gap: 1.5rem;
+`
 
 export default AchievementPage;

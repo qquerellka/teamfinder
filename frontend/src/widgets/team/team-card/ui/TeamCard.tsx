@@ -102,10 +102,12 @@ export const TeamCard: FC<TeamCardProps> = ({
 };
 
 const Root = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 0.5rem;
+  gap: 1.5rem;
+  height: 100%;
 `;
 
 const Header = styled.div`
