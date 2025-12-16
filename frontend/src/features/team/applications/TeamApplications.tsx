@@ -15,7 +15,7 @@ interface TeamApplicationsProps {
 
 export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
   const { data: applicationsData } = useHackathonApplications(team.hackathonId);
-  const applications = applicationsData?.items ?? [];
+  const applications = applicationsData?.items.filter((i) => i.status === "published") ?? [];
 
   const { data: invitesData, isFetching: isInvitesFetching } = useTeamInvites(
     team.id
