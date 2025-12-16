@@ -141,8 +141,8 @@ const Wrap = styled.span<{
   }
 
   & > svg * {
-    fill: transparent;
-    stroke: currentColor;
+    /* fill: transparent; */
+    /* stroke: currentColor; */
   }
 
   ${({ $clickable }) =>
