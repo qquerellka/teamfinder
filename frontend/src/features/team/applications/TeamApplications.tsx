@@ -44,9 +44,9 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
   
   if (applications.length === 0) {
     return (
-      <ApplicationsList>
-        <SText>Заявок пока нет</SText>
-      </ApplicationsList>
+      <NotFound>
+        <SText>У этого хакатона нет активных анкет :(</SText>
+      </NotFound>
     );
   }
 
@@ -135,4 +135,10 @@ const SecondRow = styled.div`
   flex-direction: column;
   align-items: end;
   gap: 0.5rem;
+`;
+
+const NotFound = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 `;
