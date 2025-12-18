@@ -6,10 +6,11 @@ import { SegmentedControl } from "@telegram-apps/telegram-ui";
 import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
 import { MyHackathonApplication } from "@/widgets/hackathon/my-application/ui/MyHackathonApplication";
 import styled from "styled-components";
+import { HackathonVacancies } from "@/features/hackathon/vacancies/HackathonVacancies";
 
-const HackathonVacancies = ({ hackathonId }: { hackathonId: number }) => {
-  return <div>Тут список вакансий для хакатона {hackathonId}</div>;
-};
+// const HackathonVacancies = ({ hackathonId }: { hackathonId: number }) => {
+//   return <div>Тут список вакансий для хакатона {hackathonId}</div>;
+// };
 
 const HackathonParticipatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,7 +43,7 @@ const HackathonParticipatePage: React.FC = () => {
         )}
 
         {tab === "vacancies" && (
-          <HackathonVacancies hackathonId={hackathonId} />
+          <HackathonVacancies hackathon={hackathon} />
         )}
       </Wrapper>
     </Page>
