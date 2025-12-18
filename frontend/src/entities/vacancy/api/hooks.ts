@@ -10,7 +10,7 @@ import {
   deleteVacancy,
   hackathonVacancies,
 } from "./vacancies";
-import type { Vacancy, EditVacancy } from "../model/types";
+import type { Vacancy, EditVacancy, CreateVacancy } from "../model/types";
 import { useAppQuery } from "@/shared/api/useAppQuery";
 
 const vacancyKeys = queryKeys.vacancies;
@@ -50,8 +50,8 @@ export function useVacancy(id: number) {
 export function useCreateVacancy(teamId: number) {
   const queryClient = useQueryClient();
 
-  return useMutation<Vacancy, Error, void>({
-    mutationFn: () => createVacancy(teamId),
+  return useMutation<Vacancy, Error, CreateVacancy>({
+    mutationFn: (payload: CreateVacancy) => createVacancy(teamId, payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: vacancyKeys.byTeam(teamId),

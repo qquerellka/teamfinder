@@ -1,6 +1,7 @@
 import { useTeam } from "@/entities/team";
 import { TeamApplications } from "@/features/team/applications/TeamApplications";
-import { Page, SText } from "@/shared/ui";
+import { Page } from "@/shared/ui";
+import { TeamVacancy } from "@/widgets/team/team-vacancy/ui/TeamVacancy";
 import { SegmentedControl } from "@telegram-apps/telegram-ui";
 import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
 import { useState } from "react";
@@ -30,7 +31,7 @@ export const FindTeamMemberPage = () => {
 
       {tab === "applications" && <TeamApplications team={team} />}
 
-      {tab === "vacancy" && <SText>{"Вакансия"}</SText>}
+      {tab === "vacancy" && <TeamVacancy team={team} />}
     </Page>
   );
 };

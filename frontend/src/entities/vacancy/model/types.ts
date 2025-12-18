@@ -29,3 +29,8 @@ export interface EditVacancy {
     description: string,
     status?: VacancyStatus,
 }
+
+export interface CreateVacancy {
+  role: Role,
+  description: string,
+}

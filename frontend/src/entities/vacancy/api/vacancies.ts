@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/api/client";
-import { EditVacancy, Vacancy, VacancyDTO } from "../model/types";
+import { CreateVacancy, EditVacancy, Vacancy, VacancyDTO } from "../model/types";
 import { editVacancyToDTO, vacanciesToCamelCase } from "../lib/dto";
 
 interface VacanciesResponseDTO {
@@ -15,8 +15,8 @@ export async function teamVacancies(id: number): Promise<Vacancy[]> {
   return vacanciesToCamelCase(data.items);
 }
 
-export async function createVacancy(id: number): Promise<Vacancy> {
-  const { data } = await apiClient.post<VacancyDTO>(`/teams/${id}/vacancies`);
+export async function createVacancy(id: number, payload: CreateVacancy): Promise<Vacancy> {
+  const { data } = await apiClient.post<VacancyDTO>(`/teams/${id}/vacancies`, payload);
   return vacanciesToCamelCase([data])[0];
 }
 

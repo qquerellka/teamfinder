@@ -20,7 +20,7 @@ export const AchievementsListHeader: FC<AchievementsListHeaderProps> = ({
         $fs={15}
         $fw={600}
         style={{
-          color: "var(--tg-theme-section-header-text-color)",
+          color: "var(--tg-theme-accent-text-color)",
           textAlign: "left",
         }}
       >
