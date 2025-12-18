@@ -8,7 +8,8 @@ import styled from "styled-components";
 export const ApplicationsPage = () => {
   const { data: applications } = useAuthUserApplications();
   const navigate = useNavigate();
-  if (!applications || applications.length === 0) {
+  const filteredApplications = applications.filter((a) => a.status === 'published')
+  if (!filteredApplications || filteredApplications.length === 0) {
     return (
       <NotFound>
         <SText>У вас нет активных анкет :(</SText>
@@ -18,8 +19,8 @@ export const ApplicationsPage = () => {
   return (
     <Page>
       <TeamsList>
-        <SText>Мои команды</SText>
-        {applications.map((a) => (
+        <SText>Мои анкеты</SText>
+        {filteredApplications.map((a) => (
           <ApplicationCard
             invitesCount={a.invitesCount}
             hackathonName={a.hackathonName}
