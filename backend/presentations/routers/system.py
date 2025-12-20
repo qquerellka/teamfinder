@@ -1,8 +1,8 @@
 from __future__ import annotations
 from fastapi import APIRouter
 from sqlalchemy import text
-from backend.infrastructure.db import get_engine
-from backend.settings.config import settings
+from infrastructure.db import get_engine
+from settings.config import settings
 
 router = APIRouter(prefix="/system", tags=["system"])
 

@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Skeleton } from "@telegram-apps/telegram-ui";
 
-interface ImageWithSkeletonProps
-  extends React.ImgHTMLAttributes<HTMLImageElement> {}
+type ImageWithSkeletonProps = React.ImgHTMLAttributes<HTMLImageElement>
 
 export const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   src,
@@ -39,7 +38,7 @@ export const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;   /* КВАДРАТ 1:1 */
+  aspect-ratio: 1 / 1;
   overflow: hidden;
 `;
 

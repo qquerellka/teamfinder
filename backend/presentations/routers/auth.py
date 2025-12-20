@@ -10,10 +10,10 @@ from typing import Optional, List
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
-from backend.services.auth_telegram import AuthTelegramService, AuthResult
-from backend.utils.telegram_initdata import InitDataError
-from backend.repositories.users import UsersRepo
-from backend.settings.config import settings
+from services.auth_telegram import AuthTelegramService, AuthResult
+from utils.telegram_initdata import InitDataError
+from repositories.users import UsersRepo
+from settings.config import settings
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])

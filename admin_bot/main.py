@@ -7,8 +7,8 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from admin_bot.config import settings
-from admin_bot.handlers.hackathons import router
+from config import settings
+from handlers.hackathons import router
 
 
 async def main():

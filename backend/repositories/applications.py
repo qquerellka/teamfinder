@@ -5,9 +5,9 @@ from typing import Optional, List
 
 from sqlalchemy import select, update, delete, func
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.models import application as m_app
-from backend.persistend.models import users as m_users
+from repositories.base import BaseRepository
+from persistend.models import application as m_app
+from persistend.models import users as m_users
 
 
 class ApplicationsRepo(BaseRepository):
@@ -84,20 +84,11 @@ class ApplicationsRepo(BaseRepository):
         self,
         *,
         user_id: int,
-        limit: int,
-        offset: int,
     ) -> List[m_app.Application]:
-        """Все анкеты пользователя по всем хакатонам."""
         A = m_app.Application
 
         async with self._sm() as s:
-            stmt = (
-                select(A)
-                .where(A.user_id == user_id)
-                .order_by(A.updated_at.desc())
-                .limit(limit)
-                .offset(offset)
-            )
+            stmt = select(A).where(A.user_id == user_id).order_by(A.updated_at.desc())
             res = await s.execute(stmt)
             return list(res.scalars().all())
 

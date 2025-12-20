@@ -8,13 +8,11 @@ type LoaderPageProps = {
 };
 
 export const LoaderPage: FC<LoaderPageProps> = ({
-  text = "Загружаем...",
   fullHeight = true,
 }) => {
   return (
     <Root $fullHeight={fullHeight}>
       <Spinner size="l" />
-      {text && <Text>{text}</Text>}
     </Root>
   );
 };
@@ -28,7 +26,7 @@ const Root = styled.div<{ $fullHeight: boolean }>`
   row-gap: 8px;
 `;
 
-const Text = styled.span`
-  font-size: 14px;
-  opacity: 0.8;
-`;
+// const Text = styled.span`
+//   font-size: 14px;
+//   opacity: 0.8;
+// `;

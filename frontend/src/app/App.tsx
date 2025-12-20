@@ -1,59 +1,64 @@
-import { HashRouter } from "react-router-dom";
+import { HashRouter, useLocation } from "react-router-dom";
 import { useLaunchParams, useSignal, miniApp } from "@tma.js/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { ReactQueryProvider } from "./providers/react-query";
 
 import { ErrorBoundary } from "./layouts/ErrorBoundary";
+import { AppErrorFallback } from "./layouts/AppErrorFallback";
 import { AppRouter } from "./routing/routes";
-import { useEffect } from "react";
-import { AuthGate } from "@/features/auth/ui/AuthGate";
+import { AuthGate } from "@/features/auth";
+import { LoaderPage } from "@/shared/ui";
+import { Suspense } from "react";
 
-function ErrorBoundaryError({ error }: { error: unknown }) {
+import { QueryErrorResetBoundary, useQueryClient } from "@tanstack/react-query";
+import { StartParamJoinHandler } from "./StartParamJoinHandler";
+
+function AppInner() {
+  const location = useLocation();
+  const queryClient = useQueryClient();
+
   return (
-    <div>
-      <p>An unhandled error occurred:</p>
-      <blockquote>
-        <code>
-          {error instanceof Error
-            ? error.message
-            : typeof error === "string"
-            ? error
-            : JSON.stringify(error)}
-        </code>
-      </blockquote>
-    </div>
+    <QueryErrorResetBoundary>
+      {({ reset }) => (
+        <ErrorBoundary
+          fallback={AppErrorFallback}
+          resetKeys={[location.key]}
+          onReset={() => {
+            reset();
+            // чтобы “повторить” реально перезапускало запросы
+            queryClient.invalidateQueries({
+              predicate: (q) => q.queryKey[0] !== "auth",
+            });
+          }}
+        >
+          <Suspense fallback={<LoaderPage />}>
+            <AuthGate>
+              <StartParamJoinHandler />
+              <AppRouter />
+            </AuthGate>
+          </Suspense>
+        </ErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
   );
 }
-interface AppProps {
-  str: string | undefined;
-}
-export function App({ str }: AppProps) {
-  const lp = useLaunchParams();
 
+export function App() {
+  const lp = useLaunchParams();
   const isDark = useSignal(miniApp.isDark);
-  useEffect(() => {
-    console.log("[App] initDataRaw:", lp.initDataRaw);
-    // console.log("[App] user:", lp.initData?.user);
-  }, [lp]);
-  console.log("App")
+
+  const platform =
+    lp.tgWebAppPlatform === "ios" || lp.tgWebAppPlatform === "macos"
+      ? "ios"
+      : "base";
+
   return (
-    <ErrorBoundary fallback={ErrorBoundaryError}>
-      <AppRoot
-        appearance={isDark ? "dark" : "light"}
-        platform={
-          ["macos", "ios"].includes(lp.tgWebAppPlatform) ? "ios" : "base"
-        }
-      >
-        {""}
-        {str}
+    <AppRoot appearance={isDark ? "dark" : "light"} platform={platform}>
+      <HashRouter>
         <ReactQueryProvider>
-          <AuthGate>
-            <HashRouter>
-              <AppRouter />
-            </HashRouter>
-          </AuthGate>
+          <AppInner />
         </ReactQueryProvider>
-      </AppRoot>
-    </ErrorBoundary>
+      </HashRouter>
+    </AppRoot>
   );
 }

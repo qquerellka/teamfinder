@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import Table, Column, Integer, ForeignKey, Index
 
-from backend.persistend.base import Base
+from persistend.base import Base
 
 user_skill = Table(
     "user_skill",

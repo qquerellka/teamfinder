@@ -1,29 +1,48 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-import { getHackathonPath } from "@/app/routing/paths";
-import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-import { useHackathonsQuery } from "@/entities/hackathon/api/hooks";
+import { getHackathonPath } from "@/shared/routing/paths";
+import { HackathonCard, useHackathonsQuery } from "@/entities/hackathon";
+import { Input } from "@telegram-apps/telegram-ui";
+import { useDebouncedValue } from "@/shared/helpers/useDebounceValue";
+import { InputSection, SText } from "@/shared/ui";
 
 export const HackathonList: FC = () => {
-  const { data, isLoading, error } = useHackathonsQuery();
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 800);
 
-  if (isLoading) return <div>Загружаем хакатоны…</div>;
-  if (error) return <div>Что-то пошло не так</div>;
-  if (!data?.items.length) return <div>Пока нет активных хакатонов</div>;
-  console.log(data)
+  const q = debouncedSearch.trim() || undefined;
+
+  const { data } = useHackathonsQuery({ q });
+
   return (
-    <Grid>
-      {data.items.map((h) => (
-        <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
-          <HackathonCard hackathon={h} />
-        </CardLink>
-      ))}
-    </Grid>
+    <>
+      <InputSection>
+        <Input
+          placeholder="Название хакатона"
+          value={search}
+          // style={{width: '100%', boxSizing:'border-box'}}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </InputSection>
+
+      {data.items.length === 0 ? (
+        <NotFound>
+          <SText>Ничего не нашлось :(</SText>
+        </NotFound>
+      ) : (
+        <Grid>
+          {data.items.map((h) => (
+            <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
+              <HackathonCard hackathon={h} />
+            </CardLink>
+          ))}
+        </Grid>
+      )}
+    </>
   );
 };
-
 
 const Grid = styled.section`
   display: grid;
@@ -34,4 +53,10 @@ const CardLink = styled(Link)`
   display: block;
   text-decoration: none;
   color: inherit;
+`;
+
+const NotFound = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 `;

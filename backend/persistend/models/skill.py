@@ -5,7 +5,7 @@ from sqlalchemy import Text, TIMESTAMP
 
 from sqlalchemy.sql import func
 
-from backend.persistend.base import Base, TimestampMixin
+from persistend.base import Base, TimestampMixin
 
 
 class Skill(Base, TimestampMixin):

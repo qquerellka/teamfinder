@@ -4,10 +4,10 @@ from typing import Optional, List, Sequence, Any
 
 from sqlalchemy import select
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.enums import VacancyStatus, RoleType
-from backend.persistend.models.vacancy import Vacancy
-from backend.persistend.models.team import Team
+from repositories.base import BaseRepository
+from persistend.enums import VacancyStatus, RoleType
+from persistend.models.vacancy import Vacancy
+from persistend.models.team import Team
 
 
 class VacanciesRepo(BaseRepository):
@@ -65,14 +65,14 @@ class VacanciesRepo(BaseRepository):
         team_id: int,
         role: RoleType,
         description: Optional[str],
-        skills: Optional[Sequence[str]] = None,
+        # skills: Optional[Sequence[str]] = None,
     ) -> Vacancy:
         async with self._sm() as s:
             obj = Vacancy(
                 team_id=team_id,
                 role=role,
                 description=description,
-                skills=list(skills) if skills is not None else [],
+                # skills=list(skills) if skills is not None else [],
                 status=VacancyStatus.open,
             )
             s.add(obj)

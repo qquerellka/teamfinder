@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx
 from httpx import HTTPStatusError
 
-from admin_bot.config import settings
+from config import settings
 
 
 async def create_hackathon(payload: dict) -> dict:

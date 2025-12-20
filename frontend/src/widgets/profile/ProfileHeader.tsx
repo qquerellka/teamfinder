@@ -1,17 +1,37 @@
-import { Avatar } from "@telegram-apps/telegram-ui";
+import { Avatar, Link } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
-import { STitle } from "@/shared/ui/STitle";
-import { useAuthUser } from "@/entities/user/api/hooks";
-
-export const ProfileHeader = () => {
-  const { data: user } = useAuthUser();
+import { SText } from "@/shared/ui";
+import { User } from "@/entities/user";
+import { FC } from "react";
+interface ProfileHeaderProps {
+  user: User;
+}
+export const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
+  const tgLink = `https://t.me/${user.username}`;
 
   return (
     <SProfileHeader>
       <Avatar size={96} src={user?.avatarUrl || undefined} />
       <SFullName>
-        <STitle $fs={24} $fw={600}>{user?.firstName}</STitle>
-        <STitle $fs={24} $fw={600}>{user?.secondName}</STitle>
+        <SText $fs={24} $fw={600}>
+          {user?.firstName}
+        </SText>
+        <SText $fs={24} $fw={600}>
+          {user?.secondName}
+        </SText>
+        <UsernameLink
+          href={tgLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <SText $fs={16} $fw={600}>
+            @{user.username}
+          </SText>
+        </UsernameLink>
+        {/* <SText >
+          @{user?.username}
+        </SText> */}
       </SFullName>
     </SProfileHeader>
   );
@@ -29,4 +49,9 @@ const SFullName = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+`;
+
+const UsernameLink = styled(Link)`
+  text-decoration: none;
+  color: var(--tg-theme-accent-text-color);
 `;

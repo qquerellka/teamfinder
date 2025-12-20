@@ -4,8 +4,8 @@ from typing import List
 
 from sqlalchemy import select
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.models.skill import Skill  # модель skills
+from repositories.base import BaseRepository
+from persistend.models.skill import Skill  # модель skills
 
 
 class SkillsRepo(BaseRepository):

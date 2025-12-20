@@ -23,7 +23,7 @@ class RoleType(str, Enum):
 # СТАТУС АНКЕТЫ (application_status)
 # -----------------------------------------------------------------------------
 class ApplicationStatus(str, Enum):
-    draft = "draft"
+    # draft = "draft"
     published = "published"
     hidden = "hidden"
 
@@ -119,3 +119,11 @@ class ResponseStatus(str, Enum):
     accepted  = "accepted"
     rejected  = "rejected"
     withdrawn = "withdrawn"
+    
+    
+class ResponseStatus(str, Enum):
+    pending   = "pending"
+    accepted  = "accepted"
+    rejected  = "rejected"
+    withdrawn = "withdrawn"
+    expired   = "expired"

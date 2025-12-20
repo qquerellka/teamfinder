@@ -15,8 +15,8 @@ from fastapi import (
 
 from pydantic import BaseModel, Field
 
-from backend.services.hackathons import HackathonsService, HackathonListResult
-from backend.infrastructure.admin_auth import require_admin_token
+from services.hackathons import HackathonsService, HackathonListResult
+from infrastructure.admin_auth import require_admin_token
 
 router = APIRouter(prefix="/hackathons", tags=["hackathons"])
 service = HackathonsService()

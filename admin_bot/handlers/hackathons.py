@@ -8,9 +8,9 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from admin_bot.config import settings
-from admin_bot.states import HackathonForm
-from admin_bot.services.api_client import create_hackathon
+from config import settings
+from states import HackathonForm
+from services.api_client import create_hackathon
 
 router = Router()
 

@@ -1,0 +1,60 @@
+---
+- name: Setup GitLab Runner via Docker
+  hosts: teamfinder
+  become: yes
+
+  vars:
+    apiurl: "https://gitlab.com"
+    runnerdesc: "Runner for teamfinder deployed via ansible"
+
+  vars_files:
+    - secrets/secrets.yaml
+
+  tasks:
+    - name: Create the runner configuration volume
+      community.docker.docker_volume:
+        name: gitlabrunner-config
+
+    - name: Create the runner home volume
+      community.docker.docker_volume:
+        name: gitlabrunner-home
+
+    - name: Check if runner is already registered
+      ansible.builtin.shell: |
+        if [ -f /var/lib/docker/volumes/gitlabrunner-config/_data/config.toml ]; then
+          grep -q '{{ gitlab_runner_auth_token }}' /var/lib/docker/volumes/gitlabrunner-config/_data/config.toml
+        else
+          exit 1
+        fi
+      register: runner_registered
+      changed_when: false
+      failed_when: runner_registered.rc not in [0, 1]
+
+    - name: Register GitLab runner using auth token
+      ansible.builtin.command: >
+        docker run --rm
+        -v gitlabrunner-config:/etc/gitlab-runner
+        -v /var/run/docker.sock:/var/run/docker.sock
+        gitlab/gitlab-runner:latest
+        register
+        --non-interactive
+        --url "{{ apiurl }}"
+        --token "{{ gitlab_runner_auth_token }}"
+        --executor "docker"
+        --docker-image "docker:24.0"
+        --docker-volumes "/var/run/docker.sock:/var/run/docker.sock"
+        --docker-volumes "/root/.docker:/root/.docker"
+        --description "{{ runnerdesc }}"
+      when: runner_registered.rc != 0
+      no_log: false
+
+    - name: Start GitLab Runner container
+      community.docker.docker_container:
+        name: gitlab-runner
+        image: gitlab/gitlab-runner:latest
+        state: started
+        restart_policy: always
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - gitlabrunner-config:/etc/gitlab-runner
+          - gitlabrunner-home:/home/gitlab-runner

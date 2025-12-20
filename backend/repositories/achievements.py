@@ -8,9 +8,9 @@ from sqlalchemy import delete, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.enums import AchievementPlace, RoleType
-from backend.persistend.models import achievement as m_ach
+from repositories.base import BaseRepository
+from persistend.enums import AchievementPlace, RoleType
+from persistend.models import achievement as m_ach
 
 # Лок на пару (user_id, hackathon_id), чтобы защититься от гонок при создании записи
 _key_locks: dict[tuple[int, int], asyncio.Lock] = defaultdict(asyncio.Lock)

@@ -4,15 +4,15 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from backend.repositories.users import UsersRepo
-from backend.settings.config import settings
-from backend.utils.telegram_initdata import InitDataError, verify_init_data
+from repositories.users import UsersRepo
+from settings.config import settings
+from utils.telegram_initdata import InitDataError, verify_init_data
 
 # Мягкий импорт JWT-утилиты: сначала пробуем основную, потом упрощённую.
 try:
-    from backend.utils.jwt import encode as jwt_encode
+    from utils.jwt import encode as jwt_encode
 except Exception:
-    from backend.utils import jwt_simple as _jwt_simple  # type: ignore
+    from utils import jwt_simple as _jwt_simple  # type: ignore
 
     jwt_encode = _jwt_simple.encode  # type: ignore[attr-defined]
 

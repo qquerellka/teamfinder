@@ -1,85 +1,61 @@
-import React from "react";
-import { Navigate, useParams } from "react-router-dom";
-import styled from "styled-components";
-import { Button, List } from "@telegram-apps/telegram-ui";
-
-import { HackathonCard } from "@/entities/hackathon/ui/HackathonCard";
-import type { Hackathon } from "@/entities/hackathon/model/types";
-
-import { paths } from "@/app/routing/paths";
-
-import { normalizeUrl } from "@/shared/helpers/url";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import { Page } from "@/shared/ui/Page";
-import { useHackathonQuery } from "@/entities/hackathon/api/hooks";
+import { useHackathonQuery } from "@/entities/hackathon";
+import { SegmentedControl } from "@telegram-apps/telegram-ui";
+import { SegmentedControlItem } from "@telegram-apps/telegram-ui/dist/components/Navigation/SegmentedControl/components/SegmentedControlItem/SegmentedControlItem";
+import { MyHackathonApplication } from "@/widgets/hackathon/my-application/ui/MyHackathonApplication";
+import styled from "styled-components";
+import { HackathonVacancies } from "@/features/hackathon/vacancies/HackathonVacancies";
 
-const HackathonPage: React.FC = () => {
+// const HackathonVacancies = ({ hackathonId }: { hackathonId: number }) => {
+//   return <div>Тут список вакансий для хакатона {hackathonId}</div>;
+// };
+
+const HackathonParticipatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const hackathonId = Number(id);
 
-  const { data: hackathon, isLoading, isError } = useHackathonQuery(Number(id));
+  const { data: hackathon } = useHackathonQuery(hackathonId);
 
-
-  if (isLoading) {
-    return <Placeholder>Загружаем хакатон…</Placeholder>;
-  }
-
-  if (isError || !hackathon) {
-    return <Navigate to={paths.error404} replace />;
-  }
-
-  const url = normalizeUrl((hackathon as Hackathon).registrationLink);
-
-  const openExternal = () => {
-    if (!url) return;
-
-    const wa = window.Telegram?.WebApp;
-    if (wa?.openLink) {
-      wa.openLink(url, { try_instant_view: true });
-    } else {
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-  };
-
+  const [tab, setTab] = useState<"applications" | "vacancies">("applications");
 
   return (
-      <Page>
-        <HackathonCard hackathon={hackathon} variant="full" />
+    <Page>
+      <Wrapper>
+        <SegmentedControl style={{ margin: "1rem 0" }}>
+          <SegmentedControlItem
+            selected={tab === "applications"}
+            onClick={() => setTab("applications")}
+          >
+            Анкета
+          </SegmentedControlItem>
+          <SegmentedControlItem
+            selected={tab === "vacancies"}
+            onClick={() => setTab("vacancies")}
+          >
+            Вакансии
+          </SegmentedControlItem>
+        </SegmentedControl>
 
-        <ButtonsSection>
-          <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-            Подробнее на сайте
-          </SButton>
+        {tab === "applications" && (
+          <MyHackathonApplication hackathon={hackathon} />
+        )}
 
-        </ButtonsSection>
-      </Page>
+        {tab === "vacancies" && (
+          <HackathonVacancies hackathon={hackathon} />
+        )}
+      </Wrapper>
+    </Page>
   );
 };
 
-export default HackathonPage;
-
-const SButton = styled(Button)`
-  width: 100%;
-`;
-
-const Placeholder = styled.div`
-  padding: 1rem;
-  text-align: center;
-  font-size: 14px;
-  opacity: 0.8;
-`;
-
-// const SSection = styled(Section)`
-//   background: var(--tg-theme-section-bg-color, #fff);
-//   padding: 0;
-//   border-radius: 1rem;
-//   width: 100%;
-
-//   & > div {
-//     padding: 0;
-//   }
-// `;
-
-const ButtonsSection = styled(List)`
-  margin-top: auto;          /* прижимаем к низу Page */
+const Wrapper = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  gap: 1.5rem;
+  height: 100%;
 `;
+export default HackathonParticipatePage;

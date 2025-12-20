@@ -1,21 +1,21 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAuthUser, getUserById, editUserMainInfo } from "./users";
-import type { User, UserMainInfoPatch } from "../model/types";
+import type { User, UserEdit } from "../model/types";
 import { queryKeys } from "@/shared/api/queryKeys";
+import { useAppQuery } from "@/shared/api/useAppQuery";
 
 export function useAuthUser() {
-  return useQuery<User>({
+  return useAppQuery<User>({
     queryKey: queryKeys.user.me,
     queryFn: getAuthUser,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useUser(id: number, enabled = true) {
-  return useQuery<User>({
+export function useUser(id: number) {
+  return useAppQuery<User>({
     queryKey: queryKeys.user.byId(id),
     queryFn: () => getUserById(id),
-    enabled,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -24,9 +24,14 @@ export function useEditUserMainInfo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UserMainInfoPatch) => editUserMainInfo(payload),
+    mutationFn: (payload: UserEdit) => editUserMainInfo(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.user.me });
+
+      const me = queryClient.getQueryData<User>(queryKeys.user.me);
+      if (me?.id) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.byId(me.id) });
+      }
     },
   });
 }

@@ -2,23 +2,14 @@ import { FC, useMemo } from "react";
 import styled from "styled-components";
 import { Card, InlineButtons, Title } from "@telegram-apps/telegram-ui";
 
-import type { Hackathon } from "@/entities/hackathon/model/types";
+import type { Hackathon } from "@/entities/hackathon";
 import {
   formatDateRange,
   formatRegistrationDate,
   getTeamMembersRange,
 } from "@/shared/helpers/date";
-import { STitle } from "@/shared/ui/STitle";
-import { SIcon } from "@/shared/ui/SIcon";
-
-import shareIcon from "@/assets/icons/shareIcon.svg?react";
-import hackathonPrizeIcon from "@/assets/icons/hackathonCard/hackathonPrizeIcon.svg?react";
-import hackathonDate from "@/assets/icons/hackathonCard/hackathonDateIcon.svg?react";
-import hackathonPlace from "@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
-import hackathonRegistration from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
-import hackathonTeam from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
-import { ImageWithSkeleton } from "@/shared/ui/ImageWithSkeleton";
-
+import { ImageWithSkeleton, SIcon, SText } from "@/shared/ui";
+import type { IconName } from "@/shared/ui/SIcon";
 type HackathonCardVariant = "full" | "compact";
 
 interface HackathonCardProps {
@@ -27,33 +18,37 @@ interface HackathonCardProps {
   showShareButton?: boolean;
   onShareClick?: () => void;
 }
-
+interface HackathonParamConfig {
+  icon: IconName,
+  text: string,
+}
 export const HackathonCard: FC<HackathonCardProps> = ({
   hackathon,
   variant = "full",
   showShareButton = false,
   onShareClick,
 }) => {
-  const params = useMemo(
+  console.log(typeof hackathon.registrationEndDate)
+  const params: HackathonParamConfig[] = useMemo(
     () => [
       {
-        icon: hackathonDate,
+        icon: "hackathonDate",
         text: formatDateRange(hackathon.startDate, hackathon.endDate),
       },
       {
-        icon: hackathonRegistration,
+        icon: "hackathonRegistration",
         text: formatRegistrationDate(hackathon.registrationEndDate),
       },
       {
-        icon: hackathonPlace,
+        icon: "hackathonPlace",
         text: `${hackathon.city} • ${hackathon.mode}`,
       },
       {
-        icon: hackathonPrizeIcon,
+        icon: "hackathonPrize",
         text: hackathon.prizeFund?.toLocaleString(),
       },
       {
-        icon: hackathonTeam,
+        icon: "hackathonTeam",
         text: getTeamMembersRange(
           hackathon.teamMembersLimit,
           hackathon.teamMembersMinimum
@@ -65,7 +60,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
 
   const visibleParams =
     variant === "compact"
-      ? params.filter(({ icon }) => icon !== hackathonTeam)
+      ? params.filter(({ icon }) => icon !== "hackathonTeam")
       : params;
 
   return (
@@ -75,12 +70,12 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       </SHackathonImage>
 
       <SHackathonInfo>
-        <STitle weight="2">{hackathon.name}</STitle>
+        <SText weight="2">{hackathon.name}</SText>
 
         <HackathonParams>
           {visibleParams.map(({ icon, text }, index) => (
             <HackathonParam key={`${index}-${text}`}>
-              <SIcon icon={icon} size={16} />
+              <SIcon name={icon} size={16} />
               <SubTitle level="2" weight="3">
                 {text}
               </SubTitle>
@@ -91,7 +86,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
         {showShareButton && (
           <ButtonContainer>
             <SInlineButtons mode="plain" onClick={onShareClick}>
-              <SIcon icon={shareIcon} />
+              <SIcon name={"share"} />
             </SInlineButtons>
           </ButtonContainer>
         )}
@@ -99,7 +94,6 @@ export const HackathonCard: FC<HackathonCardProps> = ({
     </SHackathonCard>
   );
 };
-
 
 const SHackathonCard = styled(Card)`
   background: var(--tg-theme-section-bg-color, #fff);

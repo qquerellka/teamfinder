@@ -5,7 +5,7 @@ from typing import List, Optional
 import aioboto3
 from fastapi import UploadFile, HTTPException
 
-from backend.settings.config import settings
+from settings.config import settings
 
 # --- Общая сессия aioboto3 ---
 
