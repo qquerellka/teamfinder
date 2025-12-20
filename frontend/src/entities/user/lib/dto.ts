@@ -1,8 +1,5 @@
-import { Skill, SkillDTO } from "@/entities/skill/model/types";
-import {
-  User,
-  UserDTO,
-} from "../model/types";
+import { Skill, SkillDTO } from "@/entities/skill";
+import { User, UserDTO, UserEdit, UserEditDTO } from "../model/types";
 import { achievementsToCamelCase } from "@/entities/achievement/lib/dto";
 
 export function skillsToCamelCase(skills: SkillDTO[]): Skill[] {
@@ -27,5 +24,15 @@ export function userToCamelCase(dto: UserDTO): User {
     link: dto.link ?? null,
     skills: skillsToCamelCase(dto.skills),
     achievements: achievementsToCamelCase(dto.achievements),
+  };
+}
+
+export function userEditToDTO(user: UserEdit): UserEditDTO {
+  return {
+    skills: user.skillSlugs,
+    bio: user.bio,
+    link: user.link,
+    city: user.city,
+    university: user.university,
   };
 }

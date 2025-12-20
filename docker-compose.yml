@@ -1,12 +1,46 @@
 services:
-  db:
-    image: postgres:16
+  nginx:
+    container_name: nginx
+    build:
+      context: infra/nginx/raw
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+
+  backend:
+    container_name: backend
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend:rw
+      - ./.env:/app/.env:ro
+
+  postgres:
+    container_name: postgres
+    build:
+      context: postgres
+      dockerfile: Dockerfile
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app_db}
       POSTGRES_USER: ${POSTGRES_USER:-app_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app_password}
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -14,50 +48,20 @@ services:
       retries: 10
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./initdb_db:/docker-entrypoint-initdb.d
-
-  api:
-    build:
-      context: backend
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app/backend:rw
-      - ./.env:/app/.env:ro
-
+  
   admin-bot:
-    build:
-      context: .
-      dockerfile: admin_bot/Dockerfile
     container_name: admin-bot
+    build:
+      context: admin_bot
+      dockerfile: Dockerfile
     environment:
       - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
-      - API_URL=http://api:8000
+      - API_URL=${API_URL}
       - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
       - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
     depends_on:
-      - api
+      - backend
     restart: unless-stopped
-
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - api
-  #   ports:
-  #     - "3000:80"
-  # если захочешь передавать какие-то ENV в билд (например VITE_API_URL),
-    # можно добавить:
-    # environment:
-    #   - VITE_API_URL=http://api:8000
-
 
 volumes:
   db-data:

@@ -5,9 +5,9 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from backend.repositories.base import BaseRepository
-from backend.persistend.enums import RoleType
-from backend.persistend.models.team_member import TeamMember
+from repositories.base import BaseRepository
+from persistend.enums import RoleType
+from persistend.models.team_member import TeamMember
 
 
 class TeamMembersRepo(BaseRepository):

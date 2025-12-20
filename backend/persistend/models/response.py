@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from sqlalchemy import Integer, Enum as SAEnum, ForeignKey
+from sqlalchemy import Integer, Enum as SAEnum, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.persistend.base import Base, TimestampMixin
-from backend.persistend.enums import ResponseStatus, RoleType
+from persistend.base import Base, TimestampMixin
+from persistend.enums import ResponseStatus
 
 
 class Response(Base, TimestampMixin):
@@ -18,16 +18,10 @@ class Response(Base, TimestampMixin):
         nullable=False,
     )
 
-    application_id: Mapped[int] = mapped_column(
+    user_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("application.id", ondelete="CASCADE"),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
-    )
-
-    desired_role: Mapped[RoleType] = mapped_column(
-        SAEnum(RoleType, name="role_type"),
-        nullable=False,
-        default=RoleType.Analytics,
     )
 
     status: Mapped[ResponseStatus] = mapped_column(
@@ -36,5 +30,6 @@ class Response(Base, TimestampMixin):
         default=ResponseStatus.pending,
     )
 
+    # связи
     vacancy = relationship("Vacancy", back_populates="responses")
-    application = relationship("Application", back_populates="responses")
+    user = relationship("User", back_populates="responses")

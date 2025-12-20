@@ -4,11 +4,11 @@ from typing import Iterable, List, Optional, Sequence, Tuple
 
 from sqlalchemy import delete, func, insert, literal, select
 
-from backend.persistend.models import achievement as m_ach
-from backend.persistend.models import skill as m_skill
-from backend.persistend.models import user_skill as m_us
-from backend.persistend.models import users as m_users
-from backend.repositories.base import BaseRepository
+from persistend.models import achievement as m_ach
+from persistend.models import skill as m_skill
+from persistend.models import user_skill as m_us
+from persistend.models import users as m_users
+from repositories.base import BaseRepository
 
 
 class UsersRepo(BaseRepository):

@@ -1,44 +1,57 @@
-import { paths } from "@/app/routing/paths";
-import { Achievement } from "@/entities/achievement/model/types";
-import { formatHackPlace } from "@/shared/helpers/date";
+import { paths } from "@/shared/routing/paths";
+import { Achievement } from "@/entities/achievement";
 import { SText } from "@/shared/ui/SText";
-import { STitle } from "@/shared/ui/STitle";
 import { Cell } from "@telegram-apps/telegram-ui";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { formatHackPlace } from "@/entities/achievement/lib/formatters";
 
 interface AchievementItemProps {
   achievement: Achievement;
+  canEdit: boolean;
 }
 
-export const AchievementItem: FC<AchievementItemProps> = ({ achievement }) => {
+export const AchievementItem: FC<AchievementItemProps> = ({
+  achievement,
+  canEdit,
+}) => {
   const navigate = useNavigate();
 
   const handleAchievementClick = (id: number) => {
-    // Вариант 1: абсолютный путь
-    navigate(`${paths.profile}/achievements/${id}`);
-
-    // или Вариант 2: относительный, если удобнее:
-    // navigate(`achievements/${id}`, { relative: "path" });
+    navigate(`${paths.userRoot}/achievements/${id}`);
   };
+  if (canEdit)
+    return (
+      <Wrapper
+        onClick={() => handleAchievementClick(achievement.id)}
+        after={
+          <SText $fs={16} $fw={500}>
+            {formatHackPlace(achievement.place)}
+          </SText>
+        }
+      >
+        <SText $fs={16} $fw={500}>
+          {achievement.hackathonName}
+        </SText>
+      </Wrapper>
+    );
   return (
     <Wrapper
-      onClick={() => handleAchievementClick(achievement.id)}
       after={
         <SText $fs={16} $fw={500}>
           {formatHackPlace(achievement.place)}
         </SText>
       }
     >
-      <STitle $fs={16} $fw={500}>
+      <SText $fs={16} $fw={500}>
         {achievement.hackathonName}
-      </STitle>
+      </SText>
     </Wrapper>
   );
 };
 
 const Wrapper = styled(Cell)`
-  background-color: var(--tg-theme-secondary-bg-color);
+  background-color: var(--tg-theme-section-bg-color);
   border-radius: 1rem;
 `;

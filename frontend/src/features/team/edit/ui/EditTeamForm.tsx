@@ -1,0 +1,46 @@
+import type { FC } from "react";
+
+import type { Hackathon } from "@/entities/hackathon";
+import type { TeamWithMembers } from "@/entities/team";
+import { useEditTeam } from "@/entities/team";
+import { TeamFormView } from "../../_shared/ui/TeamFormView";
+import { useEditTeamForm } from "../model/useEditTeamForm";
+
+export const EditTeamForm: FC<{
+  hackathon: Hackathon;
+  team: TeamWithMembers;
+  onCancel: () => void;
+  extra?: React.ReactNode;
+}> = ({ hackathon, team, onCancel, extra }) => {
+  const editMutation = useEditTeam();
+  const form = useEditTeamForm({
+    name: team.name ?? "",
+    description: team.description ?? "",
+  });
+
+  const submit = async () => {
+    if (!form.canSubmit) return;
+    await editMutation.mutateAsync({
+      id: team.id,
+      payload: { name: form.name, description: form.description },
+    });
+    onCancel(); // закрываем edit-mode
+  };
+
+  return (
+    <TeamFormView
+      mode="edit"
+      hackathonName={hackathon.name}
+      name={form.name}
+      description={form.description}
+      onNameChange={form.setName}
+      onDescriptionChange={form.setDescription}
+      submitLabel="Сохранить"
+      canSubmit={form.canSubmit}
+      loading={editMutation.isPending}
+      onSubmit={submit}
+      onCancel={onCancel}
+      extra={extra}
+    />
+  );
+};

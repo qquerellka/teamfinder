@@ -2,21 +2,24 @@ from __future__ import annotations
 
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
 from pydantic import BaseModel, Field
 
-from backend.persistend.enums import TeamStatus, RoleType, HackathonStatus
-from backend.presentations.routers.users import get_current_user_id
-from backend.services.teams import TeamsService
-from backend.services.team_members import TeamMembersService
-from backend.services.hackathons import HackathonsService
-from backend.repositories.users import UsersRepo
+from persistend.enums import TeamStatus, RoleType, HackathonStatus
+from presentations.routers.users import get_current_user_id
+from services.teams import TeamsService
+from services.team_members import TeamMembersService
+from services.hackathons import HackathonsService
+from repositories.users import UsersRepo
+from repositories.teams import TeamsRepo
+from fastapi import APIRouter, Depends, HTTPException, Query, Path, status, Body
+from settings.config import settings
 
 router = APIRouter(tags=["teams"])
 
 teams_service = TeamsService()
 members_service = TeamMembersService()
 hacks_service = HackathonsService()
+users_repo = UsersRepo()
 users_repo = UsersRepo()
 
 
@@ -31,9 +34,24 @@ class TeamOut(BaseModel):
     class Config:
         from_attributes = True
 
-
+class TeamSelfJoinIn(BaseModel):
+    role: RoleType
 class TeamListOut(BaseModel):
     items: List[TeamOut]
+    limit: int
+    offset: int
+
+
+class TeamMeOut(TeamOut):
+    hackathon_name: str
+    team_members_count: int
+    team_members_limit: Optional[int] = None
+    invites_count: int
+    is_captain: bool
+
+
+class TeamMeListOut(BaseModel):
+    items: List[TeamMeOut]
     limit: int
     offset: int
 
@@ -55,6 +73,7 @@ class TeamMemberUserOut(BaseModel):
     username: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    avatar_url: Optional[str] = None
 
 
 class TeamMemberOut(BaseModel):
@@ -66,10 +85,6 @@ class TeamMemberOut(BaseModel):
         from_attributes = True
 
 
-class TeamMembersListOut(BaseModel):
-    items: List[TeamMemberOut]
-
-
 class TeamMemberCreateIn(BaseModel):
     user_id: int
     role: RoleType
@@ -78,6 +93,18 @@ class TeamMemberCreateIn(BaseModel):
 class TeamMemberUpdateIn(BaseModel):
     role: Optional[RoleType] = None
     is_captain: Optional[bool] = None
+
+
+class TeamMembersListOut(BaseModel):
+    items: List[TeamMemberOut]
+
+
+class TeamWithMembersOut(TeamOut):
+    members: List[TeamMemberOut]
+
+
+class TeamJoinLinkOut(BaseModel):
+    url: str
 
 
 # ---- Хелперы ----
@@ -101,6 +128,30 @@ async def _ensure_captain(team, user_id: int):
     if team.captain_id != user_id:
         raise HTTPException(status_code=403, detail="forbidden: not a captain")
 
+async def _build_team_with_members(team) -> TeamWithMembersOut:
+    members = await members_service.list_members(team.id)
+    member_items: List[TeamMemberOut] = []
+    for m in members:
+        u = m.user
+        member_items.append(
+            TeamMemberOut(
+                user=TeamMemberUserOut(
+                    id=u.id,
+                    username=u.username,
+                    first_name=u.first_name,
+                    last_name=u.last_name,
+                    avatar_url=u.avatar_url,
+                ),
+                role=m.role,
+                is_captain=m.is_captain,
+            )
+        )
+
+    base_team = TeamOut.model_validate(team)
+    return TeamWithMembersOut(
+        **base_team.model_dump(),
+        members=member_items,
+    )
 
 # ---- Список команд по хакатону ----
 
@@ -191,56 +242,71 @@ async def create_team(
 # ---- Мои команды ----
 
 
-@router.get("/me/teams", response_model=TeamListOut)
+@router.get("/me/teams", response_model=TeamMeListOut)
 async def list_my_teams(
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     user_id: int = Depends(get_current_user_id),
 ):
-    teams = await teams_service.list_by_user(
-        user_id=user_id, limit=limit, offset=offset
-    )
-    return TeamListOut(
-        items=[TeamOut.model_validate(t) for t in teams],
+    rows = await teams_service.list_by_user_with_meta(
+        user_id=user_id,
         limit=limit,
         offset=offset,
     )
 
+    items: List[TeamMeOut] = []
+    for team, hackathon_name, team_members_limit, team_members_count, invites_count in rows:
+        base = TeamOut.model_validate(team)
+        items.append(
+            TeamMeOut(
+                **base.model_dump(),
+                hackathon_name=hackathon_name,
+                team_members_limit=team_members_limit,
+                team_members_count=team_members_count,
+                invites_count=invites_count,
+                is_captain=(team.captain_id == user_id),
+            )
+        )
 
-@router.get("/hackathons/{hackathon_id}/teams/me", response_model=TeamListOut)
-async def list_my_teams_on_hackathon(
+
+    return TeamMeListOut(items=items, limit=limit, offset=offset)
+
+@router.get(
+    "/hackathons/{hackathon_id}/teams/me",
+    response_model=Optional[TeamWithMembersOut],
+)
+async def get_my_team_on_hackathon(
     hackathon_id: int = Path(..., ge=1),
-    limit: int = Query(default=50, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
     user_id: int = Depends(get_current_user_id),
 ):
     await _ensure_hackathon_exists(hackathon_id)
+
     teams = await teams_service.list_by_hackathon(
         hackathon_id=hackathon_id,
         status=None,
         q=None,
         owner_id=None,
         member_user_id=user_id,
-        limit=limit,
-        offset=offset,
+        limit=1,
+        offset=0,
         sort="-created_at",
     )
-    return TeamListOut(
-        items=[TeamOut.model_validate(t) for t in teams],
-        limit=limit,
-        offset=offset,
-    )
+
+    if not teams:
+        return None
+
+    team = teams[0]
+    return await _build_team_with_members(team)
 
 
 # ---- Детали/обновление/удаление команды ----
 
-
-@router.get("/teams/{team_id}", response_model=TeamOut)
+@router.get("/teams/{team_id}", response_model=TeamWithMembersOut)
 async def get_team(team_id: int = Path(..., ge=1)):
     team = await teams_service.get_by_id(team_id)
     if not team:
         raise HTTPException(status_code=404, detail="team not found")
-    return TeamOut.model_validate(team)
+    return await _build_team_with_members(team)
 
 
 @router.patch("/teams/{team_id}", response_model=TeamOut)
@@ -313,16 +379,6 @@ async def add_team_member(
     team = await _ensure_team_exists(team_id)
     await _ensure_captain(team, current_user_id)
 
-    hackathon = await _ensure_hackathon_exists(team.hackathon_id)
-    max_team_members = hackathon.team_members_limit 
-
-    current_members_count = await teams_service.get_team_members_count(team_id)
-    if current_members_count >= max_team_members:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Team is full. Maximum {max_team_members} members allowed"
-        )
-
     user = await users_repo.get_by_id(payload.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
@@ -349,6 +405,61 @@ async def add_team_member(
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
+        ),
+        role=membership.role,
+        is_captain=membership.is_captain,
+    )
+
+
+@router.post(
+    "/teams/{team_id}/members/me",
+    response_model=TeamMemberOut,
+    status_code=status.HTTP_201_CREATED,
+)
+async def join_team_by_link(
+    team_id: int = Path(..., ge=1),
+    payload: TeamSelfJoinIn = Body(...),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    team = await _ensure_team_exists(team_id)
+
+    # уже состоит именно в этой команде
+    existing = await members_service.get_membership(team_id, current_user_id)
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="you are already a member of this team",
+        )
+
+    # есть команда на этом же хакатоне
+    already = await teams_service.user_has_team_on_hackathon(
+        user_id=current_user_id,
+        hackathon_id=team.hackathon_id,
+    )
+    if already:
+        raise HTTPException(
+            status_code=409,
+            detail="user already has a team on this hackathon",
+        )
+
+    user = await users_repo.get_by_id(current_user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="user not found")
+
+    membership = await members_service.add_member(
+        team_id=team_id,
+        user_id=current_user_id,
+        role=payload.role,
+        is_captain=False,
+    )
+
+    return TeamMemberOut(
+        user=TeamMemberUserOut(
+            id=user.id,
+            username=user.username,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            avatar_url=user.avatar_url,
         ),
         role=membership.role,
         is_captain=membership.is_captain,
@@ -388,25 +499,6 @@ async def update_team_member(
         role=membership.role,
         is_captain=membership.is_captain,
     )
-
-
-@router.delete(
-    "/teams/{team_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT
-)
-async def remove_team_member(
-    team_id: int = Path(..., ge=1),
-    user_id: int = Path(..., ge=1),
-    current_user_id: int = Depends(get_current_user_id),
-):
-    team = await _ensure_team_exists(team_id)
-    await _ensure_captain(team, current_user_id)
-
-    ok = await members_service.delete_member(team_id, user_id)
-    if not ok:
-        raise HTTPException(status_code=404, detail="team member not found (delete)")
-    return None
-
-
 @router.delete("/teams/{team_id}/members/me", status_code=status.HTTP_204_NO_CONTENT)
 async def leave_team(
     team_id: int = Path(..., ge=1),
@@ -427,3 +519,39 @@ async def leave_team(
     if not ok:
         raise HTTPException(status_code=404, detail="team member not found (leave)")
     return None
+
+@router.delete(
+    "/teams/{team_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT
+)
+async def remove_team_member(
+    team_id: int = Path(..., ge=1),
+    user_id: int = Path(..., ge=1),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    team = await _ensure_team_exists(team_id)
+    await _ensure_captain(team, current_user_id)
+
+    ok = await members_service.delete_member(team_id, user_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="team member not found (delete)")
+    return None
+
+
+
+
+
+@router.get(
+    "/teams/{team_id}/join-link",
+    response_model=TeamJoinLinkOut,
+)
+async def get_team_join_link(
+    team_id: int = Path(..., ge=1),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    team = await _ensure_team_exists(team_id)
+    await _ensure_captain(team, current_user_id)
+
+    start_param = f"join_team_{team.id}"
+    url = f"https://t.me/{settings.TG_BOT_USERNAME}/{settings.TG_APP_NAME}?startapp={start_param}"
+
+    return TeamJoinLinkOut(url=url)

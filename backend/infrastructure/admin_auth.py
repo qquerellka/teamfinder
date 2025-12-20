@@ -1,6 +1,6 @@
 from __future__ import annotations
 from fastapi import Header, HTTPException, status
-from backend.settings.config import settings
+from settings.config import settings
 
 
 class AdminPrincipal:

@@ -6,7 +6,7 @@ import svgr from 'vite-plugin-svgr' // 1. Импортируем плагин
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/teamfinder/",
+  base: "/",
   css: {
     preprocessorOptions: {
       scss: {
@@ -36,5 +36,4 @@ export default defineConfig({
     // Exposes your dev server and makes it accessible for the devices in the same network.
     host: true,
   },
-  
 });

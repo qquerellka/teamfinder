@@ -5,7 +5,7 @@ from typing import List
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from backend.repositories.skills import SkillsRepo
+from repositories.skills import SkillsRepo
 
 router = APIRouter(prefix="/skills", tags=["skills"])
 

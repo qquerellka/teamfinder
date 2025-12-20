@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from backend.settings.config import settings
+from settings.config import settings
 
 # Общий async-engine для приложения
 engine = create_async_engine(

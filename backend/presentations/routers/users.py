@@ -13,12 +13,12 @@ from fastapi import (
 )
 from pydantic import BaseModel, Field
 
-from backend.settings.config import settings
-from backend.repositories.users import UsersRepo
-from backend.repositories.achievements import AchievementsRepo
-from backend.utils import jwt_simple
-from backend.persistend.models import achievement as m_ach
-from backend.repositories.hackathons import HackathonsRepo
+from settings.config import settings
+from repositories.users import UsersRepo
+from repositories.achievements import AchievementsRepo
+from utils import jwt_simple
+from persistend.models import achievement as m_ach
+from repositories.hackathons import HackathonsRepo
 router = APIRouter(prefix="/users", tags=["users"])
 
 users_repo = UsersRepo()

@@ -1,9 +1,26 @@
-// src/shared/ui/TgIcon.tsx
-import React, { ComponentType, SVGProps, KeyboardEvent } from "react";
+import React, { KeyboardEvent } from "react";
 import styled, { css } from "styled-components";
 
-type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
-
+import PlusIcon from "@/assets/icons/plusIcon.svg?react";
+import CrossIcon from "@/assets/icons/crossIcon.svg?react";
+import CaptainIcon from "@/assets/icons/captainIcon.svg?react";
+import DeleteIcon from "@/assets/icons/deleteIcon.svg?react";
+import EditIcon from "@/assets/icons/editIcon.svg?react";
+import InviteIcon from "@/assets/icons/inviteIcon.svg?react";
+import LeaveTeamIcon from "@/assets/icons/leaveTeamIcon.svg?react";
+import SentInviteIcon from "@/assets/icons/sentInvite.svg?react";
+import ShareIcon from "@/assets/icons/shareIcon.svg?react";
+import HackathonPrizeIcon from "@/assets/icons/hackathonCard/hackathonPrizeIcon.svg?react";
+import HackathonDateIcon from "@/assets/icons/hackathonCard/hackathonDateIcon.svg?react";
+import HackathonPlaceIcon from "@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
+import HackathonRegistrationIcon from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
+import HackathonTeamIcon from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
+import ProfileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
+// import HackathonNavIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
+import TeamNavIcon from "@/assets/icons/navbarIcons/teamNavIcon.svg?react";
+import ApplicationsNavIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react";
+import ArrowIcon from "@/assets/icons/arrowIcon.svg?react";
+// type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 type SizeToken = "s" | "m" | "l" | "xl";
 
 const SIZE_MAP: Record<SizeToken, number> = {
@@ -18,8 +35,35 @@ function toPx(size?: number | SizeToken): number {
   return SIZE_MAP[size ?? "m"];
 }
 
+/**
+ * Регистрируем иконки по коротким именам
+ */
+const iconsMap = {
+  plus: PlusIcon,
+  cross: CrossIcon,
+  captain: CaptainIcon,
+  delete: DeleteIcon,
+  edit: EditIcon,
+  invite: InviteIcon,
+  leaveTeam: LeaveTeamIcon,
+  sentInvite: SentInviteIcon,
+  share: ShareIcon,
+  hackathonPrize: HackathonPrizeIcon,
+  hackathonDate: HackathonDateIcon,
+  hackathonPlace: HackathonPlaceIcon,
+  hackathonRegistration: HackathonRegistrationIcon,
+  hackathonTeam: HackathonTeamIcon,
+  profile: ProfileIcon,
+  hackNav: HackathonDateIcon,
+  appNav: ApplicationsNavIcon,
+  teamNav: TeamNavIcon,
+  arrow: ArrowIcon,
+};
+
+export type IconName = keyof typeof iconsMap;
+
 export type SIconProps = {
-  icon: IconComponent | string;
+  name: IconName;
   size?: number | SizeToken;
   color?: string;
   clickable?: boolean;
@@ -32,9 +76,9 @@ export type SIconProps = {
 };
 
 export const SIcon: React.FC<SIconProps> = ({
-  icon,
+  name,
   size = "m",
-  color = "transparent",
+  color,
   clickable,
   asButton,
   className,
@@ -44,7 +88,8 @@ export const SIcon: React.FC<SIconProps> = ({
   ...rest
 }) => {
   const px = toPx(size);
-  const isComponent = typeof icon !== "string";
+  const Icon = iconsMap[name];
+
   const ariaHidden =
     !title && !rest["aria-label"] ? { "aria-hidden": true } : {};
 
@@ -71,15 +116,7 @@ export const SIcon: React.FC<SIconProps> = ({
       {...ariaHidden}
       {...rest}
     >
-      {isComponent ? (
-        React.createElement(icon as IconComponent, {
-          width: px,
-          height: px,
-          focusable: false,
-        })
-      ) : (
-        <img src={icon as string} alt={rest["aria-label"] ?? title ?? ""} />
-      )}
+      <Icon width={px} height={px} focusable={false} />
     </Wrap>
   );
 };
@@ -95,21 +132,17 @@ const Wrap = styled.span<{
   line-height: 1;
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
-
-  color: ${({ $color }) => $color ?? "currentColor"};
+  color: ${({ $color }) => $color ?? "var(--tg-theme-text-color)"};
 
   & > svg {
     width: 100%;
     height: 100%;
     display: block;
-    fill: currentColor;
-    stroke: currentColor;
   }
-  & > img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: contain;
+
+  & > svg * {
+    fill: transparent;
+    stroke: currentColor;
   }
 
   ${({ $clickable }) =>

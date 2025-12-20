@@ -5,8 +5,8 @@ from sqlalchemy import Integer, Text, Enum as SAEnum, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.persistend.base import Base, TimestampMixin
-from backend.persistend.enums import RoleType, VacancyStatus
+from persistend.base import Base, TimestampMixin
+from persistend.enums import RoleType, VacancyStatus
 
 
 class Vacancy(Base, TimestampMixin):
@@ -27,11 +27,11 @@ class Vacancy(Base, TimestampMixin):
 
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    skills: Mapped[list] = mapped_column(
-        JSONB,
-        nullable=False,
-        default=list,
-    )
+    # skills: Mapped[list] = mapped_column(
+    #     JSONB,
+    #     nullable=False,
+    #     default=list,
+    # )
 
     status: Mapped[VacancyStatus] = mapped_column(
         SAEnum(VacancyStatus, name="vacancy_status"),

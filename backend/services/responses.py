@@ -3,16 +3,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Sequence, List
 
-from backend.persistend.enums import ResponseStatus, RoleType
-from backend.persistend.models.response import Response
-from backend.persistend.models.vacancy import Vacancy
-from backend.persistend.models.team import Team
-from backend.persistend.models.application import Application
+from persistend.enums import ResponseStatus, RoleType
+from persistend.models.response import Response
+from persistend.models.vacancy import Vacancy
+from persistend.models.team import Team
+from persistend.models.application import Application
 
-from backend.repositories.responses import ResponsesRepo
-from backend.repositories.vacancies import VacanciesRepo
-from backend.repositories.teams import TeamsRepo
-from backend.repositories.applications import ApplicationsRepo
+from repositories.responses import ResponsesRepo
+from repositories.vacancies import VacanciesRepo
+from repositories.teams import TeamsRepo
+from repositories.applications import ApplicationsRepo
 
 
 @dataclass(frozen=True)
