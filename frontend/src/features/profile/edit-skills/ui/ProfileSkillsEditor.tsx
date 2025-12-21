@@ -1,7 +1,7 @@
 import { useProfileSkillsEditor } from "../model/useProfileSkillsEditor";
 import { ProfileSkillsEditorView } from "./ProfileSkillsEditorView";
 
-export const ProfileSkillsEditor = () => {
+export const ProfileSkillsEditor = ({disabled = false}) => {
   const vm = useProfileSkillsEditor();
   return (
     <ProfileSkillsEditorView
@@ -10,6 +10,7 @@ export const ProfileSkillsEditor = () => {
       isLoading={vm.isLoading}
       error={vm.error}
       onChange={vm.onChange}
+      disabled={disabled}
     />
   );
 };

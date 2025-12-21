@@ -3,11 +3,12 @@ import { useAuthUser, useUser } from "@/entities/user";
 import { ProfileBioEditor } from "@/features/profile/edit-bio";
 import { ProfileSkillsEditor } from "@/features/profile/edit-skills";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { InputSection, SText } from "@/shared/ui";
-import { Input, Textarea } from "@telegram-apps/telegram-ui";
+// import { InputSection, SText } from "@/shared/ui";
+// import { Input, Textarea } from "@telegram-apps/telegram-ui";
 import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
 import styled from "styled-components";
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
+import { SText } from "@/shared/ui";
 
 export const ProfilePage = () => {
   const { id } = useParams<{ id?: string }>();
@@ -33,8 +34,8 @@ export const ProfilePage = () => {
           </>
         ) : (
           <>
-            <ProfileSkillsReadonly skills={user.skills} />
-            <ProfileBioReadonly bio={user.bio ?? ""} />
+            <ProfileSkillsEditor disabled={true} />
+            <ProfileBioEditor disabled={true} />
           </>
         )}
         <Achievements>
@@ -90,14 +91,14 @@ const SExtraInfo = styled.div`
 `;
 export default ProfilePage;
 
-const ProfileBioReadonly = ({ bio }: { bio: string }) => (
-  <InputSection header="Обо мне">
-    <Textarea value={bio} disabled />
-  </InputSection>
-);
+// const ProfileBioReadonly = ({ bio }: { bio: string }) => (
+//   <InputSection header="Обо мне">
+//     <Textarea value={bio} disabled />
+//   </InputSection>
+// );
 
-const ProfileSkillsReadonly = ({ skills }: { skills: { name: string }[] }) => (
-  <InputSection header="Навыки">
-    <Input value={skills.map((s) => s.name).join(", ")} disabled />
-  </InputSection>
-);
+// const ProfileSkillsReadonly = ({ skills }: { skills: { name: string }[] }) => (
+//   <InputSection header="Навыки">
+//     <Input value={skills.map((s) => s.name).join(", ")} disabled />
+//   </InputSection>
+// );
