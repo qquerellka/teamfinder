@@ -3,7 +3,7 @@ import { useAuthUser, useUser } from "@/entities/user";
 import { ProfileBioEditor } from "@/features/profile/edit-bio";
 import { ProfileSkillsEditor } from "@/features/profile/edit-skills";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { InputSection } from "@/shared/ui";
+import { InputSection, SText } from "@/shared/ui";
 import { Input, Textarea } from "@telegram-apps/telegram-ui";
 import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
 import styled from "styled-components";
@@ -39,12 +39,17 @@ export const ProfilePage = () => {
         )}
         <Achievements>
           <AchievementsListHeader showAdd={isOwner} />
-          {/* achievements list */}
-          <Wrapper>
-            {user?.achievements?.map((a) => (
-              <AchievementItem key={a.id} canEdit={isOwner} achievement={a} />
-            ))}
-          </Wrapper>
+          {user?.achievements?.length > 0 ? (
+            <Wrapper>
+              {user?.achievements?.map((a) => (
+                <AchievementItem key={a.id} canEdit={isOwner} achievement={a} />
+              ))}
+            </Wrapper>
+          ) : (
+            <NotFound>
+              <SText>{"Нет достижений"}</SText>
+            </NotFound>
+          )}
         </Achievements>
       </SExtraInfo>
     </SProfile>
@@ -55,6 +60,12 @@ const Achievements = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+const NotFound = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 `;
 
 const Wrapper = styled.div`
