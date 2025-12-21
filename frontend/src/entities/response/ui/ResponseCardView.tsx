@@ -1,27 +1,26 @@
 import { FC, useMemo } from "react";
 import styled from "styled-components";
-import { SText } from "@/shared/ui";
+import { RoleBadge, SText } from "@/shared/ui";
 import { Skill } from "@/entities/skill";
+import { Role } from "@/shared/types/enums";
 
 interface ResponseCardViewProps {
   firstName: string;
   secondName: string;
   username: string;
-  skills: Skill[],
-  //   teamName: string;
-  //   teamMembersCount: number;
-  //   teamMembersLimit: number;
-    actions?: React.ReactNode;
+  skills: Skill[];
+  role: Role;
+  actions?: React.ReactNode;
 }
 
 export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   firstName,
   secondName,
-//   username,
+  //   username,
   skills,
-  actions
+  actions,
+  role,
 }) => {
-
   const skillsString = useMemo(() => {
     const sskills = skills?.slice(0, 4) ?? [];
     return sskills.map((s) => s.name).join(", ");
@@ -31,23 +30,23 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
     <Wrapper>
       <FirstRow>
         <SText $fs={16} $fw={700}>
-          Отклик
+          {firstName} {secondName}
         </SText>
         {actions}
       </FirstRow>
 
       <SecondRow>
-        <SText $fs={14} $fw={500}>
-          {firstName} {secondName}
-        </SText>
-
+        {/* <SText $fs={14} $fw={500}></SText> */}
+            <RoleBadge role={role} />
         {/* <CountTeamMembers>
           <SIcon name="profile" />
           <SText $fs={14} $fw={500}>
             {teamMembersCount} / {teamMembersLimit}
           </SText>
         </CountTeamMembers> */}
-        <SText $fs={14} $fw={500}>{skillsString}</SText>
+        <SText $fs={14} $fw={500}>
+          {skillsString}
+        </SText>
       </SecondRow>
     </Wrapper>
   );
@@ -57,7 +56,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 0.75rem;
+  padding: 1rem;
   border-radius: 1rem;
   background-color: var(--tg-theme-section-bg-color);
 `;

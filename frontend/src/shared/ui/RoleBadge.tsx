@@ -42,7 +42,7 @@ const StyledRoleBadge = styled.div<{ $role?: Role | null }>`
   align-self: flex-start;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 1rem;
 
   ${({ $role }) => {

@@ -53,14 +53,11 @@ export const VacancyResponses: FC<VacancyResponsesProps> = ({ vacancyId }) => {
                 if (status === "accepted") {
                   navigate(getHackathonTeamPath(10));
                 }
-              }}
-            />
-          }
+              } } />}
           firstName={i.user.firstName}
           secondName={i.user.lastName}
           username={i.user.username}
-          skills={[]}
-        />
+          skills={[]} role={"DevOps"}        />
       ))}
     </Wrapper>
   );

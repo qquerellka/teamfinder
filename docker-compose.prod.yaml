@@ -27,6 +27,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     environment:
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
@@ -65,6 +66,7 @@ services:
       context: admin_bot
       dockerfile: Dockerfile
     environment:
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
       - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
       - API_URL=${API_URL}
       - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
