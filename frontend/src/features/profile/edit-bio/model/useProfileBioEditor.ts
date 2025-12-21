@@ -39,7 +39,7 @@ export function useProfileBioEditor() {
 
     const t = window.setTimeout(() => {
       edit.mutate(
-        { bio: bio || undefined },
+        { bio: bio },
         { onSuccess: () => (lastSavedRef.current = bio) }
       );
     }, 600);
