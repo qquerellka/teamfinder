@@ -14,6 +14,7 @@ import {
 } from "./achievements";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { useAppQuery } from "@/shared/api/useAppQuery";
+import { User } from "@/entities/user";
 
 const achievementKeys = queryKeys.achievements;
 const userKeys = queryKeys.user;
@@ -42,6 +43,10 @@ export function useCreateAchievement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
       queryClient.invalidateQueries({ queryKey: userKeys.me });
+      const me = queryClient.getQueryData<User>(userKeys.me);
+      if (me?.id) {
+        queryClient.invalidateQueries({ queryKey: userKeys.byId(me.id) });
+      }
     },
   });
 }
@@ -54,6 +59,10 @@ export function useDeleteAchievement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
       queryClient.invalidateQueries({ queryKey: userKeys.me });
+      const me = queryClient.getQueryData<User>(userKeys.me);
+      if (me?.id) {
+        queryClient.invalidateQueries({ queryKey: userKeys.byId(me.id) });
+      }
     },
   });
 }
@@ -67,6 +76,10 @@ export function useEditAchievement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
       queryClient.invalidateQueries({ queryKey: userKeys.me });
+      const me = queryClient.getQueryData<User>(userKeys.me);
+      if (me?.id) {
+        queryClient.invalidateQueries({ queryKey: userKeys.byId(me.id) });
+      }
     },
   });
 }

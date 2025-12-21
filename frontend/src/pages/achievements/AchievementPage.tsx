@@ -7,6 +7,7 @@ import { AchievementCreateForm } from "@/features/achievement/create";
 import { AchievementEditForm } from "@/features/achievement/edit";
 import { Page, SText } from "@/shared/ui";
 import styled from "styled-components";
+import { paths } from "@/shared/routing/paths";
 
 const AchievementPage = () => {
   const navigate = useNavigate();
@@ -33,12 +34,12 @@ const AchievementPage = () => {
       {isCreate ? (
         <AchievementCreateForm
           hackathons={hackathons}
-          onDone={() => navigate(-1)}
+          onDone={() => navigate(paths.userRoot)}
         />
       ) : achievement ? (
         <AchievementEditForm
           achievement={achievement}
-          onDone={() => navigate(-1)}
+          onDone={() => navigate(paths.userRoot)}
         />
       ) : (
         <section style={{ padding: "1.5rem" }}>
