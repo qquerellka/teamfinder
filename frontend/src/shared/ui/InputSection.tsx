@@ -39,6 +39,7 @@ const Header = styled.div`
 
 const Main = styled(List)`
   display: flex;
+  flex-direction: column;
   width: 100%;
   background-color: var(--tg-theme-secondary-bg-color);
   padding: 0;
