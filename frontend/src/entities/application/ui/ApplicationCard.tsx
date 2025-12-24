@@ -21,14 +21,11 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
   mode,
   registrationEndDate,
   role,
-  onNavigate
+  onNavigate,
 }) => {
   return (
     <Wrapper>
-      <NavigateIcon
-        name="arrow"
-        onClick={onNavigate}
-      />
+      <NavigateIcon name="arrow" onClick={onNavigate} />
       <SText $fs={16} $fw={600}>
         {hackathonName}
       </SText>
@@ -89,6 +86,6 @@ export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
 
 const Badge = styled(SText)`
   border-radius: 1.5rem;
-  padding: 0 0.5rem;
-  background-color: var(--tg-theme-section-header-text-color);
+  padding: 0.5rem 1rem;
+  background-color: var(--tg-theme-accent-text-color);
 `;
