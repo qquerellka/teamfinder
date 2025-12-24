@@ -106,7 +106,7 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 1.5rem;
+  gap: 1rem;
   height: 100%;
 `;
 

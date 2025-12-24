@@ -1,10 +1,5 @@
 import type { FC, ChangeEvent } from "react";
-import {
-  Button,
-  Input,
-  Select,
-  Textarea,
-} from "@telegram-apps/telegram-ui";
+import { Button, Input, Select, Textarea } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 
 import { roleOptions, type Role } from "@/shared/types/enums";
@@ -59,43 +54,40 @@ export const TeamFormView: FC<Props> = (props) => {
 
   return (
     <>
-      <InputSection header="Хакатон">
-        <Input value={hackathonName} disabled />
-      </InputSection>
-
-      <InputSection header="Название команды">
-        <Input value={name} onChange={(e) => onNameChange(e.target.value)} />
-      </InputSection>
-
-      <InputSection header="Описание команды">
-        <Textarea
-          value={description}
-          onChange={(e) => onDescriptionChange(e.target.value)}
-        />
-      </InputSection>
-
-      {props.mode === "create" && (
-        <InputSection header="Ваша роль">
-          <Select value={props.role} onChange={handleRole}>
-            <option value="" disabled>
-              Выберите роль
-            </option>
-            {roleOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </Select>
+      <InputsWrapper>
+        <InputSection header="Хакатон">
+          <Input value={hackathonName} disabled />
         </InputSection>
-      )}
-      {props.extra}
 
+        <InputSection header="Название команды">
+          <Input value={name} onChange={(e) => onNameChange(e.target.value)} />
+        </InputSection>
+
+        <InputSection header="Описание команды">
+          <Textarea
+            value={description}
+            onChange={(e) => onDescriptionChange(e.target.value)}
+          />
+        </InputSection>
+
+        {props.mode === "create" && (
+          <InputSection header="Ваша роль">
+            <Select value={props.role} onChange={handleRole}>
+              <option value="" disabled>
+                Выберите роль
+              </option>
+              {roleOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </Select>
+          </InputSection>
+        )}
+        {props.extra}
+      </InputsWrapper>
       <ButtonsSection>
-        <SButton
-          onClick={onSubmit}
-          stretched
-          disabled={!canSubmit || loading}
-        >
+        <SButton onClick={onSubmit} stretched disabled={!canSubmit || loading}>
           {submitLabel}
         </SButton>
 
@@ -125,4 +117,10 @@ const ButtonsSection = styled.div`
 const SButton = styled(Button)`
   width: 100%;
   margin: 0;
+`;
+
+const InputsWrapper = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;

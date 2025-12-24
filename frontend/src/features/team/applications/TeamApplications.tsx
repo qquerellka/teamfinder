@@ -141,4 +141,5 @@ const NotFound = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
+  text-align: center;
 `;

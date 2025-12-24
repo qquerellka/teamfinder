@@ -1,3 +1,4 @@
+import { SText } from "@/shared/ui";
 import { Button, Placeholder } from "@telegram-apps/telegram-ui";
 import styled from "styled-components";
 
@@ -77,13 +78,13 @@ const ErrorDetails = styled.div`
   text-align: left;
 `;
 
-const DetailsTitle = styled.div`
+const DetailsTitle = styled(SText)`
   font-size: 0.75rem;
   opacity: 0.7;
   margin-bottom: 0.25rem;
 `;
 
-const DetailsText = styled.pre`
+const DetailsText = styled(SText)`
   margin: 0;
   font-size: 0.625rem;
   line-height: 1.4;

@@ -47,7 +47,7 @@ export const HackathonVacancies: FC<HackathonVacanciesProps> = ({
   if (vacancies.length === 0) {
     return (
       <NotFound>
-        <SText>У этого хакатона нет активных анкет :(</SText>
+        <SText>На этот хакатон нет активных вакансий :(</SText>
       </NotFound>
     );
   }
@@ -143,4 +143,5 @@ const NotFound = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
+  text-align: center;
 `;

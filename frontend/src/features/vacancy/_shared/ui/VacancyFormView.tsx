@@ -45,27 +45,28 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
 
   return (
     <>
-      <InputSection header={"Хакатон"}>
-        <Textarea
-          value={description}
-          onChange={handleTextarea}
-          placeholder="Хотим заряженного ИБО перваша"
-        />
-      </InputSection>
+      <InputsWrapper>
+        <InputSection header={"Описание"}>
+          <Textarea
+            value={description}
+            onChange={handleTextarea}
+            placeholder="Хотим заряженного ИБО перваша"
+          />
+        </InputSection>
 
-      <InputSection header={"Роль"}>
-        <Select value={role} onChange={handleSelect}>
-          <option value="" disabled>
-            Выберите роль
-          </option>
-          {roleOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
+        <InputSection header={"Роль"}>
+          <Select value={role} onChange={handleSelect}>
+            <option value="" disabled>
+              Выберите роль
             </option>
-          ))}
-        </Select>
-      </InputSection>
-
+            {roleOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </Select>
+        </InputSection>
+      </InputsWrapper>
       <ButtonsSection>
         <Button
           onClick={handleSaveClick}
@@ -97,3 +98,9 @@ const ButtonsSection = styled.div`
   flex-direction: column;
   gap: 0.5rem;
 `;
+
+const InputsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`

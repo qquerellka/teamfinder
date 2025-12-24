@@ -11,7 +11,7 @@ export const CreateVacancyForm: FC<{
   return (
     <VacancyFormView
       role={form.role}
-      submitLabel="Создать анкету"
+      submitLabel="Создать вакансию"
       loading={form.isSaving}
       canSubmit={form.canSubmit}
       onRoleChange={form.setRole}
