@@ -2,7 +2,6 @@ export const useTelegramHaptic = () => {
   const impact = (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => {
     const tg = window.Telegram?.WebApp;
     
-    // Более безопасная проверка
     if (tg?.HapticFeedback?.impactOccurred) {
       try {
         tg.HapticFeedback.impactOccurred(style);

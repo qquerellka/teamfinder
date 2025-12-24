@@ -31,16 +31,16 @@ const NAV: NavItem[] = [
 ];
 
 export const Navbar: FC = () => {
-    const { impact } = useTelegramHaptic();
+  const { impact } = useTelegramHaptic();
 
-  const handleNavClick =  (path: string) => {
+  const handleNavClick = (path: string) => {
     const currentPath = window.location.pathname;
-    
+
     if (currentPath === path) {
       return;
     }
 
-    impact('light');
+    impact("heavy");
   };
 
   return (
@@ -51,7 +51,7 @@ export const Navbar: FC = () => {
             to={path}
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={() => handleNavClick(path)}
->
+          >
             <SIcon name={icon} size={28} />
           </NavLink>
         </SItem>
