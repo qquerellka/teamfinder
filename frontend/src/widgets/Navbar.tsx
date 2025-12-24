@@ -1,11 +1,11 @@
-import { FC } from "react";
+import { FC, MouseEvent } from "react";
 import styled from "styled-components";
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { NavLink } from "react-router-dom";
 import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
-import { useTelegramHaptic } from "@/shared/telegram/useTelegramHaptic";
+import { postEvent } from "@tma.js/sdk-react";
 
 interface NavItem {
   id: number;
@@ -31,17 +31,26 @@ const NAV: NavItem[] = [
 ];
 
 export const Navbar: FC = () => {
-  const { impact } = useTelegramHaptic();
 
-  const handleNavClick = (path: string) => {
+    const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
     const currentPath = window.location.pathname;
-
+    
     if (currentPath === path) {
+      e.preventDefault();
       return;
     }
 
-    impact("heavy");
+    // Вызываем вибрацию через SDK
+    try {
+      postEvent('web_app_trigger_haptic_feedback', {
+        type: 'impact',
+        impact_style: 'light',
+      });
+    } catch (error) {
+      console.debug('Haptic feedback not available', error);
+    }
   };
+
 
   return (
     <STabbar>
@@ -50,7 +59,7 @@ export const Navbar: FC = () => {
           <NavLink
             to={path}
             className={({ isActive }) => (isActive ? "active" : "")}
-            onClick={() => handleNavClick(path)}
+            onClick={(e) => handleNavClick(e, path)}
           >
             <SIcon name={icon} size={28} />
           </NavLink>
