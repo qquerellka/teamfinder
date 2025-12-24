@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from "react";
 import styled from "styled-components";
 import { IconButton } from "@telegram-apps/telegram-ui";
 
-import { RoleBadge, SIcon, SText } from "@/shared/ui";
+import { NoItems, RoleBadge, SIcon, SText } from "@/shared/ui";
 import { Hackathon } from "@/entities/hackathon";
 import { useHackathonVacancies, Vacancy } from "@/entities/vacancy";
 import { useMyResponses } from "@/entities/response";
@@ -46,9 +46,7 @@ export const HackathonVacancies: FC<HackathonVacanciesProps> = ({
 
   if (vacancies.length === 0) {
     return (
-      <NotFound>
-        <SText>На этот хакатон нет активных вакансий :(</SText>
-      </NotFound>
+      <NoItems title={"На этот хакатон нет активных вакансий :("} />
     );
   }
 
@@ -137,11 +135,4 @@ const SecondRow = styled.div`
   flex-direction: column;
   align-items: end;
   gap: 0.5rem;
-`;
-
-const NotFound = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  text-align: center;
 `;

@@ -6,7 +6,7 @@ import { getHackathonPath } from "@/shared/routing/paths";
 import { HackathonCard, useHackathonsQuery } from "@/entities/hackathon";
 import { Input } from "@telegram-apps/telegram-ui";
 import { useDebouncedValue } from "@/shared/helpers/useDebounceValue";
-import { InputSection, SText } from "@/shared/ui";
+import { InputSection, NoItems } from "@/shared/ui";
 
 export const HackathonList: FC = () => {
   const [search, setSearch] = useState("");
@@ -28,9 +28,7 @@ export const HackathonList: FC = () => {
       </InputSection>
 
       {data.items.length === 0 ? (
-        <NotFound>
-          <SText>Ничего не нашлось :(</SText>
-        </NotFound>
+        <NoItems title={"Ничего не нашлось :("} />
       ) : (
         <Grid>
           {data.items.map((h) => (
@@ -53,10 +51,4 @@ const CardLink = styled(Link)`
   display: block;
   text-decoration: none;
   color: inherit;
-`;
-
-const NotFound = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
 `;

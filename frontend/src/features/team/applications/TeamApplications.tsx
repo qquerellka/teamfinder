@@ -5,7 +5,7 @@ import { IconButton } from "@telegram-apps/telegram-ui";
 import type { Application } from "@/entities/application";
 import { useHackathonApplications } from "@/entities/application";
 import type { Team } from "@/entities/team";
-import { RoleBadge, SIcon, SText } from "@/shared/ui";
+import { NoItems, RoleBadge, SIcon, SText } from "@/shared/ui";
 import { useTeamInvites } from "@/entities/invite";
 import { useSendInviteAction } from "@/features/invite/send";
 
@@ -15,13 +15,14 @@ interface TeamApplicationsProps {
 
 export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
   const { data: applicationsData } = useHackathonApplications(team.hackathonId);
-  const applications = applicationsData?.items.filter((i) => i.status === "published") ?? [];
+  const applications =
+    applicationsData?.items.filter((i) => i.status === "published") ?? [];
 
   const { data: invitesData, isFetching: isInvitesFetching } = useTeamInvites(
     team.id
   );
 
-  const invites = invitesData.filter((i) => i.status === 'pending') ?? [];
+  const invites = invitesData.filter((i) => i.status === "pending") ?? [];
   const invitedIds = useMemo(
     () => new Set(invites.map((i) => i.applicationId)),
     [invites]
@@ -41,13 +42,9 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
       setInvitingAppId(null);
     }
   };
-  
+
   if (applications.length === 0) {
-    return (
-      <NotFound>
-        <SText>У этого хакатона нет активных анкет :(</SText>
-      </NotFound>
-    );
+    return <NoItems title={"У этого хакатона нет активных анкет :("} />;
   }
 
   return (
@@ -135,11 +132,4 @@ const SecondRow = styled.div`
   flex-direction: column;
   align-items: end;
   gap: 0.5rem;
-`;
-
-const NotFound = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  text-align: center;
 `;

@@ -33,7 +33,7 @@ const AchievementPage = () => {
     <SPage>
       {isCreate ? (
         <AchievementCreateForm
-          hackathons={hackathons}
+          hackathons={hackathons.filter((h) => h.status === 'closed')}
           onDone={() => navigate(paths.userRoot)}
         />
       ) : achievement ? (

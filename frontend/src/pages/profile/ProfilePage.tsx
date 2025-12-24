@@ -6,12 +6,10 @@ import {
   ProfileSkillsReadonly,
 } from "@/features/profile/edit-skills";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-// import { InputSection, SText } from "@/shared/ui";
-// import { Input, Textarea } from "@telegram-apps/telegram-ui";
 import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
 import styled from "styled-components";
 import { AchievementItem } from "@/widgets/achievements/AchievementItem";
-import { InputSection, SText } from "@/shared/ui";
+import { InputSection, NoItems } from "@/shared/ui";
 import { Textarea } from "@telegram-apps/telegram-ui";
 
 export const ProfilePage = () => {
@@ -19,10 +17,8 @@ export const ProfilePage = () => {
 
   const { data: me } = useAuthUser();
 
-  const viewedId = id ? Number(id) : me?.id; // /user -> me
-  const { data: user } = useUser(viewedId ?? 0); // лучше enabled, если хочешь
-
-  if (!me || !user) return null; // Loader
+  const viewedId = id ? Number(id) : me?.id;
+  const { data: user } = useUser(viewedId ?? 0);
 
   const isOwner = me.id === user.id;
 
@@ -39,7 +35,7 @@ export const ProfilePage = () => {
         ) : (
           <>
             <ProfileSkillsReadonly skills={user.skills ?? []} />
-            <ProfileBioReadonly bio={user.bio ?? ""}/>
+            <ProfileBioReadonly bio={user.bio ?? ""} />
           </>
         )}
         <Achievements>
@@ -51,9 +47,7 @@ export const ProfilePage = () => {
               ))}
             </Wrapper>
           ) : (
-            <NotFound>
-              <SText>{"Нет достижений"}</SText>
-            </NotFound>
+            <NoItems title={"Нет достижений"} />
           )}
         </Achievements>
       </SExtraInfo>
@@ -67,14 +61,7 @@ const Achievements = styled.div`
   gap: 0.5rem;
 `;
 
-const NotFound = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-`;
-
 const Wrapper = styled.div`
-  /* padding: 20px 22px 16px; */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -100,9 +87,3 @@ const ProfileBioReadonly = ({ bio }: { bio: string }) => (
     <Textarea value={bio} disabled />
   </InputSection>
 );
-
-// const ProfileSkillsReadonly = ({ skills }: { skills: { name: string }[] }) => (
-//   <InputSection header="Навыки">
-//     <Input value={skills.map((s) => s.name).join(", ")} disabled />
-//   </InputSection>
-// );

@@ -1,7 +1,7 @@
 import { useAuthUserApplications } from "@/entities/application";
 import { ApplicationCard } from "@/entities/application/ui/ApplicationCard";
 import { getHackathonParticipationPath } from "@/shared/routing/paths";
-import { Page, SText } from "@/shared/ui";
+import { NoItems, Page, SText } from "@/shared/ui";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -11,9 +11,7 @@ export const ApplicationsPage = () => {
   const filteredApplications = applications.filter((a) => a.status === 'published')
   if (!filteredApplications || filteredApplications.length === 0) {
     return (
-      <NotFound>
-        <SText>У вас нет активных анкет :(</SText>
-      </NotFound>
+      <NoItems title={"У вас нет активных анкет :("} />
     );
   }
   return (
@@ -40,11 +38,6 @@ export const ApplicationsPage = () => {
 
 export default ApplicationsPage;
 
-const NotFound = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-`;
 const TeamsList = styled.div`
   display: flex;
   flex-direction: column;
