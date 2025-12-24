@@ -7,16 +7,23 @@ import { SText } from "@/shared/ui";
 import { useVacancyResponses, Response } from "@/entities/response";
 import { ResponsesCardView } from "@/entities/response/ui/ResponseCardView";
 import { ResponseRespondButtons } from "@/features/response/respond";
+import { Vacancy } from "@/entities/vacancy";
 
 interface VacancyResponsesProps {
-  vacancyId: number;
+  vacancies: Vacancy[];
 }
 
-export const VacancyResponses: FC<VacancyResponsesProps> = ({ vacancyId }) => {
+export const VacancyResponses: FC<VacancyResponsesProps> = ({ vacancies }) => {
   const navigate = useNavigate();
-  const { data } = useVacancyResponses(vacancyId);
 
-  const responses: Response[] = data ?? [];
+  let responses: Response[] = [];
+
+  for (let i = 0; i < vacancies.length; i++) {
+    const { data } = useVacancyResponses(vacancies[i].id);
+    responses = responses.concat(data);
+  }
+
+  // const responses: Response[] = data ?? [];
 
   const pending = useMemo(
     () => responses.filter((r) => r.status === "pending"),
@@ -39,25 +46,21 @@ export const VacancyResponses: FC<VacancyResponsesProps> = ({ vacancyId }) => {
         <ResponsesCardView
           key={i.id}
           actions={
-            // <InviteRespondButtons
-            //   inviteId={i.id}
-            //   onAnswered={(status) => {
-            //     if (status === "accepted") {
-            //       navigate(getHackathonTeamPath(i.teamId));
-            //     }
-            //   }}
-            // />
             <ResponseRespondButtons
               responseId={i.id}
               onAnswered={(status) => {
                 if (status === "accepted") {
                   navigate(getHackathonTeamPath(10));
                 }
-              } } />}
+              }}
+            />
+          }
           firstName={i.user.firstName}
           secondName={i.user.lastName}
           username={i.user.username}
-          skills={[]} role={"DevOps"}        />
+          skills={[]}
+          role={"DevOps"}
+        />
       ))}
     </Wrapper>
   );

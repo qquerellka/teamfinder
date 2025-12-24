@@ -9,14 +9,16 @@ import { CreateVacancyForm } from "@/features/vacancy/create";
 import { EditVacancyForm } from "@/features/vacancy/edit";
 import { VacancyCard } from "./VacancyCard";
 import { VacancyResponses } from "@/widgets/responses/vacancy-responses";
+import { Button } from "@telegram-apps/telegram-ui";
 
 export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
   const { data: vacancies } = useTeamVacancies(team.id);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
+  const [addVacancy, setAddVacancy] = useState<boolean>(false);
 
-  if (!vacancies || vacancies.length === 0) {
-    return <CreateVacancyForm teamId={team.id} />;
+  if (!vacancies || vacancies.length === 0 || addVacancy || (team.members.length + vacancies.length) > 8) {
+    return <CreateVacancyForm teamId={team.id} onDone={() => setAddVacancy(false)}/>;
   }
 
   if (isEditing) {
@@ -30,14 +32,17 @@ export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
 
   return (
     <Wrapper>
-      <VacancyCard
-        team={team}
-        vacancy={vacancies[0]}
-        onEditClick={() => setIsEditing(true)}
-        onDeleted={() => navigate(-1)}
-      />
-      <VacancyResponses vacancyId={vacancies[0].id} />
-      {/* <ApplicationInvites appId={application.id} /> */}
+      <Button mode="bezeled" onClick={() => setAddVacancy(true)}>{"Добавить вакансию"}</Button>
+      {vacancies.map((v) => (
+        <VacancyCard
+          team={team}
+          vacancy={v}
+          onEditClick={() => setIsEditing(true)}
+          onDeleted={() => navigate(-1)}
+        />
+      ))}
+
+      <VacancyResponses vacancies={vacancies} />
     </Wrapper>
   );
 };
