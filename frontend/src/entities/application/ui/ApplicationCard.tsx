@@ -86,6 +86,6 @@ export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
 
 const Badge = styled(SText)`
   border-radius: 1.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   background-color: var(--tg-theme-accent-text-color);
 `;
