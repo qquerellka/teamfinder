@@ -41,6 +41,9 @@ const Main = styled(List)`
   display: flex;
   flex-direction: column;
   width: 100%;
+
+  box-shadow: 0 0 10px 2px rgba(255, 105, 180, 0.7);  /* Розовая тень */
+  border-radius: 1rem;
   background-color: var(--tg-theme-secondary-bg-color);
   padding: 0;
   & > div {
@@ -49,6 +52,7 @@ const Main = styled(List)`
   & > div {
     display: flex;
     width: 100%;
+    border-radius: 1rem;
     background-color: var(--tg-theme-secondary-bg-color);
   }
 

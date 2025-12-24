@@ -116,7 +116,8 @@ export const SIcon: React.FC<SIconProps> = ({
       {...ariaHidden}
       {...rest}
     >
-      <Icon width={px} height={px} focusable={false} />
+      <Icon width={px} height={px} focusable={false} style={name === 'teamNav' ? { fill: color ?? 'currentColor' } : {}}
+/>
     </Wrap>
   );
 };
