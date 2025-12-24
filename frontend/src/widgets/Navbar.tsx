@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
+import { useTelegramHaptic } from "@/shared/telegram/useTelegramHaptic";
 
 interface NavItem {
   id: number;
@@ -30,6 +31,18 @@ const NAV: NavItem[] = [
 ];
 
 export const Navbar: FC = () => {
+    const { impact } = useTelegramHaptic();
+
+  const handleNavClick =  (path: string) => {
+    const currentPath = window.location.pathname;
+    
+    if (currentPath === path) {
+      return;
+    }
+
+    impact('light');
+  };
+
   return (
     <STabbar>
       {NAV.map(({ id, icon, path }) => (
@@ -37,7 +50,8 @@ export const Navbar: FC = () => {
           <NavLink
             to={path}
             className={({ isActive }) => (isActive ? "active" : "")}
-          >
+            onClick={() => handleNavClick(path)}
+>
             <SIcon name={icon} size={28} />
           </NavLink>
         </SItem>
