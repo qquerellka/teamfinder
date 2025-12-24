@@ -6,9 +6,8 @@ import {
   ProfileSkillsReadonly,
 } from "@/features/profile/edit-skills";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { AchievementsListHeader } from "@/widgets/achievements/AchievementsListHeader";
+import { AchievementsListHeader, AchievementItem } from "@/widgets/achievements";
 import styled from "styled-components";
-import { AchievementItem } from "@/widgets/achievements/AchievementItem";
 import { InputSection, NoItems } from "@/shared/ui";
 import { Textarea } from "@telegram-apps/telegram-ui";
 
