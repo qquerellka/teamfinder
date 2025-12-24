@@ -42,7 +42,7 @@ const Main = styled(List)`
   flex-direction: column;
   width: 100%;
 
-  box-shadow: 0 0 10px 2px rgba(255, 105, 180, 0.7);  /* Розовая тень */
+  box-shadow: 0 0 10px 2px var(--tg-theme-bg-color);  /* Розовая тень */
   border-radius: 1rem;
   background-color: var(--tg-theme-secondary-bg-color);
   padding: 0;
