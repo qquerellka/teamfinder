@@ -5,7 +5,7 @@ import { matchPath, NavLink, useLocation } from "react-router-dom";
 import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
-import { postEvent } from "@tma.js/sdk-react";
+// import { postEvent } from "@tma.js/sdk-react";
 
 interface NavItem {
   id: number;
@@ -43,14 +43,14 @@ export const Navbar: FC = () => {
       return;
     }
 
-    try {
-      postEvent("web_app_trigger_haptic_feedback", {
-        type: "impact",
-        impact_style: "light",
-      });
-    } catch (error) {
-      console.debug("Haptic feedback not available", error);
-    }
+    // try {
+    //   postEvent("web_app_trigger_haptic_feedback", {
+    //     type: "impact",
+    //     impact_style: "light",
+    //   });
+    // } catch (error) {
+    //   console.debug("Haptic feedback not available", error);
+    // }
   };
 
   return (
