@@ -59,6 +59,10 @@ services:
       - API_URL=${API_URL}
       - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
       - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
+      - S3_BUCKET=${S3_BUCKET}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_PUBLIC_BASE_URL=${S3_PUBLIC_BASE_URL}
     depends_on:
       - backend
     restart: unless-stopped
