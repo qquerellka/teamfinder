@@ -6,7 +6,7 @@ const colorsForRoleBadge: Record<Role, string> = {
   DevOps: "#CE8AFF",
   GameDev: "#B16DFF",
   MobileDev: "#8AB3FF",
-  "Product manager": "#8AE2FF",
+  Manager: "#8AE2FF",
   DS: "#A9FF8A",
   ML: "#FFF78A",
   Fullstack: "#FF978A",

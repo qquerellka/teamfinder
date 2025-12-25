@@ -38,7 +38,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
   CREATE TYPE role_type AS ENUM ('DevOps','GameDev',
-  'MobileDev','Product manager','DS','ML','Fullstack',
+  'MobileDev','Manager','DS','ML','Fullstack',
   'Backend','Frontend','Designer','Analytics','QA');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 

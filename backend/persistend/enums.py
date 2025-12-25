@@ -8,7 +8,7 @@ class RoleType(str, Enum):
     DevOps = "DevOps"
     GameDev = "GameDev"
     MobileDev = "MobileDev"
-    ProductManager = "Product manager"
+    Manager = "Manager"
     DS = "DS"
     ML = "ML"
     Fullstack = "Fullstack"
