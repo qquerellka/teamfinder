@@ -116,8 +116,7 @@ export const SIcon: React.FC<SIconProps> = ({
       {...ariaHidden}
       {...rest}
     >
-      <Icon width={px} height={px} focusable={false} style={name === 'teamNav' ? { fill: color ?? 'currentColor' } : {}}
-/>
+      <Icon width={px} height={px} focusable={false} />
     </Wrap>
   );
 };
@@ -135,7 +134,7 @@ const Wrap = styled.span<{
   height: ${({ $size }) => $size}px;
   color: ${({ $color }) => $color ?? "var(--tg-theme-text-color)"};
 
-  & > svg {
+  /* & > svg {
     width: 100%;
     height: 100%;
     display: block;
@@ -144,6 +143,31 @@ const Wrap = styled.span<{
   & > svg * {
     fill: transparent;
     stroke: currentColor;
+  } */
+
+  // станет:
+  & > svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Перекрашиваем ТОЛЬКО белые stroke в currentColor */
+  & > svg [stroke="white"],
+  & > svg [stroke="#fff"],
+  & > svg [stroke="#FFF"],
+  & > svg [stroke="#ffffff"],
+  & > svg [stroke="#FFFFFF"] {
+    stroke: currentColor;
+  }
+
+  /* Перекрашиваем ТОЛЬКО белые fill в currentColor */
+  & > svg [fill="white"],
+  & > svg [fill="#fff"],
+  & > svg [fill="#FFF"],
+  & > svg [fill="#ffffff"],
+  & > svg [fill="#FFFFFF"] {
+    fill: currentColor;
   }
 
   ${({ $clickable }) =>

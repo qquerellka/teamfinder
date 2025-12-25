@@ -47,19 +47,10 @@ async function bootstrapTMA() {
     tgWebAppStartParam?: string;
     tgWebAppPlatform?: string;
   };
-  console.log("window.Telegram.WebApp:", window.Telegram?.WebApp);
-  console.log(
-    "window.Telegram.WebApp.initData:",
-    window.Telegram?.WebApp?.initData
-  );
 
   const a =
     new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
     new URLSearchParams(location.search).get("tgWebAppData");
-
-  console.log("ahahha: ", a);
-  console.log("lp.initDataRaw:", lp.initDataRaw);
-  console.log("lp.initData:", lp.initData);
 
   // 2) Жёстко задаём тип initDataRaw как string | undefined
   const initDataRaw: string | undefined =

@@ -9,8 +9,6 @@ export function useIsApplePlatform(): boolean {
   const lp = useLaunchParams();
 
   const platform = lp?.tgWebAppPlatform;
-  // на всякий случай залогировать
-  // console.log("[platform]", platform);
 
   if (!platform) {
     return false;

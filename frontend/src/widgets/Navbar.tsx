@@ -1,7 +1,7 @@
 import { FC, MouseEvent } from "react";
 import styled from "styled-components";
 import { Tabbar } from "@telegram-apps/telegram-ui";
-import { NavLink } from "react-router-dom";
+import { matchPath, NavLink, useLocation } from "react-router-dom";
 import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
@@ -31,26 +31,27 @@ const NAV: NavItem[] = [
 ];
 
 export const Navbar: FC = () => {
+  const { pathname } = useLocation();
 
-    const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
-    const currentPath = window.location.pathname;
-    
-    if (currentPath === path) {
+  const isCurrentRoute = (to: string) => {
+    return Boolean(matchPath({ path: to, end: false }, pathname));
+  };
+
+  const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (isCurrentRoute(path)) {
       e.preventDefault();
       return;
     }
 
-    // Вызываем вибрацию через SDK
     try {
-      postEvent('web_app_trigger_haptic_feedback', {
-        type: 'impact',
-        impact_style: 'light',
+      postEvent("web_app_trigger_haptic_feedback", {
+        type: "impact",
+        impact_style: "light",
       });
     } catch (error) {
-      console.debug('Haptic feedback not available', error);
+      console.debug("Haptic feedback not available", error);
     }
   };
-
 
   return (
     <STabbar>
