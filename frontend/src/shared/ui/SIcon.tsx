@@ -15,10 +15,10 @@ import HackathonDateIcon from "@/assets/icons/hackathonCard/hackathonDateIcon.sv
 import HackathonPlaceIcon from "@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
 import HackathonRegistrationIcon from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
 import HackathonTeamIcon from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
-import ProfileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
-import HackathonNavIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
-import TeamNavIcon from "@/assets/icons/navbarIcons/TeamsIcon.svg?react";
-import ApplicationsNavIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react";
+import ProfileIcon from "@/assets/icons/navbarIcons/profileIcon.svg?react";
+import HackathonNavIcon from "@/assets/icons/navbarIcons/hackathonsIcon.svg?react";
+import TeamNavIcon from "@/assets/icons/navbarIcons/teamsIcon.svg?react";
+import ApplicationsNavIcon from "@/assets/icons/navbarIcons/applicationsIcon.svg?react";
 import ArrowIcon from "@/assets/icons/arrowIcon.svg?react";
 
 type SizeToken = "s" | "m" | "l" | "xl";
