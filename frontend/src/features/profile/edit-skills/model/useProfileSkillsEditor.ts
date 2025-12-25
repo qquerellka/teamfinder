@@ -4,6 +4,7 @@ import type { MultiselectProps } from "@telegram-apps/telegram-ui";
 import { useAuthUser, useEditUserMainInfo } from "@/entities/user";
 import { useSkills, type Skill } from "@/entities/skill";
 import { MAX_SKILLS } from "./types";
+import { postEvent } from "@tma.js/sdk-react";
 
 type Option = MultiselectProps["options"][number];
 
@@ -45,6 +46,14 @@ export function useProfileSkillsEditor() {
 
   const onChange = (selected: Option[]) => {
     if (selected.length > MAX_SKILLS) {
+      try {
+        postEvent("web_app_trigger_haptic_feedback", {
+          type: "impact",
+          impact_style: "light",
+        });
+      } catch (error) {
+        console.debug("Haptic feedback not available", error);
+      }
       setError(`Нельзя выбрать больше ${MAX_SKILLS} навыков`);
       return;
     }

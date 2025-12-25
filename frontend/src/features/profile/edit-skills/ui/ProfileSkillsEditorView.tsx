@@ -22,21 +22,23 @@ export const ProfileSkillsEditorView: FC<ProfileSkillsEditorViewProps> = ({
   disabled,
 }) => {
   return (
-    <InputSection header="Навыки">
-      <Multiselect
-        status={error ? "error" : "default"}
-        options={options}
-        value={value}
-        onChange={onChange}
-        selectedBehavior="hide"
-        closeDropdownAfterSelect={false}
-        creatable={false}
-        placeholder={
-          isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
-        }
-        disabled={disabled}
-      />
+    <>
+      <InputSection header="Навыки">
+        <Multiselect
+          status={error ? "error" : "default"}
+          options={options}
+          value={value}
+          onChange={onChange}
+          selectedBehavior="hide"
+          closeDropdownAfterSelect={false}
+          creatable={false}
+          placeholder={
+            isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
+          }
+          disabled={disabled}
+        />
+      </InputSection>
       {error && <ErrorText>{error}</ErrorText>}
-    </InputSection>
+    </>
   );
 };

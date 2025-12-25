@@ -17,16 +17,18 @@ export const ProfileBioEditorView: FC<ProfileBioEditorViewProps> = ({
   disabled,
 }) => {
   return (
-    <InputSection header="Обо мне">
-      <StyledTextarea
-        status={error ? "error" : "default"}
-        value={value}
-        onChange={onChange}
-        placeholder="Расскажите немного о себе..."
-        disabled={disabled}
-      />
+    <>
+      <InputSection header="Обо мне">
+        <StyledTextarea
+          status={error ? "error" : "default"}
+          value={value}
+          onChange={onChange}
+          placeholder="Расскажите немного о себе..."
+          disabled={disabled}
+        />
+      </InputSection>
       {error && <ErrorText>{error}</ErrorText>}
-    </InputSection>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useAuthUser, useEditUserMainInfo } from "@/entities/user";
 import { MAX_BIO } from "./types";
+import { postEvent } from "@tma.js/sdk-react";
 
 export function useProfileBioEditor() {
   const { data: user } = useAuthUser();
@@ -25,8 +26,17 @@ export function useProfileBioEditor() {
     const next = e.target.value;
     setBio(next);
 
-    if (next.length > MAX_BIO) setError(`Описание должно быть не больше ${MAX_BIO} символов`);
-    else setError(null);
+    if (next.length > MAX_BIO) {
+      setError(`Описание должно быть не больше ${MAX_BIO} символов`);
+      try {
+        postEvent("web_app_trigger_haptic_feedback", {
+          type: "impact",
+          impact_style: "light",
+        });
+      } catch (error) {
+        console.debug("Haptic feedback not available", error);
+      }
+    } else setError(null);
   };
 
   useEffect(() => {
