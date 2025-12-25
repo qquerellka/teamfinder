@@ -105,7 +105,7 @@ async def _put_object(
                 # но это уже вопрос настроек отдачи.
             )
     except Exception:
-        raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILED")
+        raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILEDD")
 
 async def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
     """
