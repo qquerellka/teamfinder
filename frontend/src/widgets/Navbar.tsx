@@ -17,15 +17,15 @@ const NAV: NavItem[] = [
   { id: 1, name: "hackathons", icon: "hacksNav", path: paths.hackathons },
   {
     id: 2,
-    name: "applications",
-    icon: "appNav",
-    path: paths.applications,
-  },
-  {
-    id: 3,
     name: "teams",
     icon: "teamNav",
     path: paths.teams,
+  },
+  {
+    id: 3,
+    name: "applications",
+    icon: "appNav",
+    path: paths.applications,
   },
   { id: 4, name: "profile", icon: "profile", path: paths.userRoot },
 ];
