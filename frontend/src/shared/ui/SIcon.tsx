@@ -17,7 +17,7 @@ import HackathonRegistrationIcon from "@/assets/icons/hackathonCard/hackathonReg
 import HackathonTeamIcon from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
 import ProfileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
 import HackathonNavIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
-import TeamNavIcon from "@/assets/icons/navbarIcons/teamNavIcon.svg?react";
+import TeamNavIcon from "@/assets/icons/navbarIcons/TeamsIcon.svg?react";
 import ApplicationsNavIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react";
 import ArrowIcon from "@/assets/icons/arrowIcon.svg?react";
 
