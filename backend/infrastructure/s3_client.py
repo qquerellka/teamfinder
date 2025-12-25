@@ -4,12 +4,15 @@ from typing import List, Optional
 
 import aioboto3
 from fastapi import UploadFile, HTTPException
-
+from botocore.exceptions import ClientError, EndpointConnectionError, NoCredentialsError
+from botocore.config import Config
 from settings.config import settings
 
 # --- Общая сессия aioboto3 ---
 
 _session = aioboto3.Session()
+logger = logging.getLogger(__name__)
+
 
 def _guess_extension(content_type: str | None) -> str:
     """
@@ -79,33 +82,56 @@ def make_public_url(key: str) -> str:
     base = settings.S3_PUBLIC_BASE_URL.rstrip("/")
     return f"{base}/{key}"
 
-async def _put_object(
-    *,
-    key: str,
-    data: bytes,
-    content_type: str | None,
-) -> None:
-    """
-    Внутренний helper: положить объект в S3 асинхронно.
-    """
+
+async def _put_object(*, key: str, data: bytes, content_type: str | None) -> None:
     try:
         async with _session.client(
             "s3",
             endpoint_url=settings.S3_ENDPOINT,
             aws_access_key_id=settings.S3_ACCESS_KEY,
             aws_secret_access_key=settings.S3_SECRET_KEY,
+            region_name=getattr(settings, "S3_REGION", None)
+            or "ru-central1",  # если Yandex
+            config=Config(s3={"addressing_style": "path"}),
         ) as s3:
             await s3.put_object(
                 Bucket=settings.S3_BUCKET,
                 Key=key,
                 Body=data,
-                ACL="public-read",
+                # ACL="public-read",  # временно уберите, чтобы проверить, что не в ACL проблема
                 ContentType=content_type or "image/jpeg",
-                # Можно добавить ContentDisposition="inline", если нужно,
-                # но это уже вопрос настроек отдачи.
             )
-    except Exception:
-        raise HTTPException(status_code=500, detail="IMAGE_UPLOAD_FAILEDD")
+    except ClientError as e:
+        # тут будет Error.Code + Error.Message (AccessDenied, InvalidRequest, NoSuchBucket, etc.)
+        logger.exception(
+            "S3 put_object ClientError: bucket=%s key=%s err=%s",
+            settings.S3_BUCKET,
+            key,
+            e.response,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail={"code": "IMAGE_UPLOAD_FAILED", "s3": e.response.get("Error", {})},
+        )
+    except (EndpointConnectionError, NoCredentialsError) as e:
+        logger.exception(
+            "S3 connection/credentials error: bucket=%s key=%s err=%r",
+            settings.S3_BUCKET,
+            key,
+            e,
+        )
+        raise HTTPException(
+            status_code=500, detail={"code": "IMAGE_UPLOAD_FAILED", "reason": str(e)}
+        )
+    except Exception as e:
+        logger.exception(
+            "S3 put_object unexpected error: bucket=%s key=%s err=%r",
+            settings.S3_BUCKET,
+            key,
+            e,
+        )
+        raise HTTPException(status_code=500, detail={"code": "IMAGE_UPLOAD_FAILED"})
+
 
 async def upload_hackathon_image_to_s3(hackathon_id: int, file: UploadFile) -> str:
     """
