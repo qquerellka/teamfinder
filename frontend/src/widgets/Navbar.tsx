@@ -14,7 +14,7 @@ interface NavItem {
   path: string;
 }
 const NAV: NavItem[] = [
-  { id: 1, name: "hackathons", icon: "hackNav", path: paths.hackathons },
+  { id: 1, name: "hackathons", icon: "hacksNav", path: paths.hackathons },
   {
     id: 2,
     name: "applications",

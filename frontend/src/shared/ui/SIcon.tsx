@@ -16,11 +16,11 @@ import HackathonPlaceIcon from "@/assets/icons/hackathonCard/hackathonPlaceIcon.
 import HackathonRegistrationIcon from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
 import HackathonTeamIcon from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
 import ProfileIcon from "@/assets/icons/navbarIcons/ProfileIcon.svg?react";
-// import HackathonNavIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
+import HackathonNavIcon from "@/assets/icons/navbarIcons/HackathonsIcon.svg?react";
 import TeamNavIcon from "@/assets/icons/navbarIcons/teamNavIcon.svg?react";
 import ApplicationsNavIcon from "@/assets/icons/navbarIcons/ApplicationsIcon.svg?react";
 import ArrowIcon from "@/assets/icons/arrowIcon.svg?react";
-// type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
 type SizeToken = "s" | "m" | "l" | "xl";
 
 const SIZE_MAP: Record<SizeToken, number> = {
@@ -35,9 +35,6 @@ function toPx(size?: number | SizeToken): number {
   return SIZE_MAP[size ?? "m"];
 }
 
-/**
- * Регистрируем иконки по коротким именам
- */
 const iconsMap = {
   plus: PlusIcon,
   cross: CrossIcon,
@@ -54,10 +51,10 @@ const iconsMap = {
   hackathonRegistration: HackathonRegistrationIcon,
   hackathonTeam: HackathonTeamIcon,
   profile: ProfileIcon,
-  hackNav: HackathonDateIcon,
   appNav: ApplicationsNavIcon,
   teamNav: TeamNavIcon,
   arrow: ArrowIcon,
+  hacksNav: HackathonNavIcon,
 };
 
 export type IconName = keyof typeof iconsMap;
