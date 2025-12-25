@@ -121,7 +121,7 @@ async def _put_object(*, key: str, data: bytes, content_type: str | None) -> Non
             e,
         )
         raise HTTPException(
-            status_code=500, detail={"code": "IMAGE_UPLOAD_FAILED", "reason": str(e)}
+            status_code=500, detail={"code": "IMAGE_UPLOAD_FAILEDDD", "reason": str(e)}
         )
     except Exception as e:
         logger.exception(
