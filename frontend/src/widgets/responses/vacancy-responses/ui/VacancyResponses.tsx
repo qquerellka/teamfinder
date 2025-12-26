@@ -33,7 +33,7 @@ export const VacancyResponses: FC<VacancyResponsesProps> = ({ vacancies }) => {
   if (pending.length === 0) {
     return (
       <Wrapper>
-        <SText>Нет приглашений :(</SText>
+        <SText>Нет откликов :(</SText>
       </Wrapper>
     );
   }
