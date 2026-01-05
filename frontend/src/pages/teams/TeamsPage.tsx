@@ -19,6 +19,7 @@ export const UserTeamsPage = () => {
         <SText>Мои команды</SText>
         {teams.map((t) => (
           <TeamCard
+            key={t.id}
             invitesCount={t.countInvites}
             teamName={t.name}
             hackathonName={t.hackathonName}

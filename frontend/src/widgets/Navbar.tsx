@@ -5,7 +5,6 @@ import { matchPath, NavLink, useLocation } from "react-router-dom";
 import { paths } from "@/shared/routing/paths";
 import { SIcon } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
-// import { postEvent } from "@tma.js/sdk-react";
 
 interface NavItem {
   id: number;
@@ -34,7 +33,7 @@ export const Navbar: FC = () => {
   const { pathname } = useLocation();
 
   const isCurrentRoute = (to: string) => {
-    return Boolean(matchPath({ path: to, end: false }, pathname));
+    return Boolean(matchPath({ path: to, end: true }, pathname));
   };
 
   const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
@@ -42,27 +41,18 @@ export const Navbar: FC = () => {
       e.preventDefault();
       return;
     }
-
-    // try {
-    //   postEvent("web_app_trigger_haptic_feedback", {
-    //     type: "impact",
-    //     impact_style: "light",
-    //   });
-    // } catch (error) {
-    //   console.debug("Haptic feedback not available", error);
-    // }
   };
 
   return (
     <STabbar>
       {NAV.map(({ id, icon, path }) => (
         <SItem key={id}>
-          <NavLink
-            to={path}
-            className={({ isActive }) => (isActive ? "active" : "")}
-            onClick={(e) => handleNavClick(e, path)}
-          >
-            <SIcon name={icon} size={28} />
+          <NavLink to={path} end onClick={(e) => handleNavClick(e, path)}>
+            {matchPath({ path, end: false }, pathname) ? (
+              <StyledSIcon name={icon} size={28} />
+            ) : (
+              <SIcon name={icon} size={28} />
+            )}
           </NavLink>
         </SItem>
       ))}
@@ -91,4 +81,9 @@ const SItem = styled(Tabbar.Item)`
     padding: 0;
     margin: 0;
   }
+`;
+
+const StyledSIcon = styled(SIcon)`
+  display: inline-block;
+  filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
 `;

@@ -47,6 +47,7 @@ const Main = styled(List)`
   background-color: var(--tg-theme-secondary-bg-color);
   padding: 0;
   & > div {
+    border-radius: 1rem;
     padding: 0;
   }
   & > div {
@@ -58,6 +59,7 @@ const Main = styled(List)`
 
   & > div > * {
     flex: 1;
+    border-radius: 1rem;
     min-width: 0;
   }
 `;

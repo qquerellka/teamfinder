@@ -82,7 +82,7 @@ const HackathonPage: React.FC = () => {
         {application ? (
           <ButtonsSection>
             <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-              Подробнее на сайте
+              Подробнее 
             </SButton>
 
             <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
@@ -92,7 +92,7 @@ const HackathonPage: React.FC = () => {
         ) : team ? (
           <ButtonsSection>
             <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-              Подробнее на сайте
+              Подробнее 
             </SButton>
 
             <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
@@ -102,7 +102,7 @@ const HackathonPage: React.FC = () => {
         ) : (
           <ButtonsSection>
             <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-              Подробнее на сайте
+              Подробнее 
             </SButton>
 
             <SButton onClick={handleGoToApplications} disabled={isUserLoading}>

@@ -23,8 +23,6 @@ export const VacancyResponses: FC<VacancyResponsesProps> = ({ vacancies }) => {
     responses = responses.concat(data);
   }
 
-  // const responses: Response[] = data ?? [];
-
   const pending = useMemo(
     () => responses.filter((r) => r.status === "pending"),
     [responses]

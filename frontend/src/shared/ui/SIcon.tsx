@@ -20,6 +20,8 @@ import HackathonNavIcon from "@/assets/icons/navbarIcons/hackathonsIcon.svg?reac
 import TeamNavIcon from "@/assets/icons/navbarIcons/teamsIcon.svg?react";
 import ApplicationsNavIcon from "@/assets/icons/navbarIcons/applicationsIcon.svg?react";
 import ArrowIcon from "@/assets/icons/arrowIcon.svg?react";
+import SearchIcon from '@/assets/icons/searchIcon.svg?react';
+import FiltersIcon from '@/assets/icons/filtersIcon.svg?react';
 
 type SizeToken = "s" | "m" | "l" | "xl";
 
@@ -55,6 +57,8 @@ const iconsMap = {
   teamNav: TeamNavIcon,
   arrow: ArrowIcon,
   hacksNav: HackathonNavIcon,
+  search: SearchIcon,
+  filters: FiltersIcon,
 };
 
 export type IconName = keyof typeof iconsMap;
