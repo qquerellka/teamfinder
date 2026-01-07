@@ -45,7 +45,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       },
       {
         icon: "hackathonPrize",
-        text: hackathon.prizeFund?.toLocaleString(),
+        text: hackathon.prizeFund?.toLocaleString() ?? "Без призовых",
       },
       {
         icon: "hackathonTeam",

@@ -43,7 +43,7 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
       >
         <SText>{title}</SText>
         <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-          <Button type="button" stretched disabled={loading} onClick={onCancel}>
+          <Button mode="bezeled" type="button" stretched disabled={loading} onClick={onCancel}>
             {cancelText}
           </Button>
 
