@@ -14,6 +14,7 @@ variables:
 build-job:
   stage: build
   script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin
     - docker compose -f $COMPOSE_FILE build
 
 deploy-job:
