@@ -1,11 +1,15 @@
-# admin_bot/handlers/hackathons.py
 from __future__ import annotations
 
 from datetime import datetime
 
-from aiogram import Router
-from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram import Router, F
+from aiogram.filters import Command, StateFilter
+from aiogram.types import (
+    Message,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    CallbackQuery,
+)
 from aiogram.fsm.context import FSMContext
 
 from config import settings
@@ -181,36 +185,61 @@ async def form_registration_end_date(message: Message, state: FSMContext):
 
     await state.update_data(registration_end_date=reg_end)
     await state.set_state(HackathonForm.mode)
-    await message.answer(
-        "🌐 Введи <b>формат</b> хакатона: "
-        "<code>online</code>, <code>offline</code> или <code>hybrid</code>:"
+
+    # Создаем inline клавиатуру
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="🌐 Online", callback_data="mode_online"),
+                InlineKeyboardButton(text="🏢 Offline", callback_data="mode_offline"),
+            ],
+            [
+                InlineKeyboardButton(text="🔀 Hybrid", callback_data="mode_hybrid"),
+            ],
+        ]
     )
 
+    await message.answer("🌐 Выбери <b>формат</b> хакатона:", reply_markup=keyboard)
 
-@router.message(HackathonForm.mode)
-async def form_mode(message: Message, state: FSMContext):
-    mode_input = (message.text or "").strip().lower()
 
-    if mode_input not in ALLOWED_MODES:
-        await message.answer(
-            "❌ Неверный формат. Введи один из вариантов: "
-            "<code>online</code>, <code>offline</code> или <code>hybrid</code>."
-        )
+# ===== Обработчик выбора mode =====
+
+
+@router.callback_query(F.data.startswith("mode_"))
+async def process_mode_selection(callback: CallbackQuery, state: FSMContext):
+    # Извлекаем тип из callback_data
+    mode_type = callback.data.replace("mode_", "")
+
+    if mode_type not in ALLOWED_MODES:
+        await callback.answer("Неверный формат")
         return
 
-    await state.update_data(mode=mode_input)
+    # Обновляем состояние
+    await state.update_data(mode=mode_type)
 
-    if mode_input == "online":
+    # Отвечаем на callback
+    await callback.answer(f"Выбран формат: {mode_type}")
+
+    # Удаляем клавиатуру
+    await callback.message.edit_reply_markup(reply_markup=None)
+
+    # Показываем пользователю выбранный вариант
+    mode_texts = {"online": "🌐 Online", "offline": "🏢 Offline", "hybrid": "🔀 Hybrid"}
+
+    await callback.message.answer(f"✅ Формат: <b>{mode_texts[mode_type]}</b>")
+
+    # Продолжаем в зависимости от выбранного формата
+    if mode_type == "online":
         # для онлайн-события город фиксируем как "online"
         await state.update_data(city="online")
         await state.set_state(HackathonForm.team_min)
-        await message.answer(
+        await callback.message.answer(
             "👥 Введи <b>минимальное число участников в команде</b> "
             "(целое число, можно пропустить, отправив <code>-</code>):"
         )
     else:
         await state.set_state(HackathonForm.city)
-        await message.answer("🏙 Введи <b>город</b> проведения:")
+        await callback.message.answer("🏙 Введи <b>город</b> проведения:")
 
 
 @router.message(HackathonForm.city)
