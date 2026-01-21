@@ -11,6 +11,26 @@ import { App } from "./App";
 import { EnvUnsupported } from "@/app/EnvUnsupported";
 import { setInitDataRaw } from "@/shared/initDataStore";
 
+function loadUmamiAnalytics() {
+  // Подключаем только в production режиме
+  if (import.meta.env.PROD) {
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = 'https://cloud.umami.is/script.js';
+    script.setAttribute('data-website-id', 'fd2a58b1-bd8f-4a06-8d93-7ff983757e42');
+    
+    // Можно добавить дополнительные атрибуты для отладки
+    if (import.meta.env.DEV) {
+      console.log('Umami script would be loaded in production');
+    } else {
+      document.head.appendChild(script);
+      console.log('Umami analytics loaded');
+    }
+  } else {
+    console.log('Development mode - Umami analytics disabled');
+  }
+}
+
 const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === "true";
 
 if (import.meta.env.DEV || FORCE_BROWSER) {
@@ -82,6 +102,8 @@ async function bootstrapTMA() {
 
 (async () => {
   try {
+    loadUmamiAnalytics();
+
     if (FORCE_BROWSER || import.meta.env.DEV) {
       await bootstrapBrowser();
     } else {
