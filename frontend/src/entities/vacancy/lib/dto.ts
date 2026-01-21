@@ -5,6 +5,7 @@ export function vacanciesToCamelCase(vacancies: VacancyDTO[]): Vacancy[] {
     id: v.id,
     description: v.description,
     teamId: v.team_id,
+    teamName: v.team_name,
     role: v.role,
     status: v.status,
   }));

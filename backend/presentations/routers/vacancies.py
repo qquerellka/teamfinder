@@ -41,6 +41,7 @@ users_repo = UsersRepo()
 class VacancyOut(BaseModel):
     id: int
     team_id: int
+    team_name: str 
     role: RoleType
     description: Optional[str]
     status: VacancyStatus
@@ -153,6 +154,26 @@ async def _build_response_card(resp) -> ResponseOut:
         ),
     )
 
+async def _build_vacancy_card(vac) -> VacancyOut:
+    # Оптимизация: кэшируем запросы к командам
+    team_cache = {}
+    
+    if vac.team_id not in team_cache:
+        team = await teams_service.get_by_id(vac.team_id)
+        if not team:
+            raise HTTPException(status_code=500, detail="team not found for vacancy")
+        team_cache[vac.team_id] = team
+    
+    team = team_cache[vac.team_id]
+    
+    return VacancyOut(
+        id=vac.id,
+        team_id=vac.team_id,
+        team_name=team.name,
+        role=vac.role,
+        description=vac.description,
+        status=vac.status,
+    )
 # ---- ВАКАНСИИ КОМАНДЫ ----
 
 
@@ -171,7 +192,7 @@ async def list_team_vacancies(
         team_id=team.id,
         status=status_param,
     )
-    items = [VacancyOut.model_validate(v) for v in vacs[offset : offset + limit]]
+    items = [await _build_vacancy_card(v) for v in vacs[offset : offset + limit]]
     return VacancyListOut(items=items, limit=limit, offset=offset)
 
 
@@ -194,7 +215,7 @@ async def create_team_vacancy(
         role=payload.role,
         description=payload.description,
     )
-    return VacancyOut.model_validate(vac)
+    return await _build_vacancy_card(vac)
 
 
 # ---- ОБЩИЙ ЛИСТИНГ ВАКАНСИЙ ----
@@ -222,9 +243,8 @@ async def list_all_vacancies(
         limit=limit,
         offset=offset,
     )
-    items = [VacancyOut.model_validate(v) for v in vacs]
+    items = [await _build_vacancy_card(v) for v in vacs]
     return VacancyListOut(items=items, limit=limit, offset=offset)
-
 
 @router.get("/vacancies/{vacancy_id}", response_model=VacancyOut)
 async def get_vacancy(
@@ -233,8 +253,7 @@ async def get_vacancy(
 ):
     _ = current_user_id
     vac = await _ensure_vacancy_exists(vacancy_id)
-    return VacancyOut.model_validate(vac)
-
+    return await _build_vacancy_card(vac)
 
 @router.patch("/vacancies/{vacancy_id}", response_model=VacancyOut)
 async def update_vacancy(
@@ -256,14 +275,13 @@ async def update_vacancy(
         fields["status"] = payload.status
 
     if not fields:
-        return VacancyOut.model_validate(vacancy)
+        return await _build_vacancy_card(vacancy)
 
     updated = await vacancies_service.update(vacancy_id, fields)
     if not updated:
         raise HTTPException(status_code=404, detail="vacancy not found (update)")
 
-    return VacancyOut.model_validate(updated)
-
+    return await _build_vacancy_card(updated)
 
 @router.delete("/vacancies/{vacancy_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_vacancy(
@@ -301,7 +319,7 @@ async def list_hackathon_vacancies(
         limit=limit,
         offset=offset,
     )
-    items = [VacancyOut.model_validate(v) for v in vacs]
+    items = [await _build_vacancy_card(v) for v in vacs]
     return VacancyListOut(items=items, limit=limit, offset=offset)
 
 

@@ -93,7 +93,7 @@ const VacancyCard: FC<VacancyCardProps> = ({
     <Wrapper>
       <FirstRow>
         <SText $fs={16} $fw={600}>
-            Команда {vacancy.teamId}
+            {vacancy.teamName}
         </SText>
         <RoleBadge role={vacancy.role} />
       </FirstRow>
