@@ -52,8 +52,8 @@ export const VacancyResponses: FC = () => {
           firstName={i.user.firstName}
           secondName={i.user.lastName}
           username={i.user.username}
-          skills={[]}
-          role={"DevOps"}
+          skills={i.skills}
+          role={i.role}
         />
       ))}
     </Wrapper>

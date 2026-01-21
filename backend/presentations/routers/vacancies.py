@@ -79,7 +79,10 @@ class ResponseOut(BaseModel):
     vacancy_id: int
     user: ResponseUserInfo
     status: ResponseStatus
-
+    skills: List[str] = []  # Навыки пользователя
+    role: RoleType  # Роль из вакансии
+    team_id: int  # ID команды
+    
     class Config:
         from_attributes = True
 
@@ -141,11 +144,23 @@ async def _build_response_card(resp) -> ResponseOut:
     if not user:
         # что-то совсем странное, но лучше явно уронить 500
         raise HTTPException(status_code=500, detail="user not found for response")
+    
+    # Получаем навыки пользователя
+    skill_objs = await users_repo.get_user_skills(resp.user_id)
+    skills = [skill.name for skill in skill_objs]
+    
+    # Получаем вакансию для role и team_id
+    vacancy = await vacancies_service.get_by_id(resp.vacancy_id)
+    if not vacancy:
+        raise HTTPException(status_code=500, detail="vacancy not found for response")
 
     return ResponseOut(
         id=resp.id,
         vacancy_id=resp.vacancy_id,
         status=resp.status,
+        skills=skills,
+        role=vacancy.role,  # Роль из вакансии
+        team_id=vacancy.team_id,  # ID команды из вакансии
         user=ResponseUserInfo(
             id=user.id,
             username=user.username,
@@ -155,16 +170,9 @@ async def _build_response_card(resp) -> ResponseOut:
     )
 
 async def _build_vacancy_card(vac) -> VacancyOut:
-    # Оптимизация: кэшируем запросы к командам
-    team_cache = {}
-    
-    if vac.team_id not in team_cache:
-        team = await teams_service.get_by_id(vac.team_id)
-        if not team:
-            raise HTTPException(status_code=500, detail="team not found for vacancy")
-        team_cache[vac.team_id] = team
-    
-    team = team_cache[vac.team_id]
+    team = await teams_service.get_by_id(vac.team_id)
+    if not team:
+        raise HTTPException(status_code=500, detail="team not found for vacancy")
     
     return VacancyOut(
         id=vac.id,

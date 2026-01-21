@@ -1,3 +1,6 @@
+import { Skill, SkillDTO } from "@/entities/skill";
+import { Role } from "@/shared/types/enums";
+
 export type ResponseStatus =
   | "pending"
   | "accepted"
@@ -15,6 +18,9 @@ export interface Response {
     lastName: string;
   };
   status: ResponseStatus;
+  teamId: number;
+  skills: Skill[];
+  role: Role;
 }
 
 export interface ResponseDTO {
@@ -27,15 +33,15 @@ export interface ResponseDTO {
     last_name: string;
   };
   status: ResponseStatus;
+  team_id: number;
+  role: Role;
+  skills: SkillDTO[];
 }
 
-
 export interface UpdateResponse {
-    status: ResponseStatus,
+  status: ResponseStatus;
 }
 
 export interface UpdateResponseDTO {
-    status: ResponseStatus,
+  status: ResponseStatus;
 }
-
-
