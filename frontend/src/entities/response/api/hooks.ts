@@ -8,6 +8,7 @@ import {
   updateResponse,
   deleteResponse,
   getAllResponses,
+  getAllTeamResponses,
 } from "./responses";
 import type { Response, UpdateResponse } from "../model/types";
 import { useAppQuery } from "@/shared/api/useAppQuery";
@@ -28,6 +29,14 @@ export function useMyResponses() {
   return useAppQuery<Response[], Error>({
     queryKey: responseKeys.me,
     queryFn: getAllResponses,
+    staleTime: 60 * 1000,
+  });
+}
+
+export function useTeamResponses(teamId: number) {
+  return useAppQuery<Response[], Error>({
+    queryKey: responseKeys.me,
+    queryFn: () => getAllTeamResponses(teamId),
     staleTime: 60 * 1000,
   });
 }

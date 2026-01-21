@@ -498,3 +498,45 @@ async def delete_response(
         status=ResponseStatus.withdrawn,
     )
     return None
+# ---- ОТКЛИКИ ПО КОМАНДЕ (все вакансии) ----
+
+@router.get("/teams/{team_id}/responses", response_model=ResponseListOut)
+async def list_team_responses(
+    team_id: int = Path(..., ge=1),
+    status_param: Optional[ResponseStatus] = Query(default=None, alias="status"),
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    # 1. Проверяем команду и права
+    team = await _ensure_team_exists(team_id)
+    await _ensure_captain(team, current_user_id)
+    
+    # 2. Получаем все вакансии команды
+    team_vacancies = await vacancies_service.list_for_team(team_id=team.id)
+    
+    if not team_vacancies:
+        return ResponseListOut(items=[], limit=limit, offset=offset)
+    
+    # 3. Собираем все vacancy_id
+    vacancy_ids = [v.id for v in team_vacancies]
+    
+    # 4. Получаем все отклики для этих vacancy_id (можно через один запрос к БД)
+    # Для простоты: делаем запросы к каждой вакансии, но лучше реализовать в репозитории метод
+    all_responses = []
+    for vacancy_id in vacancy_ids:
+        vac_responses = await resp_repo.list_for_vacancy(vacancy_id)
+        all_responses.extend(vac_responses)
+    
+    # 5. Фильтруем по статусу, если указан
+    if status_param:
+        all_responses = [r for r in all_responses if r.status == status_param]
+    
+    # 6. Применяем пагинацию
+    total_count = len(all_responses)
+    paginated = all_responses[offset:offset + limit]
+    
+    # 7. Формируем ответ
+    items = [await _build_response_card(r) for r in paginated]
+    
+    return ResponseListOut(items=items, limit=limit, offset=offset)

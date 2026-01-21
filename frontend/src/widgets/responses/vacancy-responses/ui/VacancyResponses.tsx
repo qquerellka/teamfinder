@@ -1,31 +1,27 @@
 import { FC, useMemo } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { getHackathonTeamPath } from "@/shared/routing/paths";
 import { SText } from "@/shared/ui";
-import { useVacancyResponses, Response } from "@/entities/response";
+import { Response, useTeamResponses } from "@/entities/response";
 import { ResponsesCardView } from "@/entities/response/ui/ResponseCardView";
 import { ResponseRespondButtons } from "@/features/response/respond";
-import { Vacancy } from "@/entities/vacancy";
 
-interface VacancyResponsesProps {
-  vacancies: Vacancy[];
-}
-
-export const VacancyResponses: FC<VacancyResponsesProps> = ({ vacancies }) => {
+export const VacancyResponses: FC = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const { data } = useTeamResponses(Number(id));
+  const responses: Response[] = data;
 
-  let responses: Response[] = [];
-
-  for (let i = 0; i < vacancies.length; i++) {
-    const { data } = useVacancyResponses(vacancies[i].id);
-    responses = responses.concat(data);
-  }
+  // for (let i = 0; i < vacancies.length; i++) {
+  //   const { data } = useVacancyResponses(vacancies[i].id);
+  //   responses = responses.concat(data);
+  // }
 
   const pending = useMemo(
     () => responses.filter((r) => r.status === "pending"),
-    [responses]
+    [responses],
   );
 
   if (pending.length === 0) {

@@ -46,3 +46,8 @@ export async function getAllResponses(): Promise<Response[]> {
   const { data } = await apiClient.get<ResponsesResponseDTO>(`/me/responses`);
   return responsesToCamelCase(data.items);
 }
+
+export async function getAllTeamResponses(teamId: number): Promise<Response[]> {
+  const { data } = await apiClient.get<ResponsesResponseDTO>(`/teams/${teamId}/responses`);
+  return responsesToCamelCase(data.items) 
+}

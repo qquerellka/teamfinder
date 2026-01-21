@@ -46,7 +46,7 @@ export const HackathonVacancies: FC<HackathonVacanciesProps> = ({
 
   if (vacancies.length === 0) {
     return (
-      <NoItems title={"На этот хакатон нет активных вакансий :("} />
+      <NoItems title={"На этот хакатон нет вакансий :("} />
     );
   }
 

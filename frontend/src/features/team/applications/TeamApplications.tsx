@@ -44,7 +44,7 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
   };
 
   if (applications.length === 0) {
-    return <NoItems title={"У этого хакатона нет активных анкет :("} />;
+    return <NoItems title={"У этого хакатона нет анкет :("} />;
   }
 
   return (

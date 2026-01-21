@@ -17,8 +17,15 @@ export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
   const navigate = useNavigate();
   const [addVacancy, setAddVacancy] = useState<boolean>(false);
 
-  if (!vacancies || vacancies.length === 0 || addVacancy || (team.members.length + vacancies.length) > 8) {
-    return <CreateVacancyForm teamId={team.id} onDone={() => setAddVacancy(false)}/>;
+  if (
+    !vacancies ||
+    vacancies.length === 0 ||
+    addVacancy ||
+    team.members.length + vacancies.length > 8
+  ) {
+    return (
+      <CreateVacancyForm teamId={team.id} onDone={() => setAddVacancy(false)} />
+    );
   }
 
   if (isEditing) {
@@ -32,9 +39,12 @@ export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
 
   return (
     <Wrapper>
-      <Button mode="bezeled" onClick={() => setAddVacancy(true)}>{"Добавить вакансию"}</Button>
+      <Button mode="bezeled" onClick={() => setAddVacancy(true)}>
+        {"Создать вакансию"}
+      </Button>
       {vacancies.map((v) => (
         <VacancyCard
+          key={v.id}
           team={team}
           vacancy={v}
           onEditClick={() => setIsEditing(true)}
@@ -42,7 +52,7 @@ export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
         />
       ))}
 
-      <VacancyResponses vacancies={vacancies} />
+      <VacancyResponses  />
     </Wrapper>
   );
 };
