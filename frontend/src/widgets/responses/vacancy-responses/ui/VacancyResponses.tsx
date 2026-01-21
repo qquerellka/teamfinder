@@ -44,7 +44,7 @@ export const VacancyResponses: FC = () => {
               responseId={i.id}
               onAnswered={(status) => {
                 if (status === "accepted") {
-                  navigate(getHackathonTeamPath(10));
+                  navigate(getHackathonTeamPath(i.teamId));
                 }
               }}
             />
