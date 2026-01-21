@@ -22,6 +22,7 @@ from services.hackathons import HackathonsService
 from repositories.responses import ResponsesRepo
 from repositories.applications import ApplicationsRepo
 from repositories.users import UsersRepo
+from repositories.hackathons import HackathonsRepo
 
 router = APIRouter(tags=["vacancies"])
 
@@ -33,6 +34,7 @@ hackathons_service = HackathonsService()
 resp_repo = ResponsesRepo()
 apps_repo = ApplicationsRepo()
 users_repo = UsersRepo()
+hackathons_repo = HackathonsRepo()
 
 
 # ---- СХЕМЫ ----
@@ -82,7 +84,8 @@ class ResponseOut(BaseModel):
     skills: List[str] = []  # Навыки пользователя
     role: RoleType  # Роль из вакансии
     team_id: int  # ID команды
-    
+    hackathon_id: int  # ID хакатона
+
     class Config:
         from_attributes = True
 
@@ -153,6 +156,16 @@ async def _build_response_card(resp) -> ResponseOut:
     vacancy = await vacancies_service.get_by_id(resp.vacancy_id)
     if not vacancy:
         raise HTTPException(status_code=500, detail="vacancy not found for response")
+    
+    # Получаем hackathon_id через команду
+    team = await teams_service.get_by_id(vacancy.team_id)
+    if not team:
+        raise HTTPException(status_code=500, detail="team not found for vacancy")
+    
+    # Альтернативно, можно получить хакатон напрямую, если есть repo:
+    # hackathon = await hackathons_repo.get_by_id(team.hackathon_id)
+    # if not hackathon:
+    #     raise HTTPException(status_code=500, detail="hackathon not found for team")
 
     return ResponseOut(
         id=resp.id,
@@ -161,6 +174,7 @@ async def _build_response_card(resp) -> ResponseOut:
         skills=skills,
         role=vacancy.role,  # Роль из вакансии
         team_id=vacancy.team_id,  # ID команды из вакансии
+        hackathon_id=team.hackathon_id,  # ID хакатона из команды
         user=ResponseUserInfo(
             id=user.id,
             username=user.username,

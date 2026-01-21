@@ -21,6 +21,7 @@ export interface Response {
   teamId: number;
   skills: Skill[];
   role: Role;
+  hackathonId: number;
 }
 
 export interface ResponseDTO {
@@ -36,6 +37,7 @@ export interface ResponseDTO {
   team_id: number;
   role: Role;
   skills: SkillDTO[];
+  hackathon_id: number;
 }
 
 export interface UpdateResponse {

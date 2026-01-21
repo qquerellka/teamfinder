@@ -34,7 +34,7 @@ export const VacancyResponses: FC = () => {
 
   return (
     <Wrapper>
-      <SText style={{ marginBottom: "1rem" }}>Приглашения в команду</SText>
+      <SText style={{ marginBottom: "1rem" }}>Отклики на вакансии</SText>
 
       {pending.map((i) => (
         <ResponsesCardView
@@ -44,7 +44,7 @@ export const VacancyResponses: FC = () => {
               responseId={i.id}
               onAnswered={(status) => {
                 if (status === "accepted") {
-                  navigate(getHackathonTeamPath(i.teamId));
+                  navigate(getHackathonTeamPath(i.hackathonId));
                 }
               }}
             />

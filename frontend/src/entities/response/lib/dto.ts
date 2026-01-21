@@ -19,6 +19,7 @@ export function responsesToCamelCase(responses: ResponseDTO[]): Response[] {
     role: r.role,
     teamId: r.team_id,
     skills: r.skills,
+    hackathonId: r.hackathon_id,
   }));
 }
 
