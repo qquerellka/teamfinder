@@ -23,7 +23,7 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
 }) => {
   const skillsString = useMemo(() => {
     const sskills = skills?.slice(0, 4) ?? [];
-    return sskills.map((s) => s.name).join(", ");
+    return sskills.join(", ");
   }, [skills]);
 
   return (
