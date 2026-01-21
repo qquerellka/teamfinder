@@ -74,6 +74,7 @@ export type SIconProps = {
   "aria-label"?: string;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLSpanElement>;
+  active?: boolean;
 };
 
 export const SIcon: React.FC<SIconProps> = ({
@@ -86,6 +87,7 @@ export const SIcon: React.FC<SIconProps> = ({
   title,
   onClick,
   onKeyDown,
+  active=false,
   ...rest
 }) => {
   const px = toPx(size);
@@ -106,7 +108,7 @@ export const SIcon: React.FC<SIconProps> = ({
   return (
     <Wrap
       $size={px}
-      $color={color}
+      $color={active ? "var(--tg-theme-accent-text-color)" : color}
       $clickable={!!clickable || !!asButton}
       role={asButton ? "button" : undefined}
       tabIndex={asButton ? 0 : undefined}

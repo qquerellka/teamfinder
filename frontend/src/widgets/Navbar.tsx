@@ -49,8 +49,9 @@ export const Navbar: FC = () => {
         <SItem key={id}>
           <NavLink to={path} end onClick={(e) => handleNavClick(e, path)}>
             {matchPath({ path, end: false }, pathname) ? (
-              <StyledSIcon name={icon} size={28} />
+              <SIcon active={true} name={icon} size={28} />
             ) : (
+              // <StyledSIcon name={icon} size={28} />
               <SIcon name={icon} size={28} />
             )}
           </NavLink>
@@ -83,7 +84,8 @@ const SItem = styled(Tabbar.Item)`
   }
 `;
 
-const StyledSIcon = styled(SIcon)`
-  display: inline-block;
-  filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
-`;
+// Свечение иконки, убрали, так в светлой теме выглядит ужасно
+// const StyledSIcon = styled(SIcon)`
+//   display: inline-block;
+//   filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
+// `;
