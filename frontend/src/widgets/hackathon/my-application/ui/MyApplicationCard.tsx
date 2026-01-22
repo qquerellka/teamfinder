@@ -88,7 +88,7 @@ const Wrapper = styled.div`
   background-color: var(--tg-theme-section-bg-color);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   padding: 1rem;
   border-radius: 1rem;
 `;
