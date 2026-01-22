@@ -6,9 +6,12 @@ import {
   ProfileSkillsReadonly,
 } from "@/features/profile/edit-skills";
 import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import { AchievementsListHeader, AchievementItem } from "@/widgets/achievements";
+import {
+  AchievementsListHeader,
+  AchievementItem,
+} from "@/widgets/achievements";
 import styled from "styled-components";
-import { InputSection, NoItems } from "@/shared/ui";
+import { InputSection, NoItems, Page } from "@/shared/ui";
 import { Textarea } from "@telegram-apps/telegram-ui";
 
 export const ProfilePage = () => {
@@ -22,35 +25,41 @@ export const ProfilePage = () => {
   const isOwner = me.id === user.id;
 
   return (
-    <SProfile>
-      <ProfileHeader user={user} />
+    <Page>
+      <SProfile>
+        <ProfileHeader user={user} />
 
-      <SExtraInfo>
-        {isOwner ? (
-          <>
-            <ProfileSkillsEditor />
-            <ProfileBioEditor />
-          </>
-        ) : (
-          <>
-            <ProfileSkillsReadonly skills={user.skills ?? []} />
-            <ProfileBioReadonly bio={user.bio ?? ""} />
-          </>
-        )}
-        <Achievements>
-          <AchievementsListHeader showAdd={isOwner} />
-          {user?.achievements?.length > 0 ? (
-            <Wrapper>
-              {user?.achievements?.map((a) => (
-                <AchievementItem key={a.id} canEdit={isOwner} achievement={a} />
-              ))}
-            </Wrapper>
+        <SExtraInfo>
+          {isOwner ? (
+            <>
+              <ProfileSkillsEditor />
+              <ProfileBioEditor />
+            </>
           ) : (
-            <NoItems title={"Нет достижений"} />
+            <>
+              <ProfileSkillsReadonly skills={user.skills ?? []} />
+              <ProfileBioReadonly bio={user.bio ?? ""} />
+            </>
           )}
-        </Achievements>
-      </SExtraInfo>
-    </SProfile>
+          <Achievements>
+            <AchievementsListHeader showAdd={isOwner} />
+            {user?.achievements?.length > 0 ? (
+              <Wrapper>
+                {user?.achievements?.map((a) => (
+                  <AchievementItem
+                    key={a.id}
+                    canEdit={isOwner}
+                    achievement={a}
+                  />
+                ))}
+              </Wrapper>
+            ) : (
+              <NoItems title={"Нет достижений"} />
+            )}
+          </Achievements>
+        </SExtraInfo>
+      </SProfile>
+    </Page>
   );
 };
 

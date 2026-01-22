@@ -3,7 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Button } from "@telegram-apps/telegram-ui";
 
-import { HackathonCard, useHackathonQuery, Hackathon } from "@/entities/hackathon";
+import {
+  HackathonCard,
+  useHackathonQuery,
+  Hackathon,
+} from "@/entities/hackathon";
 import { useAuthUser } from "@/entities/user";
 import { useAuthUserApplicationsOnHackathon } from "@/entities/application";
 
@@ -25,7 +29,7 @@ const HackathonPage: React.FC = () => {
   const { data: user, isLoading: isUserLoading } = useAuthUser();
   const { data: application } = useAuthUserApplicationsOnHackathon(Number(id));
   const { data: team } = useMyTeamOnHackathon(Number(id));
-  
+
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -82,7 +86,7 @@ const HackathonPage: React.FC = () => {
         {application ? (
           <ButtonsSection>
             <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-              Подробнее 
+              Подробнее
             </SButton>
 
             <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
@@ -92,7 +96,7 @@ const HackathonPage: React.FC = () => {
         ) : team ? (
           <ButtonsSection>
             <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-              Подробнее 
+              Подробнее
             </SButton>
 
             <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
@@ -102,7 +106,7 @@ const HackathonPage: React.FC = () => {
         ) : (
           <ButtonsSection>
             <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
-              Подробнее 
+              Подробнее
             </SButton>
 
             <SButton onClick={handleGoToApplications} disabled={isUserLoading}>

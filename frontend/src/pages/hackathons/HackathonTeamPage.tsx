@@ -14,5 +14,4 @@ export const HackathonTeamPage = () => {
   );
 };
 
-
 export default HackathonTeamPage;

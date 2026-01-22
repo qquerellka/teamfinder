@@ -37,9 +37,7 @@ const HackathonParticipatePage: React.FC = () => {
           <MyHackathonApplication hackathon={hackathon} />
         )}
 
-        {tab === "vacancies" && (
-          <HackathonVacancies hackathon={hackathon} />
-        )}
+        {tab === "vacancies" && <HackathonVacancies hackathon={hackathon} />}
       </Wrapper>
     </Page>
   );

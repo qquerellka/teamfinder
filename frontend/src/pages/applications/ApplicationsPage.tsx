@@ -8,11 +8,11 @@ import styled from "styled-components";
 export const ApplicationsPage = () => {
   const { data: applications } = useAuthUserApplications();
   const navigate = useNavigate();
-  const filteredApplications = applications.filter((a) => a.status === 'published')
+  const filteredApplications = applications.filter(
+    (a) => a.status === "published",
+  );
   if (!filteredApplications || filteredApplications.length === 0) {
-    return (
-      <NoItems title={"У вас нет активных анкет :("} />
-    );
+    return <NoItems title={"У вас нет активных анкет :("} />;
   }
   return (
     <Page>
