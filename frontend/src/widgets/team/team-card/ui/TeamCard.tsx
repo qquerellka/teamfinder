@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Button, Input, Textarea } from "@telegram-apps/telegram-ui";
 import { useNavigate } from "react-router-dom";
 
-import type { Hackathon } from "@/entities/hackathon";
 import type { TeamWithMembers } from "@/entities/team";
 import { useAuthUser } from "@/entities/user";
 
@@ -16,17 +15,11 @@ import { TeamMembersSection } from "@/widgets/team/team-members";
 
 interface TeamCardProps {
   team: TeamWithMembers;
-  hackathon: Hackathon;
-  onEditClick: () => void;
+  onEditClick?: () => void;
   onExit: () => void;
 }
 
-export const TeamCard: FC<TeamCardProps> = ({
-  team,
-  hackathon,
-  onEditClick,
-  onExit,
-}) => {
+export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
   const navigate = useNavigate();
   const { data: user } = useAuthUser();
 
@@ -51,7 +44,7 @@ export const TeamCard: FC<TeamCardProps> = ({
       </Header>
 
       <InputSection header="Хакатон">
-        <Input value={hackathon.name} disabled />
+        <Input value={team.hackathonName} disabled />
       </InputSection>
 
       <InputSection header="Название">
@@ -65,7 +58,7 @@ export const TeamCard: FC<TeamCardProps> = ({
       <TeamMembersSection
         teamId={team.id}
         members={team.members}
-        membersLimit={hackathon.teamMembersLimit}
+        membersLimit={team.teamMembersLimit}
         canRemoveMembers={isCaptain}
       />
 

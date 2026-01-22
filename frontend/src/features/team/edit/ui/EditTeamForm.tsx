@@ -1,17 +1,16 @@
 import type { FC } from "react";
 
-import type { Hackathon } from "@/entities/hackathon";
 import type { TeamWithMembers } from "@/entities/team";
 import { useEditTeam } from "@/entities/team";
 import { TeamFormView } from "../../_shared/ui/TeamFormView";
 import { useEditTeamForm } from "../model/useEditTeamForm";
 
 export const EditTeamForm: FC<{
-  hackathon: Hackathon;
+  hackathonName: string;
   team: TeamWithMembers;
   onCancel: () => void;
   extra?: React.ReactNode;
-}> = ({ hackathon, team, onCancel, extra }) => {
+}> = ({ hackathonName, team, onCancel, extra }) => {
   const editMutation = useEditTeam();
   const form = useEditTeamForm({
     name: team.name ?? "",
@@ -30,7 +29,7 @@ export const EditTeamForm: FC<{
   return (
     <TeamFormView
       mode="edit"
-      hackathonName={hackathon.name}
+      hackathonName={hackathonName}
       name={form.name}
       description={form.description}
       onNameChange={form.setName}

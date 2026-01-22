@@ -1,7 +1,6 @@
 import { FC } from "react";
 import styled from "styled-components";
 
-import type { Hackathon } from "@/entities/hackathon";
 import type { TeamWithMembers } from "@/entities/team";
 import { useAuthUser } from "@/entities/user";
 
@@ -13,23 +12,17 @@ import { useLeaveTeamAction } from "@/features/team/leave";
 import { TeamMembersSection } from "@/widgets/team/team-members";
 
 interface Props {
-  hackathon: Hackathon;
   team: TeamWithMembers;
   onClose: () => void;
   onExit: () => void;
 }
 
-export const TeamEditPanel: FC<Props> = ({
-  hackathon,
-  team,
-  onClose,
-  onExit,
-}) => {
+export const TeamEditPanel: FC<Props> = ({ team, onClose, onExit }) => {
   const { data: user } = useAuthUser();
   const isCaptain = team.captainId === user.id;
 
   const del = useDeleteTeamAction({
-    hackathonId: hackathon.id,
+    hackathonId: team.hackathonId,
     teamId: team.id,
     onDone: onExit,
   });
@@ -46,17 +39,17 @@ export const TeamEditPanel: FC<Props> = ({
       </Header>
 
       <EditTeamForm
-        hackathon={hackathon}
         team={team}
         onCancel={onClose}
         extra={
           <TeamMembersSection
             teamId={team.id}
             members={team.members}
-            membersLimit={hackathon.teamMembersLimit}
+            membersLimit={team.teamMembersLimit}
             canRemoveMembers={isCaptain}
           />
         }
+        hackathonName={team.hackathonName}
       />
 
       <ConfirmModal

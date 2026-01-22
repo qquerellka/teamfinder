@@ -30,6 +30,8 @@ class TeamOut(BaseModel):
     description: Optional[str]
     captain_id: int
     status: TeamStatus
+    hackathon_name: str  # Добавлено новое поле
+    team_members_limit: Optional[int] = None  # Добавлено новое поле
 
     class Config:
         from_attributes = True
@@ -128,7 +130,7 @@ async def _ensure_captain(team, user_id: int):
     if team.captain_id != user_id:
         raise HTTPException(status_code=403, detail="forbidden: not a captain")
 
-async def _build_team_with_members(team) -> TeamWithMembersOut:
+async def _build_team_with_members(team, hackathon_name: str, team_members_limit: Optional[int] = None) -> TeamWithMembersOut:
     members = await members_service.list_members(team.id)
     member_items: List[TeamMemberOut] = []
     for m in members:
@@ -147,7 +149,16 @@ async def _build_team_with_members(team) -> TeamWithMembersOut:
             )
         )
 
-    base_team = TeamOut.model_validate(team)
+    base_team = TeamOut(
+        id=team.id,
+        hackathon_id=team.hackathon_id,
+        name=team.name,
+        description=team.description,
+        captain_id=team.captain_id,
+        status=team.status,
+        hackathon_name=hackathon_name,
+        team_members_limit=team_members_limit
+    )
     return TeamWithMembersOut(
         **base_team.model_dump(),
         members=member_items,
@@ -168,7 +179,7 @@ async def list_teams(
     offset: int = Query(default=0, ge=0),
     current_user_id: int = Depends(get_current_user_id),
 ):
-    await _ensure_hackathon_exists(hackathon_id)
+    hack = await _ensure_hackathon_exists(hackathon_id)
 
     member_user_id: Optional[int] = None
     if member:
@@ -194,8 +205,24 @@ async def list_teams(
         sort=sort,
     )
 
+    # Преобразуем команды с добавлением данных хакатона
+    team_out_items = []
+    for team in teams:
+        team_out_items.append(
+            TeamOut(
+                id=team.id,
+                hackathon_id=team.hackathon_id,
+                name=team.name,
+                description=team.description,
+                captain_id=team.captain_id,
+                status=team.status,
+                hackathon_name=hack.name,
+                team_members_limit=hack.team_members_limit
+            )
+        )
+
     return TeamListOut(
-        items=[TeamOut.model_validate(t) for t in teams],
+        items=team_out_items,
         limit=limit,
         offset=offset,
     )
@@ -236,7 +263,16 @@ async def create_team(
         captain_role=payload.role,
     )
 
-    return TeamOut.model_validate(team)
+    return TeamOut(
+        id=team.id,
+        hackathon_id=team.hackathon_id,
+        name=team.name,
+        description=team.description,
+        captain_id=team.captain_id,
+        status=team.status,
+        hackathon_name=hack.name,
+        team_members_limit=hack.team_members_limit
+    )
 
 
 # ---- Мои команды ----
@@ -256,21 +292,27 @@ async def list_my_teams(
 
     items: List[TeamMeOut] = []
     for team, hackathon_name, team_members_limit, team_members_count, invites_count in rows:
-        base = TeamOut.model_validate(team)
+        # Создаем базовую модель TeamOut с полями хакатона
+        base = TeamOut(
+            id=team.id,
+            hackathon_id=team.hackathon_id,
+            name=team.name,
+            description=team.description,
+            captain_id=team.captain_id,
+            status=team.status,
+            hackathon_name=hackathon_name,
+            team_members_limit=team_members_limit
+        )
         items.append(
             TeamMeOut(
-                **base.model_dump(),
-                hackathon_name=hackathon_name,
-                team_members_limit=team_members_limit,
+                **base.model_dump(),  # Распаковываем все поля TeamOut
                 team_members_count=team_members_count,
                 invites_count=invites_count,
                 is_captain=(team.captain_id == user_id),
             )
         )
 
-
     return TeamMeListOut(items=items, limit=limit, offset=offset)
-
 @router.get(
     "/hackathons/{hackathon_id}/teams/me",
     response_model=Optional[TeamWithMembersOut],
@@ -279,7 +321,7 @@ async def get_my_team_on_hackathon(
     hackathon_id: int = Path(..., ge=1),
     user_id: int = Depends(get_current_user_id),
 ):
-    await _ensure_hackathon_exists(hackathon_id)
+    hack = await _ensure_hackathon_exists(hackathon_id)
 
     teams = await teams_service.list_by_hackathon(
         hackathon_id=hackathon_id,
@@ -296,7 +338,7 @@ async def get_my_team_on_hackathon(
         return None
 
     team = teams[0]
-    return await _build_team_with_members(team)
+    return await _build_team_with_members(team, hack.name, hack.team_members_limit)
 
 
 # ---- Детали/обновление/удаление команды ----
@@ -306,7 +348,9 @@ async def get_team(team_id: int = Path(..., ge=1)):
     team = await teams_service.get_by_id(team_id)
     if not team:
         raise HTTPException(status_code=404, detail="team not found")
-    return await _build_team_with_members(team)
+    
+    hack = await hacks_service.get_by_id(team.hackathon_id)
+    return await _build_team_with_members(team, hack.name, hack.team_members_limit)
 
 
 @router.patch("/teams/{team_id}", response_model=TeamOut)
@@ -322,7 +366,18 @@ async def update_team(
     updated = await teams_service.update(team_id, data)
     if not updated:
         raise HTTPException(status_code=404, detail="team not found (update)")
-    return TeamOut.model_validate(updated)
+    
+    hack = await hacks_service.get_by_id(team.hackathon_id)
+    return TeamOut(
+        id=updated.id,
+        hackathon_id=updated.hackathon_id,
+        name=updated.name,
+        description=updated.description,
+        captain_id=updated.captain_id,
+        status=updated.status,
+        hackathon_name=hack.name,
+        team_members_limit=hack.team_members_limit
+    )
 
 
 @router.delete("/teams/{team_id}", status_code=status.HTTP_204_NO_CONTENT)

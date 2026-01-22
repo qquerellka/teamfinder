@@ -1,6 +1,6 @@
 import { useMyTeams } from "@/entities/team";
 import { TeamCard } from "@/entities/team/ui/TeamCard";
-import { getHackathonTeamPath } from "@/shared/routing/paths";
+import { getTeamPath } from "@/shared/routing/paths";
 import { NoItems, Page, SText } from "@/shared/ui";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -26,7 +26,7 @@ export const UserTeamsPage = () => {
             teamMembersCount={t.teamMembersCount}
             teamMembersLimit={t.teamMembersLimit}
             isCaptain={t.isCaptain}
-            onNavigate={() => navigate(getHackathonTeamPath(t.hackathonId))}
+            onNavigate={() => navigate(getTeamPath(t.id))}
           />
         ))}
       </TeamsList>

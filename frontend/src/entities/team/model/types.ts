@@ -23,7 +23,7 @@ export interface MyTeamDTO {
   team_members_count: number;
   team_members_limit: number;
   is_captain: boolean;
-  count_invites: number,
+  count_invites: number;
 }
 
 export interface Team {
@@ -46,12 +46,14 @@ export interface MyTeam {
   teamMembersCount: number;
   teamMembersLimit: number;
   isCaptain: boolean;
-  countInvites: number,
+  countInvites: number;
 }
 
 export interface TeamWithMembers {
   id: number;
   hackathonId: number;
+  hackathonName: string;
+  teamMembersLimit: number;
   name: string;
   description: string;
   captainId: number;
@@ -62,6 +64,8 @@ export interface TeamWithMembers {
 export interface TeamWithMembersDTO {
   id: number;
   hackathon_id: number;
+  hackathon_name: string;
+  team_members_limit: number;
   name: string;
   description: string;
   captain_id: number;

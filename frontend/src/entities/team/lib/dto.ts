@@ -57,6 +57,8 @@ export function teamWithMembersToCamelCase(
     description: payload.description,
     captainId: payload.captain_id,
     status: payload.status,
+    hackathonName: payload.hackathon_name,
+    teamMembersLimit: payload.team_members_limit,
     members: payload.members?.map((m) => ({
       user: {
         id: m.user.id,

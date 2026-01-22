@@ -12,8 +12,9 @@ import { useAuthUser } from "@/entities/user";
 import { useAuthUserApplicationsOnHackathon } from "@/entities/application";
 
 import {
+  getHackathonCreateTeamPath,
   getHackathonParticipationPath,
-  getHackathonTeamPath,
+  getTeamPath,
   paths,
 } from "@/shared/routing/paths";
 
@@ -71,7 +72,11 @@ const HackathonPage: React.FC = () => {
       return;
     }
 
-    if (id) navigate(getHackathonTeamPath(Number(id)));
+    if (id) navigate(getTeamPath(Number(team?.id)));
+  };
+
+  const handleGoToCreateTeam = () => {
+    if (id) navigate(getHackathonCreateTeamPath(Number(id)));
   };
 
   const handleGoToProfile = () => {
@@ -112,7 +117,7 @@ const HackathonPage: React.FC = () => {
             <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
               Найти команду
             </SButton>
-            <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
+            <SButton onClick={handleGoToCreateTeam} disabled={isUserLoading}>
               Создать команду
             </SButton>
           </ButtonsSection>

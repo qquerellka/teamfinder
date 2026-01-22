@@ -6,7 +6,7 @@ import { useApplicationInvites } from "@/entities/invite";
 import type { MegaInvite } from "@/entities/invite";
 import { InviteCardView } from "@/entities/invite";
 import { InviteRespondButtons } from "@/features/invite/respond";
-import { getHackathonTeamPath } from "@/shared/routing/paths";
+import { getTeamPath } from "@/shared/routing/paths";
 import { SText } from "@/shared/ui";
 
 interface ApplicationInvitesProps {
@@ -47,7 +47,7 @@ export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
               inviteId={i.id}
               onAnswered={(status) => {
                 if (status === "accepted") {
-                  navigate(getHackathonTeamPath(i.teamId));
+                  navigate(getTeamPath(i.teamId));
                 }
               }}
             />

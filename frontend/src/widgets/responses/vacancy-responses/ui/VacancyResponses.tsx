@@ -2,7 +2,7 @@ import { FC, useMemo } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { getHackathonTeamPath } from "@/shared/routing/paths";
+import { getTeamPath } from "@/shared/routing/paths";
 import { SText } from "@/shared/ui";
 import { Response, useTeamResponses } from "@/entities/response";
 import { ResponsesCardView } from "@/entities/response/ui/ResponseCardView";
@@ -44,7 +44,7 @@ export const VacancyResponses: FC = () => {
               responseId={i.id}
               onAnswered={(status) => {
                 if (status === "accepted") {
-                  navigate(getHackathonTeamPath(i.hackathonId));
+                  navigate(getTeamPath(i.teamId));
                 }
               }}
             />
