@@ -67,9 +67,6 @@ const ApplicationsList = styled.div`
   gap: 0.5rem;
 `;
 
-
-
-
 interface ApplicationCardProps {
   application: Application;
   invited: boolean;
@@ -103,7 +100,13 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
         {invited ? (
           <SIcon name="sentInvite" />
         ) : (
-          <IconButton onClick={onInvite} disabled={isInviting}>
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              onInvite();
+            }}
+            disabled={isInviting}
+          >
             <SIcon name="plus" />
           </IconButton>
         )}
