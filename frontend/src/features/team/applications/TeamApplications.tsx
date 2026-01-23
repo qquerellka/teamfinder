@@ -8,12 +8,16 @@ import type { Team } from '@/entities/team';
 import { NoItems, RoleBadge, SIcon, SText } from '@/shared/ui';
 import { useTeamInvites } from '@/entities/invite';
 import { useSendInviteAction } from '@/features/invite/send';
+import { useNavigate } from 'react-router-dom';
+import { getUserPath } from '@/shared/routing/paths';
 
 interface TeamApplicationsProps {
   team: Team;
 }
 
 export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
+  const navigate = useNavigate();
+
   const { data: applicationsData } = useHackathonApplications(team.hackathonId);
   const applications = applicationsData?.items.filter(i => i.status === 'published') ?? [];
 
@@ -50,6 +54,7 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
           invited={invitedIds.has(a.id)}
           onInvite={() => handleInvite(a)}
           isInviting={invitingAppId === a.id || isSending || isInvitesFetching}
+          onNavigate={() => navigate(getUserPath(a.userId))}
         />
       ))}
     </ApplicationsList>
@@ -62,11 +67,15 @@ const ApplicationsList = styled.div`
   gap: 0.5rem;
 `;
 
+
+
+
 interface ApplicationCardProps {
   application: Application;
   invited: boolean;
   isInviting: boolean;
   onInvite: () => void;
+  onNavigate: () => void;
 }
 
 const ApplicationCard: FC<ApplicationCardProps> = ({
@@ -74,6 +83,7 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
   invited,
   isInviting,
   onInvite,
+  onNavigate,
 }) => {
   const skillsString = useMemo(() => {
     const skills = application.skills?.slice(0, 4) ?? [];
@@ -81,7 +91,7 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
   }, [application.skills]);
 
   return (
-    <Wrapper>
+    <Wrapper onClick={onNavigate}>
       <FirstRow>
         <SText $fs={16} $fw={600}>
           {application.firstName} {application.lastName}
