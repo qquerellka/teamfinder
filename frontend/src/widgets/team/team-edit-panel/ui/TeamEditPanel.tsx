@@ -47,6 +47,7 @@ export const TeamEditPanel: FC<Props> = ({ team, onClose, onExit }) => {
             members={team.members}
             membersLimit={team.teamMembersLimit}
             canRemoveMembers={isCaptain}
+            isEditing={true}
           />
         }
         hackathonName={team.hackathonName}

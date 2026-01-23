@@ -15,7 +15,8 @@ export const TeamMembersSection: FC<{
   members: Member[];
   membersLimit: number;
   canRemoveMembers: boolean;
-}> = ({ teamId, members, membersLimit, canRemoveMembers }) => {
+  isEditing?: boolean;
+}> = ({ teamId, members, membersLimit, canRemoveMembers, isEditing=false }) => {
   const navigate = useNavigate();
   return (
     <Block>
@@ -38,7 +39,7 @@ export const TeamMembersSection: FC<{
             key={m.user.id}
             teamId={teamId}
             member={m}
-            canRemove={canRemoveMembers && !m.isCaptain}
+            canRemove={isEditing && canRemoveMembers && !m.isCaptain}
             onNavigate={() => navigate(getUserPath(m.user.id))}
           />
         ))}
