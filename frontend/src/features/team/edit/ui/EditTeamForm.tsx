@@ -1,9 +1,9 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
-import type { TeamWithMembers } from "@/entities/team";
-import { useEditTeam } from "@/entities/team";
-import { TeamFormView } from "../../_shared/ui/TeamFormView";
-import { useEditTeamForm } from "../model/useEditTeamForm";
+import type { TeamWithMembers } from '@/entities/team';
+import { useEditTeam } from '@/entities/team';
+import { TeamFormView } from '../../_shared/ui/TeamFormView';
+import { useEditTeamForm } from '../model/useEditTeamForm';
 
 export const EditTeamForm: FC<{
   hackathonName: string;
@@ -13,8 +13,8 @@ export const EditTeamForm: FC<{
 }> = ({ hackathonName, team, onCancel, extra }) => {
   const editMutation = useEditTeam();
   const form = useEditTeamForm({
-    name: team.name ?? "",
-    description: team.description ?? "",
+    name: team.name ?? '',
+    description: team.description ?? '',
   });
 
   const submit = async () => {

@@ -1,14 +1,14 @@
-import type { FC } from "react";
-import styled from "styled-components";
-import { Avatar } from "@telegram-apps/telegram-ui";
+import type { FC } from 'react';
+import styled from 'styled-components';
+import { Avatar } from '@telegram-apps/telegram-ui';
 
-import type { TeamWithMembers } from "@/entities/team";
-import { SIcon, SText } from "@/shared/ui";
-import { useRemoveTeamMember } from "@/features/team-member/remove";
-import { useNavigate } from "react-router-dom";
-import { getUserPath } from "@/shared/routing/paths";
+import type { TeamWithMembers } from '@/entities/team';
+import { SIcon, SText } from '@/shared/ui';
+import { useRemoveTeamMember } from '@/features/team-member/remove';
+import { useNavigate } from 'react-router-dom';
+import { getUserPath } from '@/shared/routing/paths';
 
-type Member = TeamWithMembers["members"][number];
+type Member = TeamWithMembers['members'][number];
 
 export const TeamMembersSection: FC<{
   teamId: number;
@@ -20,11 +20,7 @@ export const TeamMembersSection: FC<{
   return (
     <Block>
       <HeaderRow>
-        <SText
-          $fs={16}
-          $fw={600}
-          style={{ color: "var(--tg-theme-section-header-text-color)" }}
-        >
+        <SText $fs={16} $fw={600} style={{ color: 'var(--tg-theme-section-header-text-color)' }}>
           Участники
         </SText>
 
@@ -37,7 +33,7 @@ export const TeamMembersSection: FC<{
       </HeaderRow>
 
       <List>
-        {members.map((m) => (
+        {members.map(m => (
           <TeamMemberRow
             key={m.user.id}
             teamId={teamId}
@@ -57,9 +53,7 @@ const TeamMemberRow: FC<{
   canRemove: boolean;
   onNavigate: () => void;
 }> = ({ teamId, member, canRemove, onNavigate }) => {
-  const fullName = `${member.user.firstName ?? ""} ${
-    member.user.lastName ?? ""
-  }`.trim();
+  const fullName = `${member.user.firstName ?? ''} ${member.user.lastName ?? ''}`.trim();
   const { remove, isRemoving } = useRemoveTeamMember({
     teamId,
     userId: member.user.id,
@@ -76,7 +70,7 @@ const TeamMemberRow: FC<{
       <Info>
         <Names>
           <SText $fs={16} $fw={600}>
-            {fullName || "Без имени"}
+            {fullName || 'Без имени'}
           </SText>
         </Names>
 
@@ -96,7 +90,7 @@ const TeamMemberRow: FC<{
         <SIcon
           name="cross"
           color="#F55A5A"
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             if (!isRemoving) remove();
           }}

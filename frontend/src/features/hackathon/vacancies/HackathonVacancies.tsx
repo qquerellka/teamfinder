@@ -1,37 +1,29 @@
-import { FC, useMemo, useState } from "react";
-import styled from "styled-components";
-import { IconButton } from "@telegram-apps/telegram-ui";
+import { FC, useMemo, useState } from 'react';
+import styled from 'styled-components';
+import { IconButton } from '@telegram-apps/telegram-ui';
 
-import { NoItems, RoleBadge, SIcon, SText } from "@/shared/ui";
-import { Hackathon } from "@/entities/hackathon";
-import { useHackathonVacancies, Vacancy } from "@/entities/vacancy";
-import { useMyResponses } from "@/entities/response";
-import { useSendResponseAction } from "@/features/response/send";
+import { NoItems, RoleBadge, SIcon, SText } from '@/shared/ui';
+import { Hackathon } from '@/entities/hackathon';
+import { useHackathonVacancies, Vacancy } from '@/entities/vacancy';
+import { useMyResponses } from '@/entities/response';
+import { useSendResponseAction } from '@/features/response/send';
 
 interface HackathonVacanciesProps {
   hackathon: Hackathon;
 }
 
-export const HackathonVacancies: FC<HackathonVacanciesProps> = ({
-  hackathon,
-}) => {
+export const HackathonVacancies: FC<HackathonVacanciesProps> = ({ hackathon }) => {
   const { data: vacanciesData } = useHackathonVacancies(hackathon.id);
-  const vacancies = vacanciesData?.filter((v) => v.status === "open") ?? [];
+  const vacancies = vacanciesData?.filter(v => v.status === 'open') ?? [];
 
-  const { data: responsesData, isFetching: isResponsesFetching } =
-    useMyResponses();
+  const { data: responsesData, isFetching: isResponsesFetching } = useMyResponses();
 
-  const responses = responsesData.filter((r) => r.status === "pending") ?? [];
-  const repondedIds = useMemo(
-    () => new Set(responses.map((i) => i.vacancyId)),
-    [responses]
-  );
+  const responses = responsesData.filter(r => r.status === 'pending') ?? [];
+  const repondedIds = useMemo(() => new Set(responses.map(i => i.vacancyId)), [responses]);
 
   const { send, isSending } = useSendResponseAction();
 
-  const [responsingVacancyId, setResponsingVacancyId] = useState<number | null>(
-    null
-  );
+  const [responsingVacancyId, setResponsingVacancyId] = useState<number | null>(null);
 
   const handleReponse = async (vacancy: Vacancy) => {
     if (repondedIds.has(vacancy.id)) return;
@@ -45,14 +37,12 @@ export const HackathonVacancies: FC<HackathonVacanciesProps> = ({
   };
 
   if (vacancies.length === 0) {
-    return (
-      <NoItems title={"На этот хакатон нет вакансий :("} />
-    );
+    return <NoItems title={'На этот хакатон нет вакансий :('} />;
   }
 
   return (
     <ApplicationsList>
-      {vacancies.map((v) => (
+      {vacancies.map(v => (
         <VacancyCard
           key={v.id}
           vacancy={v}
@@ -78,22 +68,17 @@ interface VacancyCardProps {
   onResponse: () => void;
 }
 
-const VacancyCard: FC<VacancyCardProps> = ({
-  isResponsing,
-  onResponse,
-  responsed,
-  vacancy,
-}) => {
-//   const skillsString = useMemo(() => {
-//     const skills = application.skills?.slice(0, 4) ?? [];
-//     return skills.map((s) => s.name).join(", ");
-//   }, [application.skills]);
+const VacancyCard: FC<VacancyCardProps> = ({ isResponsing, onResponse, responsed, vacancy }) => {
+  //   const skillsString = useMemo(() => {
+  //     const skills = application.skills?.slice(0, 4) ?? [];
+  //     return skills.map((s) => s.name).join(", ");
+  //   }, [application.skills]);
 
   return (
     <Wrapper>
       <FirstRow>
         <SText $fs={16} $fw={600}>
-            {vacancy.teamName}
+          {vacancy.teamName}
         </SText>
         <RoleBadge role={vacancy.role} />
       </FirstRow>

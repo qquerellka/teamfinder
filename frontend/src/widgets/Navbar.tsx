@@ -1,10 +1,10 @@
-import { FC, MouseEvent } from "react";
-import styled from "styled-components";
-import { Tabbar } from "@telegram-apps/telegram-ui";
-import { matchPath, NavLink, useLocation } from "react-router-dom";
-import { paths } from "@/shared/routing/paths";
-import { SIcon } from "@/shared/ui";
-import type { IconName } from "@/shared/ui/SIcon";
+import { FC, MouseEvent } from 'react';
+import styled from 'styled-components';
+import { Tabbar } from '@telegram-apps/telegram-ui';
+import { matchPath, NavLink, useLocation } from 'react-router-dom';
+import { paths } from '@/shared/routing/paths';
+import { SIcon } from '@/shared/ui';
+import type { IconName } from '@/shared/ui/SIcon';
 
 interface NavItem {
   id: number;
@@ -13,20 +13,20 @@ interface NavItem {
   path: string;
 }
 const NAV: NavItem[] = [
-  { id: 1, name: "hackathons", icon: "hacksNav", path: paths.hackathons },
+  { id: 1, name: 'hackathons', icon: 'hacksNav', path: paths.hackathons },
   {
     id: 2,
-    name: "teams",
-    icon: "teamNav",
+    name: 'teams',
+    icon: 'teamNav',
     path: paths.teams,
   },
   {
     id: 3,
-    name: "applications",
-    icon: "appNav",
+    name: 'applications',
+    icon: 'appNav',
     path: paths.applications,
   },
-  { id: 4, name: "profile", icon: "profile", path: paths.userRoot },
+  { id: 4, name: 'profile', icon: 'profile', path: paths.userRoot },
 ];
 
 export const Navbar: FC = () => {
@@ -47,7 +47,7 @@ export const Navbar: FC = () => {
     <STabbar>
       {NAV.map(({ id, icon, path }) => (
         <SItem key={id}>
-          <NavLink to={path} end onClick={(e) => handleNavClick(e, path)}>
+          <NavLink to={path} end onClick={e => handleNavClick(e, path)}>
             {matchPath({ path, end: false }, pathname) ? (
               <SIcon active={true} name={icon} size={28} />
             ) : (

@@ -1,4 +1,4 @@
-import { useLeaveTeam } from "@/entities/teamMember";
+import { useLeaveTeam } from '@/entities/teamMember';
 
 export function useLeaveTeamAction(teamId: number, params?: { onDone?: () => void }) {
   const m = useLeaveTeam(teamId);

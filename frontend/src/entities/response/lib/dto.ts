@@ -1,12 +1,7 @@
-import {
-  Response,
-  ResponseDTO,
-  UpdateResponse,
-  UpdateResponseDTO,
-} from "../model/types";
+import { Response, ResponseDTO, UpdateResponse, UpdateResponseDTO } from '../model/types';
 
 export function responsesToCamelCase(responses: ResponseDTO[]): Response[] {
-  return responses.map((r) => ({
+  return responses.map(r => ({
     id: r.id,
     vacancyId: r.vacancy_id,
     status: r.status,

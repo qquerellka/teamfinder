@@ -1,6 +1,6 @@
-import { apiClient } from "@/shared/api/client";
-import { ResponseDTO, Response, UpdateResponse } from "../model/types";
-import { responsesToCamelCase, updateResponseToDTO } from "../lib/dto";
+import { apiClient } from '@/shared/api/client';
+import { ResponseDTO, Response, UpdateResponse } from '../model/types';
+import { responsesToCamelCase, updateResponseToDTO } from '../lib/dto';
 
 interface ResponsesResponseDTO {
   items: ResponseDTO[];
@@ -9,16 +9,12 @@ interface ResponsesResponseDTO {
 }
 
 export async function getVacancyResponses(id: number): Promise<Response[]> {
-  const { data } = await apiClient.get<ResponsesResponseDTO>(
-    `/vacancies/${id}/responses`
-  );
+  const { data } = await apiClient.get<ResponsesResponseDTO>(`/vacancies/${id}/responses`);
   return responsesToCamelCase(data.items);
 }
 
 export async function createVacancyResponse(id: number): Promise<Response> {
-  const { data } = await apiClient.post<ResponseDTO>(
-    `/vacancies/${id}/responses`
-  );
+  const { data } = await apiClient.post<ResponseDTO>(`/vacancies/${id}/responses`);
   return responsesToCamelCase([data])[0];
 }
 
@@ -27,13 +23,10 @@ export async function getResponse(id: number): Promise<Response> {
   return responsesToCamelCase([data])[0];
 }
 
-export async function updateResponse(
-  id: number,
-  payload: UpdateResponse
-): Promise<Response> {
+export async function updateResponse(id: number, payload: UpdateResponse): Promise<Response> {
   const { data } = await apiClient.patch<ResponseDTO>(
     `/responses/${id}`,
-    updateResponseToDTO(payload)
+    updateResponseToDTO(payload),
   );
   return responsesToCamelCase([data])[0];
 }
@@ -49,5 +42,5 @@ export async function getAllResponses(): Promise<Response[]> {
 
 export async function getAllTeamResponses(teamId: number): Promise<Response[]> {
   const { data } = await apiClient.get<ResponsesResponseDTO>(`/teams/${teamId}/responses`);
-  return responsesToCamelCase(data.items) 
+  return responsesToCamelCase(data.items);
 }

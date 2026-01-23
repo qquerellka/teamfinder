@@ -5,10 +5,10 @@ import {
   AchievementCreateDTO,
   AchievementPatch,
   AchievementPatchDTO,
-} from "../model/types";
+} from '../model/types';
 
 export function achievementsToCamelCase(achs: AchievementDTO[]): Achievement[] {
-  return achs.map((a) => ({
+  return achs.map(a => ({
     id: a.id,
     hackathonId: a.hackathon_id,
     hackathonName: a.hackathon_name,
@@ -17,9 +17,7 @@ export function achievementsToCamelCase(achs: AchievementDTO[]): Achievement[] {
   }));
 }
 
-export function achievementCreateToDTO(
-  payload: AchievementCreate
-): AchievementCreateDTO {
+export function achievementCreateToDTO(payload: AchievementCreate): AchievementCreateDTO {
   return {
     hackathon_id: payload.hackathonId,
     role: payload.role,
@@ -27,9 +25,7 @@ export function achievementCreateToDTO(
   };
 }
 
-export function achievementEditToDTO(
-  payload: AchievementPatch
-): AchievementPatchDTO {
+export function achievementEditToDTO(payload: AchievementPatch): AchievementPatchDTO {
   return {
     hackathon_id: payload.hackathonId,
     role: payload.role,

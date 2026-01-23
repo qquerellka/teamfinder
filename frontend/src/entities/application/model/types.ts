@@ -1,7 +1,7 @@
-import { Skill, SkillDTO } from "@/entities/skill";
-import { HackathonMode, Role } from "@/shared/types/enums";
+import { Skill, SkillDTO } from '@/entities/skill';
+import { HackathonMode, Role } from '@/shared/types/enums';
 
-type ApplicationStatus = "published" | "hidden";
+type ApplicationStatus = 'published' | 'hidden';
 export interface ApplicationDTO {
   id: number;
   hackathon_id: number;

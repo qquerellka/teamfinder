@@ -1,13 +1,13 @@
-import styled from "styled-components";
-import { Button } from "@telegram-apps/telegram-ui";
-import { useMemo, type FC } from "react";
+import styled from 'styled-components';
+import { Button } from '@telegram-apps/telegram-ui';
+import { useMemo, type FC } from 'react';
 
-import type { Hackathon } from "@/entities/hackathon";
-import type { Application } from "@/entities/application";
-import { formatRegistrationDate } from "@/shared/helpers/date";
-import { RoleBadge, SIcon, SText } from "@/shared/ui";
-import { ConfirmModal } from "@/shared/ui/ConfirmModal";
-import { useDeleteApplication } from "@/features/application/delete";
+import type { Hackathon } from '@/entities/hackathon';
+import type { Application } from '@/entities/application';
+import { formatRegistrationDate } from '@/shared/helpers/date';
+import { RoleBadge, SIcon, SText } from '@/shared/ui';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
+import { useDeleteApplication } from '@/features/application/delete';
 
 interface MyApplicationCardProps {
   hackathon: Hackathon;
@@ -35,7 +35,7 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
   });
   const skillsString = useMemo(() => {
     const skills = application.skills?.slice(0, 4) ?? [];
-    return skills.map((s) => s.name).join(", ");
+    return skills.map(s => s.name).join(', ');
   }, [application.skills]);
   return (
     <>
@@ -118,7 +118,7 @@ const Icons = styled.div`
   gap: 1rem;
 `;
 
-const IconButton = styled(Button).attrs({ mode: "plain", size: "s" })`
+const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
   padding: 0;
   min-width: auto;
 `;

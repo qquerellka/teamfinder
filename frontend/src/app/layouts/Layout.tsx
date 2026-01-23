@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
-import styled from "styled-components";
-import { FixedLayout } from "@telegram-apps/telegram-ui";
-import { Navbar } from "../../widgets/Navbar";
-import BackButtonController from "./BackButtonController";
+import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import styled from 'styled-components';
+import { FixedLayout } from '@telegram-apps/telegram-ui';
+import { Navbar } from '../../widgets/Navbar';
+import BackButtonController from './BackButtonController';
 
 export default function RootLayout() {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -14,18 +14,15 @@ export default function RootLayout() {
     const handleResize = () => {
       const currentHeight = window.innerHeight;
 
-      document.documentElement.style.setProperty(
-        "--vh",
-        `${currentHeight * 0.01}px`
-      );
+      document.documentElement.style.setProperty('--vh', `${currentHeight * 0.01}px`);
 
       const heightDifference = initialHeight - currentHeight;
       setIsKeyboardVisible(heightDifference > 200);
     };
 
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [initialHeight]);
 
   const [footerHeight, setFooterHeight] = useState(0);
@@ -44,7 +41,7 @@ export default function RootLayout() {
           <Outlet />
         </SContent>
 
-        <SFooterFixed style={{ display: isKeyboardVisible ? "none" : "block" }}>
+        <SFooterFixed style={{ display: isKeyboardVisible ? 'none' : 'block' }}>
           <SFooterInner ref={footerRef}>
             <Navbar />
           </SFooterInner>
@@ -74,8 +71,8 @@ const SContent = styled.div<{ $top: number; $bottom: number }>`
 `;
 
 const SFooterFixed = styled(FixedLayout).attrs({
-  vertical: "bottom",
-  Component: "footer",
+  vertical: 'bottom',
+  Component: 'footer',
 })``;
 
 const SFooterInner = styled.div`

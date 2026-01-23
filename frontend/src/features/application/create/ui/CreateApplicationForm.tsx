@@ -1,6 +1,6 @@
-import type { FC } from "react";
-import { ApplicationFormView } from "../../_shared/ui/ApplicationFormView";
-import { useCreateApplicationForm } from "../model/useCreateApplicationForm";
+import type { FC } from 'react';
+import { ApplicationFormView } from '../../_shared/ui/ApplicationFormView';
+import { useCreateApplicationForm } from '../model/useCreateApplicationForm';
 
 export const CreateApplicationForm: FC<{
   hackathonId: number;

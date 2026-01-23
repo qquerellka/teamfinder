@@ -7,10 +7,10 @@ import {
   MegaInviteDTO,
   UpdateInvite,
   UpdateInviteDTO,
-} from "../model/types";
+} from '../model/types';
 
 export function invitesToCamelCase(invites: InviteDTO[]): Invite[] {
-  return invites.map((i) => ({
+  return invites.map(i => ({
     id: i.id,
     status: i.status,
     role: i.invited_role,
@@ -23,7 +23,7 @@ export function invitesToCamelCase(invites: InviteDTO[]): Invite[] {
 }
 
 export function megaInvitesToCamelCase(invites: MegaInviteDTO[]): MegaInvite[] {
-  return invites.map((i) => ({
+  return invites.map(i => ({
     id: i.id,
     status: i.status,
     role: i.invited_role,

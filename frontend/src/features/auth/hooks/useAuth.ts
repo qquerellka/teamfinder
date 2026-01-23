@@ -27,13 +27,13 @@
 //     refetchAuth: query.refetch,
 //   };
 // }
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
-import type { AuthResponse } from "../model/types";
-import { authQueryFn } from "../api/login";
-import { UserDTO } from "@/entities/user";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
+import type { AuthResponse } from '../model/types';
+import { authQueryFn } from '../api/login';
+import { UserDTO } from '@/entities/user';
 
-export const AUTH_QUERY_KEY = ["auth"];
+export const AUTH_QUERY_KEY = ['auth'];
 
 export function useAuth() {
   const queryClient = useQueryClient();
@@ -60,20 +60,20 @@ export function useAuth() {
     if (handledUserIdRef.current === newId) return;
     handledUserIdRef.current = newId;
 
-    const prevId = localStorage.getItem("tf:last_profile_id");
+    const prevId = localStorage.getItem('tf:last_profile_id');
 
     if (prevId && prevId !== newId) {
       // отменяем и удаляем все запросы, кроме auth
       queryClient.cancelQueries({
-        predicate: (q) => q.queryKey[0] !== AUTH_QUERY_KEY[0],
+        predicate: q => q.queryKey[0] !== AUTH_QUERY_KEY[0],
       });
 
       queryClient.removeQueries({
-        predicate: (q) => q.queryKey[0] !== AUTH_QUERY_KEY[0],
+        predicate: q => q.queryKey[0] !== AUTH_QUERY_KEY[0],
       });
     }
 
-    localStorage.setItem("tf:last_profile_id", newId);
+    localStorage.setItem('tf:last_profile_id', newId);
   }, [query.data?.profile?.id, queryClient]);
 
   return {

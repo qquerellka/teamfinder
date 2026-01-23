@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { getTeamJoinLink } from "@/entities/team";
+import { useEffect, useRef, useState } from 'react';
+import { getTeamJoinLink } from '@/entities/team';
 
 async function copyToClipboard(text: string): Promise<boolean> {
   // 1) modern API
@@ -14,20 +14,20 @@ async function copyToClipboard(text: string): Promise<boolean> {
 
   // 2) iOS fallback
   try {
-    const ta = document.createElement("textarea");
+    const ta = document.createElement('textarea');
     ta.value = text;
-    ta.setAttribute("readonly", "");
-    ta.style.position = "fixed";
-    ta.style.top = "0";
-    ta.style.left = "0";
-    ta.style.opacity = "0";
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.opacity = '0';
 
     document.body.appendChild(ta);
     ta.focus();
     ta.select();
     ta.setSelectionRange(0, ta.value.length); // важно для iOS
 
-    const ok = document.execCommand("copy");
+    const ok = document.execCommand('copy');
     document.body.removeChild(ta);
     return ok;
   } catch {
@@ -48,7 +48,7 @@ export function useCopyTeamInviteLink(teamId: number) {
 
     setIsLoadingUrl(true);
     getTeamJoinLink(teamId)
-      .then((u) => {
+      .then(u => {
         if (alive) setUrl(u);
       })
       .finally(() => {

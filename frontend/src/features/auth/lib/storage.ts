@@ -1,4 +1,4 @@
-const TOKEN_PREFIX = "tf:access_token:";
+const TOKEN_PREFIX = 'tf:access_token:';
 
 export function tokenKey(tgUserId: number) {
   return `${TOKEN_PREFIX}${tgUserId}`;

@@ -1,12 +1,7 @@
-import { Skill, SkillDTO } from "@/entities/skill";
-import { Role } from "@/shared/types/enums";
+import { Skill, SkillDTO } from '@/entities/skill';
+import { Role } from '@/shared/types/enums';
 
-export type ResponseStatus =
-  | "pending"
-  | "accepted"
-  | "rejected"
-  | "withdrawn"
-  | "expired";
+export type ResponseStatus = 'pending' | 'accepted' | 'rejected' | 'withdrawn' | 'expired';
 
 export interface Response {
   id: number;

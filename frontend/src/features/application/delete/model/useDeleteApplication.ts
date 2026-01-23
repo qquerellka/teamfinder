@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useDeleteAuthUserApplication } from "@/entities/application";
+import { useState } from 'react';
+import { useDeleteAuthUserApplication } from '@/entities/application';
 
 export function useDeleteApplication(params: {
   hackathonId: number;

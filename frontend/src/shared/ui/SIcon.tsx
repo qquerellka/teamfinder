@@ -1,29 +1,29 @@
-import React, { KeyboardEvent } from "react";
-import styled, { css } from "styled-components";
+import React, { KeyboardEvent } from 'react';
+import styled, { css } from 'styled-components';
 
-import PlusIcon from "@/assets/icons/plusIcon.svg?react";
-import CrossIcon from "@/assets/icons/crossIcon.svg?react";
-import CaptainIcon from "@/assets/icons/captainIcon.svg?react";
-import DeleteIcon from "@/assets/icons/deleteIcon.svg?react";
-import EditIcon from "@/assets/icons/editIcon.svg?react";
-import InviteIcon from "@/assets/icons/inviteIcon.svg?react";
-import LeaveTeamIcon from "@/assets/icons/leaveTeamIcon.svg?react";
-import SentInviteIcon from "@/assets/icons/sentInvite.svg?react";
-import ShareIcon from "@/assets/icons/shareIcon.svg?react";
-import HackathonPrizeIcon from "@/assets/icons/hackathonCard/hackathonPrizeIcon.svg?react";
-import HackathonDateIcon from "@/assets/icons/hackathonCard/hackathonDateIcon.svg?react";
-import HackathonPlaceIcon from "@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react";
-import HackathonRegistrationIcon from "@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react";
-import HackathonTeamIcon from "@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react";
-import ProfileIcon from "@/assets/icons/navbarIcons/profileIcon.svg?react";
-import HackathonNavIcon from "@/assets/icons/navbarIcons/hackathonsIcon.svg?react";
-import TeamNavIcon from "@/assets/icons/navbarIcons/teamsIcon.svg?react";
-import ApplicationsNavIcon from "@/assets/icons/navbarIcons/applicationsIcon.svg?react";
-import ArrowIcon from "@/assets/icons/arrowIcon.svg?react";
+import PlusIcon from '@/assets/icons/plusIcon.svg?react';
+import CrossIcon from '@/assets/icons/crossIcon.svg?react';
+import CaptainIcon from '@/assets/icons/captainIcon.svg?react';
+import DeleteIcon from '@/assets/icons/deleteIcon.svg?react';
+import EditIcon from '@/assets/icons/editIcon.svg?react';
+import InviteIcon from '@/assets/icons/inviteIcon.svg?react';
+import LeaveTeamIcon from '@/assets/icons/leaveTeamIcon.svg?react';
+import SentInviteIcon from '@/assets/icons/sentInvite.svg?react';
+import ShareIcon from '@/assets/icons/shareIcon.svg?react';
+import HackathonPrizeIcon from '@/assets/icons/hackathonCard/hackathonPrizeIcon.svg?react';
+import HackathonDateIcon from '@/assets/icons/hackathonCard/hackathonDateIcon.svg?react';
+import HackathonPlaceIcon from '@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react';
+import HackathonRegistrationIcon from '@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react';
+import HackathonTeamIcon from '@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react';
+import ProfileIcon from '@/assets/icons/navbarIcons/profileIcon.svg?react';
+import HackathonNavIcon from '@/assets/icons/navbarIcons/hackathonsIcon.svg?react';
+import TeamNavIcon from '@/assets/icons/navbarIcons/teamsIcon.svg?react';
+import ApplicationsNavIcon from '@/assets/icons/navbarIcons/applicationsIcon.svg?react';
+import ArrowIcon from '@/assets/icons/arrowIcon.svg?react';
 import SearchIcon from '@/assets/icons/searchIcon.svg?react';
 import FiltersIcon from '@/assets/icons/filtersIcon.svg?react';
 
-type SizeToken = "s" | "m" | "l" | "xl";
+type SizeToken = 's' | 'm' | 'l' | 'xl';
 
 const SIZE_MAP: Record<SizeToken, number> = {
   s: 16,
@@ -33,8 +33,8 @@ const SIZE_MAP: Record<SizeToken, number> = {
 };
 
 function toPx(size?: number | SizeToken): number {
-  if (typeof size === "number") return size;
-  return SIZE_MAP[size ?? "m"];
+  if (typeof size === 'number') return size;
+  return SIZE_MAP[size ?? 'm'];
 }
 
 const iconsMap = {
@@ -71,7 +71,7 @@ export type SIconProps = {
   asButton?: boolean;
   className?: string;
   title?: string;
-  "aria-label"?: string;
+  'aria-label'?: string;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLSpanElement>;
   active?: boolean;
@@ -79,7 +79,7 @@ export type SIconProps = {
 
 export const SIcon: React.FC<SIconProps> = ({
   name,
-  size = "m",
+  size = 'm',
   color,
   clickable,
   asButton,
@@ -87,18 +87,17 @@ export const SIcon: React.FC<SIconProps> = ({
   title,
   onClick,
   onKeyDown,
-  active=false,
+  active = false,
   ...rest
 }) => {
   const px = toPx(size);
   const Icon = iconsMap[name];
 
-  const ariaHidden =
-    !title && !rest["aria-label"] ? { "aria-hidden": true } : {};
+  const ariaHidden = !title && !rest['aria-label'] ? { 'aria-hidden': true } : {};
 
   const handleKeyDown = (e: KeyboardEvent<HTMLSpanElement>) => {
     if (!asButton) return;
-    if (e.key === "Enter" || e.key === " ") {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       (e.currentTarget as HTMLSpanElement).click();
     }
@@ -108,9 +107,9 @@ export const SIcon: React.FC<SIconProps> = ({
   return (
     <Wrap
       $size={px}
-      $color={active ? "var(--tg-theme-accent-text-color)" : color}
+      $color={active ? 'var(--tg-theme-accent-text-color)' : color}
       $clickable={!!clickable || !!asButton}
-      role={asButton ? "button" : undefined}
+      role={asButton ? 'button' : undefined}
       tabIndex={asButton ? 0 : undefined}
       className={className}
       onClick={onClick}
@@ -135,7 +134,7 @@ const Wrap = styled.span<{
   line-height: 1;
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
-  color: ${({ $color }) => $color ?? "var(--tg-theme-text-color)"};
+  color: ${({ $color }) => $color ?? 'var(--tg-theme-text-color)'};
 
   /* & > svg {
     width: 100%;
@@ -156,20 +155,20 @@ const Wrap = styled.span<{
   }
 
   /* Перекрашиваем ТОЛЬКО белые stroke в currentColor */
-  & > svg [stroke="white"],
-  & > svg [stroke="#fff"],
-  & > svg [stroke="#FFF"],
-  & > svg [stroke="#ffffff"],
-  & > svg [stroke="#FFFFFF"] {
+  & > svg [stroke='white'],
+  & > svg [stroke='#fff'],
+  & > svg [stroke='#FFF'],
+  & > svg [stroke='#ffffff'],
+  & > svg [stroke='#FFFFFF'] {
     stroke: currentColor;
   }
 
   /* Перекрашиваем ТОЛЬКО белые fill в currentColor */
-  & > svg [fill="white"],
-  & > svg [fill="#fff"],
-  & > svg [fill="#FFF"],
-  & > svg [fill="#ffffff"],
-  & > svg [fill="#FFFFFF"] {
+  & > svg [fill='white'],
+  & > svg [fill='#fff'],
+  & > svg [fill='#FFF'],
+  & > svg [fill='#ffffff'],
+  & > svg [fill='#FFFFFF'] {
     fill: currentColor;
   }
 

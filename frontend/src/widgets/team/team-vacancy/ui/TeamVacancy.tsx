@@ -1,15 +1,15 @@
-import type { FC } from "react";
-import { useState } from "react";
-import styled from "styled-components";
+import type { FC } from 'react';
+import { useState } from 'react';
+import styled from 'styled-components';
 
-import { useNavigate } from "react-router-dom";
-import { TeamWithMembers } from "@/entities/team";
-import { useTeamVacancies } from "@/entities/vacancy";
-import { CreateVacancyForm } from "@/features/vacancy/create";
-import { EditVacancyForm } from "@/features/vacancy/edit";
-import { VacancyCard } from "./VacancyCard";
-import { VacancyResponses } from "@/widgets/responses/vacancy-responses";
-import { Button } from "@telegram-apps/telegram-ui";
+import { useNavigate } from 'react-router-dom';
+import { TeamWithMembers } from '@/entities/team';
+import { useTeamVacancies } from '@/entities/vacancy';
+import { CreateVacancyForm } from '@/features/vacancy/create';
+import { EditVacancyForm } from '@/features/vacancy/edit';
+import { VacancyCard } from './VacancyCard';
+import { VacancyResponses } from '@/widgets/responses/vacancy-responses';
+import { Button } from '@telegram-apps/telegram-ui';
 
 export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
   const { data: vacancies } = useTeamVacancies(team.id);
@@ -23,26 +23,19 @@ export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
     addVacancy ||
     team.members.length + vacancies.length > 8
   ) {
-    return (
-      <CreateVacancyForm teamId={team.id} onDone={() => setAddVacancy(false)} />
-    );
+    return <CreateVacancyForm teamId={team.id} onDone={() => setAddVacancy(false)} />;
   }
 
   if (isEditing) {
-    return (
-      <EditVacancyForm
-        vacancy={vacancies[0]}
-        onCancel={() => setIsEditing(false)}
-      />
-    );
+    return <EditVacancyForm vacancy={vacancies[0]} onCancel={() => setIsEditing(false)} />;
   }
 
   return (
     <Wrapper>
       <Button mode="bezeled" onClick={() => setAddVacancy(true)}>
-        {"Создать вакансию"}
+        {'Создать вакансию'}
       </Button>
-      {vacancies.map((v) => (
+      {vacancies.map(v => (
         <VacancyCard
           key={v.id}
           team={team}
@@ -52,7 +45,7 @@ export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
         />
       ))}
 
-      <VacancyResponses  />
+      <VacancyResponses />
     </Wrapper>
   );
 };

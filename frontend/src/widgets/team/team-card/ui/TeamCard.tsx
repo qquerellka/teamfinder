@@ -1,17 +1,17 @@
-import { FC } from "react";
-import styled from "styled-components";
-import { Button, Input, Textarea } from "@telegram-apps/telegram-ui";
-import { useNavigate } from "react-router-dom";
+import { FC } from 'react';
+import styled from 'styled-components';
+import { Button, Input, Textarea } from '@telegram-apps/telegram-ui';
+import { useNavigate } from 'react-router-dom';
 
-import type { TeamWithMembers } from "@/entities/team";
-import { useAuthUser } from "@/entities/user";
+import type { TeamWithMembers } from '@/entities/team';
+import { useAuthUser } from '@/entities/user';
 
-import { InputSection, SIcon, SText } from "@/shared/ui";
-import { getFindTeamMembersPath } from "@/shared/routing/paths";
+import { InputSection, SIcon, SText } from '@/shared/ui';
+import { getFindTeamMembersPath } from '@/shared/routing/paths';
 
-import { useCopyTeamInviteLink } from "@/features/team/copy-invite-link";
-import { useLeaveTeamAction } from "@/features/team/leave";
-import { TeamMembersSection } from "@/widgets/team/team-members";
+import { useCopyTeamInviteLink } from '@/features/team/copy-invite-link';
+import { useLeaveTeamAction } from '@/features/team/leave';
+import { TeamMembersSection } from '@/widgets/team/team-members';
 
 interface TeamCardProps {
   team: TeamWithMembers;
@@ -65,7 +65,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
       <Buttons>
         {isCaptain && (
           <SButton mode="bezeled" onClick={copy} stretched disabled={isCopying}>
-            {copied ? "Ссылка скопирована" : "Пригласить по ссылке"}
+            {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
           </SButton>
         )}
 
@@ -80,12 +80,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
         )}
 
         {!isCaptain && (
-          <SButton
-            mode="bezeled"
-            onClick={leave}
-            stretched
-            disabled={isLeaving}
-          >
+          <SButton mode="bezeled" onClick={leave} stretched disabled={isLeaving}>
             Покинуть команду
           </SButton>
         )}

@@ -1,13 +1,13 @@
-import { FC } from "react";
-import styled from "styled-components";
-import { SIcon, SText } from "@/shared/ui";
+import { FC } from 'react';
+import styled from 'styled-components';
+import { SIcon, SText } from '@/shared/ui';
 
 interface InviteCardViewProps {
   teamName: string;
   teamMembersCount: number;
   teamMembersLimit: number;
   actions?: React.ReactNode;
-};
+}
 
 export const InviteCardView: FC<InviteCardViewProps> = ({
   teamName,

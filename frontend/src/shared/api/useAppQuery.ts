@@ -3,7 +3,7 @@ import {
   type UseSuspenseQueryOptions,
   type UseSuspenseQueryResult,
   type QueryKey,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
 type AppQueryOptions<
   TQueryFnData,

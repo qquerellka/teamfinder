@@ -1,26 +1,23 @@
-import { useState } from "react";
-import { useCreateAchievement } from "@/entities/achievement";
-import type { Hackathon } from "@/entities/hackathon";
-import type { AchievementFormValues } from "../../_shared/model/types";
-import type { Role } from "@/shared/types/enums";
-import type { AchievementPlace } from "@/entities/achievement";
+import { useState } from 'react';
+import { useCreateAchievement } from '@/entities/achievement';
+import type { Hackathon } from '@/entities/hackathon';
+import type { AchievementFormValues } from '../../_shared/model/types';
+import type { Role } from '@/shared/types/enums';
+import type { AchievementPlace } from '@/entities/achievement';
 
-export function useAchievementCreateForm(params: {
-  hackathons: Hackathon[];
-  onDone?: () => void;
-}) {
+export function useAchievementCreateForm(params: { hackathons: Hackathon[]; onDone?: () => void }) {
   const createMutation = useCreateAchievement();
 
   const [values, setValues] = useState<AchievementFormValues>({
     hackathonId: null,
-    role: "",
-    place: "",
+    role: '',
+    place: '',
   });
 
   const setField = <K extends keyof AchievementFormValues>(
     field: K,
     value: AchievementFormValues[K],
-  ) => setValues((p) => ({ ...p, [field]: value }));
+  ) => setValues(p => ({ ...p, [field]: value }));
 
   const canSubmit = !!values.hackathonId && !!values.role && !!values.place;
 

@@ -1,15 +1,15 @@
-import { FC } from "react";
-import styled from "styled-components";
+import { FC } from 'react';
+import styled from 'styled-components';
 
-import type { TeamWithMembers } from "@/entities/team";
-import { useAuthUser } from "@/entities/user";
+import type { TeamWithMembers } from '@/entities/team';
+import { useAuthUser } from '@/entities/user';
 
-import { SIcon, SText, ConfirmModal } from "@/shared/ui";
+import { SIcon, SText, ConfirmModal } from '@/shared/ui';
 
-import { EditTeamForm } from "@/features/team/edit";
-import { useDeleteTeamAction } from "@/features/team/delete";
-import { useLeaveTeamAction } from "@/features/team/leave";
-import { TeamMembersSection } from "@/widgets/team/team-members";
+import { EditTeamForm } from '@/features/team/edit';
+import { useDeleteTeamAction } from '@/features/team/delete';
+import { useLeaveTeamAction } from '@/features/team/leave';
+import { TeamMembersSection } from '@/widgets/team/team-members';
 
 interface Props {
   team: TeamWithMembers;

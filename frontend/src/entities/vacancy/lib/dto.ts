@@ -1,7 +1,7 @@
-import { EditVacancy, EditVacancyDTO, Vacancy, VacancyDTO } from "../model/types";
+import { EditVacancy, EditVacancyDTO, Vacancy, VacancyDTO } from '../model/types';
 
 export function vacanciesToCamelCase(vacancies: VacancyDTO[]): Vacancy[] {
-  return vacancies.map((v) => ({
+  return vacancies.map(v => ({
     id: v.id,
     description: v.description,
     teamId: v.team_id,
@@ -12,9 +12,9 @@ export function vacanciesToCamelCase(vacancies: VacancyDTO[]): Vacancy[] {
 }
 
 export function editVacancyToDTO(payload: EditVacancy): EditVacancyDTO {
-    return {
-        role: payload.role,
-        description: payload.description,
-        status: payload?.status,
-    }
+  return {
+    role: payload.role,
+    description: payload.description,
+    status: payload?.status,
+  };
 }

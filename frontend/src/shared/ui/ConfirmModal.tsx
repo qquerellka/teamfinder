@@ -1,6 +1,6 @@
-import { FC } from "react";
-import { Modal, Button, List } from "@telegram-apps/telegram-ui";
-import { SText } from "./SText";
+import { FC } from 'react';
+import { Modal, Button, List } from '@telegram-apps/telegram-ui';
+import { SText } from './SText';
 
 export interface ConfirmModalProps {
   open: boolean;
@@ -18,8 +18,8 @@ export interface ConfirmModalProps {
 export const ConfirmModal: FC<ConfirmModalProps> = ({
   open,
   title,
-  confirmText = "Подтвердить",
-  cancelText = "Отмена",
+  confirmText = 'Подтвердить',
+  cancelText = 'Отмена',
   loading = false,
   onConfirm,
   onCancel,
@@ -35,14 +35,14 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
       <List
         style={{
           padding: 16,
-          display: "flex",
-          flexDirection: "column",
-          textAlign: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          textAlign: 'center',
           gap: 0,
         }}
       >
         <SText>{title}</SText>
-        <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
           <Button mode="bezeled" type="button" stretched disabled={loading} onClick={onCancel}>
             {cancelText}
           </Button>

@@ -1,1 +1,1 @@
-export { TeamMembersSection } from "./ui/TeamMembersSection";
+export { TeamMembersSection } from './ui/TeamMembersSection';

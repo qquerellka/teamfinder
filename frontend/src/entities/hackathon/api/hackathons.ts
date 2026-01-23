@@ -1,6 +1,6 @@
-import { apiClient } from "@/shared/api/client";
-import { Hackathon, HackathonDTO } from "../model/types";
-import { hackathonsToCamelCase } from "../lib/dto";
+import { apiClient } from '@/shared/api/client';
+import { Hackathon, HackathonDTO } from '../model/types';
+import { hackathonsToCamelCase } from '../lib/dto';
 
 interface FetchHackathonsApiResponse {
   items: HackathonDTO[];
@@ -21,12 +21,9 @@ export interface FetchHackathonsParams {
 }
 
 export async function fetchHackathons(
-  params: FetchHackathonsParams = {}
+  params: FetchHackathonsParams = {},
 ): Promise<FetchHackathonsResponse> {
-  const { data } = await apiClient.get<FetchHackathonsApiResponse>(
-    "/hackathons",
-    { params }
-  );
+  const { data } = await apiClient.get<FetchHackathonsApiResponse>('/hackathons', { params });
 
   return {
     limit: data.limit,

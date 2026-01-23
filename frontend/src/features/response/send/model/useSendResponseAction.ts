@@ -1,8 +1,8 @@
-import { useCreateResponse } from "@/entities/response";
+import { useCreateResponse } from '@/entities/response';
 
 export function useSendResponseAction(
-//   vacancyId: number,
-  params?: { onSent?: () => void }
+  //   vacancyId: number,
+  params?: { onSent?: () => void },
 ) {
   //   const m = useCreateInvite();
   const m = useCreateResponse();

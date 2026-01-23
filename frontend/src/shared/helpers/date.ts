@@ -1,17 +1,17 @@
 export function formatDateRange(startDate: Date, endDate: Date): string {
   const months = [
-    "января",
-    "февраля",
-    "марта",
-    "апреля",
-    "мая",
-    "июня",
-    "июля",
-    "августа",
-    "сентября",
-    "октября",
-    "ноября",
-    "декабря",
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря',
   ];
 
   const formatDate = (date: Date): string => {
@@ -28,18 +28,18 @@ export function formatDateRange(startDate: Date, endDate: Date): string {
 
 export function formatRegistrationDate(date: Date): string {
   const months = [
-    "января",
-    "февраля",
-    "марта",
-    "апреля",
-    "мая",
-    "июня",
-    "июля",
-    "августа",
-    "сентября",
-    "октября",
-    "ноября",
-    "декабря",
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря',
   ];
 
   const day = date.getDate();
@@ -48,10 +48,6 @@ export function formatRegistrationDate(date: Date): string {
   return `Регистрация до ${day} ${month}`;
 }
 
-export function getTeamMembersRange(
-  teamMembersLimit: number,
-  teamMembersMinimum: number
-): string {
-
+export function getTeamMembersRange(teamMembersLimit: number, teamMembersMinimum: number): string {
   return `${teamMembersMinimum} - ${teamMembersLimit} участников`;
 }

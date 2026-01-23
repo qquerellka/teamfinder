@@ -1,23 +1,21 @@
-import { useMyTeams } from "@/entities/team";
-import { TeamCard } from "@/entities/team/ui/TeamCard";
-import { getTeamPath } from "@/shared/routing/paths";
-import { NoItems, Page, SText } from "@/shared/ui";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { useMyTeams } from '@/entities/team';
+import { TeamCard } from '@/entities/team/ui/TeamCard';
+import { getTeamPath } from '@/shared/routing/paths';
+import { NoItems, Page, SText } from '@/shared/ui';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
 export const UserTeamsPage = () => {
   const { data: teams } = useMyTeams();
   const navigate = useNavigate();
   if (!teams || teams.length === 0) {
-    return (
-      <NoItems title={"У вас нет активных команд :("} />
-    );
+    return <NoItems title={'У вас нет активных команд :('} />;
   }
   return (
     <Page>
       <TeamsList>
         <SText>Мои команды</SText>
-        {teams.map((t) => (
+        {teams.map(t => (
           <TeamCard
             key={t.id}
             invitesCount={t.countInvites}

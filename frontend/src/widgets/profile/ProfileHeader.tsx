@@ -1,8 +1,8 @@
-import { Avatar, Link } from "@telegram-apps/telegram-ui";
-import styled from "styled-components";
-import { SText } from "@/shared/ui";
-import { User } from "@/entities/user";
-import { FC } from "react";
+import { Avatar, Link } from '@telegram-apps/telegram-ui';
+import styled from 'styled-components';
+import { SText } from '@/shared/ui';
+import { User } from '@/entities/user';
+import { FC } from 'react';
 interface ProfileHeaderProps {
   user: User;
 }
@@ -23,7 +23,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
           href={tgLink}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           <SText $fs={16} $fw={600}>
             @{user.username}

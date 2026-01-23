@@ -1,12 +1,12 @@
-import { FC, useMemo } from "react";
-import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { FC, useMemo } from 'react';
+import styled from 'styled-components';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { getTeamPath } from "@/shared/routing/paths";
-import { SText } from "@/shared/ui";
-import { Response, useTeamResponses } from "@/entities/response";
-import { ResponsesCardView } from "@/entities/response/ui/ResponseCardView";
-import { ResponseRespondButtons } from "@/features/response/respond";
+import { getTeamPath } from '@/shared/routing/paths';
+import { SText } from '@/shared/ui';
+import { Response, useTeamResponses } from '@/entities/response';
+import { ResponsesCardView } from '@/entities/response/ui/ResponseCardView';
+import { ResponseRespondButtons } from '@/features/response/respond';
 
 export const VacancyResponses: FC = () => {
   const { id } = useParams();
@@ -19,10 +19,7 @@ export const VacancyResponses: FC = () => {
   //   responses = responses.concat(data);
   // }
 
-  const pending = useMemo(
-    () => responses.filter((r) => r.status === "pending"),
-    [responses],
-  );
+  const pending = useMemo(() => responses.filter(r => r.status === 'pending'), [responses]);
 
   if (pending.length === 0) {
     return (
@@ -34,16 +31,16 @@ export const VacancyResponses: FC = () => {
 
   return (
     <Wrapper>
-      <SText style={{ marginBottom: "1rem" }}>Отклики на вакансии</SText>
+      <SText style={{ marginBottom: '1rem' }}>Отклики на вакансии</SText>
 
-      {pending.map((i) => (
+      {pending.map(i => (
         <ResponsesCardView
           key={i.id}
           actions={
             <ResponseRespondButtons
               responseId={i.id}
-              onAnswered={(status) => {
-                if (status === "accepted") {
+              onAnswered={status => {
+                if (status === 'accepted') {
                   navigate(getTeamPath(i.teamId));
                 }
               }}

@@ -11,10 +11,10 @@ import {
   TeamsResponse,
   TeamWithMembers,
   TeamWithMembersDTO,
-} from "../model/types";
+} from '../model/types';
 
 export function teamsToCamelCase(teamsDTO: TeamDTO[]): Team[] {
-  return teamsDTO.map((t) => ({
+  return teamsDTO.map(t => ({
     id: t.id,
     hackathonId: t.hackathon_id,
     name: t.name,
@@ -30,9 +30,7 @@ export function editTeamToDTO(team: EditTeam): EditTeamDTO {
     status: team.status,
   };
 }
-export function teamsResponseToCamelCase(
-  response: TeamsDTOResponse
-): TeamsResponse {
+export function teamsResponseToCamelCase(response: TeamsDTOResponse): TeamsResponse {
   return {
     offset: response.offset,
     limit: response.limit,
@@ -47,9 +45,7 @@ export function createTeamToDTO(payload: CreateTeam): CreateTeamDTO {
   };
 }
 
-export function teamWithMembersToCamelCase(
-  payload: TeamWithMembersDTO
-): TeamWithMembers {
+export function teamWithMembersToCamelCase(payload: TeamWithMembersDTO): TeamWithMembers {
   return {
     id: payload.id,
     hackathonId: payload.hackathon_id,
@@ -59,7 +55,7 @@ export function teamWithMembersToCamelCase(
     status: payload.status,
     hackathonName: payload.hackathon_name,
     teamMembersLimit: payload.team_members_limit,
-    members: payload.members?.map((m) => ({
+    members: payload.members?.map(m => ({
       user: {
         id: m.user.id,
         username: m.user.username,
@@ -74,7 +70,7 @@ export function teamWithMembersToCamelCase(
 }
 
 export function myTeamsToCamelCase(teamsDTO: MyTeamDTO[]): MyTeam[] {
-  return teamsDTO.map((t) => ({
+  return teamsDTO.map(t => ({
     id: t.id,
     hackathonId: t.hackathon_id,
     name: t.name,
@@ -85,6 +81,6 @@ export function myTeamsToCamelCase(teamsDTO: MyTeamDTO[]): MyTeam[] {
     isCaptain: t.is_captain,
     teamMembersCount: t.team_members_count,
     teamMembersLimit: t.team_members_limit,
-    countInvites: t.count_invites
+    countInvites: t.count_invites,
   }));
 }

@@ -1,8 +1,8 @@
-import { formatRegistrationDate } from "@/shared/helpers/date";
-import { Role } from "@/shared/types/enums";
-import { RoleBadge, SIcon, SText } from "@/shared/ui";
-import { FC } from "react";
-import styled from "styled-components";
+import { formatRegistrationDate } from '@/shared/helpers/date';
+import { Role } from '@/shared/types/enums';
+import { RoleBadge, SIcon, SText } from '@/shared/ui';
+import { FC } from 'react';
+import styled from 'styled-components';
 
 interface ApplicationCardProps {
   hackathonName: string;
@@ -31,13 +31,13 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
       </SText>
       <Info>
         <InfoItem>
-          <SIcon name={"hackathonRegistration"} />
+          <SIcon name={'hackathonRegistration'} />
           <SText $fs={14} $fw={500}>
             {formatRegistrationDate(registrationEndDate)}
           </SText>
         </InfoItem>
         <InfoItem>
-          <SIcon name={"hackathonPlace"} />
+          <SIcon name={'hackathonPlace'} />
           <SText $fs={14} $fw={500}>{`${city} • ${mode}`}</SText>
         </InfoItem>
       </Info>

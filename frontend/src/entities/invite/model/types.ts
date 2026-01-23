@@ -1,6 +1,6 @@
-import { Role } from "@/shared/types/enums";
+import { Role } from '@/shared/types/enums';
 
-export type InviteStatus = "pending" | "accepted" | "rejected" | "expired";
+export type InviteStatus = 'pending' | 'accepted' | 'rejected' | 'expired';
 
 export interface Invite {
   id: number;

@@ -1,16 +1,13 @@
-import { useCallback } from "react";
-import { InviteStatus } from "@/entities/invite";
-import { ResponseStatus, useUpdateResponse } from "@/entities/response";
+import { useCallback } from 'react';
+import { InviteStatus } from '@/entities/invite';
+import { ResponseStatus, useUpdateResponse } from '@/entities/response';
 
 interface UseAnswerOnResponseParams {
   responseId: number;
   onAnswered?: (status: ResponseStatus) => void;
 }
 
-export function useAnswerOnResponse({
-  responseId,
-  onAnswered,
-}: UseAnswerOnResponseParams) {
+export function useAnswerOnResponse({ responseId, onAnswered }: UseAnswerOnResponseParams) {
   const mutation = useUpdateResponse();
 
   const answer = useCallback(
@@ -22,7 +19,7 @@ export function useAnswerOnResponse({
 
       onAnswered?.(status);
     },
-    [responseId, mutation, onAnswered]
+    [responseId, mutation, onAnswered],
   );
 
   return {

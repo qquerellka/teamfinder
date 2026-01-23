@@ -1,13 +1,13 @@
-import { FC, useMemo, useState } from "react";
-import styled from "styled-components";
-import { IconButton } from "@telegram-apps/telegram-ui";
+import { FC, useMemo, useState } from 'react';
+import styled from 'styled-components';
+import { IconButton } from '@telegram-apps/telegram-ui';
 
-import type { Application } from "@/entities/application";
-import { useHackathonApplications } from "@/entities/application";
-import type { Team } from "@/entities/team";
-import { NoItems, RoleBadge, SIcon, SText } from "@/shared/ui";
-import { useTeamInvites } from "@/entities/invite";
-import { useSendInviteAction } from "@/features/invite/send";
+import type { Application } from '@/entities/application';
+import { useHackathonApplications } from '@/entities/application';
+import type { Team } from '@/entities/team';
+import { NoItems, RoleBadge, SIcon, SText } from '@/shared/ui';
+import { useTeamInvites } from '@/entities/invite';
+import { useSendInviteAction } from '@/features/invite/send';
 
 interface TeamApplicationsProps {
   team: Team;
@@ -15,18 +15,12 @@ interface TeamApplicationsProps {
 
 export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
   const { data: applicationsData } = useHackathonApplications(team.hackathonId);
-  const applications =
-    applicationsData?.items.filter((i) => i.status === "published") ?? [];
+  const applications = applicationsData?.items.filter(i => i.status === 'published') ?? [];
 
-  const { data: invitesData, isFetching: isInvitesFetching } = useTeamInvites(
-    team.id
-  );
+  const { data: invitesData, isFetching: isInvitesFetching } = useTeamInvites(team.id);
 
-  const invites = invitesData.filter((i) => i.status === "pending") ?? [];
-  const invitedIds = useMemo(
-    () => new Set(invites.map((i) => i.applicationId)),
-    [invites]
-  );
+  const invites = invitesData.filter(i => i.status === 'pending') ?? [];
+  const invitedIds = useMemo(() => new Set(invites.map(i => i.applicationId)), [invites]);
 
   const { send, isSending } = useSendInviteAction(team.id);
 
@@ -44,12 +38,12 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
   };
 
   if (applications.length === 0) {
-    return <NoItems title={"У этого хакатона нет анкет :("} />;
+    return <NoItems title={'У этого хакатона нет анкет :('} />;
   }
 
   return (
     <ApplicationsList>
-      {applications.map((a) => (
+      {applications.map(a => (
         <ApplicationCard
           key={a.id}
           application={a}
@@ -83,7 +77,7 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
 }) => {
   const skillsString = useMemo(() => {
     const skills = application.skills?.slice(0, 4) ?? [];
-    return skills.map((s) => s.name).join(", ");
+    return skills.map(s => s.name).join(', ');
   }, [application.skills]);
 
   return (

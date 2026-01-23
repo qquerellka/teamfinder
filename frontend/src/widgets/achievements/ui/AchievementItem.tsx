@@ -1,21 +1,18 @@
-import { paths } from "@/shared/routing/paths";
-import { Achievement } from "@/entities/achievement";
-import { SText } from "@/shared/ui/SText";
-import { Cell } from "@telegram-apps/telegram-ui";
-import { FC } from "react";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { formatHackPlace } from "@/entities/achievement/lib/formatters";
+import { paths } from '@/shared/routing/paths';
+import { Achievement } from '@/entities/achievement';
+import { SText } from '@/shared/ui/SText';
+import { Cell } from '@telegram-apps/telegram-ui';
+import { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { formatHackPlace } from '@/entities/achievement/lib/formatters';
 
 interface AchievementItemProps {
   achievement: Achievement;
   canEdit: boolean;
 }
 
-export const AchievementItem: FC<AchievementItemProps> = ({
-  achievement,
-  canEdit,
-}) => {
+export const AchievementItem: FC<AchievementItemProps> = ({ achievement, canEdit }) => {
   const navigate = useNavigate();
 
   const handleAchievementClick = (id: number) => {

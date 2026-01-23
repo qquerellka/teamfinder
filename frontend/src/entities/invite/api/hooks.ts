@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { queryKeys } from "@/shared/api/queryKeys";
+import { queryKeys } from '@/shared/api/queryKeys';
 import {
   getTeamInvites,
   createTeamInvite,
@@ -8,14 +8,9 @@ import {
   getAllInvites,
   getInvite,
   updateInvite,
-} from "./invites";
-import type {
-  Invite,
-  CreateInvite,
-  UpdateInvite,
-  MegaInvite,
-} from "../model/types";
-import { useAppQuery } from "@/shared/api/useAppQuery";
+} from './invites';
+import type { Invite, CreateInvite, UpdateInvite, MegaInvite } from '../model/types';
+import { useAppQuery } from '@/shared/api/useAppQuery';
 
 const inviteKeys = queryKeys.invites;
 
@@ -95,7 +90,7 @@ export function useUpdateInvite() {
 
   return useMutation<Invite, Error, UpdateInviteVariables>({
     mutationFn: ({ id, payload }) => updateInvite(id, payload),
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: inviteKeys.byId(data.id),
       });

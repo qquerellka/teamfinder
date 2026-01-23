@@ -1,8 +1,8 @@
-import type { FC } from "react";
-import type { Achievement } from "@/entities/achievement";
-import { AchievementFormView } from "../../_shared/ui/AchievementFormView";
-import { useAchievementEditForm } from "../model/useAchievementEditForm";
-import { useAchievementDelete } from "../../delete/model/useAchievementDelete";
+import type { FC } from 'react';
+import type { Achievement } from '@/entities/achievement';
+import { AchievementFormView } from '../../_shared/ui/AchievementFormView';
+import { useAchievementEditForm } from '../model/useAchievementEditForm';
+import { useAchievementDelete } from '../../delete/model/useAchievementDelete';
 
 export const AchievementEditForm: FC<{
   achievement: Achievement;

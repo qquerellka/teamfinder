@@ -5,18 +5,16 @@ import {
   EditTeamMemberDTO,
   TeamMember,
   TeamMemberDTO,
-} from "../model/types";
+} from '../model/types';
 
-export function teamMembersToCamelCase(
-  teamMembers: TeamMemberDTO[]
-): TeamMember[] {
-  return teamMembers.map((t) => ({
+export function teamMembersToCamelCase(teamMembers: TeamMemberDTO[]): TeamMember[] {
+  return teamMembers.map(t => ({
     user: {
       id: t.user.id,
       username: t.user.username,
       firstName: t.user.first_name,
       lastName: t.user.last_name,
-      avatarUrl: t.user.avatar_url
+      avatarUrl: t.user.avatar_url,
     },
     role: t.role,
     isCaptain: t.is_captain,

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useDeleteVacancy } from "@/entities/vacancy";
+import { useState } from 'react';
+import { useDeleteVacancy } from '@/entities/vacancy';
 
 export function useDeleteVacancyForm(params: {
   teamId: number;

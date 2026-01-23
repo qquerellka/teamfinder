@@ -1,1 +1,1 @@
-export { useDeleteApplication } from "./model/useDeleteApplication";
+export { useDeleteApplication } from './model/useDeleteApplication';

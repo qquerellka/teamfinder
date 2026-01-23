@@ -1,7 +1,7 @@
-import type { FC } from "react";
-import type { Application } from "@/entities/application";
-import { ApplicationFormView } from "../../_shared/ui/ApplicationFormView";
-import { useEditApplicationForm } from "../model/useEditApplicationForm";
+import type { FC } from 'react';
+import type { Application } from '@/entities/application';
+import { ApplicationFormView } from '../../_shared/ui/ApplicationFormView';
+import { useEditApplicationForm } from '../model/useEditApplicationForm';
 
 export const EditApplicationForm: FC<{
   hackathonName: string;

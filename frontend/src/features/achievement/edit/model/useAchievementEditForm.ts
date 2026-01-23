@@ -1,33 +1,30 @@
-import { useEffect, useState } from "react";
-import type { Achievement, AchievementPlace } from "@/entities/achievement";
-import { useEditAchievement } from "@/entities/achievement";
-import type { AchievementFormValues } from "../../_shared/model/types";
-import type { Role } from "@/shared/types/enums";
+import { useEffect, useState } from 'react';
+import type { Achievement, AchievementPlace } from '@/entities/achievement';
+import { useEditAchievement } from '@/entities/achievement';
+import type { AchievementFormValues } from '../../_shared/model/types';
+import type { Role } from '@/shared/types/enums';
 
-export function useAchievementEditForm(params: {
-  achievement: Achievement;
-  onDone?: () => void;
-}) {
+export function useAchievementEditForm(params: { achievement: Achievement; onDone?: () => void }) {
   const editMutation = useEditAchievement();
 
   const [values, setValues] = useState<AchievementFormValues>({
     hackathonId: params.achievement.hackathonId,
-    role: "",
-    place: "",
+    role: '',
+    place: '',
   });
 
   useEffect(() => {
     setValues({
       hackathonId: params.achievement.hackathonId,
-      role: (params.achievement.role as Role) ?? "",
-      place: (params.achievement.place as AchievementPlace) ?? "",
+      role: (params.achievement.role as Role) ?? '',
+      place: (params.achievement.place as AchievementPlace) ?? '',
     });
   }, [params.achievement]);
 
   const setField = <K extends keyof AchievementFormValues>(
     field: K,
     value: AchievementFormValues[K],
-  ) => setValues((p) => ({ ...p, [field]: value }));
+  ) => setValues(p => ({ ...p, [field]: value }));
 
   const canSubmit = !!values.role && !!values.place;
 

@@ -1,21 +1,21 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { useAuthUser, useEditUserMainInfo } from "@/entities/user";
-import { MAX_BIO } from "./types";
-import { postEvent } from "@tma.js/sdk-react";
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useAuthUser, useEditUserMainInfo } from '@/entities/user';
+import { MAX_BIO } from './types';
+import { postEvent } from '@tma.js/sdk-react';
 
 export function useProfileBioEditor() {
   const { data: user } = useAuthUser();
   const edit = useEditUserMainInfo();
 
-  const [bio, setBio] = useState("");
+  const [bio, setBio] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const lastSavedRef = useRef("");
+  const lastSavedRef = useRef('');
   const initializedRef = useRef(false);
 
   useEffect(() => {
     if (!user) return;
-    const initial = user.bio ?? "";
+    const initial = user.bio ?? '';
     setBio(initial);
     setError(null);
     lastSavedRef.current = initial;
@@ -29,12 +29,12 @@ export function useProfileBioEditor() {
     if (next.length > MAX_BIO) {
       setError(`Описание должно быть не больше ${MAX_BIO} символов`);
       try {
-        postEvent("web_app_trigger_haptic_feedback", {
-          type: "impact",
-          impact_style: "light",
+        postEvent('web_app_trigger_haptic_feedback', {
+          type: 'impact',
+          impact_style: 'light',
         });
       } catch (error) {
-        console.debug("Haptic feedback not available", error);
+        console.debug('Haptic feedback not available', error);
       }
     } else setError(null);
   };
@@ -48,10 +48,7 @@ export function useProfileBioEditor() {
     if (bio === lastSaved) return;
 
     const t = window.setTimeout(() => {
-      edit.mutate(
-        { bio: bio },
-        { onSuccess: () => (lastSavedRef.current = bio) }
-      );
+      edit.mutate({ bio: bio }, { onSuccess: () => (lastSavedRef.current = bio) });
     }, 600);
 
     return () => window.clearTimeout(t);

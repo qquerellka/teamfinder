@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useDeleteTeam } from "@/entities/team";
+import { useState } from 'react';
+import { useDeleteTeam } from '@/entities/team';
 
 export function useDeleteTeamAction(params: {
   hackathonId: number;

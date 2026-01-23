@@ -1,5 +1,5 @@
-import { Role } from "@/shared/types/enums";
-type VacancyStatus = "open" | "closed";
+import { Role } from '@/shared/types/enums';
+type VacancyStatus = 'open' | 'closed';
 
 export interface Vacancy {
   id: number;

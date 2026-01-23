@@ -1,4 +1,4 @@
-import { HackathonMode, HackathonStatus } from "@/shared/types/enums";
+import { HackathonMode, HackathonStatus } from '@/shared/types/enums';
 
 export interface Hackathon {
   id: number;

@@ -1,1 +1,1 @@
-export { useRemoveTeamMember } from "./model/useRemoveTeamMember";
+export { useRemoveTeamMember } from './model/useRemoveTeamMember';

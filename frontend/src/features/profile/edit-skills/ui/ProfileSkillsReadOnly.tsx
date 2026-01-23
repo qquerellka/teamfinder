@@ -1,13 +1,13 @@
-import { useMemo } from "react";
-import type { MultiselectProps } from "@telegram-apps/telegram-ui";
+import { useMemo } from 'react';
+import type { MultiselectProps } from '@telegram-apps/telegram-ui';
 
-import { useSkills, type Skill } from "@/entities/skill";
-import { ProfileSkillsEditorView } from "./ProfileSkillsEditorView";
+import { useSkills, type Skill } from '@/entities/skill';
+import { ProfileSkillsEditorView } from './ProfileSkillsEditorView';
 
-type Option = MultiselectProps["options"][number];
+type Option = MultiselectProps['options'][number];
 
 const toOptions = (skills: Skill[]): Option[] =>
-  skills.map((s) => ({ value: s.slug, label: s.name }));
+  skills.map(s => ({ value: s.slug, label: s.name }));
 
 export const ProfileSkillsReadonly = ({ skills }: { skills: Skill[] }) => {
   const { data: allSkills = [], isLoading } = useSkills();
@@ -26,14 +26,11 @@ export const ProfileSkillsReadonly = ({ skills }: { skills: Skill[] }) => {
     return Array.from(map.values());
   }, [baseOptions, selectedFallback]);
 
-  const selectedSet = useMemo(
-    () => new Set((skills ?? []).map((s) => s.slug)),
-    [skills]
-  );
+  const selectedSet = useMemo(() => new Set((skills ?? []).map(s => s.slug)), [skills]);
 
   const value = useMemo(
-    () => options.filter((o) => selectedSet.has(String(o.value))),
-    [options, selectedSet]
+    () => options.filter(o => selectedSet.has(String(o.value))),
+    [options, selectedSet],
   );
 
   return (

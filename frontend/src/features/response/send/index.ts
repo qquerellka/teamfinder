@@ -1,1 +1,1 @@
-export { useSendResponseAction } from './model/useSendResponseAction'
+export { useSendResponseAction } from './model/useSendResponseAction';

@@ -1,9 +1,9 @@
-import type { FC, ChangeEvent } from "react";
-import { Button, Input, Select, Textarea } from "@telegram-apps/telegram-ui";
-import styled from "styled-components";
+import type { FC, ChangeEvent } from 'react';
+import { Button, Input, Select, Textarea } from '@telegram-apps/telegram-ui';
+import styled from 'styled-components';
 
-import { roleOptions, type Role } from "@/shared/types/enums";
-import { InputSection } from "@/shared/ui";
+import { roleOptions, type Role } from '@/shared/types/enums';
+import { InputSection } from '@/shared/ui';
 
 type BaseProps = {
   hackathonName: string;
@@ -20,20 +20,20 @@ type BaseProps = {
 };
 
 type CreateProps = BaseProps & {
-  mode: "create";
-  role: Role | "";
-  onRoleChange: (role: Role | "") => void;
+  mode: 'create';
+  role: Role | '';
+  onRoleChange: (role: Role | '') => void;
 };
 
 type EditProps = BaseProps & {
-  mode: "edit";
+  mode: 'edit';
 };
 
 type Props = CreateProps | EditProps;
 
-const parseRole = (raw: string): Role | "" => (raw ? (raw as Role) : "");
+const parseRole = (raw: string): Role | '' => (raw ? (raw as Role) : '');
 
-export const TeamFormView: FC<Props> = (props) => {
+export const TeamFormView: FC<Props> = props => {
   const {
     hackathonName,
     name,
@@ -48,7 +48,7 @@ export const TeamFormView: FC<Props> = (props) => {
   } = props;
 
   const handleRole = (e: ChangeEvent<HTMLSelectElement>) => {
-    if (props.mode !== "create") return;
+    if (props.mode !== 'create') return;
     props.onRoleChange(parseRole(e.target.value));
   };
 
@@ -60,23 +60,20 @@ export const TeamFormView: FC<Props> = (props) => {
         </InputSection>
 
         <InputSection header="Название команды">
-          <Input value={name} onChange={(e) => onNameChange(e.target.value)} />
+          <Input value={name} onChange={e => onNameChange(e.target.value)} />
         </InputSection>
 
         <InputSection header="Описание команды">
-          <Textarea
-            value={description}
-            onChange={(e) => onDescriptionChange(e.target.value)}
-          />
+          <Textarea value={description} onChange={e => onDescriptionChange(e.target.value)} />
         </InputSection>
 
-        {props.mode === "create" && (
+        {props.mode === 'create' && (
           <InputSection header="Ваша роль">
             <Select value={props.role} onChange={handleRole}>
               <option value="" disabled>
                 Выберите роль
               </option>
-              {roleOptions.map((opt) => (
+              {roleOptions.map(opt => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
@@ -92,12 +89,7 @@ export const TeamFormView: FC<Props> = (props) => {
         </SButton>
 
         {onCancel && (
-          <SButton
-            mode="bezeled"
-            stretched
-            onClick={onCancel}
-            disabled={loading}
-          >
+          <SButton mode="bezeled" stretched onClick={onCancel} disabled={loading}>
             Отмена
           </SButton>
         )}

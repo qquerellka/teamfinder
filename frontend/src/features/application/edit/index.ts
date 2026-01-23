@@ -1,1 +1,1 @@
-export { EditApplicationForm } from "./ui/EditApplicationForm";
+export { EditApplicationForm } from './ui/EditApplicationForm';

@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { queryKeys } from "@/shared/api/queryKeys";
+import { queryKeys } from '@/shared/api/queryKeys';
 import {
   getHackathonTeams,
   getMyTeams,
@@ -9,16 +9,9 @@ import {
   createTeam,
   editTeam,
   deleteTeam,
-} from "./teams";
-import {
-  Team,
-  TeamsResponse,
-  CreateTeam,
-  EditTeam,
-  TeamWithMembers,
-  MyTeam,
-} from "../model/types";
-import { useAppQuery } from "@/shared/api/useAppQuery";
+} from './teams';
+import { Team, TeamsResponse, CreateTeam, EditTeam, TeamWithMembers, MyTeam } from '../model/types';
+import { useAppQuery } from '@/shared/api/useAppQuery';
 
 const teamKeys = queryKeys.teams;
 
@@ -58,8 +51,8 @@ export function useCreateTeam(hackathonId: number) {
   const queryClient = useQueryClient();
 
   return useMutation<Team, Error, CreateTeam>({
-    mutationFn: (payload) => createTeam(payload, hackathonId),
-    onSuccess: (data) => {
+    mutationFn: payload => createTeam(payload, hackathonId),
+    onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: teamKeys.byHackathon(hackathonId),
       });
@@ -86,7 +79,7 @@ export function useEditTeam() {
 
   return useMutation<Team, Error, EditTeamVariables>({
     mutationFn: ({ id, payload }) => editTeam(id, payload),
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: teamKeys.byId(data.id),
       });

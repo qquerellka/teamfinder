@@ -1,7 +1,7 @@
-import { FC, ReactNode } from "react";
-import styled from "styled-components";
-import { SText } from "./SText";
-import { List } from "@telegram-apps/telegram-ui";
+import { FC, ReactNode } from 'react';
+import styled from 'styled-components';
+import { SText } from './SText';
+import { List } from '@telegram-apps/telegram-ui';
 
 interface InpurSectionProps {
   children: ReactNode;

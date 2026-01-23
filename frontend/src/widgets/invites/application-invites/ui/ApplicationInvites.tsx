@@ -1,13 +1,13 @@
-import { FC, useMemo } from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { FC, useMemo } from 'react';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
-import { useApplicationInvites } from "@/entities/invite";
-import type { MegaInvite } from "@/entities/invite";
-import { InviteCardView } from "@/entities/invite";
-import { InviteRespondButtons } from "@/features/invite/respond";
-import { getTeamPath } from "@/shared/routing/paths";
-import { SText } from "@/shared/ui";
+import { useApplicationInvites } from '@/entities/invite';
+import type { MegaInvite } from '@/entities/invite';
+import { InviteCardView } from '@/entities/invite';
+import { InviteRespondButtons } from '@/features/invite/respond';
+import { getTeamPath } from '@/shared/routing/paths';
+import { SText } from '@/shared/ui';
 
 interface ApplicationInvitesProps {
   appId: number;
@@ -19,10 +19,7 @@ export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
 
   const invites: MegaInvite[] = data ?? [];
 
-  const pending = useMemo(
-    () => invites.filter((i) => i.status === "pending"),
-    [invites]
-  );
+  const pending = useMemo(() => invites.filter(i => i.status === 'pending'), [invites]);
 
   if (pending.length === 0) {
     return (
@@ -34,9 +31,9 @@ export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
 
   return (
     <Wrapper>
-      <SText style={{ marginBottom: "1rem" }}>Приглашения в команду</SText>
+      <SText style={{ marginBottom: '1rem' }}>Приглашения в команду</SText>
 
-      {pending.map((i) => (
+      {pending.map(i => (
         <InviteCardView
           key={i.id}
           teamName={i.teamName}
@@ -45,8 +42,8 @@ export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
           actions={
             <InviteRespondButtons
               inviteId={i.id}
-              onAnswered={(status) => {
-                if (status === "accepted") {
+              onAnswered={status => {
+                if (status === 'accepted') {
                   navigate(getTeamPath(i.teamId));
                 }
               }}

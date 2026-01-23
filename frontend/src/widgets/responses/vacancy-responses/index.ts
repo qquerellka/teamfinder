@@ -1,1 +1,1 @@
-export { VacancyResponses } from './ui/VacancyResponses'
+export { VacancyResponses } from './ui/VacancyResponses';

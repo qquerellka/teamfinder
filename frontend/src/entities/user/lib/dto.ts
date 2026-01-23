@@ -1,9 +1,9 @@
-import { Skill, SkillDTO } from "@/entities/skill";
-import { User, UserDTO, UserEdit, UserEditDTO } from "../model/types";
-import { achievementsToCamelCase } from "@/entities/achievement/lib/dto";
+import { Skill, SkillDTO } from '@/entities/skill';
+import { User, UserDTO, UserEdit, UserEditDTO } from '../model/types';
+import { achievementsToCamelCase } from '@/entities/achievement/lib/dto';
 
 export function skillsToCamelCase(skills: SkillDTO[]): Skill[] {
-  return skills.map((s) => ({
+  return skills.map(s => ({
     id: s.id,
     slug: s.slug,
     name: s.name,

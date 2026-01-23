@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
-import { useLaunchParams } from "@tma.js/sdk-react";
-import { joinTeamMe } from "@/entities/team";
-import { Role } from "@/shared/types/enums";
-import { useAuth } from "@/features/auth";
+import { useEffect, useRef } from 'react';
+import { useLaunchParams } from '@tma.js/sdk-react';
+import { joinTeamMe } from '@/entities/team';
+import { Role } from '@/shared/types/enums';
+import { useAuth } from '@/features/auth';
 
 export const StartParamJoinHandler = () => {
   const lp = useLaunchParams();
@@ -15,20 +15,20 @@ export const StartParamJoinHandler = () => {
     if (isLoading) return;
     if (!accessToken) return;
 
-    if (!startParam?.startsWith("join_team_")) return;
+    if (!startParam?.startsWith('join_team_')) return;
 
-    const parts = startParam.split("_");
+    const parts = startParam.split('_');
     const teamId = Number(parts[2]);
     if (!Number.isFinite(teamId)) return;
 
     const run = async () => {
       try {
-        await joinTeamMe(teamId, "Fullstack" as Role);
+        await joinTeamMe(teamId, 'Fullstack' as Role);
         hasJoinedRef.current = true;
-        console.log("[StartParamJoinHandler] joined team", teamId);
+        console.log('[StartParamJoinHandler] joined team', teamId);
         // тут можно сделать refetch команды / навигацию
       } catch (e) {
-        console.error("[StartParamJoinHandler] join failed", e);
+        console.error('[StartParamJoinHandler] join failed', e);
       }
     };
 

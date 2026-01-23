@@ -1,9 +1,9 @@
-const KEY = "tf:initDataRaw";
+const KEY = 'tf:initDataRaw';
 
 let cachedInitDataRaw: string | undefined;
 
 export function setInitDataRaw(raw?: string) {
-  if (typeof raw === "string" && raw.length > 0) {
+  if (typeof raw === 'string' && raw.length > 0) {
     cachedInitDataRaw = raw;
     try {
       sessionStorage.setItem(KEY, raw);

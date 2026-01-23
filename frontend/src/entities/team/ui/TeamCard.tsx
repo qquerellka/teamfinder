@@ -1,6 +1,6 @@
-import { SIcon, SText, TeamLoad } from "@/shared/ui";
-import { FC } from "react";
-import styled from "styled-components";
+import { SIcon, SText, TeamLoad } from '@/shared/ui';
+import { FC } from 'react';
+import styled from 'styled-components';
 
 interface TeamCardProps {
   teamName: string;
@@ -26,9 +26,9 @@ export const TeamCard: FC<TeamCardProps> = ({
       <Row>
         <Name>
           <SText>{teamName}</SText>
-          {isCaptain && <SIcon name={"captain"} color={"#F3BD28"}></SIcon>}
+          {isCaptain && <SIcon name={'captain'} color={'#F3BD28'}></SIcon>}
         </Name>
-        <SIcon onClick={onNavigate} name={"arrow"} />
+        <SIcon onClick={onNavigate} name={'arrow'} />
       </Row>
       {invitesCount > 0 ? (
         <>
@@ -37,19 +37,13 @@ export const TeamCard: FC<TeamCardProps> = ({
           </Row>
           <Row>
             <InvitesBadge count={invitesCount} />
-            <TeamLoad
-              teamMembersCount={teamMembersCount}
-              teamMembersLimit={teamMembersLimit}
-            />
+            <TeamLoad teamMembersCount={teamMembersCount} teamMembersLimit={teamMembersLimit} />
           </Row>
         </>
       ) : (
         <Row>
           <SText>{hackathonName}</SText>
-          <TeamLoad
-            teamMembersCount={teamMembersCount}
-            teamMembersLimit={teamMembersLimit}
-          />
+          <TeamLoad teamMembersCount={teamMembersCount} teamMembersLimit={teamMembersLimit} />
         </Row>
       )}
     </Wrapper>

@@ -1,9 +1,9 @@
-import { useTeam } from "@/entities/team";
-import { Page } from "@/shared/ui";
-import { MyHackathonTeam } from "@/widgets/hackathon/my-team";
-import { useParams } from "react-router-dom";
-import NotFound from "../not-found/NotFound";
-import { useAuthUser } from "@/entities/user";
+import { useTeam } from '@/entities/team';
+import { Page } from '@/shared/ui';
+import { MyHackathonTeam } from '@/widgets/hackathon/my-team';
+import { useParams } from 'react-router-dom';
+import NotFound from '../not-found/NotFound';
+import { useAuthUser } from '@/entities/user';
 
 export const TeamPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +14,7 @@ export const TeamPage = () => {
     return <NotFound />;
   }
 
-  if (team.members.filter((m) => m.user.id === user.id).length > 0) {
+  if (team.members.filter(m => m.user.id === user.id).length > 0) {
     return (
       <Page>
         <MyHackathonTeam
@@ -26,7 +26,7 @@ export const TeamPage = () => {
       </Page>
     );
   }
-  return <Page/> 
+  return <Page />;
 };
 
 export default TeamPage;

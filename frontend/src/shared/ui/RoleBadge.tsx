@@ -1,20 +1,20 @@
-import styled from "styled-components";
-import { Role } from "../types/enums";
-import { SText } from "./SText";
+import styled from 'styled-components';
+import { Role } from '../types/enums';
+import { SText } from './SText';
 
 const colorsForRoleBadge: Record<Role, string> = {
-  DevOps: "#CE8AFF",
-  GameDev: "#B16DFF",
-  MobileDev: "#8AB3FF",
-  Manager: "#8AE2FF",
-  DS: "#A9FF8A",
-  ML: "#FFF78A",
-  Fullstack: "#FF978A",
-  Backend: "#FF8A8B",
-  Frontend: "#FFC28A",
-  Designer: "#8F8AFF",
-  Analytics: "#8AFFC6",
-  QA: "#939BA7",
+  DevOps: '#CE8AFF',
+  GameDev: '#B16DFF',
+  MobileDev: '#8AB3FF',
+  Manager: '#8AE2FF',
+  DS: '#A9FF8A',
+  ML: '#FFF78A',
+  Fullstack: '#FF978A',
+  Backend: '#FF8A8B',
+  Frontend: '#FFC28A',
+  Designer: '#8F8AFF',
+  Analytics: '#8AFFC6',
+  QA: '#939BA7',
 };
 
 type RoleBadgeProps = {
@@ -46,7 +46,7 @@ const StyledRoleBadge = styled.div<{ $role?: Role | null }>`
   border-radius: 1rem;
 
   ${({ $role }) => {
-    const color = $role ? colorsForRoleBadge[$role] : "var(--tg-theme-accent-text-color)";
+    const color = $role ? colorsForRoleBadge[$role] : 'var(--tg-theme-accent-text-color)';
     return `
       color: ${color};
       border: 1px solid ${color};

@@ -1,1 +1,1 @@
-export { TeamEditPanel } from "./ui/TeamEditPanel";
+export { TeamEditPanel } from './ui/TeamEditPanel';

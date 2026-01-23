@@ -1,10 +1,10 @@
-import { FC, useState } from "react";
+import { FC, useState } from 'react';
 
-import { TeamWithMembers } from "@/entities/team";
+import { TeamWithMembers } from '@/entities/team';
 
-import { TeamCard } from "@/widgets/team/team-card";
-import { TeamEditPanel } from "@/widgets/team/team-edit-panel";
-import { useNavigate } from "react-router-dom";
+import { TeamCard } from '@/widgets/team/team-card';
+import { TeamEditPanel } from '@/widgets/team/team-edit-panel';
+import { useNavigate } from 'react-router-dom';
 
 interface MyHackathonTeamProps {
   hackathonId: number;
@@ -19,20 +19,8 @@ export const MyHackathonTeam: FC<MyHackathonTeamProps> = ({ team }) => {
   const exit = () => navigate(-1);
 
   if (isEditing && team) {
-    return (
-      <TeamEditPanel
-        team={team}
-        onClose={() => setIsEditing(false)}
-        onExit={exit}
-      />
-    );
+    return <TeamEditPanel team={team} onClose={() => setIsEditing(false)} onExit={exit} />;
   }
 
-  return (
-    <TeamCard
-      team={team}
-      onEditClick={() => setIsEditing(true)}
-      onExit={exit}
-    />
-  );
+  return <TeamCard team={team} onEditClick={() => setIsEditing(true)} onExit={exit} />;
 };

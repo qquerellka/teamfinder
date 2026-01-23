@@ -1,7 +1,7 @@
-import { useHackathonQuery } from "@/entities/hackathon";
-import { CreateTeamForm } from "@/features/team/create";
-import { Page } from "@/shared/ui";
-import { useNavigate, useParams } from "react-router-dom";
+import { useHackathonQuery } from '@/entities/hackathon';
+import { CreateTeamForm } from '@/features/team/create';
+import { Page } from '@/shared/ui';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const HackathonCreateTeamPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -9,10 +9,7 @@ export const HackathonCreateTeamPage = () => {
   const navigate = useNavigate();
   return (
     <Page>
-      <CreateTeamForm
-        hackathon={hackathon}
-        onDone={() => navigate('/teams')}
-      />
+      <CreateTeamForm hackathon={hackathon} onDone={() => navigate('/teams')} />
     </Page>
   );
 };

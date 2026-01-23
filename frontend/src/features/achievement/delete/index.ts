@@ -1,1 +1,1 @@
-export { useAchievementDelete } from "./model/useAchievementDelete";
+export { useAchievementDelete } from './model/useAchievementDelete';

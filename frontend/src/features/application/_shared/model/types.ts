@@ -1,7 +1,7 @@
-import type { Role } from "@/shared/types/enums";
+import type { Role } from '@/shared/types/enums';
 
 export type ApplicationFormValues = {
-  role: Role | "";
+  role: Role | '';
 };
 
 export type ApplicationFormField = keyof ApplicationFormValues; // "role"

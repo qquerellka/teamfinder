@@ -1,7 +1,7 @@
-import { getSkills } from "./skills";
-import { Skill } from "../model/types";
-import { queryKeys } from "@/shared/api/queryKeys";
-import { useAppQuery } from "@/shared/api/useAppQuery";
+import { getSkills } from './skills';
+import { Skill } from '../model/types';
+import { queryKeys } from '@/shared/api/queryKeys';
+import { useAppQuery } from '@/shared/api/useAppQuery';
 
 export function useSkills() {
   return useAppQuery<Skill[]>({

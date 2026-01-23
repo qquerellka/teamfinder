@@ -1,19 +1,9 @@
-import {
-  Component,
-  type ComponentType,
-  type PropsWithChildren,
-  type ReactNode,
-} from "react";
+import { Component, type ComponentType, type PropsWithChildren, type ReactNode } from 'react';
 
-type FallbackRender = (args: {
-  error: unknown;
-  resetErrorBoundary: () => void;
-}) => ReactNode;
+type FallbackRender = (args: { error: unknown; resetErrorBoundary: () => void }) => ReactNode;
 
 export interface ErrorBoundaryProps extends PropsWithChildren {
-  fallback?:
-    | ReactNode
-    | ComponentType<{ error: unknown; resetErrorBoundary?: () => void }>;
+  fallback?: ReactNode | ComponentType<{ error: unknown; resetErrorBoundary?: () => void }>;
   fallbackRender?: FallbackRender;
 
   // если поменялись resetKeys — сбрасываем ошибку (например, при смене роута)
@@ -45,14 +35,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: unknown) {
-    console.error("Uncaught error in ErrorBoundary:", error, info);
+    console.error('Uncaught error in ErrorBoundary:', error, info);
   }
 
   componentDidUpdate(prevProps: ErrorBoundaryProps) {
-    if (
-      this.state.error &&
-      !areResetKeysEqual(prevProps.resetKeys, this.props.resetKeys)
-    ) {
+    if (this.state.error && !areResetKeysEqual(prevProps.resetKeys, this.props.resetKeys)) {
       this.resetErrorBoundary();
     }
   }
@@ -72,17 +59,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       }
 
       if (Fallback) {
-        if (typeof Fallback === "function") {
+        if (typeof Fallback === 'function') {
           const FallbackComponent = Fallback as ComponentType<{
             error: unknown;
             resetErrorBoundary?: () => void;
           }>;
-          return (
-            <FallbackComponent
-              error={error}
-              resetErrorBoundary={this.resetErrorBoundary}
-            />
-          );
+          return <FallbackComponent error={error} resetErrorBoundary={this.resetErrorBoundary} />;
         }
         return Fallback;
       }

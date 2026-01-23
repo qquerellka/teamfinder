@@ -1,4 +1,4 @@
-import { useDeleteTeamMember } from "@/entities/teamMember";
+import { useDeleteTeamMember } from '@/entities/teamMember';
 
 export function useRemoveTeamMember(params: {
   teamId: number;

@@ -1,15 +1,13 @@
-import type { FC } from "react";
-import styled from "styled-components";
-import { Spinner } from "@telegram-apps/telegram-ui";
+import type { FC } from 'react';
+import styled from 'styled-components';
+import { Spinner } from '@telegram-apps/telegram-ui';
 
 type LoaderPageProps = {
   text?: string;
   fullHeight?: boolean;
 };
 
-export const LoaderPage: FC<LoaderPageProps> = ({
-  fullHeight = true,
-}) => {
+export const LoaderPage: FC<LoaderPageProps> = ({ fullHeight = true }) => {
   return (
     <Root $fullHeight={fullHeight}>
       <Spinner size="l" />
@@ -18,7 +16,7 @@ export const LoaderPage: FC<LoaderPageProps> = ({
 };
 
 const Root = styled.div<{ $fullHeight: boolean }>`
-  min-height: ${({ $fullHeight }) => ($fullHeight ? "60vh" : "auto")};
+  min-height: ${({ $fullHeight }) => ($fullHeight ? '60vh' : 'auto')};
   width: 100%;
   display: grid;
   place-items: center;

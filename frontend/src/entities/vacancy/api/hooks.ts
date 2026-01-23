@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { queryKeys } from "@/shared/api/queryKeys";
+import { queryKeys } from '@/shared/api/queryKeys';
 import {
   teamVacancies,
   createVacancy,
@@ -9,9 +9,9 @@ import {
   editVacancy,
   deleteVacancy,
   hackathonVacancies,
-} from "./vacancies";
-import type { Vacancy, EditVacancy, CreateVacancy } from "../model/types";
-import { useAppQuery } from "@/shared/api/useAppQuery";
+} from './vacancies';
+import type { Vacancy, EditVacancy, CreateVacancy } from '../model/types';
+import { useAppQuery } from '@/shared/api/useAppQuery';
 
 const vacancyKeys = queryKeys.vacancies;
 
@@ -52,7 +52,7 @@ export function useCreateVacancy(teamId: number) {
 
   return useMutation<Vacancy, Error, CreateVacancy>({
     mutationFn: (payload: CreateVacancy) => createVacancy(teamId, payload),
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: vacancyKeys.byTeam(teamId),
       });
@@ -78,7 +78,7 @@ export function useEditVacancy() {
 
   return useMutation<Vacancy, Error, EditVacancyVariables>({
     mutationFn: ({ id, payload }) => editVacancy(payload, id),
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: vacancyKeys.byId(data.id),
       });

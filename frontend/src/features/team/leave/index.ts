@@ -1,1 +1,1 @@
-export { useLeaveTeamAction } from "./model/useLeaveTeamAction";
+export { useLeaveTeamAction } from './model/useLeaveTeamAction';

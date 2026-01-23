@@ -1,4 +1,4 @@
-import { Role } from "@/shared/types/enums";
+import { Role } from '@/shared/types/enums';
 import {
   Application,
   ApplicationCreate,
@@ -6,14 +6,12 @@ import {
   ApplicationDTO,
   ApplicationEdit,
   ApplicationEditDTO,
-} from "../model/types";
+} from '../model/types';
 
-const parseDate = (value: string): Date => new Date(value.replace(" ", "T"));
+const parseDate = (value: string): Date => new Date(value.replace(' ', 'T'));
 
-export function applicationsToCamelCase(
-  applications: ApplicationDTO[]
-): Application[] {
-  return applications.map((a) => ({
+export function applicationsToCamelCase(applications: ApplicationDTO[]): Application[] {
+  return applications.map(a => ({
     id: a.id,
     hackathonId: a.hackathon_id,
     userId: a.user_id,
@@ -31,18 +29,13 @@ export function applicationsToCamelCase(
   }));
 }
 
-export function applicationCreateToDTO(
-  payload: ApplicationCreate
-): ApplicationCreateDTO {
+export function applicationCreateToDTO(payload: ApplicationCreate): ApplicationCreateDTO {
   return {
     role: payload.role,
   };
 }
-export function applicationEditToDTO(
-  payload: ApplicationEdit
-): ApplicationEditDTO {
+export function applicationEditToDTO(payload: ApplicationEdit): ApplicationEditDTO {
   return {
     role: payload.role,
   };
 }
-

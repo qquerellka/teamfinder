@@ -1,22 +1,22 @@
-import styled from "styled-components";
-import { Button, Input, Select } from "@telegram-apps/telegram-ui";
-import type { FC, ChangeEvent } from "react";
+import styled from 'styled-components';
+import { Button, Input, Select } from '@telegram-apps/telegram-ui';
+import type { FC, ChangeEvent } from 'react';
 
-import { roleOptions, type Role } from "@/shared/types/enums";
-import { InputSection } from "@/shared/ui";
+import { roleOptions, type Role } from '@/shared/types/enums';
+import { InputSection } from '@/shared/ui';
 
 interface ApplicationFormViewProps {
   hackathonName: string;
-  role: Role | "";
+  role: Role | '';
   submitLabel: string;
   loading?: boolean;
   canSubmit: boolean;
-  onRoleChange: (role: Role | "") => void;
+  onRoleChange: (role: Role | '') => void;
   onSubmit: () => void;
   onCancel?: () => void;
-};
+}
 
-const parseRole = (raw: string): Role | "" => (raw ? (raw as Role) : "");
+const parseRole = (raw: string): Role | '' => (raw ? (raw as Role) : '');
 
 export const ApplicationFormView: FC<ApplicationFormViewProps> = ({
   hackathonName,
@@ -39,16 +39,16 @@ export const ApplicationFormView: FC<ApplicationFormViewProps> = ({
 
   return (
     <>
-      <InputSection header={"Хакатон"}>
+      <InputSection header={'Хакатон'}>
         <Input type="text" value={hackathonName} disabled />
       </InputSection>
 
-      <InputSection header={"Роль"}>
+      <InputSection header={'Роль'}>
         <Select value={role} onChange={handleSelect}>
           <option value="" disabled>
             Выберите роль
           </option>
-          {roleOptions.map((opt) => (
+          {roleOptions.map(opt => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>

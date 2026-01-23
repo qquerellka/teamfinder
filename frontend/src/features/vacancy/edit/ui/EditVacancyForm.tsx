@@ -1,7 +1,7 @@
-import type { FC } from "react";
-import { Vacancy } from "@/entities/vacancy";
-import { useEditVacancyForm } from "../model/useEditVacancyForm";
-import { VacancyFormView } from "../../_shared/ui/VacancyFormView";
+import type { FC } from 'react';
+import { Vacancy } from '@/entities/vacancy';
+import { useEditVacancyForm } from '../model/useEditVacancyForm';
+import { VacancyFormView } from '../../_shared/ui/VacancyFormView';
 
 export const EditVacancyForm: FC<{
   vacancy: Vacancy;

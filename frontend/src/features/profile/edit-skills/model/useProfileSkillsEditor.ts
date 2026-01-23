@@ -1,20 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { MultiselectProps } from "@telegram-apps/telegram-ui";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { MultiselectProps } from '@telegram-apps/telegram-ui';
 
-import { useAuthUser, useEditUserMainInfo } from "@/entities/user";
-import { useSkills, type Skill } from "@/entities/skill";
-import { MAX_SKILLS } from "./types";
-import { postEvent } from "@tma.js/sdk-react";
+import { useAuthUser, useEditUserMainInfo } from '@/entities/user';
+import { useSkills, type Skill } from '@/entities/skill';
+import { MAX_SKILLS } from './types';
+import { postEvent } from '@tma.js/sdk-react';
 
-type Option = MultiselectProps["options"][number];
+type Option = MultiselectProps['options'][number];
 
 const toOptions = (skills: Skill[]): Option[] =>
-  skills.map((s) => ({ value: s.slug, label: s.name }));
+  skills.map(s => ({ value: s.slug, label: s.name }));
 
 const sameSet = (a: string[], b: string[]) => {
   if (a.length !== b.length) return false;
   const sb = new Set(b);
-  return a.every((x) => sb.has(x));
+  return a.every(x => sb.has(x));
 };
 
 export function useProfileSkillsEditor() {
@@ -29,7 +29,7 @@ export function useProfileSkillsEditor() {
 
   useEffect(() => {
     if (!user) return;
-    const fromUser = user.skills.map((s) => s.slug);
+    const fromUser = user.skills.map(s => s.slug);
 
     setSelectedSlugs(fromUser);
     lastSavedRef.current = fromUser;
@@ -40,25 +40,25 @@ export function useProfileSkillsEditor() {
   const options = useMemo(() => toOptions(skills), [skills]);
 
   const value = useMemo(
-    () => options.filter((o) => selectedSlugs.includes(String(o.value))),
-    [options, selectedSlugs]
+    () => options.filter(o => selectedSlugs.includes(String(o.value))),
+    [options, selectedSlugs],
   );
 
   const onChange = (selected: Option[]) => {
     if (selected.length > MAX_SKILLS) {
       try {
-        postEvent("web_app_trigger_haptic_feedback", {
-          type: "impact",
-          impact_style: "light",
+        postEvent('web_app_trigger_haptic_feedback', {
+          type: 'impact',
+          impact_style: 'light',
         });
       } catch (error) {
-        console.debug("Haptic feedback not available", error);
+        console.debug('Haptic feedback not available', error);
       }
       setError(`Нельзя выбрать больше ${MAX_SKILLS} навыков`);
       return;
     }
 
-    const slugs = selected.map((o) => String(o.value));
+    const slugs = selected.map(o => String(o.value));
     if (sameSet(slugs, lastSavedRef.current)) return;
 
     setSelectedSlugs(slugs);

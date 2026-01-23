@@ -1,1 +1,1 @@
-export { useCopyTeamInviteLink } from "./model/useCopyTeamInviteLink";
+export { useCopyTeamInviteLink } from './model/useCopyTeamInviteLink';

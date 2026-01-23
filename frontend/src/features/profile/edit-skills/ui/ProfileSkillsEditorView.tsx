@@ -1,8 +1,8 @@
-import type { FC } from "react";
-import { Multiselect, type MultiselectProps } from "@telegram-apps/telegram-ui";
-import { ErrorText, InputSection } from "@/shared/ui";
+import type { FC } from 'react';
+import { Multiselect, type MultiselectProps } from '@telegram-apps/telegram-ui';
+import { ErrorText, InputSection } from '@/shared/ui';
 
-type Option = MultiselectProps["options"][number];
+type Option = MultiselectProps['options'][number];
 
 interface ProfileSkillsEditorViewProps {
   options: Option[];
@@ -25,16 +25,14 @@ export const ProfileSkillsEditorView: FC<ProfileSkillsEditorViewProps> = ({
     <>
       <InputSection header="Навыки">
         <Multiselect
-          status={error ? "error" : "default"}
+          status={error ? 'error' : 'default'}
           options={options}
           value={value}
           onChange={onChange}
           selectedBehavior="hide"
           closeDropdownAfterSelect={false}
           creatable={false}
-          placeholder={
-            isLoading ? "Загружаем навыки..." : "Выберите до 10 навыков"
-          }
+          placeholder={isLoading ? 'Загружаем навыки...' : 'Выберите до 10 навыков'}
           disabled={disabled}
         />
       </InputSection>

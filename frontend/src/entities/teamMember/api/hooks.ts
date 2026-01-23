@@ -1,15 +1,15 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { queryKeys } from "@/shared/api/queryKeys";
+import { queryKeys } from '@/shared/api/queryKeys';
 import {
   getTeamMembers,
   addTeamMember,
   editTeamMember,
   deleteTeamMember,
   leaveTeam,
-} from "./teamMembers";
-import type { TeamMember, AddTeamMember, EditTeamMember } from "../model/types";
-import { useAppQuery } from "@/shared/api/useAppQuery";
+} from './teamMembers';
+import type { TeamMember, AddTeamMember, EditTeamMember } from '../model/types';
+import { useAppQuery } from '@/shared/api/useAppQuery';
 
 const teamKeys = queryKeys.teams;
 
@@ -25,7 +25,7 @@ export function useAddTeamMember(teamId: number) {
   const queryClient = useQueryClient();
 
   return useMutation<TeamMember, Error, AddTeamMember>({
-    mutationFn: (payload) => addTeamMember(teamId, payload),
+    mutationFn: payload => addTeamMember(teamId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: teamKeys.members(teamId),
@@ -45,7 +45,7 @@ export function useEditTeamMember(teamId: number) {
   const queryClient = useQueryClient();
 
   return useMutation<TeamMember, Error, EditTeamMember>({
-    mutationFn: (payload) => editTeamMember(teamId, payload),
+    mutationFn: payload => editTeamMember(teamId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: teamKeys.members(teamId),

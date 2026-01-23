@@ -1,14 +1,10 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { Skeleton } from "@telegram-apps/telegram-ui";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { Skeleton } from '@telegram-apps/telegram-ui';
 
-type ImageWithSkeletonProps = React.ImgHTMLAttributes<HTMLImageElement>
+type ImageWithSkeletonProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
-export const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
-  src,
-  alt,
-  ...rest
-}) => {
+export const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 

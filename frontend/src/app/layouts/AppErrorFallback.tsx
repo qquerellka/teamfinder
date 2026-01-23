@@ -1,6 +1,6 @@
-import { SText } from "@/shared/ui";
-import { Button, Placeholder } from "@telegram-apps/telegram-ui";
-import styled from "styled-components";
+import { SText } from '@/shared/ui';
+import { Button, Placeholder } from '@telegram-apps/telegram-ui';
+import styled from 'styled-components';
 
 type AppErrorFallbackProps = {
   error: unknown;
@@ -11,9 +11,9 @@ export function AppErrorFallback({ error, resetErrorBoundary }: AppErrorFallback
   const message =
     error instanceof Error
       ? error.message
-      : typeof error === "string"
-      ? error
-      : "Неизвестная ошибка";
+      : typeof error === 'string'
+        ? error
+        : 'Неизвестная ошибка';
 
   const handleReload = () => {
     window.location.reload();
@@ -30,12 +30,7 @@ export function AppErrorFallback({ error, resetErrorBoundary }: AppErrorFallback
         description="Попробуйте повторить. Если ошибка повторяется, перезапустите приложение."
       >
         <Buttons>
-          <Button
-            mode="bezeled"
-            size="m"
-            onClick={handleRetry}
-            disabled={!resetErrorBoundary}
-          >
+          <Button mode="bezeled" size="m" onClick={handleRetry} disabled={!resetErrorBoundary}>
             Повторить
           </Button>
 

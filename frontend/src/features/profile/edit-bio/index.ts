@@ -1,2 +1,2 @@
-export { ProfileBioEditor } from "./ui/ProfileBioEditor";
-export { ProfileBioEditorView } from "./ui/ProfileBioEditorView";
+export { ProfileBioEditor } from './ui/ProfileBioEditor';
+export { ProfileBioEditorView } from './ui/ProfileBioEditorView';

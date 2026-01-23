@@ -1,8 +1,8 @@
-import { FC, useMemo } from "react";
-import styled from "styled-components";
-import { RoleBadge, SText } from "@/shared/ui";
-import { Skill } from "@/entities/skill";
-import { Role } from "@/shared/types/enums";
+import { FC, useMemo } from 'react';
+import styled from 'styled-components';
+import { RoleBadge, SText } from '@/shared/ui';
+import { Skill } from '@/entities/skill';
+import { Role } from '@/shared/types/enums';
 
 interface ResponseCardViewProps {
   firstName: string;
@@ -23,7 +23,7 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
 }) => {
   const skillsString = useMemo(() => {
     const sskills = skills?.slice(0, 4) ?? [];
-    return sskills.join(", ");
+    return sskills.join(', ');
   }, [skills]);
 
   return (
@@ -37,7 +37,7 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
 
       <SecondRow>
         {/* <SText $fs={14} $fw={500}></SText> */}
-            <RoleBadge role={role} />
+        <RoleBadge role={role} />
         {/* <CountTeamMembers>
           <SIcon name="profile" />
           <SText $fs={14} $fw={500}>

@@ -1,18 +1,12 @@
-import { useParams } from "react-router-dom";
-import { useAuthUser, useUser } from "@/entities/user";
-import { ProfileBioEditor } from "@/features/profile/edit-bio";
-import {
-  ProfileSkillsEditor,
-  ProfileSkillsReadonly,
-} from "@/features/profile/edit-skills";
-import { ProfileHeader } from "@/widgets/profile/ProfileHeader";
-import {
-  AchievementsListHeader,
-  AchievementItem,
-} from "@/widgets/achievements";
-import styled from "styled-components";
-import { InputSection, NoItems, Page } from "@/shared/ui";
-import { Textarea } from "@telegram-apps/telegram-ui";
+import { useParams } from 'react-router-dom';
+import { useAuthUser, useUser } from '@/entities/user';
+import { ProfileBioEditor } from '@/features/profile/edit-bio';
+import { ProfileSkillsEditor, ProfileSkillsReadonly } from '@/features/profile/edit-skills';
+import { ProfileHeader } from '@/widgets/profile/ProfileHeader';
+import { AchievementsListHeader, AchievementItem } from '@/widgets/achievements';
+import styled from 'styled-components';
+import { InputSection, NoItems, Page } from '@/shared/ui';
+import { Textarea } from '@telegram-apps/telegram-ui';
 
 export const ProfilePage = () => {
   const { id } = useParams<{ id?: string }>();
@@ -38,23 +32,19 @@ export const ProfilePage = () => {
           ) : (
             <>
               <ProfileSkillsReadonly skills={user.skills ?? []} />
-              <ProfileBioReadonly bio={user.bio ?? ""} />
+              <ProfileBioReadonly bio={user.bio ?? ''} />
             </>
           )}
           <Achievements>
             <AchievementsListHeader showAdd={isOwner} />
             {user?.achievements?.length > 0 ? (
               <Wrapper>
-                {user?.achievements?.map((a) => (
-                  <AchievementItem
-                    key={a.id}
-                    canEdit={isOwner}
-                    achievement={a}
-                  />
+                {user?.achievements?.map(a => (
+                  <AchievementItem key={a.id} canEdit={isOwner} achievement={a} />
                 ))}
               </Wrapper>
             ) : (
-              <NoItems title={"Нет достижений"} />
+              <NoItems title={'Нет достижений'} />
             )}
           </Achievements>
         </SExtraInfo>

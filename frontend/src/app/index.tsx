@@ -1,15 +1,15 @@
-import "@telegram-apps/telegram-ui/dist/styles.css";
-import "./styles/index.css";
-import "./styles/reset.css";
+import '@telegram-apps/telegram-ui/dist/styles.css';
+import './styles/index.css';
+import './styles/reset.css';
 
-import ReactDOM from "react-dom/client";
-import { StrictMode } from "react";
-import { retrieveLaunchParams } from "@tma.js/sdk-react";
+import ReactDOM from 'react-dom/client';
+import { StrictMode } from 'react';
+import { retrieveLaunchParams } from '@tma.js/sdk-react';
 
-import { init } from "@/app/init";
-import { App } from "./App";
-import { EnvUnsupported } from "@/app/EnvUnsupported";
-import { setInitDataRaw } from "@/shared/initDataStore";
+import { init } from '@/app/init';
+import { App } from './App';
+import { EnvUnsupported } from '@/app/EnvUnsupported';
+import { setInitDataRaw } from '@/shared/initDataStore';
 
 function loadUmamiAnalytics() {
   // Подключаем только в production режиме
@@ -18,7 +18,7 @@ function loadUmamiAnalytics() {
     script.defer = true;
     script.src = 'https://cloud.umami.is/script.js';
     script.setAttribute('data-website-id', 'fd2a58b1-bd8f-4a06-8d93-7ff983757e42');
-    
+
     // Можно добавить дополнительные атрибуты для отладки
     if (import.meta.env.DEV) {
       console.log('Umami script would be loaded in production');
@@ -31,13 +31,13 @@ function loadUmamiAnalytics() {
   }
 }
 
-const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === "true";
+const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === 'true';
 
 if (import.meta.env.DEV || FORCE_BROWSER) {
-  await import("./mocks/mockEnv");
+  await import('./mocks/mockEnv');
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root")!);
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 // ---------- БРАУЗЕР (dev) ----------
 
@@ -53,7 +53,7 @@ async function bootstrapBrowser() {
   root.render(
     <StrictMode>
       <App />
-    </StrictMode>
+    </StrictMode>,
   );
 }
 
@@ -69,8 +69,8 @@ async function bootstrapTMA() {
   };
 
   const a =
-    new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") ||
-    new URLSearchParams(location.search).get("tgWebAppData");
+    new URLSearchParams(location.hash.slice(1)).get('tgWebAppData') ||
+    new URLSearchParams(location.search).get('tgWebAppData');
 
   // 2) Жёстко задаём тип initDataRaw как string | undefined
   const initDataRaw: string | undefined =
@@ -81,8 +81,7 @@ async function bootstrapTMA() {
 
   setInitDataRaw(initDataRaw);
 
-  const debug =
-    (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
+  const debug = (lp.tgWebAppStartParam || '').includes('debug') || import.meta.env.DEV;
 
   await init({
     debug,
@@ -94,7 +93,7 @@ async function bootstrapTMA() {
   root.render(
     <StrictMode>
       <App />
-    </StrictMode>
+    </StrictMode>,
   );
 }
 

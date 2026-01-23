@@ -1,4 +1,4 @@
-import { apiClient } from "@/shared/api/client";
+import { apiClient } from '@/shared/api/client';
 import {
   CreateTeam,
   EditTeam,
@@ -8,7 +8,7 @@ import {
   TeamDTO,
   TeamWithMembers,
   TeamWithMembersDTO,
-} from "../model/types";
+} from '../model/types';
 import {
   createTeamToDTO,
   editTeamToDTO,
@@ -16,8 +16,8 @@ import {
   teamsResponseToCamelCase,
   teamsToCamelCase,
   teamWithMembersToCamelCase,
-} from "../lib/dto";
-import { Role } from "@/shared/types/enums";
+} from '../lib/dto';
+import { Role } from '@/shared/types/enums';
 
 interface TeamsDTOResponse {
   offset: number;
@@ -38,19 +38,14 @@ interface MyTeamsDTOResponse {
 }
 
 export async function getHackathonTeams(id: number): Promise<TeamsResponse> {
-  const { data } = await apiClient.get<TeamsDTOResponse>(
-    `/hackathons/${id}/teams`
-  );
+  const { data } = await apiClient.get<TeamsDTOResponse>(`/hackathons/${id}/teams`);
   return teamsResponseToCamelCase(data);
 }
 
-export async function createTeam(
-  payload: CreateTeam,
-  hackId: number
-): Promise<Team> {
+export async function createTeam(payload: CreateTeam, hackId: number): Promise<Team> {
   const { data } = await apiClient.post<TeamDTO>(
     `/hackathons/${hackId}/teams`,
-    createTeamToDTO(payload)
+    createTeamToDTO(payload),
   );
   return teamsToCamelCase([data])[0];
 }
@@ -60,12 +55,8 @@ export async function getMyTeams(): Promise<MyTeam[]> {
   return myTeamsToCamelCase(data.items);
 }
 
-export async function getMyTeamOnHackathon(
-  hackId: number
-): Promise<TeamWithMembers | null> {
-  const { data } = await apiClient.get<TeamWithMembersDTO | null>(
-    `/hackathons/${hackId}/teams/me`
-  );
+export async function getMyTeamOnHackathon(hackId: number): Promise<TeamWithMembers | null> {
+  const { data } = await apiClient.get<TeamWithMembersDTO | null>(`/hackathons/${hackId}/teams/me`);
   if (data === null) {
     return null;
   }
@@ -78,10 +69,7 @@ export async function getTeam(id: number): Promise<TeamWithMembers> {
 }
 
 export async function editTeam(id: number, payload: EditTeam): Promise<Team> {
-  const { data } = await apiClient.patch<TeamDTO>(
-    `/teams/${id}`,
-    editTeamToDTO(payload)
-  );
+  const { data } = await apiClient.patch<TeamDTO>(`/teams/${id}`, editTeamToDTO(payload));
   return teamsToCamelCase([data])[0];
 }
 
@@ -90,9 +78,7 @@ export async function deleteTeam(id: number): Promise<void> {
 }
 
 export async function getTeamJoinLink(id: number): Promise<string> {
-  const { data } = await apiClient.get<{ url: string }>(
-    `/teams/${id}/join-link`
-  );
+  const { data } = await apiClient.get<{ url: string }>(`/teams/${id}/join-link`);
   return data.url;
 }
 

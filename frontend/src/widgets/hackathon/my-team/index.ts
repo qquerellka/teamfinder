@@ -1,1 +1,1 @@
-export { MyHackathonTeam } from "./ui/MyHackathonTeam";
+export { MyHackathonTeam } from './ui/MyHackathonTeam';

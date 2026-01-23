@@ -1,7 +1,7 @@
-import { TeamMember, TeamMemberDTO } from "@/entities/teamMember";
-import { Role } from "@/shared/types/enums";
+import { TeamMember, TeamMemberDTO } from '@/entities/teamMember';
+import { Role } from '@/shared/types/enums';
 
-export type TeamStatus = "forming" | "ready";
+export type TeamStatus = 'forming' | 'ready';
 
 export interface TeamDTO {
   id: number;

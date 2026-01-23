@@ -1,20 +1,20 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Achievement,
   AchievementCreate,
   AchievementsList,
   EditAchievementArgs,
-} from "../model/types";
+} from '../model/types';
 import {
   createAchievement,
   deleteAchievement,
   editAchievement,
   getAuthUserAchievements,
   getUserAchievementsByUserId,
-} from "./achievements";
-import { queryKeys } from "@/shared/api/queryKeys";
-import { useAppQuery } from "@/shared/api/useAppQuery";
-import { User } from "@/entities/user";
+} from './achievements';
+import { queryKeys } from '@/shared/api/queryKeys';
+import { useAppQuery } from '@/shared/api/useAppQuery';
+import { User } from '@/entities/user';
 
 const achievementKeys = queryKeys.achievements;
 const userKeys = queryKeys.user;
@@ -39,7 +39,7 @@ export function useCreateAchievement() {
   const queryClient = useQueryClient();
 
   return useMutation<Achievement, Error, AchievementCreate>({
-    mutationFn: (payload) => createAchievement(payload),
+    mutationFn: payload => createAchievement(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
       queryClient.invalidateQueries({ queryKey: userKeys.me });
@@ -71,8 +71,7 @@ export function useEditAchievement() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, patch }: EditAchievementArgs) =>
-      editAchievement(id, patch),
+    mutationFn: ({ id, patch }: EditAchievementArgs) => editAchievement(id, patch),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: achievementKeys.me });
       queryClient.invalidateQueries({ queryKey: userKeys.me });

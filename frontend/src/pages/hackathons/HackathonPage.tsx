@@ -1,27 +1,23 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { Button } from "@telegram-apps/telegram-ui";
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { Button } from '@telegram-apps/telegram-ui';
 
-import {
-  HackathonCard,
-  useHackathonQuery,
-  Hackathon,
-} from "@/entities/hackathon";
-import { useAuthUser } from "@/entities/user";
-import { useAuthUserApplicationsOnHackathon } from "@/entities/application";
+import { HackathonCard, useHackathonQuery, Hackathon } from '@/entities/hackathon';
+import { useAuthUser } from '@/entities/user';
+import { useAuthUserApplicationsOnHackathon } from '@/entities/application';
 
 import {
   getHackathonCreateTeamPath,
   getHackathonParticipationPath,
   getTeamPath,
   paths,
-} from "@/shared/routing/paths";
+} from '@/shared/routing/paths';
 
-import { normalizeUrl } from "@/shared/helpers/url";
-import { Page } from "@/shared/ui";
-import { ConfirmModal } from "@/shared/ui/ConfirmModal";
-import { useMyTeamOnHackathon } from "@/entities/team";
+import { normalizeUrl } from '@/shared/helpers/url';
+import { Page } from '@/shared/ui';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal';
+import { useMyTeamOnHackathon } from '@/entities/team';
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
@@ -43,15 +39,14 @@ const HackathonPage: React.FC = () => {
     if (wa?.openLink) {
       wa.openLink(url, { try_instant_view: true });
     } else {
-      window.open(url, "_blank", "noopener,noreferrer");
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
 
   const handleGoToApplications = () => {
     if (isUserLoading) return;
 
-    const hasSkills =
-      !!user && Array.isArray(user.skills) && user.skills.length > 0;
+    const hasSkills = !!user && Array.isArray(user.skills) && user.skills.length > 0;
 
     if (!hasSkills) {
       setIsSkillsModalOpen(true);
@@ -64,8 +59,7 @@ const HackathonPage: React.FC = () => {
   const handleGoToTeam = () => {
     if (isUserLoading) return;
 
-    const hasSkills =
-      !!user && Array.isArray(user.skills) && user.skills.length > 0;
+    const hasSkills = !!user && Array.isArray(user.skills) && user.skills.length > 0;
 
     if (!hasSkills) {
       setIsSkillsModalOpen(true);

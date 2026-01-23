@@ -1,8 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAuthUser, getUserById, editUserMainInfo } from "./users";
-import type { User, UserEdit } from "../model/types";
-import { queryKeys } from "@/shared/api/queryKeys";
-import { useAppQuery } from "@/shared/api/useAppQuery";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getAuthUser, getUserById, editUserMainInfo } from './users';
+import type { User, UserEdit } from '../model/types';
+import { queryKeys } from '@/shared/api/queryKeys';
+import { useAppQuery } from '@/shared/api/useAppQuery';
 
 export function useAuthUser() {
   return useAppQuery<User>({

@@ -1,1 +1,1 @@
-export { CreateVacancyForm } from "./ui/CreateVacancyForm";
+export { CreateVacancyForm } from './ui/CreateVacancyForm';

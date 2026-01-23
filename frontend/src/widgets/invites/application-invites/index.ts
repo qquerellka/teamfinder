@@ -1,1 +1,1 @@
-export { ApplicationInvites } from "./ui/ApplicationInvites";
+export { ApplicationInvites } from './ui/ApplicationInvites';

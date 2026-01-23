@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 export function useEditTeamForm(initial: { name: string; description: string }) {
   const [name, setName] = useState(initial.name);

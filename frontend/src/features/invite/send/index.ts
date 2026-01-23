@@ -1,1 +1,1 @@
-export { useSendInviteAction } from "./model/useSendInviteAction";
+export { useSendInviteAction } from './model/useSendInviteAction';

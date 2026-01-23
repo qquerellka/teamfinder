@@ -1,10 +1,10 @@
-import { apiClient } from "@/shared/api/client";
-import { AuthResponse } from "../model/types";
-import axios from "axios";
-import { resolveInitDataRaw } from "@/shared/resolveInitDataRaw";
-import { getTgUserId } from "../lib/getTgUserId";
+import { apiClient } from '@/shared/api/client';
+import { AuthResponse } from '../model/types';
+import axios from 'axios';
+import { resolveInitDataRaw } from '@/shared/resolveInitDataRaw';
+import { getTgUserId } from '../lib/getTgUserId';
 
-const AUTH_STORAGE_PREFIX = "tf:auth_token:";
+const AUTH_STORAGE_PREFIX = 'tf:auth_token:';
 
 function tokenKey(tgUserId: number) {
   return `${AUTH_STORAGE_PREFIX}${tgUserId}`;
@@ -32,22 +32,22 @@ function clearAuthStorage(tgUserId: number) {
   delete apiClient.defaults.headers.common.Authorization;
 }
 
-async function fetchProfile(): Promise<AuthResponse["profile"]> {
-  const { data } = await apiClient.get<AuthResponse["profile"]>("/users/me");
+async function fetchProfile(): Promise<AuthResponse['profile']> {
+  const { data } = await apiClient.get<AuthResponse['profile']>('/users/me');
   return data;
 }
 
 export async function authDev(): Promise<AuthResponse> {
   const body = {
     telegram_id: 0,
-    username: "teamfinder",
-    first_name: "Team",
-    last_name: "Finder",
+    username: 'teamfinder',
+    first_name: 'Team',
+    last_name: 'Finder',
     avatar_url:
-      "https://storage.yandexcloud.net/teamfinder-hackathons-images/hackathons/1/cover.jpg",
+      'https://storage.yandexcloud.net/teamfinder-hackathons-images/hackathons/1/cover.jpg',
   };
 
-  const response = await apiClient.post<AuthResponse>("/auth/dev-login", body);
+  const response = await apiClient.post<AuthResponse>('/auth/dev-login', body);
   const data = response.data;
 
   // dev-акк тоже кладём в отдельный ключ (tgUserId = 0)
@@ -58,12 +58,12 @@ export async function authDev(): Promise<AuthResponse> {
 
 export async function authTelegram(): Promise<AuthResponse> {
   const initDataRaw = resolveInitDataRaw();
-  if (!initDataRaw) throw new Error("No init_data for tgAuth");
+  if (!initDataRaw) throw new Error('No init_data for tgAuth');
 
   const tgUserId = getTgUserId(initDataRaw);
-  if (!tgUserId) throw new Error("Cannot parse tg user id from init_data");
+  if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
 
-  const { data } = await apiClient.post<AuthResponse>("/auth/telegram", {
+  const { data } = await apiClient.post<AuthResponse>('/auth/telegram', {
     init_data: initDataRaw,
   });
 
@@ -72,16 +72,15 @@ export async function authTelegram(): Promise<AuthResponse> {
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
-  const forceDevLogin =
-    import.meta.env.VITE_FORCE_DEV_LOGIN === "1" || import.meta.env.DEV;
+  const forceDevLogin = import.meta.env.VITE_FORCE_DEV_LOGIN === '1' || import.meta.env.DEV;
 
   if (forceDevLogin) return authDev();
 
   const initDataRaw = resolveInitDataRaw();
-  if (!initDataRaw) throw new Error("No init_data for tgAuth");
+  if (!initDataRaw) throw new Error('No init_data for tgAuth');
 
   const tgUserId = getTgUserId(initDataRaw);
-  if (!tgUserId) throw new Error("Cannot parse tg user id from init_data");
+  if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
 
   const token = restoreTokenFromStorage(tgUserId);
   if (token) {

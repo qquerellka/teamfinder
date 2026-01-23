@@ -1,10 +1,10 @@
-import { TeamWithMembers } from "@/entities/team";
-import { Vacancy } from "@/entities/vacancy";
-import { useDeleteVacancyForm } from "@/features/vacancy/delete/model/useDeleteVacancy";
-import { ConfirmModal, RoleBadge, SIcon, SText } from "@/shared/ui";
-import { Button } from "@telegram-apps/telegram-ui";
-import { FC } from "react";
-import styled from "styled-components";
+import { TeamWithMembers } from '@/entities/team';
+import { Vacancy } from '@/entities/vacancy';
+import { useDeleteVacancyForm } from '@/features/vacancy/delete/model/useDeleteVacancy';
+import { ConfirmModal, RoleBadge, SIcon, SText } from '@/shared/ui';
+import { Button } from '@telegram-apps/telegram-ui';
+import { FC } from 'react';
+import styled from 'styled-components';
 
 interface VacancyCardProps {
   team: TeamWithMembers;
@@ -13,12 +13,7 @@ interface VacancyCardProps {
   onDeleted?: () => void;
 }
 
-export const VacancyCard: FC<VacancyCardProps> = ({
-  team,
-  vacancy,
-  onDeleted,
-  onEditClick,
-}) => {
+export const VacancyCard: FC<VacancyCardProps> = ({ team, vacancy, onDeleted, onEditClick }) => {
   const {
     isOpen: isDeleteModalOpen,
     open: openDeleteModal,
@@ -35,7 +30,7 @@ export const VacancyCard: FC<VacancyCardProps> = ({
       <Wrapper>
         <Header>
           <SText $fs={16} $fw={600}>
-            {"Кого ищем?"}
+            {'Кого ищем?'}
           </SText>
           <Icons>
             <IconButton type="button" onClick={onEditClick}>
@@ -93,7 +88,7 @@ const Icons = styled.div`
   gap: 1rem;
 `;
 
-const IconButton = styled(Button).attrs({ mode: "plain", size: "s" })`
+const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
   padding: 0;
   min-width: auto;
 `;

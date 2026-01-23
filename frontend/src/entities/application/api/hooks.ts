@@ -1,5 +1,5 @@
-import { queryKeys } from "@/shared/api/queryKeys";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from '@/shared/api/queryKeys';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createHackathonApplication,
   deleteAuthUserApplication,
@@ -8,14 +8,14 @@ import {
   getAuthUserApplicationOnHackathon,
   getAuthUserApplications,
   getHackathonApplications,
-} from "./aplications";
+} from './aplications';
 import {
   Application,
   ApplicationCreate,
   ApplicationEdit,
   ApplicationsResponse,
-} from "../model/types";
-import { useAppQuery } from "@/shared/api/useAppQuery";
+} from '../model/types';
+import { useAppQuery } from '@/shared/api/useAppQuery';
 
 const applicationKeys = queryKeys.applications;
 
@@ -47,7 +47,7 @@ export function useCreateHackathonApplication(hackathonId: number) {
   const queryClient = useQueryClient();
 
   return useMutation<Application, Error, ApplicationCreate>({
-    mutationFn: (payload) => createHackathonApplication(hackathonId, payload),
+    mutationFn: payload => createHackathonApplication(hackathonId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: applicationKeys.byHackathon(hackathonId),
@@ -73,13 +73,9 @@ export function useAuthUserApplication(id: number) {
 export function useEditAuthUserApplication() {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    Application,
-    Error,
-    { id: number; payload: ApplicationEdit }
-  >({
+  return useMutation<Application, Error, { id: number; payload: ApplicationEdit }>({
     mutationFn: ({ id, payload }) => editAuthUserApplication(id, payload),
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: applicationKeys.byId(data.id),
       });

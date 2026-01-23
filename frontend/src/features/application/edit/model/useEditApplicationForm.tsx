@@ -1,17 +1,14 @@
-import { useEffect, useState } from "react";
-import type { Role } from "@/shared/types/enums";
-import type { Application } from "@/entities/application";
-import { useEditAuthUserApplication } from "@/entities/application";
+import { useEffect, useState } from 'react';
+import type { Role } from '@/shared/types/enums';
+import type { Application } from '@/entities/application';
+import { useEditAuthUserApplication } from '@/entities/application';
 
-export function useEditApplicationForm(params: {
-  application: Application;
-  onDone?: () => void;
-}) {
+export function useEditApplicationForm(params: { application: Application; onDone?: () => void }) {
   const editMutation = useEditAuthUserApplication();
-  const [role, setRole] = useState<Role | "">("");
+  const [role, setRole] = useState<Role | ''>('');
 
   useEffect(() => {
-    setRole(params.application.role ?? "");
+    setRole(params.application.role ?? '');
   }, [params.application]);
 
   const canSubmit = Boolean(role) && !editMutation.isPending;

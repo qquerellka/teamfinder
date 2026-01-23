@@ -1,6 +1,6 @@
-import { apiClient } from "@/shared/api/client";
-import { CreateVacancy, EditVacancy, Vacancy, VacancyDTO } from "../model/types";
-import { editVacancyToDTO, vacanciesToCamelCase } from "../lib/dto";
+import { apiClient } from '@/shared/api/client';
+import { CreateVacancy, EditVacancy, Vacancy, VacancyDTO } from '../model/types';
+import { editVacancyToDTO, vacanciesToCamelCase } from '../lib/dto';
 
 interface VacanciesResponseDTO {
   items: VacancyDTO[];
@@ -9,9 +9,7 @@ interface VacanciesResponseDTO {
 }
 
 export async function teamVacancies(id: number): Promise<Vacancy[]> {
-  const { data } = await apiClient.get<VacanciesResponseDTO>(
-    `/teams/${id}/vacancies`
-  );
+  const { data } = await apiClient.get<VacanciesResponseDTO>(`/teams/${id}/vacancies`);
   return vacanciesToCamelCase(data.items);
 }
 
@@ -40,8 +38,6 @@ export async function deleteVacancy(id: number): Promise<void> {
 }
 
 export async function hackathonVacancies(id: number): Promise<Vacancy[]> {
-  const { data } = await apiClient.get<VacanciesResponseDTO>(
-    `/hackathons/${id}/vacancies`
-  );
+  const { data } = await apiClient.get<VacanciesResponseDTO>(`/hackathons/${id}/vacancies`);
   return vacanciesToCamelCase(data.items);
 }

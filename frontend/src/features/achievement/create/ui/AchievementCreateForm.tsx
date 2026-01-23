@@ -1,7 +1,7 @@
-import type { FC } from "react";
-import type { Hackathon } from "@/entities/hackathon";
-import { AchievementFormView } from "../../_shared/ui/AchievementFormView";
-import { useAchievementCreateForm } from "../model/useAchievementCreateForm";
+import type { FC } from 'react';
+import type { Hackathon } from '@/entities/hackathon';
+import { AchievementFormView } from '../../_shared/ui/AchievementFormView';
+import { useAchievementCreateForm } from '../model/useAchievementCreateForm';
 
 export const AchievementCreateForm: FC<{
   hackathons: Hackathon[];

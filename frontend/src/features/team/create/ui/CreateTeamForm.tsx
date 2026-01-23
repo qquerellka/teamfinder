@@ -1,12 +1,12 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
-import type { Hackathon } from "@/entities/hackathon";
-import { useCreateTeam } from "@/entities/team/api/hooks";
-import { TeamFormView } from "../../_shared/ui/TeamFormView";
-import { useCreateTeamForm } from "../model/useCreateTeamForm";
-import { Role } from "@/shared/types/enums";
-import { SText } from "@/shared/ui";
-import styled from "styled-components";
+import type { Hackathon } from '@/entities/hackathon';
+import { useCreateTeam } from '@/entities/team/api/hooks';
+import { TeamFormView } from '../../_shared/ui/TeamFormView';
+import { useCreateTeamForm } from '../model/useCreateTeamForm';
+import { Role } from '@/shared/types/enums';
+import { SText } from '@/shared/ui';
+import styled from 'styled-components';
 
 export const CreateTeamForm: FC<{
   hackathon: Hackathon;

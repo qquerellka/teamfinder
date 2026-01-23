@@ -1,15 +1,12 @@
-import { useCallback } from "react";
-import { InviteStatus, useUpdateInvite } from "@/entities/invite";
+import { useCallback } from 'react';
+import { InviteStatus, useUpdateInvite } from '@/entities/invite';
 
 interface UseAnswerOnInviteParams {
   inviteId: number;
   onAnswered?: (status: InviteStatus) => void;
 }
 
-export function useAnswerOnInvite({
-  inviteId,
-  onAnswered,
-}: UseAnswerOnInviteParams) {
+export function useAnswerOnInvite({ inviteId, onAnswered }: UseAnswerOnInviteParams) {
   const mutation = useUpdateInvite();
 
   const answer = useCallback(
@@ -21,7 +18,7 @@ export function useAnswerOnInvite({
 
       onAnswered?.(status);
     },
-    [inviteId, mutation, onAnswered]
+    [inviteId, mutation, onAnswered],
   );
 
   return {

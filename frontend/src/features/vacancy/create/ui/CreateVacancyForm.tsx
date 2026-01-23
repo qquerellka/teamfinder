@@ -1,6 +1,6 @@
-import type { FC } from "react";
-import { VacancyFormView } from "../../_shared/ui/VacancyFormView";
-import { useCreateVacancyForm } from "../model/useCreateVacancyForm";
+import type { FC } from 'react';
+import { VacancyFormView } from '../../_shared/ui/VacancyFormView';
+import { useCreateVacancyForm } from '../model/useCreateVacancyForm';
 
 export const CreateVacancyForm: FC<{
   teamId: number;

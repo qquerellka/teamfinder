@@ -1,7 +1,7 @@
-import { useProfileSkillsEditor } from "../model/useProfileSkillsEditor";
-import { ProfileSkillsEditorView } from "./ProfileSkillsEditorView";
+import { useProfileSkillsEditor } from '../model/useProfileSkillsEditor';
+import { ProfileSkillsEditorView } from './ProfileSkillsEditorView';
 
-export const ProfileSkillsEditor = ({disabled = false}) => {
+export const ProfileSkillsEditor = ({ disabled = false }) => {
   const vm = useProfileSkillsEditor();
   return (
     <ProfileSkillsEditorView

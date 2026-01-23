@@ -1,19 +1,12 @@
-import { FC, useState } from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { FC, useState } from 'react';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-import { getHackathonPath } from "@/shared/routing/paths";
-import { HackathonCard, useHackathonsQuery } from "@/entities/hackathon";
-import {
-  Button,
-  Cell,
-  Checkbox,
-  IconButton,
-  Input,
-  Modal,
-} from "@telegram-apps/telegram-ui";
-import { useDebouncedValue } from "@/shared/helpers/useDebounceValue";
-import { InputSection, NoItems, SIcon, SText } from "@/shared/ui";
+import { getHackathonPath } from '@/shared/routing/paths';
+import { HackathonCard, useHackathonsQuery } from '@/entities/hackathon';
+import { Button, Cell, Checkbox, IconButton, Input, Modal } from '@telegram-apps/telegram-ui';
+import { useDebouncedValue } from '@/shared/helpers/useDebounceValue';
+import { InputSection, NoItems, SIcon, SText } from '@/shared/ui';
 
 interface HackathonsFilters {
   online: boolean;
@@ -23,7 +16,7 @@ interface HackathonsFilters {
 }
 
 export const HackathonList: FC = () => {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search, 800);
 
   const q = debouncedSearch.trim() || undefined;
@@ -44,11 +37,11 @@ export const HackathonList: FC = () => {
         <SearchSection>
           <InputSection>
             <SInput
-              before={<SIcon name="search" color={""} />}
+              before={<SIcon name="search" color={''} />}
               placeholder="Название хакатона"
               value={search}
               // style={{width: '100%', boxSizing:'border-box'}}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={e => setSearch(e.target.value)}
             />
           </InputSection>
           <IconButton onClick={() => setIsModalOpen(true)}>
@@ -56,10 +49,10 @@ export const HackathonList: FC = () => {
           </IconButton>
         </SearchSection>
         {data.items.length === 0 ? (
-          <NoItems title={"Ничего не нашлось :("} />
+          <NoItems title={'Ничего не нашлось :('} />
         ) : (
           <Grid>
-            {data.items.map((h) => (
+            {data.items.map(h => (
               <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
                 <HackathonCard hackathon={h} />
               </CardLink>
@@ -69,53 +62,47 @@ export const HackathonList: FC = () => {
       </Wrapper>
       <Modal open={isModalOpen}>
         <ModalContainer>
-          <SText>{"Фильтры"}</SText>
+          <SText>{'Фильтры'}</SText>
           <Cell
             before={
               <Checkbox
                 name="online"
                 checked={filters.online}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, online: e.target.checked }))
-                }
+                onChange={e => setFilters(prev => ({ ...prev, online: e.target.checked }))}
               />
             }
           >
-            {"Онлайн"}
+            {'Онлайн'}
           </Cell>
           <Cell
             before={
               <Checkbox
                 name="offline"
                 checked={filters.offline}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, offline: e.target.checked }))
-                }
+                onChange={e => setFilters(prev => ({ ...prev, offline: e.target.checked }))}
               />
             }
           >
-            {"Оффлайн"}
+            {'Оффлайн'}
           </Cell>
           <Cell
             before={
               <Checkbox
                 name="hybrid"
                 checked={filters.hybrid}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, hybrid: e.target.checked }))
-                }
+                onChange={e => setFilters(prev => ({ ...prev, hybrid: e.target.checked }))}
               />
             }
           >
-            {"Гибрид"}
+            {'Гибрид'}
           </Cell>
           <Cell
             before={
               <Checkbox
                 name="withPrize"
                 checked={filters.withPrize}
-                onChange={(e) =>
-                  setFilters((prev) => ({
+                onChange={e =>
+                  setFilters(prev => ({
                     ...prev,
                     withPrize: e.target.checked,
                   }))
@@ -123,9 +110,9 @@ export const HackathonList: FC = () => {
               />
             }
           >
-            {"С призовыми"}
+            {'С призовыми'}
           </Cell>
-          <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
             <Button
               mode="bezeled"
               type="button"
@@ -133,7 +120,7 @@ export const HackathonList: FC = () => {
               // disabled={loading}
               onClick={() => setIsModalOpen(false)}
             >
-              {"Сбросить"}
+              {'Сбросить'}
             </Button>
 
             <Button
@@ -143,7 +130,7 @@ export const HackathonList: FC = () => {
               // onClick={onConfirm}
               onClick={() => setIsModalOpen(false)}
             >
-              {"Применить"}
+              {'Применить'}
             </Button>
           </div>
         </ModalContainer>
