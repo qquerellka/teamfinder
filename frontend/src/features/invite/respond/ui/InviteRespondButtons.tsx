@@ -16,11 +16,23 @@ export const InviteRespondButtons: FC<InviteRespondButtonsProps> = ({ inviteId, 
 
   return (
     <Buttons>
-      <IconButton disabled={isLoading} onClick={() => answer('rejected')}>
+      <IconButton
+        disabled={isLoading}
+        onClick={e => {
+          e.stopPropagation();
+          answer('rejected');
+        }}
+      >
         <SIcon name="cross" color="#F55A5A" />
       </IconButton>
 
-      <IconButton disabled={isLoading} onClick={() => answer('accepted')}>
+      <IconButton
+        disabled={isLoading}
+        onClick={e => {
+          e.stopPropagation();
+          answer('accepted');
+        }}
+      >
         <SIcon name="plus" />
       </IconButton>
     </Buttons>

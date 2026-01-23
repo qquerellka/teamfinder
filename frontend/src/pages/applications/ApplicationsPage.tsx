@@ -14,7 +14,7 @@ export const ApplicationsPage = () => {
   }
   return (
     <Page>
-      <TeamsList>
+      <ApplicationsList>
         <SText>Мои анкеты</SText>
         {filteredApplications.map(a => (
           <ApplicationCard
@@ -28,14 +28,14 @@ export const ApplicationsPage = () => {
             onNavigate={() => navigate(getHackathonParticipationPath(a.hackathonId))}
           />
         ))}
-      </TeamsList>
+      </ApplicationsList>
     </Page>
   );
 };
 
 export default ApplicationsPage;
 
-const TeamsList = styled.div`
+const ApplicationsList = styled.div`
   display: flex;
   flex-direction: column;
   text-align: center;

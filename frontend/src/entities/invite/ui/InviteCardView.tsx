@@ -7,6 +7,7 @@ interface InviteCardViewProps {
   teamMembersCount: number;
   teamMembersLimit: number;
   actions?: React.ReactNode;
+  onNavigate: () => void;
 }
 
 export const InviteCardView: FC<InviteCardViewProps> = ({
@@ -14,9 +15,10 @@ export const InviteCardView: FC<InviteCardViewProps> = ({
   teamMembersCount,
   teamMembersLimit,
   actions,
+  onNavigate,
 }) => {
   return (
-    <Wrapper>
+    <Wrapper onClick={onNavigate}>
       <FirstRow>
         <SText $fs={16} $fw={700}>
           Приглашение

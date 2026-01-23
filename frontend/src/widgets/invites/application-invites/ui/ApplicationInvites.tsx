@@ -39,6 +39,7 @@ export const ApplicationInvites: FC<ApplicationInvitesProps> = ({ appId }) => {
           teamName={i.teamName}
           teamMembersCount={i.teamMembersCount}
           teamMembersLimit={i.teamMembersLimit}
+          onNavigate={() => navigate(getTeamPath(i.teamId))}
           actions={
             <InviteRespondButtons
               inviteId={i.id}
