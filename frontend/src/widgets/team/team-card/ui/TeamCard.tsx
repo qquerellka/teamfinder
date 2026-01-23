@@ -34,7 +34,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
       <Header>
         <div />
         <SText $fs={14} $fw={500}>
-          {isMember ? "Моя команда": "Команда"}
+          {isMember ? 'Моя команда' : 'Команда'}
         </SText>
 
         {isCaptain ? (

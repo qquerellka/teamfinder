@@ -16,7 +16,7 @@ export const TeamMembersSection: FC<{
   membersLimit: number;
   canRemoveMembers: boolean;
   isEditing?: boolean;
-}> = ({ teamId, members, membersLimit, canRemoveMembers, isEditing=false }) => {
+}> = ({ teamId, members, membersLimit, canRemoveMembers, isEditing = false }) => {
   const navigate = useNavigate();
   return (
     <Block>
@@ -54,7 +54,6 @@ const TeamMemberRow: FC<{
   canRemove: boolean;
   onNavigate: () => void;
 }> = ({ teamId, member, canRemove, onNavigate }) => {
-  
   const fullName = `${member.user.firstName ?? ''} ${member.user.lastName ?? ''}`.trim();
   const { remove, isRemoving } = useRemoveTeamMember({
     teamId,

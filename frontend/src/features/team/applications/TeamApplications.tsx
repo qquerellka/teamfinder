@@ -101,7 +101,7 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
           <SIcon name="sentInvite" />
         ) : (
           <IconButton
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onInvite();
             }}

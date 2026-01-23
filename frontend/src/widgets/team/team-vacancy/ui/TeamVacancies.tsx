@@ -17,11 +17,7 @@ export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
   const navigate = useNavigate();
   const [addVacancy, setAddVacancy] = useState<boolean>(false);
 
-  if (
-    !vacancies ||
-    vacancies.length === 0 ||
-    addVacancy || team.members.length < team.teamMembersLimit
-  ) {
+  if (!vacancies || vacancies.length === 0 || addVacancy) {
     return <CreateVacancyForm teamId={team.id} onDone={() => setAddVacancy(false)} />;
   }
 
@@ -31,9 +27,11 @@ export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
 
   return (
     <Wrapper>
-      <Button mode="bezeled" onClick={() => setAddVacancy(true)}>
-        {'Создать вакансию'}
-      </Button>
+      {team.members.length + vacancies.length < team.teamMembersLimit && (
+        <Button mode="bezeled" onClick={() => setAddVacancy(true)}>
+          {'Создать вакансию'}
+        </Button>
+      )}
       {vacancies.map(v => (
         <VacancyCard
           key={v.id}
