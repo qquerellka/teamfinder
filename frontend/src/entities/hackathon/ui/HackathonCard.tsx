@@ -10,6 +10,7 @@ import {
 } from "@/shared/helpers/date";
 import { ImageWithSkeleton, SIcon, SText } from "@/shared/ui";
 import type { IconName } from "@/shared/ui/SIcon";
+import { EHackathonMode } from "@/shared/types/enums";
 type HackathonCardVariant = "full" | "compact";
 
 interface HackathonCardProps {
@@ -19,8 +20,8 @@ interface HackathonCardProps {
   onShareClick?: () => void;
 }
 interface HackathonParamConfig {
-  icon: IconName,
-  text: string,
+  icon: IconName;
+  text: string;
 }
 export const HackathonCard: FC<HackathonCardProps> = ({
   hackathon,
@@ -28,7 +29,6 @@ export const HackathonCard: FC<HackathonCardProps> = ({
   showShareButton = false,
   onShareClick,
 }) => {
-
   const params: HackathonParamConfig[] = useMemo(
     () => [
       {
@@ -41,7 +41,10 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       },
       {
         icon: "hackathonPlace",
-        text: `${hackathon.city} • ${hackathon.mode}`,
+        text:
+          hackathon.mode === EHackathonMode.ONLINE
+            ? `${hackathon.mode}`
+            : `${hackathon.city} • ${hackathon.mode}`,
       },
       {
         icon: "hackathonPrize",
@@ -51,11 +54,11 @@ export const HackathonCard: FC<HackathonCardProps> = ({
         icon: "hackathonTeam",
         text: getTeamMembersRange(
           hackathon.teamMembersLimit,
-          hackathon.teamMembersMinimum
+          hackathon.teamMembersMinimum,
         ),
       },
     ],
-    [hackathon]
+    [hackathon],
   );
 
   const visibleParams =

@@ -30,3 +30,9 @@ export const ROLES = [
 export type Role = (typeof ROLES)[number];
 export type HackathonMode = "online" | "offline" | "hybrid";
 export type HackathonStatus = "open" | "closed"
+
+export enum EHackathonMode {
+  ONLINE = "online",
+  OFFLINE = "offline",
+  HYBRID = "hybrid"
+}

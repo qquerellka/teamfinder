@@ -20,6 +20,7 @@ export const ApplicationsPage = () => {
         <SText>Мои анкеты</SText>
         {filteredApplications.map((a) => (
           <ApplicationCard
+            key={a.id}
             invitesCount={a.invitesCount}
             hackathonName={a.hackathonName}
             registrationEndDate={a.registrationEndDate}
