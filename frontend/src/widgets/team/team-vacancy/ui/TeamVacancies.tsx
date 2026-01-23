@@ -11,7 +11,7 @@ import { VacancyCard } from './VacancyCard';
 import { VacancyResponses } from '@/widgets/responses/vacancy-responses';
 import { Button } from '@telegram-apps/telegram-ui';
 
-export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
+export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
   const { data: vacancies } = useTeamVacancies(team.id);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
@@ -20,8 +20,7 @@ export const TeamVacancy: FC<{ team: TeamWithMembers }> = ({ team }) => {
   if (
     !vacancies ||
     vacancies.length === 0 ||
-    addVacancy ||
-    team.members.length + vacancies.length > 8
+    addVacancy || team.members.length < team.teamMembersLimit
   ) {
     return <CreateVacancyForm teamId={team.id} onDone={() => setAddVacancy(false)} />;
   }

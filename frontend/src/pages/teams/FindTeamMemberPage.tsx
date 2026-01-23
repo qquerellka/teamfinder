@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { Page } from '@/shared/ui';
 import { useTeam } from '@/entities/team';
 import { TeamApplications } from '@/features/team/applications/TeamApplications';
-import { TeamVacancy } from '@/widgets/team/team-vacancy';
+import { TeamVacancies } from '@/widgets/team/team-vacancy';
 
 export const FindTeamMemberPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,7 +26,7 @@ export const FindTeamMemberPage = () => {
         </SegmentedControl.Item>
       </SegmentedControl>
 
-      {tab === 'vacancy' && <TeamVacancy team={team} />}
+      {tab === 'vacancy' && <TeamVacancies team={team} />}
 
       {tab === 'applications' && <TeamApplications team={team} />}
     </Page>
