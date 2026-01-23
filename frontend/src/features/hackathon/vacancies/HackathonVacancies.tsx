@@ -7,12 +7,16 @@ import { Hackathon } from '@/entities/hackathon';
 import { useHackathonVacancies, Vacancy } from '@/entities/vacancy';
 import { useMyResponses } from '@/entities/response';
 import { useSendResponseAction } from '@/features/response/send';
+import { useNavigate } from 'react-router-dom';
+import { getTeamPath } from '@/shared/routing/paths';
 
 interface HackathonVacanciesProps {
   hackathon: Hackathon;
 }
 
 export const HackathonVacancies: FC<HackathonVacanciesProps> = ({ hackathon }) => {
+  const navigate = useNavigate();
+
   const { data: vacanciesData } = useHackathonVacancies(hackathon.id);
   const vacancies = vacanciesData?.filter(v => v.status === 'open') ?? [];
 
@@ -49,6 +53,7 @@ export const HackathonVacancies: FC<HackathonVacanciesProps> = ({ hackathon }) =
           responsed={repondedIds.has(v.id)}
           onResponse={() => handleReponse(v)}
           isResponsing={responsingVacancyId === v.id || isSending || isResponsesFetching}
+          onNavigate={() => navigate(getTeamPath(v.teamId))}
         />
       ))}
     </ApplicationsList>
@@ -66,16 +71,23 @@ interface VacancyCardProps {
   responsed: boolean;
   isResponsing: boolean;
   onResponse: () => void;
+  onNavigate: () => void;
 }
 
-const VacancyCard: FC<VacancyCardProps> = ({ isResponsing, onResponse, responsed, vacancy }) => {
+const VacancyCard: FC<VacancyCardProps> = ({
+  isResponsing,
+  onResponse,
+  onNavigate,
+  responsed,
+  vacancy,
+}) => {
   //   const skillsString = useMemo(() => {
   //     const skills = application.skills?.slice(0, 4) ?? [];
   //     return skills.map((s) => s.name).join(", ");
   //   }, [application.skills]);
 
   return (
-    <Wrapper>
+    <Wrapper onClick={onNavigate}>
       <FirstRow>
         <SText $fs={16} $fw={600}>
           {vacancy.teamName}
@@ -87,7 +99,13 @@ const VacancyCard: FC<VacancyCardProps> = ({ isResponsing, onResponse, responsed
         {responsed ? (
           <SIcon name="sentInvite" />
         ) : (
-          <IconButton onClick={onResponse} disabled={isResponsing}>
+          <IconButton
+            onClick={e => {
+              e.stopPropagation();
+              onResponse();
+            }}
+            disabled={isResponsing}
+          >
             <SIcon name="plus" />
           </IconButton>
         )}

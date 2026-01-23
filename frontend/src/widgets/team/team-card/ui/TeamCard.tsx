@@ -16,7 +16,7 @@ import { TeamMembersSection } from '@/widgets/team/team-members';
 interface TeamCardProps {
   team: TeamWithMembers;
   onEditClick?: () => void;
-  onExit: () => void;
+  onExit?: () => void;
 }
 
 export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
@@ -24,6 +24,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
   const { data: user } = useAuthUser();
 
   const isCaptain = team.captainId === user.id;
+  const isMember = team.members.filter(m => m.user.id === user.id).length === 1;
 
   const { copy, isCopying, copied } = useCopyTeamInviteLink(team.id);
   const { leave, isLeaving } = useLeaveTeamAction(team.id, { onDone: onExit });
@@ -38,8 +39,10 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
 
         {isCaptain ? (
           <SIcon onClick={onEditClick} name="edit" />
-        ) : (
+        ) : isMember ? (
           <SIcon onClick={leave} name="leaveTeam" />
+        ) : (
+          <div />
         )}
       </Header>
 
@@ -61,30 +64,31 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
         membersLimit={team.teamMembersLimit}
         canRemoveMembers={isCaptain}
       />
+      {isMember && (
+        <Buttons>
+          {isCaptain && (
+            <SButton mode="bezeled" onClick={copy} stretched disabled={isCopying}>
+              {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
+            </SButton>
+          )}
 
-      <Buttons>
-        {isCaptain && (
-          <SButton mode="bezeled" onClick={copy} stretched disabled={isCopying}>
-            {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
-          </SButton>
-        )}
+          {isCaptain && (
+            <SButton
+              onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
+              stretched
+              disabled={isCopying}
+            >
+              Найти участников
+            </SButton>
+          )}
 
-        {isCaptain && (
-          <SButton
-            onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
-            stretched
-            disabled={isCopying}
-          >
-            Найти участников
-          </SButton>
-        )}
-
-        {!isCaptain && (
-          <SButton mode="bezeled" onClick={leave} stretched disabled={isLeaving}>
-            Покинуть команду
-          </SButton>
-        )}
-      </Buttons>
+          {!isCaptain && (
+            <SButton mode="bezeled" onClick={leave} stretched disabled={isLeaving}>
+              Покинуть команду
+            </SButton>
+          )}
+        </Buttons>
+      )}
     </Root>
   );
 };
