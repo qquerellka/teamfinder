@@ -11,6 +11,7 @@ interface ResponseCardViewProps {
   skills: Skill[];
   role: Role;
   actions?: React.ReactNode;
+  onNavigate: () => void;
 }
 
 export const ResponsesCardView: FC<ResponseCardViewProps> = ({
@@ -20,6 +21,7 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   skills,
   actions,
   role,
+  onNavigate,
 }) => {
   const skillsString = useMemo(() => {
     const sskills = skills?.slice(0, 4) ?? [];
@@ -27,7 +29,7 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   }, [skills]);
 
   return (
-    <Wrapper>
+    <Wrapper onClick={onNavigate}>
       <FirstRow>
         <SText $fs={16} $fw={700}>
           {firstName} {secondName}

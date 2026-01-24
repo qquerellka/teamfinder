@@ -10,12 +10,15 @@ export const HackathonCreateTeamPage = () => {
   const { data: hackathon } = useHackathonQuery(Number(id));
   const { data: team } = useMyTeamOnHackathon(Number(id));
   const navigate = useNavigate();
+
+  // костыль
   if (team !== null) {
     navigate(getTeamPath(team.id), { replace: true });
   }
+
   return (
     <Page>
-      <CreateTeamForm hackathon={hackathon} onDone={(id: number) => navigate(getTeamPath(id))} />
+      <CreateTeamForm hackathon={hackathon} onDone={(id: number) => navigate(getTeamPath(id), { replace: true })} />
     </Page>
   );
 };

@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getTeamPath } from '@/shared/routing/paths';
+import { getTeamPath, getUserPath } from '@/shared/routing/paths';
 import { SText } from '@/shared/ui';
 import { Response, useTeamResponses } from '@/entities/response';
 import { ResponsesCardView } from '@/entities/response/ui/ResponseCardView';
@@ -51,6 +51,7 @@ export const VacancyResponses: FC = () => {
           username={i.user.username}
           skills={i.skills}
           role={i.role}
+          onNavigate={() => navigate(getUserPath(i.user.id))}
         />
       ))}
     </Wrapper>
