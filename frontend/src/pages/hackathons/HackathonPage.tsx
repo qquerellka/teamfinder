@@ -70,6 +70,13 @@ const HackathonPage: React.FC = () => {
   };
 
   const handleGoToCreateTeam = () => {
+    const hasSkills = !!user && Array.isArray(user.skills) && user.skills.length > 0;
+
+    if (!hasSkills) {
+      setIsSkillsModalOpen(true);
+      return;
+    }
+    
     if (id) navigate(getHackathonCreateTeamPath(Number(id)));
   };
 

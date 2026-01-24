@@ -24,8 +24,8 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
   onNavigate,
 }) => {
   return (
-    <Wrapper>
-      <NavigateIcon name="arrow" onClick={onNavigate} />
+    <Wrapper onClick={onNavigate}>
+      <NavigateIcon name="arrow" />
       <SText $fs={16} $fw={600}>
         {hackathonName}
       </SText>
