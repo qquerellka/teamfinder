@@ -27,7 +27,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
   const isMember = team.members.filter(m => m.user.id === user.id).length === 1;
 
   const { copy, isCopying, copied } = useCopyTeamInviteLink(team.id);
-  const { leave, isLeaving } = useLeaveTeamAction(team.id, { onDone: onExit });
+  const { leave } = useLeaveTeamAction(team.id, { onDone: onExit });
 
   return (
     <Root>
@@ -40,7 +40,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
         {isCaptain ? (
           <SIcon onClick={onEditClick} name="edit" />
         ) : isMember ? (
-          <SIcon onClick={leave} name="leaveTeam" />
+          <SIcon onClick={leave} name="leaveTeam"/>
         ) : (
           <div />
         )}
@@ -82,11 +82,11 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
             </SButton>
           )}
 
-          {!isCaptain && (
+          {/* {!isCaptain && (
             <SButton mode="bezeled" onClick={leave} stretched disabled={isLeaving}>
               Покинуть команду
             </SButton>
-          )}
+          )} */}
         </Buttons>
       )}
     </Root>
