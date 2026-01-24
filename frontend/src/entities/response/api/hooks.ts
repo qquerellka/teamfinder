@@ -91,6 +91,12 @@ export function useUpdateResponse() {
         queryKey: responseKeys.byVacancy(data.vacancyId),
       });
 
+      if (data.teamId) {
+        queryClient.invalidateQueries({
+          queryKey: responseKeys.byTeam(data.teamId),
+        });
+      }
+
       queryClient.invalidateQueries({
         queryKey: responseKeys.me,
       });
