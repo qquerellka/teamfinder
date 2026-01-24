@@ -10,19 +10,19 @@ import styled from 'styled-components';
 
 export const CreateTeamForm: FC<{
   hackathon: Hackathon;
-  onDone?: () => void;
+  onDone?: (id: number) => void;
 }> = ({ hackathon, onDone }) => {
   const createMutation = useCreateTeam(hackathon.id);
   const form = useCreateTeamForm();
 
   const submit = async () => {
     if (!form.canSubmit) return;
-    await createMutation.mutateAsync({
+    const res = await createMutation.mutateAsync({
       role: form.role as Role,
       name: form.name,
       description: form.description,
     });
-    onDone?.();
+    onDone?.(res.id);
   };
 
   return (
