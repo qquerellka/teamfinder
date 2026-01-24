@@ -11,7 +11,7 @@ export const HackathonCreateTeamPage = () => {
   const { data: team } = useMyTeamOnHackathon(Number(id));
   const navigate = useNavigate();
   if (team !== null) {
-    navigate(getTeamPath(team.id));
+    navigate(getTeamPath(team.id), { replace: true });
   }
   return (
     <Page>
