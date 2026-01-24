@@ -1,46 +1,65 @@
-import { FC } from "react";
-import styled from "styled-components";
-import { Tabbar } from "@telegram-apps/telegram-ui";
-import { NavLink } from "react-router-dom";
+import { FC, MouseEvent } from 'react';
+import styled from 'styled-components';
+import { Tabbar } from '@telegram-apps/telegram-ui';
+import { matchPath, NavLink, useLocation } from 'react-router-dom';
+import { paths } from '@/shared/routing/paths';
+import { SIcon } from '@/shared/ui';
+import type { IconName } from '@/shared/ui/SIcon';
 
-import HackIcon from "../../assets/icons/navbarIcons/HackathonsIcon.svg?react";
-import BellIcon from "../../assets/icons/navbarIcons/NotificationsIcon.svg?react";
-import ProfIcon from "../../assets/icons/navbarIcons/ProfileIcon.svg?react";
-import TeamIcon from "../../assets/icons/navbarIcons/TeamsIcon.svg?react";
-import { paths } from "@/app/routing/paths";
-import { SIcon } from "@/shared/ui/SIcon";
-
-const NAV = [
-  { id: 1, name: "hackathons", icon: HackIcon, path: paths.hackathons },
+interface NavItem {
+  id: number;
+  name: string;
+  icon: IconName;
+  path: string;
+}
+const NAV: NavItem[] = [
+  { id: 1, name: 'hackathons', icon: 'hacksNav', path: paths.hackathons },
   {
     id: 2,
-    name: "teams",
-    icon: TeamIcon,
+    name: 'teams',
+    icon: 'teamNav',
     path: paths.teams,
   },
   {
     id: 3,
-    name: "notifications",
-    icon: BellIcon,
-    path: paths.notifications,
+    name: 'applications',
+    icon: 'appNav',
+    path: paths.applications,
   },
-  { id: 4, name: "profile", icon: ProfIcon, path: paths.profile },
+  { id: 4, name: 'profile', icon: 'profile', path: paths.userRoot },
 ];
 
-export const Navbar: FC = () => (
-  <STabbar>
-    {NAV.map(({ id, icon, path }) => (
-      <SItem key={id}>
-        <NavLink
-          to={path}
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          <SIcon icon={icon} size={28} color={'transparent'} />
-        </NavLink>
-      </SItem>
-    ))}
-  </STabbar>
-);
+export const Navbar: FC = () => {
+  const { pathname } = useLocation();
+
+  const isCurrentRoute = (to: string) => {
+    return Boolean(matchPath({ path: to, end: true }, pathname));
+  };
+
+  const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (isCurrentRoute(path)) {
+      e.preventDefault();
+      return;
+    }
+  };
+
+  return (
+    <STabbar>
+      {NAV.map(({ id, icon, path }) => (
+        <SItem key={id}>
+          <NavLink to={path} end onClick={e => handleNavClick(e, path)}>
+            {matchPath({ path, end: false }, pathname) ? (
+              <SIcon active={true} name={icon} size={28} />
+            ) : (
+              // <StyledSIcon name={icon} size={28} />
+              <SIcon name={icon} size={28} />
+            )}
+          </NavLink>
+        </SItem>
+      ))}
+    </STabbar>
+  );
+};
 
 const STabbar = styled(Tabbar)`
   position: static;
@@ -64,3 +83,9 @@ const SItem = styled(Tabbar.Item)`
     margin: 0;
   }
 `;
+
+// Свечение иконки, убрали, так в светлой теме выглядит ужасно
+// const StyledSIcon = styled(SIcon)`
+//   display: inline-block;
+//   filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
+// `;

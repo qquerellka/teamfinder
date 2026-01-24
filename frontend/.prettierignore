@@ -1,0 +1,14 @@
+# Игнорировать
+node_modules
+dist
+build
+.next
+.vscode
+*.log
+coverage
+.env
+.env.local
+.DS_Store
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

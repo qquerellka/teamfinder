@@ -1,317 +1,269 @@
-# Clean FastAPI + PostgreSQL Template
+# TeamFinder Backend (FastAPI)
 
-Минимальный чистый шаблон бэкенда на **FastAPI** с **PostgreSQL** и асинхронным SQLAlchemy.
-Архитектура слоями: `presentations` (API) → `services` (бизнес‑логика) → `repositories` (доступ к БД) → `persistend` (ORM‑модели) → `infrastructure` (подключение БД) → `settings` (настройки).
+Бэкенд для Telegram Mini App, которая помогает участникам хакатона находить команды/участников: создавать команды, публиковать вакансии, откликаться на вакансии, приглашать по анкетам и фиксировать достижения.
 
-## Быстрый старт (Docker)
+> Важно для запуска локально: в приложении включён `root_path="/api"` (ориентировано на деплой за reverse-proxy). Если вы поднимаете сервис **без** прокси, запросы делайте по «сырому» пути (например, `/system/health`).
 
-1) Скопируйте `.env.example` → `.env` и при необходимости измените значения.
-2) Запустите:
-```bash
-docker compose up --build
+---
+
+## Технологии
+
+- Python **3.12**
+- **FastAPI** (ASGI)
+- **SQLAlchemy 2.x (asyncio)** + **asyncpg**
+- **Pydantic v2** + **pydantic-settings**
+- JWT (HS256) — минимальная реализация в `utils/jwt_simple.py`
+- Авторизация через **Telegram WebApp init_data** (проверка подписи в `utils/telegram_initdata.py`)
+- S3‑совместимое хранилище (Yandex Cloud / MinIO / AWS S3) для картинок хакатонов — `aioboto3`
+- Dockerfile для контейнерного запуска
+
+---
+
+## Архитектура бэкенда
+
+Архитектура — слоистая (HTTP → сервисы → репозитории → ORM):
+
+```mermaid
+graph TD
+    A[HTTP запрос] --> B[FastAPI routers (presentations/routers)]
+    B --> C[Services (services/*)]
+    C --> D[Repositories (repositories/*)]
+    D --> E[ORM models (persistend/models)]
+    E --> F[(PostgreSQL)]
+
+    B --> G[Auth: JWT + Telegram init_data]
+    B --> H[Admin auth: X-Admin-Token]
 ```
-3) Проверьте:
-- Swagger UI: http://localhost:8000/docs
-- Healthcheck: http://localhost:8000/health
 
-## Локально (без Docker)
+### Что где лежит
+
+```
+backend/
+  main.py                    # точка входа (uvicorn)
+  presentations/
+    app.py                   # create_app(), middlewares, подключение роутеров
+    routers/                 # HTTP-слой: эндпоинты + Pydantic-схемы
+  services/                  # бизнес-логика/оркестрация (hackathons, teams, invites...)
+  repositories/              # доступ к данным (SQLAlchemy async)
+  persistend/                # ORM-модели и enum'ы (название папки историческое)
+  infrastructure/            # db engine/session, S3, Telegram files, admin auth
+  settings/                  # конфигурация (pydantic-settings)
+  utils/                     # JWT и Telegram init_data
+```
+
+### Принципы
+
+- **Async-first**: все операции I/O (Postgres, Telegram, S3) асинхронные.
+- **Короткоживущие сессии**: репозитории открывают `AsyncSession` «на операцию» через `async_sessionmaker`.
+- **Разделение ответственности**:
+  - роутеры — HTTP, схемы, права доступа;
+  - сервисы — оркестрация нескольких репозиториев/инфраструктуры;
+  - репозитории — SQL и маппинг ORM.
+
+---
+
+## Доменная модель
+
+Ключевые сущности:
+
+- **User** — пользователь Telegram
+- **Skill** + `user_skill` — навыки (many-to-many)
+- **Hackathon** — хакатон
+- **Application** — анкета пользователя на конкретный хакатон (1 анкета на пользователя в рамках хакатона)
+- **Team** + **TeamMember** — команда и участники
+- **Vacancy** — вакансия команды (роль, описание)
+- **Response** — отклик пользователя на вакансию
+- **Invite** — приглашение от команды к анкете
+- **Achievement** — достижения на хакатонах
+
+```mermaid
+erDiagram
+    USERS ||--o{ APPLICATION : has
+    HACKATHON ||--o{ APPLICATION : has
+
+    HACKATHON ||--o{ TEAM : hosts
+    USERS ||--o{ TEAM : captain
+    TEAM ||--o{ TEAM_MEMBER : includes
+    USERS ||--o{ TEAM_MEMBER : participates
+
+    TEAM ||--o{ VACANCY : publishes
+    VACANCY ||--o{ RESPONSE : receives
+    USERS ||--o{ RESPONSE : sends
+
+    TEAM ||--o{ INVITE : sends
+    APPLICATION ||--o{ INVITE : receives
+
+    USERS ||--o{ ACHIEVEMENTS : earns
+    HACKATHON ||--o{ ACHIEVEMENTS : awards
+
+    USERS ||--o{ USER_SKILL : has
+    SKILL ||--o{ USER_SKILL : part
+```
+
+### Инварианты (как реализованы)
+
+- **Одна анкета на хакатон для пользователя**: `UniqueConstraint(hackathon_id, user_id)` в модели `Application`.
+- **Участник уникален в команде**: `(team_id, user_id)` — составной PK в `TeamMember`.
+- **Ограничение «одна команда на хакатон для пользователя»**: проверяется на уровне роутера/сервиса (перед accept invite/response).
+- **Принятие инвайта** сделано атомарно через SQL‑функцию в БД `accept_invite(invite_id, actor_user_id)` (см. `services/invites.py`).
+- **Принятие отклика (Response)** сейчас делается в роутере и включает несколько шагов: добавление участника, закрытие вакансии, скрытие анкеты, «протухание» других откликов. Это можно улучшить оборачиванием в транзакцию.
+
+---
+
+## Авторизация
+
+### Пользовательская авторизация (Telegram → JWT)
+
+- `POST /auth/telegram` — принимает `init_data` от Telegram Mini App, проверяет подпись, делает upsert пользователя, возвращает JWT.
+- `POST /auth/dev-login` — dev‑логин без Telegram (только если `APP_ENV != prod`).
+
+JWT кладётся в заголовок:
+
+```
+Authorization: Bearer <token>
+```
+
+`sub` в токене содержит `user_id`.
+
+### Админ‑доступ
+
+Часть ручек (управление хакатонами) защищена заголовком:
+
+```
+X-Admin-Token: <ADMIN_API_TOKEN>
+```
+
+Проверка — `infrastructure/admin_auth.py`.
+
+---
+
+## Конфигурация (.env)
+
+Настройки читаются через `pydantic-settings` из переменных окружения и файла `.env`.
+
+Минимально необходимые для старта:
+
+- Postgres:
+  - `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` *(или `DATABASE_URL`)*
+- Auth:
+  - `TELEGRAM_BOT_TOKEN`
+  - `JWT_SECRET`
+  - `ADMIN_API_TOKEN` *(если нужны админ‑ручки)*
+- Telegram deep-link (для join‑link команды):
+  - `TG_BOT_USERNAME` (например, `teamfinder_test_bot`)
+  - `TG_APP_NAME` (например, `tfapp`)
+- S3 (нужно для загрузки обложек хакатонов):
+  - `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PUBLIC_BASE_URL` *(и при необходимости `S3_ENDPOINT`)*
+
+Пример `.env`:
+
+```dotenv
+APP_ENV=dev
+JWT_SECRET=dev-secret-change-me
+
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=app_db
+POSTGRES_USER=app_user
+POSTGRES_PASSWORD=app_password
+
+TELEGRAM_BOT_TOKEN=123456:ABCDEF...
+ADMIN_API_TOKEN=super-admin-token
+
+TG_BOT_USERNAME=teamfinder_test_bot
+TG_APP_NAME=tfapp
+
+S3_ENDPOINT=https://storage.yandexcloud.net
+S3_BUCKET=teamfinder
+S3_ACCESS_KEY=...
+S3_SECRET_KEY=...
+S3_PUBLIC_BASE_URL=https://storage.yandexcloud.net/teamfinder
+```
+
+---
+
+## Запуск
+
+### 1) Локально (venv)
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r backend/requirements.txt
-export $(grep -v '^#' .env | xargs)  # либо задайте ENV переменные вручную
-uvicorn backend.main:app --reload
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# выставить переменные окружения / создать .env
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## Структура
+Проверка:
 
-```
-backend/
-  main.py
-  presentations/
-    app.py
-    routers/health.py
-  services/
-  repositories/
-    base.py
-  persistend/
-    base.py
-    models/
-  infrastructure/
-    db.py
-  settings/
-    config.py
-  utils/
-  requirements.txt
-Dockerfile
-docker-compose.yml
-.env.example
-```
+- `GET /system/health`
 
-## Дальше
-
-- Добавляйте модели в `persistend/models` и запускайте миграции (можно подключить Alembic позже).
-- Реализуйте репозитории и сервисы под свою доменную логику.
-- Подключайте новые роуты через `presentations/app.py`.
-
-## Backend Architecture — Quick Reference (FastAPI + SQLAlchemy + Postgres)
-
-> Конспект по архитектуре проекта и правилам расширения. Готово для вставки в `README.md`.
->
-> Используется стек: **FastAPI**, **SQLAlchemy (async)**, **PostgreSQL**, **pydantic-settings**.
-
----
-
-## 1) Зачем такая архитектура
-
-- Отделяем HTTP-обвязку от бизнес-логики и SQL.
-- Единая точка конфигурации и подключения к БД.
-- Понятные границы транзакций (commit/rollback).
-- Лёгкое добавление новых сущностей (модели → репозитории → сервисы → роутеры).
-
----
-
-## 2) Дерево проекта (краткое описание слоёв)
-
-```text
-backend/
-  main.py                         # точка входа: app = create_app()
-  presentations/
-    app.py                        # сборка FastAPI, CORS, middleware, startup/shutdown (init_db/dispose_db)
-    routers/
-      health.py                   # системные ручки: /system/health, /system/version
-  services/                       # бизнес-логика: правила, валидации, оркестрация репозиториев
-  repositories/
-    base.py                       # общий Generic-репозиторий (get/list/add/delete/exists и т.п.)
-  persistend/
-    base.py                       # Declarative Base + TimestampMixin (created_at/updated_at)
-    models/                       # ORM-модели (по одной сущности в файл)
-  infrastructure/
-    db.py                         # Async SQLAlchemy: engine, sessionmaker, get_session() с commit/rollback
-  settings/
-    config.py                     # конфиги (Pydantic Settings): .env, CORS, DATABASE_URL, pool params
-  utils/                          # вспомогательные функции без побочек
-Dockerfile
-docker-compose.yml
-.env.example
-```
-
----
-
-## 3) Поток данных (кто кого вызывает)
-
-```mermaid
-flowchart LR
-    A[HTTP-запрос] --> B[presentations/routers]
-    B --> C[services]
-    C --> D[repositories]
-    D --> E["persistend/models\nSQLAlchemy ORM"]
-    E --> F[(PostgreSQL)]
-    B --> G[settings/config]
-    C --> G
-    D --> H["infrastructure/db\nget_session()"]
-```
-
----
-
-## 4) Принципы разделения
-
-- **presentations/** — только HTTP-детали (FastAPI-роуты, Pydantic-схемы).
-- **services/** — бизнес-правила, валидации, оркестрация нескольких репозиториев.
-- **repositories/** — SQL и доступ к данным (никакой бизнес-логики).
-- **persistend/** — ORM-модели и общие базовые классы.
-- **infrastructure/** — интеграции и тех. детали (БД, кэш, очереди и т.д.).
-- **settings/** — конфиги (.env → Settings).
-- **utils/** — вспомогательные идемпотентные функции.
-
----
-
-## 5) Транзакции и сессии
-
-- Одна операция/HTTP-запрос → **одна `AsyncSession`**.
-- Используем контекстный менеджер:
-
-  ```python
-  async with get_session() as s:
-      # делаем изменения/чтение
-  # внутри блока:
-  #   без исключений → COMMIT
-  #   с исключением  → ROLLBACK (ошибка пробрасывается выше)
-  ```
-
-- Репозитории **не коммитят** (делают `flush()` при необходимости ID/defaults). Commit/rollback осуществляет `get_session()`.
-
----
-
-## 6) Настройки и CORS
-
-- Все конфиги в `settings/config.py` (pydantic-settings).
-- CORS: передавайте в `app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS_LIST, ...)`.
-- Строка подключения к БД: `settings.database_url` (берётся из `DATABASE_URL` или собирается из `POSTGRES_*`).
-
-```mermaid
-flowchart LR
-  subgraph Settings
-    S1[ENV/.env] --> S2[settings/config.py]
-  end
-  S2 --> DB[(PostgreSQL)]
-  S2 --> APP[FastAPI App]
-  S2 --> ENG[SQLAlchemy Engine]
-```
-
----
-
-## 7) Системные эндпоинты
-
-- `GET /system/health` — «жив ли процесс» (не трогает БД).
-- `GET /system/version` — имя/версия/окружение.
-- (Опционально) `GET /system/ready` — проверка доступности БД (см. пример в `health.py`).
-
----
-
-## 8) Как добавить новую сущность — пошагово
-
-**Шаг 1 — Модель (ORM)**  
-`backend/persistend/models/<entity>.py`
-
-```python
-import uuid
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Text
-from backend.persistend.base import Base, TimestampMixin
-
-class Link(TimestampMixin, Base):
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    short: Mapped[str] = mapped_column(String(16), unique=True, index=True)
-    long: Mapped[str] = mapped_column(Text(), nullable=False)
-```
-
-**Шаг 2 — Репозиторий**  
-`backend/repositories/links.py`
-
-```python
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from backend.repositories.base import BaseRepository
-from backend.persistend.models.link import Link
-
-class LinkRepository(BaseRepository[Link]):
-    def __init__(self, session: AsyncSession):
-        super().__init__(session, Link)
-
-    async def get_by_short(self, code: str) -> Link | None:
-        res = await self.session.execute(select(Link).where(Link.short == code).limit(1))
-        return res.scalars().first()
-```
-
-**Шаг 3 — Сервис (бизнес-логика)**  
-`backend/services/links.py`
-
-```python
-from backend.infrastructure.db import get_session
-from backend.repositories.links import LinkRepository
-from backend.persistend.models.link import Link
-
-async def create_link(short: str, long: str) -> Link:
-    async with get_session() as s:
-        repo = LinkRepository(s)
-        if await repo.get_by_short(short):
-            raise ValueError("short already exists")
-        link = Link(short=short, long=long)
-        await repo.add(link)   # commit произойдёт в get_session()
-        return link
-```
-
-**Шаг 4 — Роутер (HTTP-слой)**  
-`backend/presentations/routers/links.py`
-
-```python
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
-from backend.services.links import create_link
-
-router = APIRouter(prefix="/links", tags=["links"])
-
-class LinkCreate(BaseModel):
-    short: str
-    long: str
-
-class LinkOut(BaseModel):
-    id: str
-    short: str
-    long: str
-
-@router.post("", response_model=LinkOut, status_code=status.HTTP_201_CREATED)
-async def create(payload: LinkCreate):
-    try:
-        link = await create_link(payload.short, payload.long)
-        return LinkOut.model_validate(link)
-    except ValueError as e:
-        raise HTTPException(status.HTTP_409_CONFLICT, str(e))
-```
-
-**Шаг 5 — Подключить роутер**  
-`backend/presentations/app.py`:
-
-```python
-from backend.presentations.routers.links import router as links_router
-app.include_router(links_router)
-```
-
----
-
-## 9) Нейминг и конвенции
-
-- Файлы по сущностям: `user.py`, `link.py` (единственное число).
-- PK по умолчанию — UUID (удобно для шардирования и импортов).
-- Время — через `TimestampMixin` (UTC предпочтительно).
-- Pydantic-схемы можно держать в роутере или вынести в `presentations/schemas/<entity>.py`, если их много.
-
----
-
-## 10) Ошибки и ответы
-
-- В **сервисах** бросайте доменные исключения (`ValueError`, свои `DomainError`).
-- В **роутерах** маппьте их на `HTTPException` с корректными статусами (404/409/422/...).
-- Не пропускайте raw SQL-ошибки наружу без нормального текста/статуса.
-
----
-
-## 11) Миграции
-
-- Dev: временно можно включить `Base.metadata.create_all()` в `init_db()`.
-- Prod: используйте **Alembic** (инициализация, ревизии, апгрейды).
-
-```mermaid
-sequenceDiagram
-    participant Dev as Developer
-    participant Alembic as Alembic CLI
-    participant DB as PostgreSQL
-    Dev->>Alembic: alembic revision --autogenerate -m "add link"
-    Alembic->>DB: сравнение моделей и схемы БД
-    Dev->>Alembic: alembic upgrade head
-    Alembic->>DB: применяет миграции
-```
-
----
-
-## 12) Запуск
+### 2) Docker
 
 ```bash
-cp .env.example .env
-docker compose up --build
-# Swagger: http://localhost:8000/docs
-# Health:  http://localhost:8000/system/health
+docker build -t teamfinder-backend .
+docker run --rm -p 8000:8000 --env-file .env teamfinder-backend
 ```
+
+PostgreSQL поднимается отдельно (локально или отдельным контейнером).
+
+
+### Инициализация схемы БД (dev)
+
+В репозитории нет Alembic‑миграций. Для локального dev можно создать таблицы через `Base.metadata.create_all()`.
+
+Особенность: в модели `Achievement` тип enum `achiev_place` помечен как `create_type=False`, поэтому **его нужно создать заранее**:
+
+```sql
+CREATE TYPE achiev_place AS ENUM ('firstPlace','secondPlace','thirdPlace','finalyst','participant');
+```
+
+Далее можно создать таблицы:
+
+```bash
+python -c "import asyncio; from infrastructure.db import engine; from persistend.base import Base;
+
+async def main():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+asyncio.run(main())"
+```
+
+
+## Swagger / OpenAPI
+
+- Swagger UI: `/docs`
+- OpenAPI JSON: `/openapi.json`
+
+В проде сервис обычно проксируется под префиксом `/api`. В коде это отражено через `root_path="/api"`.
+Если вы запускаете backend напрямую **без** прокси и в Swagger видите ошибку загрузки схемы (попытка получить `/api/openapi.json`),
+временно измените `root_path` в `presentations/app.py` (например, на пустую строку) или поднимайте сервис за прокси, который отрезает префикс `/api`.
 
 ---
 
-## 13) Чек-лист при добавлении фичи
+## Основные ручки API (high-level)
 
-- [ ] ORM-модель в `persistend/models`.
-- [ ] Репозиторий с запросами в `repositories`.
-- [ ] Сервис с бизнес-правилами в `services`.
-- [ ] Роутер + схемы в `presentations/routers` (+ подключить в `app.py`).
-- [ ] Проверить в Swagger (`/docs`).
-- [ ] (Prod) создать и прогнать миграцию Alembic.
+Полный список и схемы — в OpenAPI/Swagger.
+
+- Auth: `POST /auth/telegram`, `POST /auth/dev-login`
+- Users: `GET /users/me`, `PATCH /users/me`, `GET /users` (поиск)
+- Skills: `GET /skills`
+- Hackathons: `GET /hackathons`, `GET /hackathons/{id}`
+- Applications: `POST /hackathons/{hackathon_id}/applications/me`, `GET /me/applications`
+- Teams: создание/редактирование команды, управление участниками, join‑link
+- Vacancies: вакансии команды + список вакансий по хакатону
+- Responses: отклики на вакансии + принятие/отклонение капитаном
+- Invites: инвайты к анкетам + принятие/отклонение владельцем анкеты
+- Achievements: создание/листинг в `users.py`, update/delete в `achievements.py`
+
+---
+
+## Примечания по текущему состоянию (для защиты проекта)
+
+- Миграции Alembic в этом репозитории отсутствуют: предполагается, что схема БД разворачивается отдельно.
+- `persistend/enums.py` содержит повторяющиеся определения некоторых enum'ов (в Python используется последняя декларация).
+- В нескольких местах есть технический долг (например, принятие `Response` не завернуто в транзакцию).
+
+Эти пункты можно использовать как аргументы для «что бы улучшили дальше» на защите.

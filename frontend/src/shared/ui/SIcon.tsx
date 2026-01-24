@@ -1,10 +1,29 @@
-// src/shared/ui/TgIcon.tsx
-import React, { ComponentType, SVGProps, KeyboardEvent } from "react";
-import styled, { css } from "styled-components";
+import React, { KeyboardEvent } from 'react';
+import styled, { css } from 'styled-components';
 
-type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+import PlusIcon from '@/assets/icons/plusIcon.svg?react';
+import CrossIcon from '@/assets/icons/crossIcon.svg?react';
+import CaptainIcon from '@/assets/icons/captainIcon.svg?react';
+import DeleteIcon from '@/assets/icons/deleteIcon.svg?react';
+import EditIcon from '@/assets/icons/editIcon.svg?react';
+import InviteIcon from '@/assets/icons/inviteIcon.svg?react';
+import LeaveTeamIcon from '@/assets/icons/leaveTeamIcon.svg?react';
+import SentInviteIcon from '@/assets/icons/sentInvite.svg?react';
+import ShareIcon from '@/assets/icons/shareIcon.svg?react';
+import HackathonPrizeIcon from '@/assets/icons/hackathonCard/hackathonPrizeIcon.svg?react';
+import HackathonDateIcon from '@/assets/icons/hackathonCard/hackathonDateIcon.svg?react';
+import HackathonPlaceIcon from '@/assets/icons/hackathonCard/hackathonPlaceIcon.svg?react';
+import HackathonRegistrationIcon from '@/assets/icons/hackathonCard/hackathonRegistrationIcon.svg?react';
+import HackathonTeamIcon from '@/assets/icons/hackathonCard/hackathonTeamIcon.svg?react';
+import ProfileIcon from '@/assets/icons/navbarIcons/profileIcon.svg?react';
+import HackathonNavIcon from '@/assets/icons/navbarIcons/hackathonsIcon.svg?react';
+import TeamNavIcon from '@/assets/icons/navbarIcons/teamsIcon.svg?react';
+import ApplicationsNavIcon from '@/assets/icons/navbarIcons/applicationsIcon.svg?react';
+import ArrowIcon from '@/assets/icons/arrowIcon.svg?react';
+import SearchIcon from '@/assets/icons/searchIcon.svg?react';
+import FiltersIcon from '@/assets/icons/filtersIcon.svg?react';
 
-type SizeToken = "s" | "m" | "l" | "xl";
+type SizeToken = 's' | 'm' | 'l' | 'xl';
 
 const SIZE_MAP: Record<SizeToken, number> = {
   s: 16,
@@ -14,26 +33,53 @@ const SIZE_MAP: Record<SizeToken, number> = {
 };
 
 function toPx(size?: number | SizeToken): number {
-  if (typeof size === "number") return size;
-  return SIZE_MAP[size ?? "m"];
+  if (typeof size === 'number') return size;
+  return SIZE_MAP[size ?? 'm'];
 }
 
+const iconsMap = {
+  plus: PlusIcon,
+  cross: CrossIcon,
+  captain: CaptainIcon,
+  delete: DeleteIcon,
+  edit: EditIcon,
+  invite: InviteIcon,
+  leaveTeam: LeaveTeamIcon,
+  sentInvite: SentInviteIcon,
+  share: ShareIcon,
+  hackathonPrize: HackathonPrizeIcon,
+  hackathonDate: HackathonDateIcon,
+  hackathonPlace: HackathonPlaceIcon,
+  hackathonRegistration: HackathonRegistrationIcon,
+  hackathonTeam: HackathonTeamIcon,
+  profile: ProfileIcon,
+  appNav: ApplicationsNavIcon,
+  teamNav: TeamNavIcon,
+  arrow: ArrowIcon,
+  hacksNav: HackathonNavIcon,
+  search: SearchIcon,
+  filters: FiltersIcon,
+};
+
+export type IconName = keyof typeof iconsMap;
+
 export type SIconProps = {
-  icon: IconComponent | string;
+  name: IconName;
   size?: number | SizeToken;
   color?: string;
   clickable?: boolean;
   asButton?: boolean;
   className?: string;
   title?: string;
-  "aria-label"?: string;
+  'aria-label'?: string;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLSpanElement>;
+  active?: boolean;
 };
 
 export const SIcon: React.FC<SIconProps> = ({
-  icon,
-  size = "m",
+  name,
+  size = 'm',
   color,
   clickable,
   asButton,
@@ -41,16 +87,17 @@ export const SIcon: React.FC<SIconProps> = ({
   title,
   onClick,
   onKeyDown,
+  active = false,
   ...rest
 }) => {
   const px = toPx(size);
-  const isComponent = typeof icon !== "string";
-  const ariaHidden =
-    !title && !rest["aria-label"] ? { "aria-hidden": true } : {};
+  const Icon = iconsMap[name];
+
+  const ariaHidden = !title && !rest['aria-label'] ? { 'aria-hidden': true } : {};
 
   const handleKeyDown = (e: KeyboardEvent<HTMLSpanElement>) => {
     if (!asButton) return;
-    if (e.key === "Enter" || e.key === " ") {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       (e.currentTarget as HTMLSpanElement).click();
     }
@@ -60,9 +107,9 @@ export const SIcon: React.FC<SIconProps> = ({
   return (
     <Wrap
       $size={px}
-      $color={color}
+      $color={active ? 'var(--tg-theme-accent-text-color)' : color}
       $clickable={!!clickable || !!asButton}
-      role={asButton ? "button" : undefined}
+      role={asButton ? 'button' : undefined}
       tabIndex={asButton ? 0 : undefined}
       className={className}
       onClick={onClick}
@@ -71,15 +118,7 @@ export const SIcon: React.FC<SIconProps> = ({
       {...ariaHidden}
       {...rest}
     >
-      {isComponent ? (
-        React.createElement(icon as IconComponent, {
-          width: px,
-          height: px,
-          focusable: false,
-        })
-      ) : (
-        <img src={icon as string} alt={rest["aria-label"] ?? title ?? ""} />
-      )}
+      <Icon width={px} height={px} focusable={false} />
     </Wrap>
   );
 };
@@ -95,21 +134,42 @@ const Wrap = styled.span<{
   line-height: 1;
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
+  color: ${({ $color }) => $color ?? 'var(--tg-theme-text-color)'};
 
-  color: ${({ $color }) => $color ?? "currentColor"};
+  /* & > svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 
+  & > svg * {
+    fill: transparent;
+    stroke: currentColor;
+  } */
+
+  // станет:
   & > svg {
     width: 100%;
     height: 100%;
     display: block;
-    fill: currentColor;
+  }
+
+  /* Перекрашиваем ТОЛЬКО белые stroke в currentColor */
+  & > svg [stroke='white'],
+  & > svg [stroke='#fff'],
+  & > svg [stroke='#FFF'],
+  & > svg [stroke='#ffffff'],
+  & > svg [stroke='#FFFFFF'] {
     stroke: currentColor;
   }
-  & > img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: contain;
+
+  /* Перекрашиваем ТОЛЬКО белые fill в currentColor */
+  & > svg [fill='white'],
+  & > svg [fill='#fff'],
+  & > svg [fill='#FFF'],
+  & > svg [fill='#ffffff'],
+  & > svg [fill='#FFFFFF'] {
+    fill: currentColor;
   }
 
   ${({ $clickable }) =>

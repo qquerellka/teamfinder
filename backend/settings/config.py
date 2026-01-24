@@ -1,71 +1,84 @@
-from functools import lru_cache  # Для кэширования результатов функции
-from typing import List, Optional  # Для аннотаций типов (List, Optional)
-from pydantic_settings import BaseSettings, SettingsConfigDict  # Импорт классов для работы с настройками
+from functools import lru_cache
+from typing import List, Optional
+import os
 
-# Класс для управления настройками приложения с использованием pydantic
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
 class Settings(BaseSettings):
-    # ЯВНО: читать .env, игнорировать лишние ключи, не различать регистр
     model_config = SettingsConfigDict(
-        env_file=".env",  # Указываем файл .env для загрузки настроек
-        env_file_encoding="utf-8",  # Указываем кодировку для чтения файла .env
-        extra="ignore",  # Игнорируем любые лишние ключи в файле .env
-        case_sensitive=False,  # Не учитываем регистр при загрузке настроек
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
     )
 
     # ==== App ====
-    APP_NAME: str = "MyBackend"  # Название приложения
-    APP_VERSION: str = "0.1.0"  # Версия приложения
-    APP_ENV: str = "dev"  # Окружение (например, "dev", "prod")
+    APP_NAME: str = "MyBackend"
+    APP_VERSION: str = "0.1.0"
+    APP_ENV: str = "dev"
 
     # ==== CORS ====
-    CORS_ORIGINS: str = "*"  # Разрешенные источники для CORS. "*" означает разрешение всех источников.
+    CORS_ORIGINS: str = "*"
 
     # ==== Postgres ====
-    POSTGRES_HOST: str = "localhost"  # Хост для подключения к базе данных
-    POSTGRES_PORT: int = 5432  # Порт для подключения к базе данных
-    POSTGRES_DB: str = "app_db"  # Имя базы данных
-    POSTGRES_USER: str = "app_user"  # Пользователь базы данных
-    POSTGRES_PASSWORD: str = "app_password"  # Пароль пользователя базы данных
-    DATABASE_URL: Optional[str] = None  # URL для базы данных, если он указан (может переопределить другие параметры)
+    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "localhost")
+    POSTGRES_PORT: int = os.getenv("POSTGRES_PORT", 5432)
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "app_db")
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "app_user")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "app_password")
+    DATABASE_URL: Optional[str] = None
+    TG_BOT_USERNAME: str = os.getenv("TG_BOT_USERNAME", "teamfinder_test_bot")
+    TG_APP_NAME: str = os.getenv("TG_APP_NAME", "tfapp")
 
     # ==== Pool/Echo ====
-    DB_POOL_SIZE: int = 5  # Размер пула подключений к базе данных
-    DB_MAX_OVERFLOW: int = 10  # Максимальное количество переполненных подключений
-    DB_ECHO: bool = False  # Включение/выключение логирования SQL-запросов
+    DB_POOL_SIZE: int = 5
+    DB_MAX_OVERFLOW: int = 10
+    DB_ECHO: bool = False
 
-    # ==== Auth (ОБЯЗАТЕЛЬНО объявить, иначе будет extra_forbidden) ====
-    TELEGRAM_BOT_TOKEN: str = ""  # Токен для Telegram бота, должен быть заполнен в .env
-    JWT_SECRET: str = "dev-secret-change-me"  # Секрет для подписи JWT токенов
+    # ==== Auth ====
+    TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "dev-secret-change-me")
+    ADMIN_API_TOKEN: str = os.getenv("ADMIN_API_TOKEN", "")
 
-    # Метод, который возвращает список разрешенных источников CORS
+    # ==== S3 ====
+    S3_ENDPOINT: str = "https://storage.yandexcloud.net"
+    S3_BUCKET: str = ""
+    S3_ACCESS_KEY: str = ""
+    S3_SECRET_KEY: str = ""
+    S3_PUBLIC_BASE_URL: str = ""
+
+    S3_HACKATHON_MAX_SIZE_MB: int = 5
+    S3_HACKATHON_ALLOWED_TYPES: str = "image/jpeg,image/png,image/webp"
+
     @property
     def CORS_ORIGINS_LIST(self) -> List[str]:
-        # Если CORS_ORIGINS пуст, возвращаем пустой список
         if not self.CORS_ORIGINS:
             return []
-        # Если значение "*" (разрешены все источники), возвращаем список с одним элементом "*"
         if self.CORS_ORIGINS.strip() == "*":
             return ["*"]
-        # Разбиваем строку на список и удаляем лишние пробелы
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
-    # Метод, который возвращает строку подключения к базе данных
     @property
     def database_url(self) -> str:
-        # Если DATABASE_URL задан, возвращаем его значение
         if self.DATABASE_URL:
             return self.DATABASE_URL
-        # Если DATABASE_URL не задан, строим строку подключения на основе других параметров
         return (
             f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
 
-# Использование кэширования для хранения настроек и ускорения доступа к ним
+    @property
+    def S3_HACKATHON_ALLOWED_TYPES_LIST(self) -> List[str]:
+        raw = (self.S3_HACKATHON_ALLOWED_TYPES or "").strip()
+        if not raw:
+            return []
+        return [t.strip() for t in raw.split(",") if t.strip()]
+
+
 @lru_cache
 def _get_settings() -> Settings:
-    # Возвращаем объект настроек, который автоматически загрузит данные из .env
     return Settings()
 
-# Получаем настройки, вызывая кэшированную функцию
+
 settings = _get_settings()

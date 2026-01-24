@@ -1,83 +1,115 @@
-// import "@telegram-apps/telegram-ui/dist/styles.css";
-// import "./styles/index.css";
-// import "./styles/reset.css";
-// import ReactDOM from "react-dom/client";
-// import { StrictMode } from "react";
-// import { retrieveLaunchParams } from "@tma.js/sdk-react";
-// import { initData } from "@tma.js/sdk";
+import '@telegram-apps/telegram-ui/dist/styles.css';
+import './styles/index.css';
+import './styles/reset.css';
 
-// import { EnvUnsupported } from "@/app/EnvUnsupported.tsx";
-// import { init } from "@/app/init.ts";
+import ReactDOM from 'react-dom/client';
+import { StrictMode } from 'react';
+import { retrieveLaunchParams } from '@tma.js/sdk-react';
 
-// import "./mocks/mockEnv.ts";
-// import { App } from "./App.tsx";
+import { init } from '@/app/init';
+import { App } from './App';
+import { EnvUnsupported } from '@/app/EnvUnsupported';
+import { setInitDataRaw } from '@/shared/initDataStore';
 
-// const root = ReactDOM.createRoot(document.getElementById("root")!);
+function loadUmamiAnalytics() {
+  // Подключаем только в production режиме
+  if (import.meta.env.PROD) {
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = 'https://cloud.umami.is/script.js';
+    script.setAttribute('data-website-id', 'fd2a58b1-bd8f-4a06-8d93-7ff983757e42');
 
-// try {
-//   const launchParams = retrieveLaunchParams();
-//   const { initDataRaw } = retrieveLaunchParams();
-//   const { tgWebAppPlatform: platform } = launchParams;
-//   console.log(initDataRaw);
-//   const initDataString = initData.raw();
+    // Можно добавить дополнительные атрибуты для отладки
+    if (import.meta.env.DEV) {
+      console.log('Umami script would be loaded in production');
+    } else {
+      document.head.appendChild(script);
+      console.log('Umami analytics loaded');
+    }
+  } else {
+    console.log('Development mode - Umami analytics disabled');
+  }
+}
 
-  
+const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === 'true';
 
-//   const debug =
-//     (launchParams.tgWebAppStartParam || "").includes("debug") ||
-//     import.meta.env.DEV;
+if (import.meta.env.DEV || FORCE_BROWSER) {
+  await import('./mocks/mockEnv');
+}
 
-//   await init({
-//     debug,
-//     eruda: debug && ["ios", "android"].includes(platform),
-//     mockForMacOS: platform === "macos",
-//   }).then(() => {
-//     root.render(
-//       <StrictMode>
-//         <App str={initDataString} />
-//       </StrictMode>
-//     );
-//   });
-// } catch (e) {
-//   root.render(<EnvUnsupported />);
-// }
-import ReactDOM from "react-dom/client";
-import { StrictMode } from "react";
-import { retrieveLaunchParams } from "@tma.js/sdk-react";
-import { init } from "@/app/init";
-import { App } from "./App";
-import { EnvUnsupported } from "@/app/EnvUnsupported";
-import { resolveInitDataRaw } from "../shared/resolveInitDataRow";
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 
-const root = ReactDOM.createRoot(document.getElementById("root")!);
+// ---------- БРАУЗЕР (dev) ----------
 
-try {
-  const lp = retrieveLaunchParams();
-  const raw = resolveInitDataRaw();
-
-  console.log("[LP] platform:", lp.tgWebAppPlatform);
-  console.log("[LP] from SDK:", lp.initDataRaw);
-  console.log("[RAW] from TG:", (window as any)?.Telegram?.WebApp?.initData);
-  console.log("[RAW] from URL:", new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
-    || new URLSearchParams(location.search).get("tgWebAppData"));
-  console.log("[RESOLVED] initDataRaw:", raw);
-  const a = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData")
-    || new URLSearchParams(location.search).get("tgWebAppData")
-  const debug =
-    (lp.tgWebAppStartParam || "").includes("debug") || import.meta.env.DEV;
+async function bootstrapBrowser() {
+  const debug = true;
 
   await init({
     debug,
-    eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform),
-    mockForMacOS: false
+    eruda: false,
+    mockForMacOS: true,
   });
 
   root.render(
     <StrictMode>
-      <App str={a ?? ""} />
-    </StrictMode>
+      <App />
+    </StrictMode>,
   );
-} catch (e) {
-  console.error(e);
-  root.render(<EnvUnsupported />);
 }
+
+// ---------- TMA (prod) ----------
+
+async function bootstrapTMA() {
+  // 1) Явно описываем то, что нам нужно из launch params
+  const lp = retrieveLaunchParams() as {
+    initDataRaw?: string;
+    initData?: string;
+    tgWebAppStartParam?: string;
+    tgWebAppPlatform?: string;
+  };
+
+  const a =
+    new URLSearchParams(location.hash.slice(1)).get('tgWebAppData') ||
+    new URLSearchParams(location.search).get('tgWebAppData');
+
+  // 2) Жёстко задаём тип initDataRaw как string | undefined
+  const initDataRaw: string | undefined =
+    lp.initDataRaw ??
+    lp.initData ??
+    (window?.Telegram?.WebApp?.initData as string | undefined) ??
+    (a ? decodeURIComponent(a) : undefined);
+
+  setInitDataRaw(initDataRaw);
+
+  const debug = (lp.tgWebAppStartParam || '').includes('debug') || import.meta.env.DEV;
+
+  await init({
+    debug,
+    // eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform || ""),
+    eruda: true,
+    mockForMacOS: false,
+  });
+
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+}
+
+// ---------- ЕДИНАЯ ТОЧКА ВХОДА ----------
+
+(async () => {
+  try {
+    loadUmamiAnalytics();
+
+    if (FORCE_BROWSER || import.meta.env.DEV) {
+      await bootstrapBrowser();
+    } else {
+      await bootstrapTMA();
+    }
+  } catch (e) {
+    console.error(e);
+    root.render(<EnvUnsupported />);
+  }
+})();

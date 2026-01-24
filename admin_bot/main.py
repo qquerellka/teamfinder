@@ -1,4 +1,3 @@
-# admin_bot/main.py
 from __future__ import annotations
 
 import asyncio
@@ -8,8 +7,8 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from admin_bot.config import settings
-from admin_bot.handlers import hackathons
+from config import settings
+from handlers.hackathons import router
 
 
 async def main():
@@ -19,7 +18,7 @@ async def main():
     )
     dp = Dispatcher(storage=MemoryStorage())
 
-    dp.include_router(hackathons.router)
+    dp.include_router(router)
 
     await dp.start_polling(bot)
 

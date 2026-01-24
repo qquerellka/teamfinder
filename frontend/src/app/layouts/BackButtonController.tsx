@@ -1,25 +1,25 @@
-import { useCallback, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { backButton } from "@tma.js/sdk-react";
-import { paths } from "../routing/paths";
+import { useCallback, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { paths } from '@/shared/routing/paths';
+import { backButton, type BackButton } from '@tma.js/sdk-react';
 
 const TAB_ROUTES: ReadonlySet<string> = new Set([
   paths.hackathons,
-  paths.notifications,
-  paths.profile,
+  paths.applications,
+  paths.userRoot,
   paths.teams,
 ]);
 
 export default function BackButtonController() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const bb: BackButton = backButton;
 
-  // На таб-страницах скрываем кнопку, на внутренних — показываем
   useEffect(() => {
     const isTab = TAB_ROUTES.has(pathname);
-    try {
-      isTab ? backButton.hide() : backButton.show();
-    } catch { /* noop */ }
+    if (!bb.isSupported()) return;
+    if (isTab) bb.hide();
+    else bb.show();
   }, [pathname]);
 
   const handleClick = useCallback(() => {
@@ -27,17 +27,11 @@ export default function BackButtonController() {
     else navigate(paths.hackathons, { replace: true });
   }, [navigate]);
 
-  // совместимость разных версий sdk-react
   useEffect(() => {
-    const bb: any = backButton;
+    if (!bb.isSupported()) return;
 
-    if (typeof bb.onClick === "function") {
-      bb.onClick(handleClick);
-      return () => bb.offClick?.(handleClick);
-    }
-
-    bb.on?.("click", handleClick);
-    return () => bb.off?.("click", handleClick);
+    const off = bb.onClick(handleClick);
+    return () => off();
   }, [handleClick]);
 
   return null;

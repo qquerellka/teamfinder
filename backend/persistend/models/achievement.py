@@ -1,17 +1,3 @@
-# =============================================================================
-# ФАЙЛ: backend/persistend/models/achievement.py
-# КРАТКО: ORM-модель таблицы "achievements".
-# ЗАЧЕМ:
-#   • Хранит достижения пользователей по хакатонам (роль и место).
-#   • Даёт типобезопасный доступ к данным через ORM.
-#   • created_at/updated_at — из TimestampMixin.
-#
-# ПРИМЕЧАНИЯ:
-#   • В БД уже существуют ENUM-типы: role_type, achiev_place.
-#     Поэтому Enum(..., create_type=False) — типы не создаём, только ссылаемся.
-#   • Значения enum-ов ниже — пример. Приведите к вашему фактическому списку.
-# =============================================================================
-
 from __future__ import annotations
 
 import enum
@@ -20,8 +6,9 @@ from datetime import datetime
 from sqlalchemy import Integer, ForeignKey, Enum, DateTime, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.persistend.base import Base, TimestampMixin
-from backend.persistend.enums import RoleType, AchievementPlace
+from persistend.base import Base, TimestampMixin
+from persistend.enums import RoleType, AchievementPlace
+
 
 class Achievement(Base, TimestampMixin):
     __tablename__ = "achievements"

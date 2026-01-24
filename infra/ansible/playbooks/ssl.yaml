@@ -1,0 +1,45 @@
+---
+- name: Issue/renew LetsEncrypt cert for teamfinder
+  hosts: teamfinder
+  become: yes
+
+  vars:
+    nginx_container_name: "nginx"
+
+  vars_files:
+    - secrets/secrets.yaml
+
+  tasks:
+    - name: Ensure certbot is installed
+      apt:
+        name: certbot
+        state: present
+        update_cache: yes
+
+    - name: Check if certificate already exists
+      stat:
+        path: "/etc/letsencrypt/live/{{ teamfinder_domain }}/fullchain.pem"
+      register: cert_stat
+
+    - name: Stop nginx container if running
+      community.docker.docker_container:
+        name: "{{ nginx_container_name }}"
+        state: stopped
+      when: not cert_stat.stat.exists
+      ignore_errors: true
+
+    - name: Obtain initial LetsEncrypt SSL certificate via standalone
+      command: >
+        certbot certonly
+        --standalone
+        --non-interactive --agree-tos
+        -m {{ letsencrypt_email }}
+        -d {{ teamfinder_domain }}
+      when: not cert_stat.stat.exists
+
+    - name: Create cron job for automatic renewal (standalone, with nginx stop/start)
+      cron:
+        name: "Renew LetsEncrypt certificate for teamfinder"
+        minute: "0"
+        hour: "3"
+        job: "/usr/bin/certbot renew --quiet --pre-hook '/usr/bin/docker stop {{ nginx_container_name }}' --post-hook '/usr/bin/docker start {{ nginx_container_name }}'"

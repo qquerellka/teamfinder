@@ -1,10 +1,11 @@
 import { emitEvent, isTMA, mockTelegramEnv } from '@tma.js/sdk-react';
+const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === 'true';
 
 // It is important, to mock the environment only for development purposes. When building the
 // application, import.meta.env.DEV will become false, and the code inside will be tree-shaken,
 // so you will not see it in your final bundle.
-if (import.meta.env.DEV) {
-  if (!await isTMA('complete')) {
+if (import.meta.env.DEV || FORCE_BROWSER) {
+  if (!(await isTMA('complete'))) {
     const themeParams = {
       accent_text_color: '#6ab2f2',
       bg_color: '#17212b',
@@ -61,12 +62,15 @@ if (import.meta.env.DEV) {
         // user=%7B%22id%22%3A279058397%2C%22first_name%22%3A%22Vladislav%22%2C%22last_name%22...
         // ```
         // But in case you don't really need a valid init data, use this one:
-        ['tgWebAppData', new URLSearchParams([
-          ['auth_date', (new Date().getTime() / 1000 | 0).toString()],
-          ['hash', 'some-hash'],
-          ['signature', 'some-signature'],
-          ['user', JSON.stringify({ id: 1, first_name: 'Vladislav' })],
-        ]).toString()],
+        [
+          'tgWebAppData',
+          new URLSearchParams([
+            ['auth_date', ((new Date().getTime() / 1000) | 0).toString()],
+            ['hash', 'some-hash'],
+            ['signature', 'some-signature'],
+            ['user', JSON.stringify({ id: 1, first_name: 'Vladislav' })],
+          ]).toString(),
+        ],
         ['tgWebAppVersion', '8.4'],
         ['tgWebAppPlatform', 'tdesktop'],
       ]),

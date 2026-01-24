@@ -1,10 +1,9 @@
-# admin_bot/services/api_client.py
 from __future__ import annotations
 
 import httpx
 from httpx import HTTPStatusError
 
-from admin_bot.config import settings
+from config import settings
 
 
 async def create_hackathon(payload: dict) -> dict:
@@ -12,8 +11,9 @@ async def create_hackathon(payload: dict) -> dict:
         resp = await client.post(
             "/hackathons",
             json=payload,
-            headers={"Authorization": f"Bearer {settings.api_token}"},
+            headers={"X-Admin-Token": settings.api_token},
         )
+
         try:
             resp.raise_for_status()
         except HTTPStatusError as e:
