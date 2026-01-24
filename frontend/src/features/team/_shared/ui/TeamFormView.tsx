@@ -33,7 +33,7 @@ type Props = CreateProps | EditProps;
 
 const parseRole = (raw: string): Role | '' => (raw ? (raw as Role) : '');
 
-export const TeamFormView: FC<Props> = props => {
+export const TeamFormView: FC<Props> = (props) => {
   const {
     hackathonName,
     name,

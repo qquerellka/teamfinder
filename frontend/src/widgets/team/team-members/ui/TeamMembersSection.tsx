@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Avatar } from '@telegram-apps/telegram-ui';
 
 import type { TeamWithMembers } from '@/entities/team';
-import { SIcon, SText } from '@/shared/ui';
+import { ConfirmModal, SIcon, SText } from '@/shared/ui';
 import { useRemoveTeamMember } from '@/features/team-member/remove';
 import { useNavigate } from 'react-router-dom';
 import { getUserPath } from '@/shared/routing/paths';
@@ -55,51 +55,68 @@ const TeamMemberRow: FC<{
   onNavigate: () => void;
 }> = ({ teamId, member, canRemove, onNavigate }) => {
   const fullName = `${member.user.firstName ?? ''} ${member.user.lastName ?? ''}`.trim();
-  const { remove, isRemoving } = useRemoveTeamMember({
+  const {
+    remove,
+    isRemoving,
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    cancel,
+  } = useRemoveTeamMember({
     teamId,
     userId: member.user.id,
   });
 
   return (
-    <Row onClick={onNavigate}>
-      <AvatarWrapper>
-        <Avatar size={40} src={member.user.avatarUrl}>
-          {member.user.firstName?.[0]}
-        </Avatar>
-      </AvatarWrapper>
+    <>
+      <Row onClick={onNavigate}>
+        <AvatarWrapper>
+          <Avatar size={40} src={member.user.avatarUrl}>
+            {member.user.firstName?.[0]}
+          </Avatar>
+        </AvatarWrapper>
 
-      <Info>
-        <Names>
-          <SText $fs={16} $fw={600}>
-            {fullName || 'Без имени'}
-          </SText>
-        </Names>
-
-        <Meta>
-          <SText $fs={14}>{member.role}</SText>
-          {member.user.username && (
-            <SText $fs={14} style={{ opacity: 0.8 }}>
-              @{member.user.username}
+        <Info>
+          <Names>
+            <SText $fs={16} $fw={600}>
+              {fullName || 'Без имени'}
             </SText>
-          )}
-        </Meta>
-      </Info>
+          </Names>
 
-      {member.isCaptain ? (
-        <SIcon name="captain" color="#F3BD28" />
-      ) : canRemove ? (
-        <SIcon
-          name="cross"
-          color="#F55A5A"
-          onClick={e => {
-            e.stopPropagation();
-            if (!isRemoving) remove();
-          }}
-        />
-      ) : (
-        <Spacer />
-      )}
-    </Row>
+          <Meta>
+            <SText $fs={14}>{member.role}</SText>
+            {member.user.username && (
+              <SText $fs={14} style={{ opacity: 0.8 }}>
+                @{member.user.username}
+              </SText>
+            )}
+          </Meta>
+        </Info>
+
+        {member.isCaptain ? (
+          <SIcon name="captain" color="#F3BD28" />
+        ) : canRemove ? (
+          <SIcon
+            name="cross"
+            color="#F55A5A"
+            onClick={e => {
+              e.stopPropagation();
+              openDeleteModal();
+            }}
+          />
+        ) : (
+          <Spacer />
+        )}
+      </Row>
+      <ConfirmModal
+        open={isDeleteModalOpen}
+        title="Удалить участника?"
+        confirmText="Удалить"
+        cancelText="Отмена"
+        loading={isRemoving}
+        onConfirm={remove}
+        onCancel={cancel}
+      />
+    </>
   );
 };
 
