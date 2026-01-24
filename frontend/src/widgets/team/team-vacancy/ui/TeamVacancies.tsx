@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { TeamWithMembers } from '@/entities/team';
 import { useTeamVacancies } from '@/entities/vacancy';
 import { CreateVacancyForm } from '@/features/vacancy/create';
@@ -14,7 +14,7 @@ import { Button } from '@telegram-apps/telegram-ui';
 export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
   const { data: vacancies } = useTeamVacancies(team.id);
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [addVacancy, setAddVacancy] = useState<boolean>(false);
 
   if (!vacancies || vacancies.length === 0 || addVacancy) {
@@ -38,7 +38,7 @@ export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
           team={team}
           vacancy={v}
           onEditClick={() => setIsEditing(true)}
-          onDeleted={() => navigate(-1)}
+          onDeleted={() => console.log("vacancy deleted")}
         />
       ))}
 
