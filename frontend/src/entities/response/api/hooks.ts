@@ -91,9 +91,20 @@ export function useUpdateResponse() {
         queryKey: responseKeys.byVacancy(data.vacancyId),
       });
 
-      if (data.teamId) {
+      if (data.teamId && data.status === 'accepted') {
+        // Инвалидируем членов команды
         queryClient.invalidateQueries({
-          queryKey: responseKeys.byTeam(data.teamId),
+          queryKey: ['teams', data.teamId, 'members'],
+        });
+
+        // Также инвалидируем саму команду
+        queryClient.invalidateQueries({
+          queryKey: ['teams', data.teamId],
+        });
+
+        // Инвалидируем vacancies этой команды
+        queryClient.invalidateQueries({
+          queryKey: ['vacancies', 'team', data.teamId],
         });
       }
 
