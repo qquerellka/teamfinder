@@ -76,7 +76,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
             <Button
               onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
               stretched
-              disabled={isCopying}
+              disabled={isCopying || team.members.length >= team.teamMembersLimit}
             >
               Найти участников
             </Button>
