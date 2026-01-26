@@ -205,7 +205,7 @@ async def _build_vacancy_card(vac) -> VacancyOut:
 @router.get("/teams/{team_id}/vacancies", response_model=VacancyListOut)
 async def list_team_vacancies(
     team_id: int = Path(..., ge=1),
-    status_param: Optional[VacancyStatus] = Query(default=None, alias="status"),
+    status_param: Optional[VacancyStatus] = Query(default=VacancyStatus.open, alias="status"),
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     current_user_id: int = Depends(get_current_user_id),

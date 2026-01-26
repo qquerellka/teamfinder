@@ -163,11 +163,13 @@ async def list_hackathon_applications(
     ),
     limit: int = Query(default=20, ge=1, le=100, description="Размер страницы"),
     offset: int = Query(default=0, ge=0, description="Смещение от начала списка"),
+    status: Optional[ApplicationStatus] = Query(default=ApplicationStatus.published, description="Статус получаемых анкет"),
     _me: int = Depends(get_current_user_id),
 ):
     rows = await apps_service.search(
         hackathon_id=hackathon_id,
         role=role.value if role else None,
+        status=status,
         q=q,
         limit=limit,
         offset=offset,
