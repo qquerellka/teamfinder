@@ -73,7 +73,7 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
         </Button>
 
         {onCancel && (
-          <Button mode="bezeled" stretched onClick={onCancel} disabled={loading}>
+          <Button mode="white" stretched onClick={onCancel} disabled={loading}>
             Отмена
           </Button>
         )}

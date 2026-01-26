@@ -62,7 +62,7 @@ export const ApplicationFormView: FC<ApplicationFormViewProps> = ({
         </Button>
 
         {onCancel && (
-          <Button mode="bezeled" stretched onClick={onCancel} disabled={loading}>
+          <Button mode="white" stretched onClick={onCancel} disabled={loading}>
             Отмена
           </Button>
         )}

@@ -10,3 +10,4 @@ export * from './ErrorText';
 export * from './ConfirmModal';
 export * from './TeamLoad';
 export * from './NoItems';
+export * from './ButtonsSection';

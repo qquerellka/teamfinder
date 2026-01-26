@@ -30,7 +30,7 @@ export function AppErrorFallback({ error, resetErrorBoundary }: AppErrorFallback
         description="Попробуйте повторить. Если ошибка повторяется, перезапустите приложение."
       >
         <Buttons>
-          <Button mode="bezeled" size="m" onClick={handleRetry} disabled={!resetErrorBoundary}>
+          <Button mode="white" size="m" onClick={handleRetry} disabled={!resetErrorBoundary}>
             Повторить
           </Button>
 

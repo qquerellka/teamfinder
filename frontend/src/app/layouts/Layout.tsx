@@ -13,7 +13,6 @@ export default function RootLayout() {
   useEffect(() => {
     const handleResize = () => {
       const currentHeight = window.innerHeight;
-
       document.documentElement.style.setProperty('--vh', `${currentHeight * 0.01}px`);
 
       const heightDifference = initialHeight - currentHeight;
@@ -41,11 +40,11 @@ export default function RootLayout() {
           <Outlet />
         </SContent>
 
-        <SFooterFixed style={{ display: isKeyboardVisible ? 'none' : 'block' }}>
+        <FixedLayout vertical="bottom" style={{ display: isKeyboardVisible ? 'none' : 'block' }}>
           <SFooterInner ref={footerRef}>
             <Navbar />
           </SFooterInner>
-        </SFooterFixed>
+        </FixedLayout>
       </SRoot>
     </>
   );
@@ -58,22 +57,17 @@ const SRoot = styled.div`
   margin: 0 auto;
   background: var(--tg-theme-secondary-bg-color, #fff);
   padding: 1rem;
-  display: flex;
-  flex-direction: column;
 `;
 
 const SContent = styled.div<{ $top: number; $bottom: number }>`
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding-top: ${({ $top }) => $top + 12}px;
   padding-bottom: ${({ $bottom }) => $bottom + 12}px;
+  /* position: relative; */
 `;
-
-const SFooterFixed = styled(FixedLayout).attrs({
-  vertical: 'bottom',
-  Component: 'footer',
-})``;
 
 const SFooterInner = styled.div`
   border-radius: 1rem 1rem 0 0;

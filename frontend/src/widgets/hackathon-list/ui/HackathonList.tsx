@@ -114,7 +114,7 @@ export const HackathonList: FC = () => {
           </Cell>
           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
             <Button
-              mode="bezeled"
+              mode="white"
               type="button"
               stretched
               // disabled={loading}

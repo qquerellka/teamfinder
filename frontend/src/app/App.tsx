@@ -25,7 +25,6 @@ function AppInner() {
           resetKeys={[location.key]}
           onReset={() => {
             reset();
-            // чтобы “повторить” реально перезапускало запросы
             queryClient.invalidateQueries({
               predicate: q => q.queryKey[0] !== 'auth',
             });

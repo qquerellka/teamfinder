@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import type { TeamWithMembers } from '@/entities/team';
 import { useAuthUser } from '@/entities/user';
 
-import { InputSection, SIcon, SText } from '@/shared/ui';
+import { InputSection, SIcon, SText, ButtonsSection } from '@/shared/ui';
 import { getFindTeamMembersPath } from '@/shared/routing/paths';
 
 import { useCopyTeamInviteLink } from '@/features/team/copy-invite-link';
@@ -32,7 +32,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
   return (
     <Root>
       <Header>
-        <div />
+        <div style={{width: 32}} />
         <SText $fs={14} $fw={500}>
           {isMember ? 'Моя команда' : 'Команда'}
         </SText>
@@ -65,9 +65,9 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
         canRemoveMembers={isCaptain}
       />
       {isMember && (
-        <Buttons>
+        <ButtonsSection>
           {isCaptain && (
-            <SButton mode="bezeled" onClick={copy} stretched disabled={isCopying}>
+            <SButton mode="white" onClick={copy} stretched disabled={isCopying}>
               {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
             </SButton>
           )}
@@ -81,13 +81,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
               Найти участников
             </SButton>
           )}
-
-          {/* {!isCaptain && (
-            <SButton mode="bezeled" onClick={leave} stretched disabled={isLeaving}>
-              Покинуть команду
-            </SButton>
-          )} */}
-        </Buttons>
+        </ButtonsSection>
       )}
     </Root>
   );
@@ -106,14 +100,6 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-const Buttons = styled.div`
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 `;
 
 const SButton = styled(Button)`

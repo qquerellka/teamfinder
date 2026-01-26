@@ -3,7 +3,7 @@ import { Button, Input, Select, Textarea } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
-import { InputSection } from '@/shared/ui';
+import { InputSection, ButtonsSection } from '@/shared/ui';
 
 type BaseProps = {
   hackathonName: string;
@@ -33,7 +33,7 @@ type Props = CreateProps | EditProps;
 
 const parseRole = (raw: string): Role | '' => (raw ? (raw as Role) : '');
 
-export const TeamFormView: FC<Props> = (props) => {
+export const TeamFormView: FC<Props> = props => {
   const {
     hackathonName,
     name,
@@ -89,7 +89,7 @@ export const TeamFormView: FC<Props> = (props) => {
         </SButton>
 
         {onCancel && (
-          <SButton mode="bezeled" stretched onClick={onCancel} disabled={loading}>
+          <SButton mode="white" stretched onClick={onCancel} disabled={loading}>
             Отмена
           </SButton>
         )}
@@ -98,13 +98,19 @@ export const TeamFormView: FC<Props> = (props) => {
   );
 };
 
-const ButtonsSection = styled.div`
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
+// const ButtonsSection = styled.div`
+//   margin-top: auto;
+//   padding-bottom: env(safe-area-inset-bottom, 0);
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.5rem;
+
+//   margin-top: auto;
+//   padding-bottom: env(safe-area-inset-bottom, 0);
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.5rem;
+// `;
 
 const SButton = styled(Button)`
   width: 100%;

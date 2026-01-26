@@ -16,7 +16,7 @@ import {
 
 import { normalizeUrl } from '@/shared/helpers/url';
 import { Page } from '@/shared/ui';
-import { ConfirmModal } from '@/shared/ui/ConfirmModal';
+import { ConfirmModal, ButtonsSection } from '@/shared/ui/';
 import { useMyTeamOnHackathon } from '@/entities/team';
 
 const HackathonPage: React.FC = () => {
@@ -76,7 +76,7 @@ const HackathonPage: React.FC = () => {
       setIsSkillsModalOpen(true);
       return;
     }
-    
+
     if (id) navigate(getHackathonCreateTeamPath(Number(id)));
   };
 
@@ -91,7 +91,7 @@ const HackathonPage: React.FC = () => {
         <HackathonCard hackathon={hackathon} variant="full" />
         {application ? (
           <ButtonsSection>
-            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+            <SButton mode="white" onClick={openExternal} disabled={!url}>
               Подробнее
             </SButton>
 
@@ -101,7 +101,7 @@ const HackathonPage: React.FC = () => {
           </ButtonsSection>
         ) : team ? (
           <ButtonsSection>
-            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+            <SButton mode="white" onClick={openExternal} disabled={!url}>
               Подробнее
             </SButton>
 
@@ -111,7 +111,7 @@ const HackathonPage: React.FC = () => {
           </ButtonsSection>
         ) : (
           <ButtonsSection>
-            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+            <SButton mode="white" onClick={openExternal} disabled={!url}>
               Подробнее
             </SButton>
 
@@ -129,7 +129,7 @@ const HackathonPage: React.FC = () => {
         open={isSkillsModalOpen}
         title="Чтобы участвовать в хакатоне, добавьте хотя бы один навык в свой профиль."
         cancelText="Потом"
-        confirmText="Заполнить профиль"
+        confirmText="Заполнить"
         loading={false}
         onCancel={() => setIsSkillsModalOpen(false)}
         onConfirm={handleGoToProfile}
@@ -142,11 +142,4 @@ export default HackathonPage;
 
 const SButton = styled(Button)`
   width: 100%;
-`;
-
-const ButtonsSection = styled.div`
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 `;

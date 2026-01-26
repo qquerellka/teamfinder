@@ -22,13 +22,13 @@ export const TeamCard: FC<TeamCardProps> = ({
   invitesCount,
 }) => {
   return (
-    <Wrapper>
+    <Wrapper onClick={onNavigate} >
       <Row>
         <Name>
           <SText>{teamName}</SText>
           {isCaptain && <SIcon name={'captain'} color={'#F3BD28'}></SIcon>}
         </Name>
-        <SIcon onClick={onNavigate} name={'arrow'} />
+        <SIcon name={'arrow'} />
       </Row>
       {invitesCount > 0 ? (
         <>
