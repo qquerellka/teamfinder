@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, List
 
-from persistend.enums import ResponseStatus, RoleType, ApplicationStatus, VacancyStatus
-from persistend.models.response import Response
-from persistend.models.vacancy import Vacancy
-from persistend.models.team import Team
-from persistend.models.application import Application
+from persistent.enums import ResponseStatus, RoleType, ApplicationStatus, VacancyStatus
+from persistent.models.response import Response
+from persistent.models.vacancy import Vacancy
+from persistent.models.team import Team
+from persistent.models.application import Application
 
 from repositories.responses import ResponsesRepo
 from repositories.vacancies import VacanciesRepo

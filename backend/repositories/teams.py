@@ -6,11 +6,11 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import aliased
 
 from repositories.base import BaseRepository
-from persistend.enums import TeamStatus, RoleType, InviteStatus
-from persistend.models.hackathon import Hackathon
-from persistend.models.team import Team
-from persistend.models.team_member import TeamMember
-from persistend.models.invite import Invite
+from persistent.enums import TeamStatus, RoleType, InviteStatus
+from persistent.models.hackathon import Hackathon
+from persistent.models.team import Team
+from persistent.models.team_member import TeamMember
+from persistent.models.invite import Invite
 
 
 class TeamsRepo(BaseRepository):

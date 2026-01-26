@@ -56,7 +56,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
-      - API_URL=${API_URL}
+      - API_URL=${API_URL} 
       - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
       - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
       - S3_BUCKET=${S3_BUCKET}

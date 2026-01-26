@@ -3,8 +3,8 @@ from __future__ import annotations
 from sqlalchemy import Integer, Enum as SAEnum, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from persistend.base import Base, TimestampMixin
-from persistend.enums import ResponseStatus
+from persistent.base import Base, TimestampMixin
+from persistent.enums import ResponseStatus
 
 
 class Response(Base, TimestampMixin):

@@ -17,7 +17,7 @@ from settings.config import settings
 from repositories.users import UsersRepo
 from repositories.achievements import AchievementsRepo
 from utils import jwt_simple
-from persistend.models import achievement as m_ach
+from persistent.models import achievement as m_ach
 from repositories.hackathons import HackathonsRepo
 router = APIRouter(prefix="/users", tags=["users"])
 

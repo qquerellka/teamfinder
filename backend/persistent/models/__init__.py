@@ -1,4 +1,4 @@
-from persistend.base import Base
+from persistent.base import Base
 
 from .users import User
 from .hackathon import Hackathon

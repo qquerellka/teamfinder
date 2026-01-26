@@ -8,7 +8,7 @@ from typing import Any, Optional, List
 from fastapi import UploadFile
 
 from repositories.hackathons import HackathonsRepo
-from persistend.models import hackathon as m_hack
+from persistent.models import hackathon as m_hack
 from infrastructure.telegram_files import download_telegram_file
 from infrastructure.s3_client import (
     upload_hackathon_image_to_s3,

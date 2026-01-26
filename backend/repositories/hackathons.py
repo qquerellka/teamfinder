@@ -5,8 +5,8 @@ from typing import Any, List, Optional
 from sqlalchemy import select
 
 from repositories.base import BaseRepository
-from persistend.models import hackathon as m_hack
-from persistend.enums import HackathonStatus
+from persistent.models import hackathon as m_hack
+from persistent.enums import HackathonStatus
 
 
 class HackathonsRepo(BaseRepository):

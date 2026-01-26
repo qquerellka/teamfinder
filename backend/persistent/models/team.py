@@ -4,8 +4,8 @@ from typing import Optional, List
 from sqlalchemy import Integer, Text, Boolean, Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from persistend.base import Base, TimestampMixin
-from persistend.enums import TeamStatus
+from persistent.base import Base, TimestampMixin
+from persistent.enums import TeamStatus
 
 
 class Team(Base, TimestampMixin):

@@ -28,7 +28,7 @@ graph TD
     A[HTTP запрос] --> B[FastAPI routers (presentations/routers)]
     B --> C[Services (services/*)]
     C --> D[Repositories (repositories/*)]
-    D --> E[ORM models (persistend/models)]
+    D --> E[ORM models (persistent/models)]
     E --> F[(PostgreSQL)]
 
     B --> G[Auth: JWT + Telegram init_data]
@@ -45,7 +45,7 @@ backend/
     routers/                 # HTTP-слой: эндпоинты + Pydantic-схемы
   services/                  # бизнес-логика/оркестрация (hackathons, teams, invites...)
   repositories/              # доступ к данным (SQLAlchemy async)
-  persistend/                # ORM-модели и enum'ы (название папки историческое)
+  persistent/                # ORM-модели и enum'ы (название папки историческое)
   infrastructure/            # db engine/session, S3, Telegram files, admin auth
   settings/                  # конфигурация (pydantic-settings)
   utils/                     # JWT и Telegram init_data
@@ -222,7 +222,7 @@ CREATE TYPE achiev_place AS ENUM ('firstPlace','secondPlace','thirdPlace','final
 Далее можно создать таблицы:
 
 ```bash
-python -c "import asyncio; from infrastructure.db import engine; from persistend.base import Base;
+python -c "import asyncio; from infrastructure.db import engine; from persistent.base import Base;
 
 async def main():
     async with engine.begin() as conn:
@@ -263,7 +263,7 @@ asyncio.run(main())"
 ## Примечания по текущему состоянию (для защиты проекта)
 
 - Миграции Alembic в этом репозитории отсутствуют: предполагается, что схема БД разворачивается отдельно.
-- `persistend/enums.py` содержит повторяющиеся определения некоторых enum'ов (в Python используется последняя декларация).
+- `persistent/enums.py` содержит повторяющиеся определения некоторых enum'ов (в Python используется последняя декларация).
 - В нескольких местах есть технический долг (например, принятие `Response` не завернуто в транзакцию).
 
 Эти пункты можно использовать как аргументы для «что бы улучшили дальше» на защите.

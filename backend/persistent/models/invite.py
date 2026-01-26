@@ -6,8 +6,8 @@ from typing import Optional
 from sqlalchemy import Integer, Enum as SAEnum, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from persistend.base import Base, CreatedAtMixin
-from persistend.enums import InviteStatus, RoleType
+from persistent.base import Base, CreatedAtMixin
+from persistent.enums import InviteStatus, RoleType
 
 
 class Invite(Base, CreatedAtMixin):

@@ -6,10 +6,10 @@ from sqlalchemy import select, func, update
 from sqlalchemy.orm import joinedload
 
 from repositories.base import BaseRepository
-from persistend.enums import ResponseStatus
-from persistend.models.response import Response
-from persistend.models.vacancy import Vacancy
-from persistend.models.team import Team
+from persistent.enums import ResponseStatus
+from persistent.models.response import Response
+from persistent.models.vacancy import Vacancy
+from persistent.models.team import Team
 
 
 class ResponsesRepo(BaseRepository):

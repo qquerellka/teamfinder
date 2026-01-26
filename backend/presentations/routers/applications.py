@@ -20,10 +20,10 @@ from pydantic import BaseModel, Field
 from presentations.routers.users import get_current_user_id
 from repositories.users import UsersRepo
 from repositories.hackathons import HackathonsRepo
-from persistend.enums import RoleType, ApplicationStatus, HackathonMode
+from persistent.enums import RoleType, ApplicationStatus, HackathonMode
 from services.applications import ApplicationsService
 from repositories.invites import invites_repo
-from persistend.enums import InviteStatus
+from persistent.enums import InviteStatus
 
 router = APIRouter(tags=["applications"])
 

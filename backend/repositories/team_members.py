@@ -6,8 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from repositories.base import BaseRepository
-from persistend.enums import RoleType
-from persistend.models.team_member import TeamMember
+from persistent.enums import RoleType
+from persistent.models.team_member import TeamMember
 
 
 class TeamMembersRepo(BaseRepository):

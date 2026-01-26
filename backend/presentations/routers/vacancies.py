@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import BaseModel
 
 from presentations.routers.users import get_current_user_id
-from persistend.enums import (
+from persistent.enums import (
     RoleType,
     VacancyStatus,
     ResponseStatus,

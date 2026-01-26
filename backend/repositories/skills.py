@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy import select
 
 from repositories.base import BaseRepository
-from persistend.models.skill import Skill  # модель skills
+from persistent.models.skill import Skill  # модель skills
 
 
 class SkillsRepo(BaseRepository):

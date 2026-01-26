@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-from persistend.enums import AchievementPlace, RoleType
-from persistend.models import achievement as m_ach
+from persistent.enums import AchievementPlace, RoleType
+from persistent.models import achievement as m_ach
 from repositories.achievements import AchievementsRepo
 
 

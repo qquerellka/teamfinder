@@ -5,7 +5,7 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
-from persistend.enums import InviteStatus, RoleType
+from persistent.enums import InviteStatus, RoleType
 from services.invites import InvitesService, InviteWithContext
 from presentations.routers.users import get_current_user_id
 
