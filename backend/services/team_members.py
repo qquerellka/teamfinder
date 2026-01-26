@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Optional
 
-from repositories.team_members import TeamMembersRepo
+from repositories.team_members import team_members_repo
 from persistend.enums import RoleType
 from persistend.models.team_member import TeamMember
 
@@ -13,7 +13,7 @@ class TeamMembersService:
     """
 
     def __init__(self) -> None:
-        self.repo = TeamMembersRepo()
+        self.repo = team_members_repo
 
     async def list_members(self, team_id: int) -> List[TeamMember]:
         return await self.repo.list_members(team_id)

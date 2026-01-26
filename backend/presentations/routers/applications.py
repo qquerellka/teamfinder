@@ -22,7 +22,7 @@ from repositories.users import UsersRepo
 from repositories.hackathons import HackathonsRepo
 from persistend.enums import RoleType, ApplicationStatus, HackathonMode
 from services.applications import ApplicationsService
-from repositories.invites import InvitesRepo
+from repositories.invites import invites_repo
 from persistend.enums import InviteStatus
 
 router = APIRouter(tags=["applications"])
@@ -30,7 +30,7 @@ router = APIRouter(tags=["applications"])
 users_repo = UsersRepo()
 hacks_repo = HackathonsRepo()
 apps_service = ApplicationsService()
-invites_repo = InvitesRepo()
+invites_repo = invites_repo
 
 
 # ---- СХЕМЫ ----

@@ -15,7 +15,7 @@ from persistend.models.application import Application
 from persistend.models.team_member import TeamMember
 from persistend.models.hackathon import Hackathon
 
-from repositories.invites import InvitesRepo
+from repositories.invites import invites_repo, InvitesRepo
 from repositories.teams import TeamsRepo
 from repositories.applications import ApplicationsRepo
 from repositories.hackathons import HackathonsRepo
@@ -41,13 +41,13 @@ class InvitesService:
 
     def __init__(
         self,
-        invites_repo: Optional[InvitesRepo] = None,
+        invites_repository: Optional[InvitesRepo] = None,
         applications_repo: Optional[ApplicationsRepo] = None,
         teams_repo: Optional[TeamsRepo] = None,
         hackathons_repo: Optional[HackathonsRepo] = None,
         sessionmaker: Optional[async_sessionmaker[AsyncSession]] = None,
     ) -> None:
-        self.invites = invites_repo or InvitesRepo()
+        self.invites = invites_repository or invites_repo
         self.apps = applications_repo or ApplicationsRepo()
         self.teams = teams_repo or TeamsRepo()
         self.hacks = hackathons_repo or HackathonsRepo()

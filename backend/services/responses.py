@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Sequence, List
+from typing import Optional, List
 
-from persistend.enums import ResponseStatus, RoleType
+from persistend.enums import ResponseStatus, RoleType, ApplicationStatus, VacancyStatus
 from persistend.models.response import Response
 from persistend.models.vacancy import Vacancy
 from persistend.models.team import Team
@@ -12,7 +12,9 @@ from persistend.models.application import Application
 from repositories.responses import ResponsesRepo
 from repositories.vacancies import VacanciesRepo
 from repositories.teams import TeamsRepo
+from repositories.team_members import team_members_repo, TeamMembersRepo
 from repositories.applications import ApplicationsRepo
+from repositories.invites import invites_repo, InvitesRepo
 
 
 @dataclass(frozen=True)
@@ -39,12 +41,16 @@ class ResponsesService:
         responses_repo: Optional[ResponsesRepo] = None,
         vacancies_repo: Optional[VacanciesRepo] = None,
         teams_repo: Optional[TeamsRepo] = None,
+        team_members_repository: Optional[TeamMembersRepo] = None,
+        invites_repository: Optional[InvitesRepo] = None,
         applications_repo: Optional[ApplicationsRepo] = None,
         max_active_per_application: int = 10,
     ) -> None:
         self.responses = responses_repo or ResponsesRepo()
         self.vacancies = vacancies_repo or VacanciesRepo()
         self.teams = teams_repo or TeamsRepo()
+        self.team_members = team_members_repository or team_members_repo
+        self.invites = invites_repository or invites_repo
         self.apps = applications_repo or ApplicationsRepo()
         self.max_active_per_application = max_active_per_application
 
@@ -71,6 +77,63 @@ class ResponsesService:
     async def _ensure_captain(self, team: Team, current_user_id: int) -> None:
         if team.captain_id != current_user_id:
             raise PermissionError("not_team_captain")
+
+    async def _process_acceptance(
+        self,
+        response: Response,
+        vacancy: Vacancy,
+        team: Team,
+        application: Application,
+    ) -> Response:
+        """
+        Обработка принятия отклика и присоединения пользователя к команде
+        """
+        if application.status != ApplicationStatus.published:
+            raise ValueError("application_not_active")
+
+        updated_response = await self.responses.update_status(
+            response_id=response.id,
+            status=ResponseStatus.accepted
+        )
+        if not updated_response:
+            raise ValueError("response_not_found")
+
+        await self.team_members.add_member(
+            team_id=team.id,
+            user_id=response.user_id,
+            role=vacancy.role
+        )
+
+        await self.apps.update(
+            app_id=application.id,
+            data={
+                "status": ApplicationStatus.hidden,
+                "joined": True
+            }
+        )
+
+        await self.vacancies.update(
+            vacancy_id=vacancy.id,
+            fields={
+                "status": VacancyStatus.closed
+            }
+        )
+
+        await self.responses.expire_all_for_vacancy(
+            vacancy_id=vacancy.id
+        )
+
+        await self.responses.expire_other_pending_for_user_on_hackathon(
+            user_id=response.user_id,
+            hackathon_id=team.hackathon_id,
+            except_response_id=response.id
+        )
+
+        await self.invites.expire_all_pending_for_application(
+            application_id=application.id
+        )
+
+        return updated_response
 
     # --- чтение ---
 
@@ -166,35 +229,69 @@ class ResponsesService:
         return await self.responses.create(
             vacancy_id=vacancy.id,
             application_id=app.id,
-            desired_role=role,
+            user_id=current_user_id,
         )
 
-    # --- смена статуса отклика капитаном ---
-
-    async def change_status_by_captain(
+    async def accept_response(
         self,
-        *,
-        current_user_id: int,
         response_id: int,
-        new_status: ResponseStatus,
+        current_user_id: int,
     ) -> Response:
         """
-        Сменить статус отклика (accept/reject/…) от имени капитана команды.
-
-        Правила:
-          - Берём отклик -> вакансию -> команду.
-          - Проверяем, что current_user_id — капитан этой команды.
+        Принять отклик и выполнить все связанные операции.
+        Вызывается только капитаном команды.
         """
-        resp = await self.responses.get_by_id(response_id)
-        if not resp:
+        rwc = await self.get_with_context(response_id)
+        if not rwc:
             raise ValueError("response_not_found")
 
-        vacancy = await self._get_vacancy_or_404(resp.vacancy_id)
-        team = await self._get_team_or_404(vacancy.team_id)
+        response, vacancy, team, application = (
+            rwc.response, rwc.vacancy, rwc.team, rwc.application
+        )
+
         await self._ensure_captain(team, current_user_id)
 
-        updated = await self.responses.update_status(response_id, new_status)
-        if not updated:
+        already = await self.teams.user_has_team_on_hackathon(
+            user_id=response.user_id,
+            hackathon_id=team.hackathon_id,
+        )
+        if already:
+            raise ValueError("user_already_in_team")
+
+        return await self._process_acceptance(response, vacancy, team, application)
+
+    async def reject_response(
+        self,
+        response_id: int,
+        current_user_id: int,
+    ) -> Response:
+        """
+        Отклонить отклик, вызывается только капитаном
+        """
+        rwc = await self.get_with_context(response_id)
+        if not rwc:
             raise ValueError("response_not_found")
 
-        return updated
+        await self._ensure_captain(rwc.team, current_user_id)
+
+        return await self.responses.update_status(response_id, ResponseStatus.rejected)
+
+    async def withdraw_response(
+        self,
+        response_id: int,
+        current_user_id: int,
+    ) -> Response:
+        """
+        Отозвать свой отклик, вызывается только владельцем отклика
+        """
+        response = await self.responses.get_by_id(response_id)
+        if not response:
+            raise ValueError("response_not_found")
+
+        if response.user_id != current_user_id:
+            raise PermissionError("not_response_owner")
+
+        if response.status != ResponseStatus.pending:
+            raise ValueError("only_pending_can_be_withdrawn")
+
+        return await self.responses.update_status(response_id, ResponseStatus.withdrawn)

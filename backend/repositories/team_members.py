@@ -98,3 +98,5 @@ class TeamMembersRepo(BaseRepository):
             await s.delete(obj)
             await s.commit()
             return True
+
+team_members_repo = TeamMembersRepo()

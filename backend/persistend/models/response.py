@@ -23,6 +23,12 @@ class Response(Base, TimestampMixin):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
+    
+    application_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("application.id", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     status: Mapped[ResponseStatus] = mapped_column(
         SAEnum(ResponseStatus, name="response_status"),
@@ -33,3 +39,4 @@ class Response(Base, TimestampMixin):
     # связи
     vacancy = relationship("Vacancy", back_populates="responses")
     user = relationship("User", back_populates="responses")
+    application = relationship("Application", back_populates="responses")
