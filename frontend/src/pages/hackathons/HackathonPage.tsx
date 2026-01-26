@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 import { Button } from '@telegram-apps/telegram-ui';
 
 import { HackathonCard, useHackathonQuery, Hackathon } from '@/entities/hackathon';
@@ -91,36 +90,36 @@ const HackathonPage: React.FC = () => {
         <HackathonCard hackathon={hackathon} variant="full" />
         {application ? (
           <ButtonsSection>
-            <SButton mode="white" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={openExternal} disabled={!url}>
               Подробнее
-            </SButton>
+            </Button>
 
-            <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
+            <Button onClick={handleGoToApplications} disabled={isUserLoading}>
               Моя анкета
-            </SButton>
+            </Button>
           </ButtonsSection>
         ) : team ? (
           <ButtonsSection>
-            <SButton mode="white" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={openExternal} disabled={!url}>
               Подробнее
-            </SButton>
+            </Button>
 
-            <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
+            <Button onClick={handleGoToTeam} disabled={isUserLoading}>
               Моя команда
-            </SButton>
+            </Button>
           </ButtonsSection>
         ) : (
           <ButtonsSection>
-            <SButton mode="white" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={openExternal} disabled={!url}>
               Подробнее
-            </SButton>
+            </Button>
 
-            <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
+            <Button onClick={handleGoToApplications} disabled={isUserLoading}>
               Найти команду
-            </SButton>
-            <SButton onClick={handleGoToCreateTeam} disabled={isUserLoading}>
+            </Button>
+            <Button onClick={handleGoToCreateTeam} disabled={isUserLoading}>
               Создать команду
-            </SButton>
+            </Button>
           </ButtonsSection>
         )}
       </Page>
@@ -139,7 +138,3 @@ const HackathonPage: React.FC = () => {
 };
 
 export default HackathonPage;
-
-const SButton = styled(Button)`
-  width: 100%;
-`;

@@ -84,38 +84,19 @@ export const TeamFormView: FC<Props> = props => {
         {props.extra}
       </InputsWrapper>
       <ButtonsSection>
-        <SButton onClick={onSubmit} stretched disabled={!canSubmit || loading}>
+        <Button onClick={onSubmit} stretched disabled={!canSubmit || loading}>
           {submitLabel}
-        </SButton>
+        </Button>
 
         {onCancel && (
-          <SButton mode="white" stretched onClick={onCancel} disabled={loading}>
+          <Button mode="white" stretched onClick={onCancel} disabled={loading}>
             Отмена
-          </SButton>
+          </Button>
         )}
       </ButtonsSection>
     </>
   );
 };
-
-// const ButtonsSection = styled.div`
-//   margin-top: auto;
-//   padding-bottom: env(safe-area-inset-bottom, 0);
-//   display: flex;
-//   flex-direction: column;
-//   gap: 0.5rem;
-
-//   margin-top: auto;
-//   padding-bottom: env(safe-area-inset-bottom, 0);
-//   display: flex;
-//   flex-direction: column;
-//   gap: 0.5rem;
-// `;
-
-const SButton = styled(Button)`
-  width: 100%;
-  margin: 0;
-`;
 
 const InputsWrapper = styled.section`
   display: flex;

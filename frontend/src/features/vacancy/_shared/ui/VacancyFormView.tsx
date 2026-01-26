@@ -3,7 +3,7 @@ import { Button, Select, Textarea } from '@telegram-apps/telegram-ui';
 import type { FC, ChangeEvent } from 'react';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
-import { InputSection } from '@/shared/ui';
+import { ButtonsSection, InputSection } from '@/shared/ui';
 
 interface VacancyFormViewProps {
   role: Role | '';
@@ -81,14 +81,6 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
     </>
   );
 };
-
-const ButtonsSection = styled.div`
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
 
 const InputsWrapper = styled.div`
   display: flex;

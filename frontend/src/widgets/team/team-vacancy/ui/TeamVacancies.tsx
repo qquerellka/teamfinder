@@ -9,6 +9,7 @@ import { EditVacancyForm } from '@/features/vacancy/edit';
 import { VacancyCard } from './VacancyCard';
 import { VacancyResponses } from '@/widgets/responses/vacancy-responses';
 import { Button } from '@telegram-apps/telegram-ui';
+import { ButtonsSection } from '@/shared/ui';
 
 export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
   const { data: vacancies } = useTeamVacancies(team.id);
@@ -25,22 +26,24 @@ export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
 
   return (
     <Wrapper>
-      {team.members.length + vacancies.length < team.teamMembersLimit && (
-        <Button mode="white" onClick={() => setAddVacancy(true)}>
-          {'Создать вакансию'}
-        </Button>
-      )}
       {vacancies.map(v => (
         <VacancyCard
           key={v.id}
           team={team}
           vacancy={v}
           onEditClick={() => setIsEditing(true)}
-          onDeleted={() => console.log("vacancy deleted")}
+          onDeleted={() => console.log('vacancy deleted')}
         />
       ))}
 
       <VacancyResponses />
+      {team.members.length + vacancies.length < team.teamMembersLimit && (
+        <ButtonsSection>
+          <Button mode="white" onClick={() => setAddVacancy(true)}>
+            {'Создать вакансию'}
+          </Button>
+        </ButtonsSection>
+      )}
     </Wrapper>
   );
 };

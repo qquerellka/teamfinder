@@ -6,7 +6,7 @@ import type { Hackathon } from '@/entities/hackathon';
 import { placeOptions } from '@/entities/achievement';
 import { roleOptions } from '@/shared/types/enums';
 import type { AchievementFormValues, AchievementFormField } from '../model/types';
-import { SText, InputSection } from '@/shared/ui';
+import { SText, InputSection, ButtonsSection } from '@/shared/ui';
 
 type BaseProps = {
   values: AchievementFormValues;
@@ -138,13 +138,4 @@ const SProfile = styled.section`
 
 const DeleteButton = styled(Button)`
   background-color: var(--tg-theme-destructive-text-color);
-`;
-
-const ButtonsSection = styled.section`
-  width: 100%;
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 `;

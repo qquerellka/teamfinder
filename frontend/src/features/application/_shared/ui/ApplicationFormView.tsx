@@ -1,9 +1,8 @@
-import styled from 'styled-components';
 import { Button, Input, Select } from '@telegram-apps/telegram-ui';
 import type { FC, ChangeEvent } from 'react';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
-import { InputSection } from '@/shared/ui';
+import { ButtonsSection, InputSection } from '@/shared/ui';
 
 interface ApplicationFormViewProps {
   hackathonName: string;
@@ -70,11 +69,3 @@ export const ApplicationFormView: FC<ApplicationFormViewProps> = ({
     </>
   );
 };
-
-const ButtonsSection = styled.div`
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;

@@ -32,7 +32,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
   return (
     <Root>
       <Header>
-        <div style={{width: 32}} />
+        <div style={{ width: 32 }} />
         <SText $fs={14} $fw={500}>
           {isMember ? 'Моя команда' : 'Команда'}
         </SText>
@@ -40,7 +40,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
         {isCaptain ? (
           <SIcon onClick={onEditClick} name="edit" />
         ) : isMember ? (
-          <SIcon onClick={leave} name="leaveTeam"/>
+          <SIcon onClick={leave} name="leaveTeam" />
         ) : (
           <div />
         )}
@@ -67,19 +67,19 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
       {isMember && (
         <ButtonsSection>
           {isCaptain && (
-            <SButton mode="white" onClick={copy} stretched disabled={isCopying}>
+            <Button mode="white" onClick={copy} stretched disabled={isCopying}>
               {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
-            </SButton>
+            </Button>
           )}
 
           {isCaptain && (
-            <SButton
+            <Button
               onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
               stretched
               disabled={isCopying}
             >
               Найти участников
-            </SButton>
+            </Button>
           )}
         </ButtonsSection>
       )}
@@ -100,8 +100,4 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-const SButton = styled(Button)`
-  width: 100%;
 `;

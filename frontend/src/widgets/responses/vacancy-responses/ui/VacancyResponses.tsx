@@ -14,10 +14,6 @@ export const VacancyResponses: FC = () => {
   const { data } = useTeamResponses(Number(id));
   const responses: Response[] = data;
 
-  // for (let i = 0; i < vacancies.length; i++) {
-  //   const { data } = useVacancyResponses(vacancies[i].id);
-  //   responses = responses.concat(data);
-  // }
 
   const pending = useMemo(() => responses.filter(r => r.status === 'pending'), [responses]);
 
