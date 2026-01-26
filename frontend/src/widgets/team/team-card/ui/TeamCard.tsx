@@ -66,13 +66,13 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
       />
       {isMember && (
         <ButtonsSection>
-          {isCaptain && (
-            <Button mode="white" onClick={copy} stretched disabled={isCopying}>
+          {isCaptain && team.members.length < team.teamMembersLimit && (
+            <Button mode="white" onClick={copy} stretched disabled={isCopying || team.members.length >= team.teamMembersLimit}>
               {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
             </Button>
           )}
 
-          {isCaptain && (
+          {isCaptain && team.members.length < team.teamMembersLimit && (
             <Button
               onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
               stretched
