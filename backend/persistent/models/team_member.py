@@ -2,8 +2,8 @@ from datetime import datetime
 from sqlalchemy import Integer, Boolean, TIMESTAMP, ForeignKey, Enum as SAEnum, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from persistend.base import Base
-from persistend.enums import RoleType
+from persistent.base import Base
+from persistent.enums import RoleType
 
 
 class TeamMember(Base):

@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import Optional, List, Tuple
 
 from repositories.teams import TeamsRepo
-from persistend.enums import TeamStatus
-from persistend.models.team import Team
+from persistent.enums import TeamStatus
+from persistent.models.team import Team
 
 
 class TeamsService:

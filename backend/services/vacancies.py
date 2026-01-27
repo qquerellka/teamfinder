@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, List, Sequence, Any
 
-from persistend.enums import RoleType, VacancyStatus
-from persistend.models.vacancy import Vacancy
+from persistent.enums import RoleType, VacancyStatus
+from persistent.models.vacancy import Vacancy
 from repositories.vacancies import VacanciesRepo
 
 

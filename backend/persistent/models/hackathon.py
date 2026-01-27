@@ -5,8 +5,8 @@ from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, Integer, DateTime, Enum
 
-from persistend.base import Base, TimestampMixin
-from persistend.enums import HackathonMode, HackathonStatus
+from persistent.base import Base, TimestampMixin
+from persistent.enums import HackathonMode, HackathonStatus
 
 
 class Hackathon(Base, TimestampMixin):

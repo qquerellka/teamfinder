@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import BaseModel
 
 from presentations.routers.users import get_current_user_id
-from persistend.enums import (
+from persistent.enums import (
     RoleType,
     VacancyStatus,
     ResponseStatus,
@@ -18,6 +18,7 @@ from services.vacancies import VacanciesService
 from services.teams import TeamsService
 from services.team_members import TeamMembersService
 from services.hackathons import HackathonsService
+from services.responses import ResponsesService
 
 from repositories.responses import ResponsesRepo
 from repositories.applications import ApplicationsRepo
@@ -35,6 +36,8 @@ resp_repo = ResponsesRepo()
 apps_repo = ApplicationsRepo()
 users_repo = UsersRepo()
 hackathons_repo = HackathonsRepo()
+
+responses_service = ResponsesService(resp_repo)
 
 
 # ---- СХЕМЫ ----
@@ -202,7 +205,7 @@ async def _build_vacancy_card(vac) -> VacancyOut:
 @router.get("/teams/{team_id}/vacancies", response_model=VacancyListOut)
 async def list_team_vacancies(
     team_id: int = Path(..., ge=1),
-    status_param: Optional[VacancyStatus] = Query(default=None, alias="status"),
+    status_param: Optional[VacancyStatus] = Query(default=VacancyStatus.open, alias="status"),
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     current_user_id: int = Depends(get_current_user_id),
@@ -400,9 +403,9 @@ async def create_response(
             detail="response already exists for this vacancy",
         )
 
-    resp = await resp_repo.create(
+    resp = await responses_service.create_for_vacancy(
+        current_user_id=current_user_id,
         vacancy_id=vacancy_id,
-        user_id=current_user_id,
     )
 
     return await _build_response_card(resp)
@@ -445,77 +448,56 @@ async def update_response_status(
     current_user_id: int = Depends(get_current_user_id),
 ):
     resp = await _ensure_response_exists(response_id)
-    vac = resp.vacancy
-    team = await _ensure_team_exists(vac.team_id)
 
     new_status = payload.status
 
-    if new_status in (ResponseStatus.accepted, ResponseStatus.rejected):
-        await _ensure_captain(team, current_user_id)
-    elif new_status is ResponseStatus.withdrawn:
-        if resp.user_id != current_user_id:
-            raise HTTPException(status_code=403, detail="forbidden")
-    else:
-        raise HTTPException(status_code=400, detail="unsupported status change")
-
-    if new_status == ResponseStatus.accepted:
-        user_id = resp.user_id
-
-        already = await teams_service.user_has_team_on_hackathon(
-            user_id=user_id,
-            hackathon_id=team.hackathon_id,
-        )
-        if already:
+    try:
+        if new_status == ResponseStatus.accepted:
+            updated_response = await responses_service.accept_response(
+                response_id=response_id,
+                current_user_id=current_user_id,
+            )
+            
+        elif new_status == ResponseStatus.rejected:
+            updated_response = await responses_service.reject_response(
+                response_id=response_id,
+                current_user_id=current_user_id,
+            )
+            
+        elif new_status == ResponseStatus.withdrawn:
+            updated_response = await responses_service.withdraw_response(
+                response_id=response_id,
+                current_user_id=current_user_id,
+            )
+        
+        else:
             raise HTTPException(
-                status_code=409, detail="user already has a team on this hackathon"
+                status_code=400,
+                detail=f"Unsupported status: {new_status}"
             )
-
-        # добавляем пользователя в команду с ролью из вакансии
-        await members_service.add_member(
-            team_id=team.id,
-            user_id=user_id,
-            role=vac.role,
-            is_captain=False,
+    
+    except ValueError as e:
+        error_map = {
+            "response_not_found": (404, "Response not found"),
+            "user_already_in_team": (409, "User already has a team on this hackathon"),
+            "only_pending_can_be_withdrawn": (400, "Only pending response can be withdrawn"),
+        }
+        
+        status_code, detail = error_map.get(
+            str(e),
+            (400, str(e))
         )
-
-        # закрываем вакансию
-        await vacancies_service.update(
-            vacancy_id=vac.id,
-            fields={"status": VacancyStatus.closed},
-        )
-
-        # скрываем анкету пользователя по этому хаку (если есть)
-        app = await apps_repo.get_by_user_and_hackathon(
-            user_id=user_id,
-            hackathon_id=team.hackathon_id,
-        )
-        if app:
-            await apps_repo.update(
-                app_id=app.id,
-                data={"status": ApplicationStatus.hidden, "joined": True},
-            )
-
-        # гасим другие pending-отклики пользователя по этому хаку
-        await resp_repo.expire_other_pending_for_user_on_hackathon(
-            user_id=user_id,
-            hackathon_id=team.hackathon_id,
-            except_response_id=resp.id,
-        )
-        # TODO: погасить pending-инвайты и разослать уведомления.
-
-    if new_status == ResponseStatus.withdrawn:
-        if resp.status != ResponseStatus.pending:
-            raise HTTPException(
-                status_code=400, detail="only pending response can be withdrawn"
-            )
-
-    updated = await resp_repo.update_status(response_id=response_id, status=new_status)
-    if not updated:
-        raise HTTPException(
-            status_code=404, detail="response not found (update_status)"
-        )
-
-    return await _build_response_card(updated)
+        raise HTTPException(status_code=status_code, detail=detail)
+        
+    except PermissionError as e:
+        if str(e) == "not_response_owner":
+            raise HTTPException(status_code=403, detail="You can only withdraw your own responses")
+        elif str(e) == "not_team_captain":
+            raise HTTPException(status_code=403, detail="Only team captain can accept/reject responses")
+        else:
+            raise HTTPException(status_code=403, detail=str(e))
+    
+    return await _build_response_card(updated_response)
 
 
 @router.delete("/responses/{response_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -8,14 +8,14 @@ from sqlalchemy import select, func, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from infrastructure.db import get_sessionmaker
-from persistend.enums import InviteStatus, RoleType
-from persistend.models.invite import Invite
-from persistend.models.team import Team
-from persistend.models.application import Application
-from persistend.models.team_member import TeamMember
-from persistend.models.hackathon import Hackathon
+from persistent.enums import InviteStatus, RoleType
+from persistent.models.invite import Invite
+from persistent.models.team import Team
+from persistent.models.application import Application
+from persistent.models.team_member import TeamMember
+from persistent.models.hackathon import Hackathon
 
-from repositories.invites import InvitesRepo
+from repositories.invites import invites_repo, InvitesRepo
 from repositories.teams import TeamsRepo
 from repositories.applications import ApplicationsRepo
 from repositories.hackathons import HackathonsRepo
@@ -41,13 +41,13 @@ class InvitesService:
 
     def __init__(
         self,
-        invites_repo: Optional[InvitesRepo] = None,
+        invites_repository: Optional[InvitesRepo] = None,
         applications_repo: Optional[ApplicationsRepo] = None,
         teams_repo: Optional[TeamsRepo] = None,
         hackathons_repo: Optional[HackathonsRepo] = None,
         sessionmaker: Optional[async_sessionmaker[AsyncSession]] = None,
     ) -> None:
-        self.invites = invites_repo or InvitesRepo()
+        self.invites = invites_repository or invites_repo
         self.apps = applications_repo or ApplicationsRepo()
         self.teams = teams_repo or TeamsRepo()
         self.hacks = hackathons_repo or HackathonsRepo()

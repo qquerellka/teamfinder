@@ -4,7 +4,7 @@ from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
-from persistend.enums import TeamStatus, RoleType, HackathonStatus
+from persistent.enums import TeamStatus, RoleType, HackathonStatus
 from presentations.routers.users import get_current_user_id
 from services.teams import TeamsService
 from services.team_members import TeamMembersService

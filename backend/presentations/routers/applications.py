@@ -20,17 +20,17 @@ from pydantic import BaseModel, Field
 from presentations.routers.users import get_current_user_id
 from repositories.users import UsersRepo
 from repositories.hackathons import HackathonsRepo
-from persistend.enums import RoleType, ApplicationStatus, HackathonMode
+from persistent.enums import RoleType, ApplicationStatus, HackathonMode
 from services.applications import ApplicationsService
-from repositories.invites import InvitesRepo
-from persistend.enums import InviteStatus
+from repositories.invites import invites_repo
+from persistent.enums import InviteStatus
 
 router = APIRouter(tags=["applications"])
 
 users_repo = UsersRepo()
 hacks_repo = HackathonsRepo()
 apps_service = ApplicationsService()
-invites_repo = InvitesRepo()
+invites_repo = invites_repo
 
 
 # ---- СХЕМЫ ----
@@ -163,11 +163,13 @@ async def list_hackathon_applications(
     ),
     limit: int = Query(default=20, ge=1, le=100, description="Размер страницы"),
     offset: int = Query(default=0, ge=0, description="Смещение от начала списка"),
+    status: Optional[ApplicationStatus] = Query(default=ApplicationStatus.published, description="Статус получаемых анкет"),
     _me: int = Depends(get_current_user_id),
 ):
     rows = await apps_service.search(
         hackathon_id=hackathon_id,
         role=role.value if role else None,
+        status=status,
         q=q,
         limit=limit,
         offset=offset,

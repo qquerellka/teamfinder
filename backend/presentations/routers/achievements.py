@@ -20,7 +20,7 @@ from fastapi import (
 )
 from pydantic import BaseModel
 
-from persistend.models import achievement as m_ach
+from persistent.models import achievement as m_ach
 from services.achievements import AchievementsService
 from presentations.routers.users import get_current_user_id
 

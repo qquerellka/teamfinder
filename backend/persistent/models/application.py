@@ -9,11 +9,11 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from persistend.base import (
+from persistent.base import (
     Base,
     TimestampMixin,
 )
-from persistend.enums import (
+from persistent.enums import (
     RoleType,
     ApplicationStatus,
 )
@@ -22,7 +22,8 @@ from persistend.enums import (
 class Application(Base, TimestampMixin):
     __tablename__ = "application"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True)
 
     hackathon_id: Mapped[int] = mapped_column(
         Integer,
@@ -47,12 +48,14 @@ class Application(Base, TimestampMixin):
         nullable=False,
     )
 
-    joined: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    joined: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False)
 
     user = relationship("User", back_populates="applications")
 
     hackathon = relationship("Hackathon", back_populates="applications")
 
+    responses = relationship("Response", back_populates="application")
 
     invites = relationship(
         "Invite",
@@ -60,8 +63,7 @@ class Application(Base, TimestampMixin):
         cascade="all, delete-orphan",
     )
 
-
-
     __table_args__ = (
-        UniqueConstraint("hackathon_id", "user_id", name="app_unique_per_hack"),
+        UniqueConstraint("hackathon_id", "user_id",
+                         name="app_unique_per_hack"),
     )

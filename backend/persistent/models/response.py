@@ -3,8 +3,8 @@ from __future__ import annotations
 from sqlalchemy import Integer, Enum as SAEnum, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from persistend.base import Base, TimestampMixin
-from persistend.enums import ResponseStatus
+from persistent.base import Base, TimestampMixin
+from persistent.enums import ResponseStatus
 
 
 class Response(Base, TimestampMixin):
@@ -23,6 +23,12 @@ class Response(Base, TimestampMixin):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
+    
+    application_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("application.id", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     status: Mapped[ResponseStatus] = mapped_column(
         SAEnum(ResponseStatus, name="response_status"),
@@ -33,3 +39,4 @@ class Response(Base, TimestampMixin):
     # связи
     vacancy = relationship("Vacancy", back_populates="responses")
     user = relationship("User", back_populates="responses")
+    application = relationship("Application", back_populates="responses")
