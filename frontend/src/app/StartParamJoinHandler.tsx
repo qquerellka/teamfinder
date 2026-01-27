@@ -60,6 +60,7 @@ export const StartParamJoinHandler = () => {
   const [role, setRole] = useState<Role | ''>('Fullstack');
   const [teamId, setTeamId] = useState<number | null>(null);
   const [isJoining, setIsJoining] = useState(false);
+  const [hasProcessed, setHasProcessed] = useState(false);
 
   const parseRole = (raw: string): Role | '' => (raw ? (raw as Role) : '');
 
@@ -79,6 +80,10 @@ export const StartParamJoinHandler = () => {
       hasJoinedRef.current = true;
       console.log('[StartParamJoinHandler] joined team', teamId);
       setModalOpen(false);
+      setHasProcessed(true);
+
+      window.location.hash = '';
+
       navigate(getTeamPath(teamId));
     } catch (e) {
       console.error('[StartParamJoinHandler] join failed', e);
@@ -87,7 +92,15 @@ export const StartParamJoinHandler = () => {
     }
   };
 
+  const handleCancel = () => {
+    setModalOpen(false);
+    setHasProcessed(true);
+    window.location.hash = '';
+
+    navigate('/hackathons');
+  };
   useEffect(() => {
+    if (hasProcessed) return;
     if (hasJoinedRef.current) return;
     if (isLoading) return;
     if (!accessToken) return;
@@ -101,7 +114,7 @@ export const StartParamJoinHandler = () => {
     console.log('teamId', extractedTeamId);
     setTeamId(extractedTeamId);
     setModalOpen(true);
-  }, [startParam, isLoading, accessToken]);
+  }, [startParam, isLoading, accessToken, hasProcessed]);
 
   return (
     <Modal open={modalOpen} title={'Выбор роли'}>
@@ -138,14 +151,7 @@ export const StartParamJoinHandler = () => {
             {isJoining ? 'Присоединение...' : 'Присоединиться'}
           </Button>
 
-          <Button
-            type="button"
-            stretched
-            onClick={() => {
-              setModalOpen(false);
-              navigate('/hackathons');
-            }}
-          >
+          <Button type="button" stretched onClick={handleCancel}>
             {'Отмена'}
           </Button>
         </div>
