@@ -67,14 +67,46 @@ export const StartParamJoinHandler = () => {
   const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     setRole(parseRole(e.target.value));
   };
-  const clearQueryParams = () => {
+  const clearStartParam = () => {
     try {
-      // Создаем URL без query параметров
+      // 1. Очищаем URL query параметры
       const url = new URL(window.location.href);
-      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`; // Сохраняем hash если есть
+      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
       window.history.replaceState({}, '', cleanUrl);
+
+      // 2. Очищаем launchParams из sessionStorage
+      const launchParamsKey = 'tapps/launchParams';
+      const launchParamsStr = sessionStorage.getItem(launchParamsKey);
+
+      if (launchParamsStr) {
+        try {
+          const launchParams = JSON.parse(launchParamsStr);
+
+          // Удаляем tgWebAppStartParam из launchParams
+          if (launchParams.includes('tgWebAppStartParam=')) {
+            // Удаляем параметр из строки launchParams
+            const updatedParams = launchParams
+              .replace(/(?:&|^)tgWebAppStartParam=[^&]*/, '')
+              .replace(/^&/, '');
+
+            sessionStorage.setItem(launchParamsKey, JSON.stringify(updatedParams));
+          }
+        } catch (e) {
+          console.error('Error parsing launchParams:', e);
+        }
+      }
+
+      // 3. Также очищаем initDataRaw если там есть start param
+      const initDataKey = 'tf:initDataRaw';
+      const initDataStr = sessionStorage.getItem(initDataKey);
+
+      if (initDataStr && initDataStr.includes('start_param')) {
+        sessionStorage.removeItem(initDataKey);
+      }
+
+      console.log('Start param cleared from all locations');
     } catch (error) {
-      console.error('Error clearing query params:', error);
+      console.error('Error clearing start param:', error);
     }
   };
 
@@ -92,7 +124,7 @@ export const StartParamJoinHandler = () => {
       setModalOpen(false);
       setHasProcessed(true);
 
-      clearQueryParams();
+      clearStartParam();
 
       navigate(getTeamPath(teamId));
     } catch (e) {
@@ -105,7 +137,7 @@ export const StartParamJoinHandler = () => {
   const handleCancel = () => {
     setModalOpen(false);
     setHasProcessed(true);
-    clearQueryParams();
+    clearStartParam();
 
     navigate('/hackathons');
   };
