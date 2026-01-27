@@ -138,7 +138,14 @@ export const StartParamJoinHandler = () => {
             {isJoining ? 'Присоединение...' : 'Присоединиться'}
           </Button>
 
-          <Button type="button" stretched onClick={() => navigate('/hackathons')}>
+          <Button
+            type="button"
+            stretched
+            onClick={() => {
+              setModalOpen(false);
+              navigate('/hackathons');
+            }}
+          >
             {'Отмена'}
           </Button>
         </div>
