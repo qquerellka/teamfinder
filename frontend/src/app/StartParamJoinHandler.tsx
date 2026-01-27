@@ -7,9 +7,9 @@ import { useAuth } from '@/features/auth';
 export const StartParamJoinHandler = () => {
   const lp = useLaunchParams();
   const startParam = lp.tgWebAppStartParam;
-  const { isLoading, accessToken } = useAuth();
+  const { isLoading, accessToken, profile } = useAuth();
   const hasJoinedRef = useRef(false);
-
+  console.log("startParamHandler", profile)
   useEffect(() => {
     if (hasJoinedRef.current) return;
     if (isLoading) return;
@@ -21,6 +21,7 @@ export const StartParamJoinHandler = () => {
     const teamId = Number(parts[2]);
     if (!Number.isFinite(teamId)) return;
 
+    console.log("teamId", teamId);
     const run = async () => {
       try {
         await joinTeamMe(teamId, 'Fullstack' as Role);
