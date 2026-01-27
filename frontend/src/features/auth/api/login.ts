@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api/client';
 import { AuthResponse } from '../model/types';
-import axios from 'axios';
+// import axios from 'axios';
 import { resolveInitDataRaw } from '@/shared/resolveInitDataRaw';
 import { getTgUserId } from '../lib/getTgUserId';
 
@@ -20,22 +20,22 @@ function saveAuthToStorage(data: AuthResponse, tgUserId: number) {
   saveAccessToken(token);
 }
 
-function restoreTokenFromStorage(tgUserId: number): string | null {
-  const token = localStorage.getItem(tokenKey(tgUserId));
-  if (!token) return null;
-  saveAccessToken(token);
-  return token;
-}
+// function restoreTokenFromStorage(tgUserId: number): string | null {
+//   const token = localStorage.getItem(tokenKey(tgUserId));
+//   if (!token) return null;
+//   saveAccessToken(token);
+//   return token;
+// }
 
-function clearAuthStorage(tgUserId: number) {
-  localStorage.removeItem(tokenKey(tgUserId));
-  delete apiClient.defaults.headers.common.Authorization;
-}
+// function clearAuthStorage(tgUserId: number) {
+//   localStorage.removeItem(tokenKey(tgUserId));
+//   delete apiClient.defaults.headers.common.Authorization;
+// }
 
-async function fetchProfile(): Promise<AuthResponse['profile']> {
-  const { data } = await apiClient.get<AuthResponse['profile']>('/users/me');
-  return data;
-}
+// async function fetchProfile(): Promise<AuthResponse['profile']> {
+//   const { data } = await apiClient.get<AuthResponse['profile']>('/users/me');
+//   return data;
+// }
 
 export async function authDev(): Promise<AuthResponse> {
   const body = {
@@ -91,24 +91,24 @@ export async function authQueryFn(): Promise<AuthResponse> {
 
   // получение токена из localStorage + переустановка Bearer
   //
-  const token = restoreTokenFromStorage(tgUserId);
-  if (token) {
-    try {
-      const profile = await fetchProfile();
-      return { access_token: token, profile };
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const status = err.response?.status;
-        if (status === 401 || status === 403 || status === 404) {
-          clearAuthStorage(tgUserId);
-        } else {
-          throw err;
-        }
-      } else {
-        throw err;
-      }
-    }
-  }
+  // const token = restoreTokenFromStorage(tgUserId);
+  // if (token) {
+  //   try {
+  //     const profile = await fetchProfile();
+  //     return { access_token: token, profile };
+  //   } catch (err: unknown) {
+  //     if (axios.isAxiosError(err)) {
+  //       const status = err.response?.status;
+  //       if (status === 401 || status === 403 || status === 404) {
+  //         clearAuthStorage(tgUserId);
+  //       } else {
+  //         throw err;
+  //       }
+  //     } else {
+  //       throw err;
+  //     }
+  //   }
+  // }
 
   return authTelegram();
 }
