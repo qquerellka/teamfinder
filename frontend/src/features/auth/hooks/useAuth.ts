@@ -27,6 +27,7 @@
 //     refetchAuth: query.refetch,
 //   };
 // }
+
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import type { AuthResponse } from '../model/types';
@@ -48,6 +49,7 @@ export function useAuth() {
     retry: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    refetchOnMount: 'always',
   });
 
   useEffect(() => {

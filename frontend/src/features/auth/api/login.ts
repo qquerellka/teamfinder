@@ -44,29 +44,35 @@ export async function authDev(): Promise<AuthResponse> {
     first_name: 'Team',
     last_name: 'Finder',
     avatar_url:
-      'https://storage.yandexcloud.net/teamfinder-hackathons-images/hackathons/1/cover.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Albert_Einstein_Head_cleaned.jpg/330px-Albert_Einstein_Head_cleaned.jpg',
   };
 
   const response = await apiClient.post<AuthResponse>('/auth/dev-login', body);
+
   const data = response.data;
 
-  // dev-акк тоже кладём в отдельный ключ (tgUserId = 0)
   saveAuthToStorage(data, 0);
 
   return data;
 }
 
 export async function authTelegram(): Promise<AuthResponse> {
+  // 1) получение строки initData
   const initDataRaw = resolveInitDataRaw();
+  console.log('initDataRaw', initDataRaw);
   if (!initDataRaw) throw new Error('No init_data for tgAuth');
 
+  // 2) получение id пользователя по initData
   const tgUserId = getTgUserId(initDataRaw);
+  console.log('tgUserId', tgUserId);
   if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
 
+  // 3) вызов ручки авторизации
   const { data } = await apiClient.post<AuthResponse>('/auth/telegram', {
     init_data: initDataRaw,
   });
 
+  // 4) сохранение токена в localStorage и добавление Bearer в заголовок
   saveAuthToStorage(data, tgUserId);
   return data;
 }
@@ -76,12 +82,15 @@ export async function authQueryFn(): Promise<AuthResponse> {
 
   if (forceDevLogin) return authDev();
 
+  // получение строки initData
   const initDataRaw = resolveInitDataRaw();
   if (!initDataRaw) throw new Error('No init_data for tgAuth');
 
   const tgUserId = getTgUserId(initDataRaw);
   if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
 
+  // получение токена из localStorage + переустановка Bearer
+  //
   const token = restoreTokenFromStorage(tgUserId);
   if (token) {
     try {

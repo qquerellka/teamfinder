@@ -9,10 +9,13 @@ interface AuthGateProps {
 
 export function AuthGate({ children }: AuthGateProps) {
   const { isLoading, isError, error, refetchAuth, profile } = useAuth();
+
   console.log(profile);
+  
   if (isLoading) {
     return <LoaderPage />;
   }
+
   if (isError) {
     const message = error instanceof Error ? error.message : 'Не удалось авторизоваться';
 
