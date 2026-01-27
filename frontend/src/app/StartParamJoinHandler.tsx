@@ -67,6 +67,16 @@ export const StartParamJoinHandler = () => {
   const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     setRole(parseRole(e.target.value));
   };
+  const clearQueryParams = () => {
+    try {
+      // Создаем URL без query параметров
+      const url = new URL(window.location.href);
+      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`; // Сохраняем hash если есть
+      window.history.replaceState({}, '', cleanUrl);
+    } catch (error) {
+      console.error('Error clearing query params:', error);
+    }
+  };
 
   const handleJoinTeam = async () => {
     if (!teamId || !role) {
@@ -82,7 +92,7 @@ export const StartParamJoinHandler = () => {
       setModalOpen(false);
       setHasProcessed(true);
 
-      window.location.hash = '';
+      clearQueryParams();
 
       navigate(getTeamPath(teamId));
     } catch (e) {
@@ -95,7 +105,7 @@ export const StartParamJoinHandler = () => {
   const handleCancel = () => {
     setModalOpen(false);
     setHasProcessed(true);
-    window.location.hash = '';
+    clearQueryParams();
 
     navigate('/hackathons');
   };
