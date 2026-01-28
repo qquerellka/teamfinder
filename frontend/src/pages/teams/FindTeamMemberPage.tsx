@@ -6,12 +6,15 @@ import { Page } from '@/shared/ui';
 import { useTeam } from '@/entities/team';
 import { TeamApplications } from '@/features/team/applications/TeamApplications';
 import { TeamVacancies } from '@/widgets/team/team-vacancy';
+import NotFound from '../not-found/NotFound';
 
 export const FindTeamMemberPage = () => {
   const { id } = useParams<{ id: string }>();
   const { data: team } = useTeam(Number(id));
   const [tab, setTab] = useState<'vacancy' | 'applications'>('vacancy');
-
+  if (team === null) {
+    return <NotFound/>
+  }
   return (
     <Page>
       <SegmentedControl style={{ margin: '1rem 0' }}>
