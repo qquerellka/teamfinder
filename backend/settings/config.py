@@ -12,6 +12,8 @@ class Settings(BaseSettings):
         extra="ignore",
         case_sensitive=False,
     )
+    
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "dev")
 
     # ==== App ====
     APP_NAME: str = "MyBackend"
