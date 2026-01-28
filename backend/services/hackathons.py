@@ -9,6 +9,7 @@ from fastapi import UploadFile
 
 from repositories.hackathons import HackathonsRepo
 from persistent.models import hackathon as m_hack
+from persistent.enums import HackathonMode
 from infrastructure.telegram_files import download_telegram_file
 from infrastructure.s3_client import (
     upload_hackathon_image_to_s3,
@@ -63,11 +64,19 @@ class HackathonsService:
         q: Optional[str],
         limit: int,
         offset: int,
+        hackathon_mode: Optional[HackathonMode],
+        with_prize_fund: Optional[bool]
     ) -> HackathonListResult:
         """
         Список открытых хакатонов (status = 'open') с простым текстовым фильтром.
         """
-        items = await self.repo.list_open(q=q, limit=limit, offset=offset)
+        items = await self.repo.list_open(
+            q=q,
+            limit=limit,
+            offset=offset,
+            hackathon_mode=hackathon_mode,
+            with_prize_fund=with_prize_fund
+        )
         return HackathonListResult(items=items, limit=limit, offset=offset)
 
     async def get_by_id(self, hackathon_id: int) -> Optional[m_hack.Hackathon]:
