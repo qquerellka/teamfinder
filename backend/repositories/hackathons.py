@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from repositories.base import BaseRepository
 from persistent.models import hackathon as m_hack
-from persistent.enums import HackathonStatus
+from persistent.enums import HackathonStatus, HackathonMode
 
 
 class HackathonsRepo(BaseRepository):
@@ -22,11 +22,15 @@ class HackathonsRepo(BaseRepository):
         q: str | None = None,
         limit: int = 50,
         offset: int = 0,
+        hackathon_mode: Optional[HackathonMode] = None,
+        with_prize_fund: Optional[bool] = None
     ) -> List[m_hack.Hackathon]:
         """
         Список открытых хакатонов.
         Параметры:
-          • q — текстовый фильтр по name/description (ILIKE).
+          q - текстовый фильтр по name/description (ILIKE)
+          hackathon_mode - фильтр по формату хакатона
+          with_prize_fund - есть ли призовой фонд 
         """
         H = m_hack.Hackathon
 
@@ -36,7 +40,16 @@ class HackathonsRepo(BaseRepository):
             if q:
                 like = f"%{q}%"
                 stmt = stmt.where((H.name.ilike(like)) | (H.description.ilike(like)))
-
+                
+            if hackathon_mode:
+                stmt = stmt.where(H.mode == hackathon_mode)
+                
+            if with_prize_fund is not None:
+                if with_prize_fund:
+                    stmt = stmt.where(H.prize_fund.is_not(None))
+                else:
+                    stmt = stmt.where(H.prize_fund.is_(None))
+            
             stmt = stmt.order_by(H.start_date.desc()).limit(limit).offset(offset)
             res = await s.execute(stmt)
             return list(res.scalars().all())
