@@ -39,10 +39,10 @@ export function useMyTeamOnHackathon(hackathonId: number) {
   });
 }
 
-export function useTeam(teamId: number) {
-  return useAppQuery<TeamWithMembers, Error>({
-    queryKey: teamKeys.byId(teamId),
-    queryFn: () => getTeam(teamId),
+export function useTeam(teamId?: number) {
+  return useAppQuery<TeamWithMembers | null, Error>({
+    queryKey: teamKeys.byId(teamId), // нужно обновить teamKeys
+    queryFn: () => teamId ? getTeam(teamId) : Promise.resolve(null),
     staleTime: 60 * 1000,
   });
 }

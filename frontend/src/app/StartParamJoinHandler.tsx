@@ -36,8 +36,9 @@ export const StartParamJoinHandler = () => {
   }, [startParam, isLoading, accessToken, getHandledKey]);
 
   /* ---------- team loading ---------- */
-  const teamQuery = teamId ? useTeam(teamId) : null;
-  const team = teamQuery?.data;
+
+  const teamQuery = useTeam(teamId || undefined);
+  const team = teamQuery.data; // будет null если teamId undefined
 
   /* ---------- membership check ---------- */
 
