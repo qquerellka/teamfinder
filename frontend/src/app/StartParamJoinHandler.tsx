@@ -120,11 +120,11 @@ export const StartParamJoinHandler = () => {
           </InputSection>
 
           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-            <Button mode="bezeled" stretched onClick={handleJoinTeam} disabled={isJoining || !role}>
+            <Button stretched onClick={handleJoinTeam} disabled={isJoining || !role}>
               {isJoining ? 'Присоединение...' : 'Присоединиться'}
             </Button>
 
-            <Button stretched onClick={handleCancel}>
+            <Button  mode="bezeled" stretched onClick={handleCancel}>
               Отмена
             </Button>
           </div>

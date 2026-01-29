@@ -8,9 +8,7 @@ interface AuthGateProps {
 }
 
 export function AuthGate({ children }: AuthGateProps) {
-  const { isLoading, isError, error, refetchAuth, profile } = useAuth();
-
-  console.log(profile);
+  const { isLoading, isError, error, refetchAuth } = useAuth();
   
   if (isLoading) {
     return <LoaderPage />;

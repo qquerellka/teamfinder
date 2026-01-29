@@ -53,22 +53,20 @@ export const FilterModal: FC<FilterModalProps> = ({
       <ModalContainer>
         <SText>{'Фильтры'}</SText>
 
-        {/* Фильтр по режиму */}
         <Section>
           <SText>{'Формат проведения'}</SText>
           {MODE_OPTIONS.map(({ value, label }) => (
-            <RatioContainer>
+            <RatioContainer key={`mode-${value}`}>
               <Radio name="mode" checked={mode === value} onChange={() => onModeChange(value)} />
               <SText>{label}</SText>
             </RatioContainer>
           ))}
         </Section>
 
-        {/* Фильтр по призовым */}
         <Section>
           <SText>{'Призовые'}</SText>
           {MONEY_OPTIONS.map(({ value, label }) => (
-            <RatioContainer>
+            <RatioContainer key={`money-${value}`}>
               <Radio name="money" checked={money === value} onChange={() => onMoneyChange(value)} />
               <SText>{label}</SText>
             </RatioContainer>
@@ -87,12 +85,14 @@ export const FilterModal: FC<FilterModalProps> = ({
     </Modal>
   );
 };
+
 const Section = styled.section`
   display: flex;
   flex-direction: column;
   align-items: start;
   gap: 0.5rem;
 `;
+
 const RatioContainer = styled.div`
   display: flex;
   flex-direction: row;

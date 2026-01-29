@@ -96,6 +96,7 @@ export const HackathonCard: FC<HackathonCardProps> = ({
 const SHackathonCard = styled(Card)`
   background: var(--tg-theme-section-bg-color, #fff);
   border-radius: 1rem;
+
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -104,7 +105,7 @@ const SHackathonCard = styled(Card)`
 const SHackathonImage = styled.div`
   position: relative;
   overflow: hidden;
-  border-radius: 1.5rem;
+  border-radius: 0rem;
 `;
 
 const SHackathonInfo = styled.div`

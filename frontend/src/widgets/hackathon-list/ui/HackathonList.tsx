@@ -11,7 +11,7 @@ import { FilterModal, useFilters } from '@/features/hackathon/filters';
 
 export const HackathonList: FC = () => {
   const [search, setSearch] = useState('');
-  
+
   const debouncedSearch = useDebouncedValue(search, 800);
   const q = debouncedSearch.trim() || undefined;
 
@@ -28,8 +28,7 @@ export const HackathonList: FC = () => {
     setSearch('');
   }, [filters]);
 
-  // Проверка активных фильтров (оба фильтра)
-  const hasActiveFilters = filters.appliedMode !== '' || filters.appliedMoney !== null;
+  const hasActiveFilters = filters.appliedMode !== '' && filters.appliedMoney !== null;
 
   return (
     <>
@@ -44,10 +43,7 @@ export const HackathonList: FC = () => {
             />
           </InputSection>
           <IconButton onClick={filters.openModal}>
-            <SIcon
-              name="filters"
-              color={hasActiveFilters ? 'var(--tg-theme-link-color)' : ''}
-            />
+            <SIcon name="filters" color={hasActiveFilters ? 'var(--tg-theme-link-color)' : ''} />
           </IconButton>
         </SearchSection>
         {data.items.length === 0 ? (
@@ -76,7 +72,6 @@ export const HackathonList: FC = () => {
     </>
   );
 };
-
 const Wrapper = styled.section`
   display: flex;
   flex-direction: column;
@@ -96,8 +91,7 @@ const CardLink = styled(Link)`
 
 const SearchSection = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: start;
+  align-items: center;
   gap: 1rem;
 `;
 

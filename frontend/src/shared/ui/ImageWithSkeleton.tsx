@@ -36,6 +36,7 @@ const Wrapper = styled.div`
   width: 100%;
   aspect-ratio: 1 / 1;
   overflow: hidden;
+  border-radius: 0rem;
 `;
 
 const Img = styled.img<{ $visible: boolean }>`
@@ -44,7 +45,7 @@ const Img = styled.img<{ $visible: boolean }>`
   width: 100%;
   height: 100%;
   object-fit: cover;
-
+  border-radius: 0rem;
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transition: opacity 0.2s ease-in-out;
 `;
