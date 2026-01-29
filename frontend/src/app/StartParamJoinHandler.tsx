@@ -143,17 +143,20 @@ export const StartParamJoinHandler = () => {
                       sessionStorage.setItem(getHandledKey(teamId), '1');
                     }
                     setTeamModalOpen(false);
+                    navigate(getTeamPath(teamId!));
                   }}
                 >
                   <SIcon name="cross" color="#F55A5A" />
                 </IconButton>
               </Modal.Close>
             }
-          >
-          </Modal.Header>
+          ></Modal.Header>
         }
       >
-        <Placeholder description="У вас уже есть команда на этот хакатон" header="Не получиться присоединиться">
+        <Placeholder
+          description="У вас уже есть команда на этот хакатон"
+          header="Не получиться присоединиться"
+        >
           <img
             alt="Telegram sticker"
             src="https://xelene.me/telegram.gif"

@@ -1,35 +1,35 @@
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { IconButton, Input } from '@telegram-apps/telegram-ui';
 
 import { getHackathonPath } from '@/shared/routing/paths';
 import { HackathonCard, useHackathonsQuery } from '@/entities/hackathon';
-import { Button, Cell, Checkbox, IconButton, Input, Modal } from '@telegram-apps/telegram-ui';
 import { useDebouncedValue } from '@/shared/helpers/useDebounceValue';
-import { InputSection, NoItems, SIcon, SText } from '@/shared/ui';
-
-interface HackathonsFilters {
-  online: boolean;
-  offline: boolean;
-  hybrid: boolean;
-  withPrize: boolean;
-}
+import { InputSection, NoItems, SIcon } from '@/shared/ui';
+import { FilterModal, useFilters } from '@/features/hackathon/filters';
 
 export const HackathonList: FC = () => {
   const [search, setSearch] = useState('');
+  
   const debouncedSearch = useDebouncedValue(search, 800);
-
   const q = debouncedSearch.trim() || undefined;
 
-  const { data } = useHackathonsQuery({ q });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const filters = useFilters();
 
-  const [filters, setFilters] = useState<HackathonsFilters>({
-    online: false,
-    offline: false,
-    hybrid: false,
-    withPrize: false,
+  const { data } = useHackathonsQuery({
+    q,
+    mode: filters.queryParams.mode,
+    prize_fund: filters.queryParams.hasPrize,
   });
+
+  const handleResetAll = useCallback(() => {
+    filters.resetFilters();
+    setSearch('');
+  }, [filters]);
+
+  // Проверка активных фильтров (оба фильтра)
+  const hasActiveFilters = filters.appliedMode !== '' || filters.appliedMoney !== null;
 
   return (
     <>
@@ -40,12 +40,14 @@ export const HackathonList: FC = () => {
               before={<SIcon name="search" color={''} />}
               placeholder="Название хакатона"
               value={search}
-              // style={{width: '100%', boxSizing:'border-box'}}
               onChange={e => setSearch(e.target.value)}
             />
           </InputSection>
-          <IconButton onClick={() => setIsModalOpen(true)}>
-            <SIcon name="filters" />
+          <IconButton onClick={filters.openModal}>
+            <SIcon
+              name="filters"
+              color={hasActiveFilters ? 'var(--tg-theme-link-color)' : ''}
+            />
           </IconButton>
         </SearchSection>
         {data.items.length === 0 ? (
@@ -60,92 +62,20 @@ export const HackathonList: FC = () => {
           </Grid>
         )}
       </Wrapper>
-      <Modal open={isModalOpen}>
-        <ModalContainer>
-          <SText>{'Фильтры'}</SText>
-          <Cell
-            before={
-              <Checkbox
-                name="online"
-                checked={filters.online}
-                onChange={e => setFilters(prev => ({ ...prev, online: e.target.checked }))}
-              />
-            }
-          >
-            {'Онлайн'}
-          </Cell>
-          <Cell
-            before={
-              <Checkbox
-                name="offline"
-                checked={filters.offline}
-                onChange={e => setFilters(prev => ({ ...prev, offline: e.target.checked }))}
-              />
-            }
-          >
-            {'Оффлайн'}
-          </Cell>
-          <Cell
-            before={
-              <Checkbox
-                name="hybrid"
-                checked={filters.hybrid}
-                onChange={e => setFilters(prev => ({ ...prev, hybrid: e.target.checked }))}
-              />
-            }
-          >
-            {'Гибрид'}
-          </Cell>
-          <Cell
-            before={
-              <Checkbox
-                name="withPrize"
-                checked={filters.withPrize}
-                onChange={e =>
-                  setFilters(prev => ({
-                    ...prev,
-                    withPrize: e.target.checked,
-                  }))
-                }
-              />
-            }
-          >
-            {'С призовыми'}
-          </Cell>
-          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-            <Button
-              mode="white"
-              type="button"
-              stretched
-              // disabled={loading}
-              onClick={() => setIsModalOpen(false)}
-            >
-              {'Сбросить'}
-            </Button>
 
-            <Button
-              type="button"
-              stretched
-              // loading={loading}
-              // onClick={onConfirm}
-              onClick={() => setIsModalOpen(false)}
-            >
-              {'Применить'}
-            </Button>
-          </div>
-        </ModalContainer>
-      </Modal>
+      <FilterModal
+        isOpen={filters.isModalOpen}
+        onClose={filters.closeModal}
+        mode={filters.mode}
+        onModeChange={filters.setMode}
+        money={filters.money}
+        onMoneyChange={filters.setMoney}
+        onApply={filters.applyFilters}
+        onReset={handleResetAll}
+      />
     </>
   );
 };
-
-const ModalContainer = styled.section`
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  gap: 0.5rem;
-`;
 
 const Wrapper = styled.section`
   display: flex;

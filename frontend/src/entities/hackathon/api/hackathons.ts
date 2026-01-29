@@ -1,6 +1,7 @@
 import { apiClient } from '@/shared/api/client';
 import { Hackathon, HackathonDTO } from '../model/types';
 import { hackathonsToCamelCase } from '../lib/dto';
+import { HackathonMode } from '@/shared/types/enums';
 
 interface FetchHackathonsApiResponse {
   items: HackathonDTO[];
@@ -18,6 +19,8 @@ export interface FetchHackathonsParams {
   q?: string;
   limit?: number;
   offset?: number;
+  mode?: HackathonMode;
+  prize_fund?: boolean;
 }
 
 export async function fetchHackathons(
