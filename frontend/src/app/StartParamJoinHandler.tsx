@@ -6,7 +6,7 @@ import { useAuth } from '@/features/auth';
 import { useNavigate } from 'react-router-dom';
 import { getTeamPath } from '@/shared/routing/paths';
 import { InputSection, SText } from '@/shared/ui';
-import { Button, List, Modal, Select } from '@telegram-apps/telegram-ui';
+import { Button, IconButton, List, Modal, Placeholder, Select } from '@telegram-apps/telegram-ui';
 
 export const StartParamJoinHandler = () => {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ export const StartParamJoinHandler = () => {
 
   const [teamId, setTeamId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [teamModalOpen, setTeamModalOpen] = useState(false);
   const [role, setRole] = useState<Role | ''>('');
   const [isJoining, setIsJoining] = useState(false);
 
@@ -43,17 +44,18 @@ export const StartParamJoinHandler = () => {
   /* ---------- membership check ---------- */
 
   useEffect(() => {
-    if (!team || !profile || !teamId) return;
+    if (!profile || !teamId) return;
+    if (!team) return;
 
     const isMember = team.members.some(m => m.user.id === profile.id);
 
     if (isMember) {
       sessionStorage.setItem(getHandledKey(teamId), '1');
       setModalOpen(false);
-      return;
+      setTeamModalOpen(true);
+    } else {
+      setModalOpen(true);
     }
-
-    setModalOpen(true);
   }, [team, profile, teamId, getHandledKey]);
 
   /* ---------- handlers ---------- */
@@ -88,44 +90,81 @@ export const StartParamJoinHandler = () => {
 
   /* ---------- render ---------- */
 
-  if (!modalOpen) return null;
+  if (!modalOpen && !teamModalOpen) return null;
 
   return (
-    <Modal open title="Выбор роли">
-      <List
-        style={{
-          padding: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          textAlign: 'center',
-          gap: 0,
-        }}
-      >
-        <SText>Выбор роли</SText>
+    <>
+      <Modal open={modalOpen} title="Выбор роли">
+        <List
+          style={{
+            padding: 16,
+            display: 'flex',
+            flexDirection: 'column',
+            textAlign: 'center',
+            gap: 0,
+          }}
+        >
+          <SText>Выбор роли</SText>
 
-        <InputSection header="Роль">
-          <Select value={role} onChange={handleSelect}>
-            <option value="" disabled>
-              Выберите роль
-            </option>
-            {roleOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+          <InputSection header="Роль">
+            <Select value={role} onChange={handleSelect}>
+              <option value="" disabled>
+                Выберите роль
               </option>
-            ))}
-          </Select>
-        </InputSection>
+              {roleOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </Select>
+          </InputSection>
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-          <Button mode="bezeled" stretched onClick={handleJoinTeam} disabled={isJoining || !role}>
-            {isJoining ? 'Присоединение...' : 'Присоединиться'}
-          </Button>
+          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            <Button mode="bezeled" stretched onClick={handleJoinTeam} disabled={isJoining || !role}>
+              {isJoining ? 'Присоединение...' : 'Присоединиться'}
+            </Button>
 
-          <Button stretched onClick={handleCancel}>
-            Отмена
-          </Button>
-        </div>
-      </List>
-    </Modal>
+            <Button stretched onClick={handleCancel}>
+              Отмена
+            </Button>
+          </div>
+        </List>
+      </Modal>
+
+      <Modal
+        open={teamModalOpen}
+        header={
+          <Modal.Header
+            after={
+              <Modal.Close>
+                <IconButton
+                  onClick={() => {
+                    if (teamId) {
+                      sessionStorage.setItem(getHandledKey(teamId), '1');
+                    }
+                    setTeamModalOpen(false);
+                  }}
+                  style={{ color: 'var(--tgui--plain_foreground)' }}
+                />
+              </Modal.Close>
+            }
+          >
+            Only iOS header
+          </Modal.Header>
+        }
+      >
+        <Placeholder description="У вас уже есть команда на этот хакатон" header="Не получиться">
+          <img
+            alt="Telegram sticker"
+            src="https://xelene.me/telegram.gif"
+            style={{
+              display: 'block',
+              height: '144px',
+              width: '144px',
+            }}
+          />
+        </Placeholder>
+      </Modal>
+    </>
   );
 };
