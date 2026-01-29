@@ -5,7 +5,7 @@ import { Role, roleOptions } from '@/shared/types/enums';
 import { useAuth } from '@/features/auth';
 import { useNavigate } from 'react-router-dom';
 import { getTeamPath } from '@/shared/routing/paths';
-import { InputSection, SText } from '@/shared/ui';
+import { InputSection, SIcon, SText } from '@/shared/ui';
 import { Button, IconButton, List, Modal, Placeholder, Select } from '@telegram-apps/telegram-ui';
 
 export const StartParamJoinHandler = () => {
@@ -144,16 +144,16 @@ export const StartParamJoinHandler = () => {
                     }
                     setTeamModalOpen(false);
                   }}
-                  style={{ color: 'var(--tgui--plain_foreground)' }}
-                />
+                >
+                  <SIcon name="cross" color="#F55A5A" />
+                </IconButton>
               </Modal.Close>
             }
           >
-            Only iOS header
           </Modal.Header>
         }
       >
-        <Placeholder description="У вас уже есть команда на этот хакатон" header="Не получиться">
+        <Placeholder description="У вас уже есть команда на этот хакатон" header="Не получиться присоединиться">
           <img
             alt="Telegram sticker"
             src="https://xelene.me/telegram.gif"
