@@ -98,10 +98,11 @@ const RatioContainer = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  text-align: initial;
   gap: 1rem;
 `;
 
-const ModalContainer = styled.section`
+const ModalContainer = styled.form` 
   padding: 1rem;
   display: flex;
   flex-direction: column;
