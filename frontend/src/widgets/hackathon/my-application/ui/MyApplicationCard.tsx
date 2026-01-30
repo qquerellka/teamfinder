@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button } from '@telegram-apps/telegram-ui';
+import { IconButton } from '@telegram-apps/telegram-ui';
 import { useMemo, type FC } from 'react';
 
 import type { Hackathon } from '@/entities/hackathon';
@@ -46,11 +46,11 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
           </SText>
 
           <Icons>
-            <IconButton type="button" onClick={onEditClick}>
-              <SIcon name="edit" />
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
+              <SIcon name="edit"  size={24}/>
             </IconButton>
-            <IconButton type="button" onClick={openDeleteModal}>
-              <SIcon name="delete" />
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={openDeleteModal}>
+              <SIcon name="delete" size={24}/>
             </IconButton>
           </Icons>
         </Header>
@@ -115,10 +115,10 @@ const Header = styled.div`
 const Icons = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
-const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
-  padding: 0;
-  min-width: auto;
-`;
+// const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
+//   padding: 0;
+//   min-width: auto;
+// `;

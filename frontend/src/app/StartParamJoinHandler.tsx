@@ -146,7 +146,7 @@ export const StartParamJoinHandler = () => {
                     navigate(getTeamPath(teamId!));
                   }}
                 >
-                  <SIcon name="cross" color="#F55A5A" />
+                  <SIcon name="cross" size={16} color="#F55A5A" />
                 </IconButton>
               </Modal.Close>
             }

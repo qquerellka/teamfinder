@@ -45,7 +45,7 @@ export const HackathonVacancies: FC<HackathonVacanciesProps> = ({ hackathon }) =
   }
 
   return (
-    <ApplicationsList>
+    <VacanciesList>
       {vacancies.map(v => (
         <VacancyCard
           key={v.id}
@@ -56,11 +56,11 @@ export const HackathonVacancies: FC<HackathonVacanciesProps> = ({ hackathon }) =
           onNavigate={() => navigate(getTeamPath(v.teamId))}
         />
       ))}
-    </ApplicationsList>
+    </VacanciesList>
   );
 };
 
-const ApplicationsList = styled.div`
+const VacanciesList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -97,16 +97,17 @@ const VacancyCard: FC<VacancyCardProps> = ({
 
       <SecondRow>
         {responsed ? (
-          <SIcon name="sentInvite" />
+          <SIcon name="sentInvite" size={24} />
         ) : (
           <IconButton
+            style={{ borderRadius: 6, padding: 6 }}
             onClick={e => {
               e.stopPropagation();
               onResponse();
             }}
             disabled={isResponsing}
           >
-            <SIcon name="plus" />
+            <SIcon name="plus" size={24} />
           </IconButton>
         )}
 

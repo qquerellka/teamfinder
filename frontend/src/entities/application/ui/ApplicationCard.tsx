@@ -1,6 +1,7 @@
 import { formatRegistrationDate } from '@/shared/helpers/date';
 import { Role } from '@/shared/types/enums';
 import { RoleBadge, SIcon, SText } from '@/shared/ui';
+import { IconButton } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import styled from 'styled-components';
 
@@ -25,7 +26,9 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
 }) => {
   return (
     <Wrapper onClick={onNavigate}>
-      <NavigateIcon name="arrow" />
+      <NavigateIcon style={{ borderRadius: 6, padding: 6 }}>
+        <SIcon name='arrow' size={24}/>
+      </NavigateIcon>
       <SText $fs={16} $fw={600}>
         {hackathonName}
       </SText>
@@ -71,7 +74,7 @@ const InfoItem = styled.div`
   gap: 0.5rem;
 `;
 
-const NavigateIcon = styled(SIcon)`
+const NavigateIcon = styled(IconButton)`
   position: absolute;
   top: 1rem;
   right: 1rem;

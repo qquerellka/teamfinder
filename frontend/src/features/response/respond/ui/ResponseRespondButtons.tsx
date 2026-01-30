@@ -19,12 +19,12 @@ export const ResponseRespondButtons: FC<ResponseRespondButtonsProps> = ({
 
   return (
     <Buttons>
-      <IconButton disabled={isLoading} onClick={() => answer('rejected')}>
-        <SIcon name="cross" color="#F55A5A" />
+      <IconButton style={{ borderRadius: 6, padding: 6 }} disabled={isLoading} onClick={() => answer('rejected')}>
+        <SIcon size={24} name="cross" color="#F55A5A"/>
       </IconButton>
 
-      <IconButton disabled={isLoading} onClick={() => answer('accepted')}>
-        <SIcon name="plus" />
+      <IconButton style={{ borderRadius: 6, padding: 6 }} disabled={isLoading} onClick={() => answer('accepted')}>
+        <SIcon size={24} name="plus" />
       </IconButton>
     </Buttons>
   );

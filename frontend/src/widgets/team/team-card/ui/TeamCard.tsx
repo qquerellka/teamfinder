@@ -32,15 +32,15 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
   return (
     <Root>
       <Header>
-        <div style={{ width: 32 }} />
+        <div style={{ width: 24 }} />
         <SText $fs={14} $fw={500}>
           {isMember ? 'Моя команда' : 'Команда'}
         </SText>
 
         {isCaptain ? (
-          <SIcon onClick={onEditClick} name="edit" />
+          <SIcon onClick={onEditClick} name="edit" size={24}/>
         ) : isMember ? (
-          <SIcon onClick={leave} name="leaveTeam" />
+          <SIcon onClick={leave} name="leaveTeam" size={24}/>
         ) : (
           <div />
         )}

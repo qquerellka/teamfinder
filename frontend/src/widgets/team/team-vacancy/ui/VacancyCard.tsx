@@ -2,7 +2,7 @@ import { TeamWithMembers } from '@/entities/team';
 import { Vacancy } from '@/entities/vacancy';
 import { useDeleteVacancyForm } from '@/features/vacancy/delete/model/useDeleteVacancy';
 import { ConfirmModal, RoleBadge, SIcon, SText } from '@/shared/ui';
-import { Button } from '@telegram-apps/telegram-ui';
+import { IconButton } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import styled from 'styled-components';
 
@@ -33,11 +33,14 @@ export const VacancyCard: FC<VacancyCardProps> = ({ team, vacancy, onDeleted, on
             {'Кого ищем?'}
           </SText>
           <Icons>
-            <IconButton type="button" onClick={onEditClick}>
-              <SIcon name="edit" />
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
+              <SIcon name="edit" size={24} />
             </IconButton>
-            <IconButton type="button" onClick={openDeleteModal}>
-              <SIcon name="delete" />
+            <IconButton
+              style={{ borderRadius: 6, padding: 6 }}
+              onClick={openDeleteModal}
+            >
+              <SIcon name="delete" size={24} />
             </IconButton>
           </Icons>
         </Header>
@@ -63,7 +66,7 @@ const Wrapper = styled.div`
   background-color: var(--tg-theme-section-bg-color);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.75rem;
   padding: 1rem;
   border-radius: 1rem;
 `;
@@ -85,10 +88,10 @@ const Header = styled.div`
 const Icons = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
-const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
-  padding: 0;
-  min-width: auto;
-`;
+// const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
+//   padding: 0;
+//   min-width: auto;
+// `;

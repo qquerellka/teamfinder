@@ -1,4 +1,5 @@
 import { SIcon, SText, TeamLoad } from '@/shared/ui';
+import { IconButton } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import styled from 'styled-components';
 
@@ -22,13 +23,15 @@ export const TeamCard: FC<TeamCardProps> = ({
   invitesCount,
 }) => {
   return (
-    <Wrapper onClick={onNavigate} >
+    <Wrapper onClick={onNavigate}>
       <Row>
         <Name>
           <SText>{teamName}</SText>
-          {isCaptain && <SIcon name={'captain'} color={'#F3BD28'}></SIcon>}
+          {isCaptain && <SIcon name={'captain'} size={16} color={'#F3BD28'}></SIcon>}
         </Name>
-        <SIcon name={'arrow'} />
+        <IconButton style={{ borderRadius: 6, padding: 6 }}>
+          <SIcon name={'arrow'} size={24} />
+        </IconButton>
       </Row>
       {invitesCount > 0 ? (
         <>
@@ -63,6 +66,7 @@ const Name = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
+  color: var(--tg-theme-button-text-color);
 `;
 const Row = styled.div`
   display: flex;

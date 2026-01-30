@@ -97,6 +97,7 @@ const TeamMemberRow: FC<{
         ) : canRemove ? (
           <SIcon
             name="cross"
+            size={16}
             color="#F55A5A"
             onClick={e => {
               e.stopPropagation();
