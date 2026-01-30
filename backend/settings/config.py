@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "app_password")
     DATABASE_URL: Optional[str] = None
     TG_BOT_USERNAME: str = os.getenv("TG_BOT_USERNAME", "teamfinder_hack_bot")
-    TG_APP_NAME: str = os.getenv("TG_APP_NAME", "tfapp")
+    TG_APP_NAME: str = os.getenv("TG_APP_NAME", "")
 
     # ==== Pool/Echo ====
     DB_POOL_SIZE: int = 5
