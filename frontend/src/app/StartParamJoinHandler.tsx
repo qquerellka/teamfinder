@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState, useCallback } from 'react';
 import { useLaunchParams } from '@tma.js/sdk-react';
-import { joinTeamMe, useTeam } from '@/entities/team';
+import { useTeam, useJoinTeam } from '@/entities/team'; // Импортируем хук
 import { Role, roleOptions } from '@/shared/types/enums';
 import { useAuth } from '@/features/auth';
 import { useNavigate } from 'react-router-dom';
@@ -17,9 +17,11 @@ export const StartParamJoinHandler = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [teamModalOpen, setTeamModalOpen] = useState(false);
   const [role, setRole] = useState<Role | ''>('');
-  const [isJoining, setIsJoining] = useState(false);
 
   const getHandledKey = useCallback((id: number) => `join_team_handled_${id}`, []);
+
+  // Используем хук для присоединения к команде
+  const joinTeamMutation = useJoinTeam();
 
   /* ---------- startParam parsing ---------- */
 
@@ -39,7 +41,7 @@ export const StartParamJoinHandler = () => {
   /* ---------- team loading ---------- */
 
   const teamQuery = useTeam(teamId || undefined);
-  const team = teamQuery.data; // будет null если teamId undefined
+  const team = teamQuery.data;
 
   /* ---------- membership check ---------- */
 
@@ -65,18 +67,15 @@ export const StartParamJoinHandler = () => {
   };
 
   const handleJoinTeam = async () => {
-    if (!teamId || !role || isJoining) return;
+    if (!teamId || !role) return;
 
-    setIsJoining(true);
     try {
-      await joinTeamMe(teamId, role);
+      await joinTeamMutation.mutateAsync({ id: teamId, role });
       sessionStorage.setItem(getHandledKey(teamId), '1');
       setModalOpen(false);
       navigate(getTeamPath(teamId));
     } catch (e) {
       console.error('[StartParamJoinHandler] join failed', e);
-    } finally {
-      setIsJoining(false);
     }
   };
 
@@ -120,11 +119,15 @@ export const StartParamJoinHandler = () => {
           </InputSection>
 
           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-            <Button stretched onClick={handleJoinTeam} disabled={isJoining || !role}>
-              {isJoining ? 'Присоединение...' : 'Присоединиться'}
+            <Button
+              stretched
+              onClick={handleJoinTeam}
+              disabled={joinTeamMutation.isPending || !role}
+            >
+              {joinTeamMutation.isPending ? 'Присоединение...' : 'Присоединиться'}
             </Button>
 
-            <Button  mode="bezeled" stretched onClick={handleCancel}>
+            <Button mode="bezeled" stretched onClick={handleCancel}>
               Отмена
             </Button>
           </div>
