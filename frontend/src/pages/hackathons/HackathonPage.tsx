@@ -102,7 +102,7 @@ const HackathonPage: React.FC = () => {
           </ButtonsSection>
         ) : team ? (
           <ButtonsSection>
-            <Button mode="white" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={() => openTelegramLink(url!)} disabled={!url}>
               Подробнее
             </Button>
 
@@ -112,7 +112,7 @@ const HackathonPage: React.FC = () => {
           </ButtonsSection>
         ) : (
           <ButtonsSection>
-            <Button mode="white" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={() => openTelegramLink(url!)} disabled={!url}>
               Подробнее
             </Button>
 
