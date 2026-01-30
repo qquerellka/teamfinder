@@ -17,7 +17,7 @@ import { normalizeUrl } from '@/shared/helpers/url';
 import { Page } from '@/shared/ui';
 import { ConfirmModal, ButtonsSection } from '@/shared/ui/';
 import { useMyTeamOnHackathon } from '@/entities/team';
-import { openTelegramLink } from '@tma.js/sdk-react';
+import { openLink } from '@tma.js/sdk-react';
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
@@ -81,7 +81,7 @@ const HackathonPage: React.FC = () => {
         <HackathonCard hackathon={hackathon} variant="full" />
         {application ? (
           <ButtonsSection>
-            <Button mode="white" onClick={() => openTelegramLink(url!)} disabled={!url}>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее
             </Button>
 
@@ -91,7 +91,7 @@ const HackathonPage: React.FC = () => {
           </ButtonsSection>
         ) : team ? (
           <ButtonsSection>
-            <Button mode="white" onClick={() => openTelegramLink(url!)} disabled={!url}>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее
             </Button>
 
@@ -101,7 +101,7 @@ const HackathonPage: React.FC = () => {
           </ButtonsSection>
         ) : (
           <ButtonsSection>
-            <Button mode="white" onClick={() => openTelegramLink(url!)} disabled={!url}>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее
             </Button>
 
