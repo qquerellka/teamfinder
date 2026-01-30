@@ -32,17 +32,6 @@ const HackathonPage: React.FC = () => {
 
   const url = normalizeUrl((hackathon as Hackathon).registrationLink);
 
-  // const openExternal = () => {
-  //   if (!url) return;
-
-  //   const wa = window.Telegram?.WebApp;
-  //   if (wa?.openLink) {
-  //     wa.openLink(url, { try_instant_view: true });
-  //   } else {
-  //     window.open(url, '_blank', 'noopener,noreferrer');
-  //   }
-  // };
-
   const handleGoToApplications = () => {
     if (isUserLoading) return;
 
