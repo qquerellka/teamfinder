@@ -17,6 +17,7 @@ import { normalizeUrl } from '@/shared/helpers/url';
 import { Page } from '@/shared/ui';
 import { ConfirmModal, ButtonsSection } from '@/shared/ui/';
 import { useMyTeamOnHackathon } from '@/entities/team';
+import { openTelegramLink } from '@tma.js/sdk-react';
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
@@ -83,6 +84,7 @@ const HackathonPage: React.FC = () => {
     setIsSkillsModalOpen(false);
     navigate(paths.userRoot);
   };
+  console.log(url);
 
   return (
     <>
@@ -90,7 +92,7 @@ const HackathonPage: React.FC = () => {
         <HackathonCard hackathon={hackathon} variant="full" />
         {application ? (
           <ButtonsSection>
-            <Button mode="white" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={() => openTelegramLink(url!)} disabled={!url}>
               Подробнее
             </Button>
 
