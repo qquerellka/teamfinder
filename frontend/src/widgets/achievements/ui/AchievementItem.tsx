@@ -1,11 +1,13 @@
-import { paths } from '@/shared/routing/paths';
-import { Achievement } from '@/entities/achievement';
-import { SText } from '@/shared/ui/SText';
 import { Cell } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { formatHackPlace } from '@/entities/achievement/lib/formatters';
+
+import { Achievement,formatHackPlace } from '@/entities/achievement';
+import { paths } from '@/shared/routing/paths';
+import { SText } from '@/shared/ui';
+
+
 
 interface AchievementItemProps {
   achievement: Achievement;
@@ -18,9 +20,10 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement, canEdit
   const handleAchievementClick = (id: number) => {
     navigate(`${paths.userRoot}/achievements/${id}`);
   };
+
   if (canEdit)
     return (
-      <Wrapper
+      <AchievementContainer
         onClick={() => handleAchievementClick(achievement.id)}
         after={
           <SText $fs={16} $fw={500}>
@@ -31,10 +34,10 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement, canEdit
         <SText $fs={16} $fw={500}>
           {achievement.hackathonName}
         </SText>
-      </Wrapper>
+      </AchievementContainer>
     );
   return (
-    <Wrapper
+    <AchievementContainer
       after={
         <SText $fs={16} $fw={500}>
           {formatHackPlace(achievement.place)}
@@ -44,11 +47,11 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement, canEdit
       <SText $fs={16} $fw={500}>
         {achievement.hackathonName}
       </SText>
-    </Wrapper>
+    </AchievementContainer>
   );
 };
 
-const Wrapper = styled(Cell)`
+const AchievementContainer = styled(Cell)`
   background-color: var(--tg-theme-section-bg-color);
   border-radius: 1rem;
 `;
