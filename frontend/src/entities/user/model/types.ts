@@ -4,9 +4,9 @@ import { Skill, SkillDTO } from '@/entities/skill';
 export interface User {
   id: number;
   telegramId: number;
-  username: string | null;
-  firstName: string | null;
-  secondName: string | null;
+  username: string;
+  firstName: string;
+  secondName: string;
   avatarUrl: string;
   bio?: string | null;
   city?: string | null;
@@ -19,9 +19,9 @@ export interface User {
 export interface UserDTO {
   id: number;
   telegram_id: number;
-  username: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  username: string;
+  first_name: string;
+  last_name: string;
   avatar_url: string;
   bio?: string | null;
   city?: string | null;

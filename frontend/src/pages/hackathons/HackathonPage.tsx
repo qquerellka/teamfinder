@@ -72,7 +72,6 @@ const HackathonPage: React.FC = () => {
     setIsSkillsModalOpen(false);
     navigate(paths.userRoot);
   };
-  console.log(url);
 
   return (
     <>

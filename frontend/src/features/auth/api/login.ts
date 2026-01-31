@@ -59,12 +59,10 @@ export async function authDev(): Promise<AuthResponse> {
 export async function authTelegram(): Promise<AuthResponse> {
   // 1) получение строки initData
   const initDataRaw = resolveInitDataRaw();
-  console.log('initDataRaw', initDataRaw);
   if (!initDataRaw) throw new Error('No init_data for tgAuth');
 
   // 2) получение id пользователя по initData
   const tgUserId = getTgUserId(initDataRaw);
-  console.log('tgUserId', tgUserId);
   if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
 
   // 3) вызов ручки авторизации
