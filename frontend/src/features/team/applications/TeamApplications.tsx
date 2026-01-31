@@ -98,7 +98,7 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
 
       <SecondRow>
         {invited ? (
-          <SIcon name="sentInvite" />
+          <SIcon name="sentInvite" size={36} />
         ) : (
           <IconButton
             onClick={e => {

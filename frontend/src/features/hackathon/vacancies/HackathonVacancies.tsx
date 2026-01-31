@@ -97,7 +97,7 @@ const VacancyCard: FC<VacancyCardProps> = ({
 
       <SecondRow>
         {responsed ? (
-          <SIcon name="sentInvite" size={24} />
+          <SIcon name="sentInvite" size={36} />
         ) : (
           <IconButton
             style={{ borderRadius: 6, padding: 6 }}
