@@ -32,7 +32,13 @@ const HackathonPage: React.FC = () => {
 
   const url = normalizeUrl((hackathon as Hackathon).registrationLink);
 
-  const handleGoToApplications = () => {
+  const handleGoToApplication = () => {
+    if (isUserLoading) return;
+
+    if (id) navigate(getHackathonParticipationPath(Number(id)));
+  };
+
+  const handleGoToCreateApplication = () => {
     if (isUserLoading) return;
 
     const hasSkills = !!user && Array.isArray(user.skills) && user.skills.length > 0;
@@ -47,13 +53,6 @@ const HackathonPage: React.FC = () => {
 
   const handleGoToTeam = () => {
     if (isUserLoading) return;
-
-    const hasSkills = !!user && Array.isArray(user.skills) && user.skills.length > 0;
-
-    if (!hasSkills) {
-      setIsSkillsModalOpen(true);
-      return;
-    }
 
     if (id) navigate(getTeamPath(Number(team?.id)));
   };
@@ -85,7 +84,7 @@ const HackathonPage: React.FC = () => {
               Подробнее
             </Button>
 
-            <Button onClick={handleGoToApplications} disabled={isUserLoading}>
+            <Button onClick={handleGoToApplication} disabled={isUserLoading}>
               Моя анкета
             </Button>
           </ButtonsSection>
@@ -105,7 +104,7 @@ const HackathonPage: React.FC = () => {
               Подробнее
             </Button>
 
-            <Button onClick={handleGoToApplications} disabled={isUserLoading}>
+            <Button onClick={handleGoToCreateApplication} disabled={isUserLoading}>
               Найти команду
             </Button>
             <Button onClick={handleGoToCreateTeam} disabled={isUserLoading}>

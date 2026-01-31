@@ -17,3 +17,6 @@ class HackathonForm(StatesGroup):
     prize_fund = State()
     image_link = State()
     confirm = State()
+
+class DeleteHackathonForm(StatesGroup):
+    hackathon_id = State()

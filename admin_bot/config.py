@@ -29,9 +29,9 @@ def _parse_admin_ids(raw: str | None) -> List[int]:
 
 
 settings = Settings(
-    bot_token=os.environ.get("ADMIN_BOT_TOKEN", ""),
-    api_url=os.environ.get("API_URL", "http://api:8000"),
-    api_token=os.environ.get("ADMIN_API_TOKEN", ""),
+    bot_token=os.environ.get("ADMIN_BOT_TOKEN", "8505531112:AAH0da_xSAMjX0Asf7eFieER8ihotTsKBWo"),
+    api_url=os.environ.get("API_URL", "http://localhost/api/"),
+    api_token=os.environ.get("ADMIN_API_TOKEN", "8505531112:AAH0da_xSAMjX0Asf7eFieER8ihotTsKBWo"),
     admin_ids=_parse_admin_ids(os.environ.get("ADMIN_TELEGRAM_IDS")),
 )
 

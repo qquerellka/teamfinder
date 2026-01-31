@@ -13,8 +13,8 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 
 from config import settings
-from states import HackathonForm
-from services.api_client import create_hackathon
+from states import HackathonForm, DeleteHackathonForm
+from services.api_client import create_hackathon, delete_hackathon
 
 router = Router()
 
@@ -43,6 +43,7 @@ async def cmd_start(message: Message):
         "Привет! Я админ-бот Teamfinder.\n\n"
         "Сейчас умею:\n"
         "• /addhackathon — добавить хакатон на платформу.\n"
+        "• /deletehackathon — удалить хакатон по ID.\n"
     )
 
 
@@ -438,3 +439,98 @@ async def form_confirm(message: Message, state: FSMContext):
         f"id: <code>{created.get('id')}</code>\n"
         f"Название: <b>{created.get('name')}</b>"
     )
+
+
+# ===== Удаление хакатона =====
+
+
+@router.message(Command("deletehackathon"))
+async def cmd_delete_hackathon(message: Message, state: FSMContext):
+    if not _is_admin(message.from_user.id):
+        await message.answer("❌ У тебя нет прав администратора.")
+        return
+
+    await state.set_state(DeleteHackathonForm.hackathon_id)
+    await message.answer(
+        "🗑 Введи <b>ID хакатона</b>, который нужно удалить:\n"
+        "(ID можно посмотреть в карточке созданного хакатона)"
+    )
+
+
+@router.message(DeleteHackathonForm.hackathon_id)
+async def delete_form_hackathon_id(message: Message, state: FSMContext):
+    text = (message.text or "").strip()
+    
+    try:
+        hackathon_id = int(text)
+        if hackathon_id <= 0:
+            raise ValueError
+    except ValueError:
+        await message.answer("❌ ID хакатона должен быть положительным целым числом.")
+        return
+
+    # Создаем inline клавиатуру для подтверждения
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Да, удалить", 
+                    callback_data=f"confirm_delete_{hackathon_id}"
+                ),
+                InlineKeyboardButton(
+                    text="❌ Отмена", 
+                    callback_data="cancel_delete"
+                ),
+            ]
+        ]
+    )
+
+    await state.update_data(hackathon_id=hackathon_id)
+    await message.answer(
+        f"⚠️ <b>ВНИМАНИЕ!</b> Ты собираешься удалить хакатон с ID <code>{hackathon_id}</code>.\n\n"
+        f"Это действие <b>необратимо</b>. Все данные о хакатоне будут удалены.\n\n"
+        f"Подтверди удаление:",
+        reply_markup=keyboard
+    )
+
+
+@router.callback_query(F.data.startswith("confirm_delete_"))
+async def confirm_delete_hackathon(callback: CallbackQuery, state: FSMContext):
+    try:
+        # Извлекаем ID из callback_data
+        hackathon_id = int(callback.data.replace("confirm_delete_", ""))
+    except ValueError:
+        await callback.answer("❌ Неверный формат ID")
+        return
+
+    # Удаляем клавиатуру
+    await callback.message.edit_reply_markup(reply_markup=None)
+
+    try:
+        # Вызываем API для удаления
+        success = await delete_hackathon(hackathon_id)
+        
+        if success:
+            await callback.message.answer(
+                f"✅ Хакатон с ID <code>{hackathon_id}</code> успешно удалён."
+            )
+        else:
+            await callback.message.answer(
+                f"❌ Не удалось удалить хакатон с ID <code>{hackathon_id}</code>.\n"
+                f"Возможно, хакатон не существует или произошла ошибка на сервере."
+            )
+    except Exception as e:
+        await callback.message.answer(
+            f"⚠️ Ошибка при удалении хакатона: <code>{e}</code>"
+        )
+    
+    await state.clear()
+    await callback.answer()
+
+
+@router.callback_query(F.data == "cancel_delete")
+async def cancel_delete_hackathon(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.answer("❌ Удаление хакатона отменено.")
+    await callback.answer()
