@@ -29,9 +29,6 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
             @{user.username}
           </SText>
         </UsernameLink>
-        {/* <SText >
-          @{user?.username}
-        </SText> */}
       </SFullName>
     </SProfileHeader>
   );

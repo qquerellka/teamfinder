@@ -1,12 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useAuthUser, useUser } from '@/entities/user';
 import { ProfileBioEditor } from '@/features/profile/edit-bio';
-import { ProfileSkillsEditor, ProfileSkillsReadonly } from '@/features/profile/edit-skills';
+import { ProfileSkillsEditor } from '@/features/profile/edit-skills';
 import { ProfileHeader } from '@/widgets/profile/ProfileHeader';
 import { AchievementsListHeader, AchievementItem } from '@/widgets/achievements';
 import styled from 'styled-components';
-import { InputSection, NoItems, Page } from '@/shared/ui';
-import { Textarea } from '@telegram-apps/telegram-ui';
+import { NoItems, Page } from '@/shared/ui';
 
 export const ProfilePage = () => {
   const { id } = useParams<{ id?: string }>();
@@ -14,6 +13,7 @@ export const ProfilePage = () => {
   const { data: me } = useAuthUser();
 
   const viewedId = id ? Number(id) : me?.id;
+
   const { data: user } = useUser(viewedId ?? 0);
 
   const isOwner = me.id === user.id;
@@ -24,17 +24,9 @@ export const ProfilePage = () => {
         <ProfileHeader user={user} />
 
         <SExtraInfo>
-          {isOwner ? (
-            <>
-              <ProfileSkillsEditor />
-              <ProfileBioEditor />
-            </>
-          ) : (
-            <>
-              <ProfileSkillsReadonly skills={user.skills ?? []} />
-              <ProfileBioReadonly bio={user.bio ?? ''} />
-            </>
-          )}
+          <ProfileSkillsEditor disabled={!isOwner} />
+          <ProfileBioEditor disabled={!isOwner} />
+
           <Achievements>
             <AchievementsListHeader showAdd={isOwner} />
             {user?.achievements?.length > 0 ? (
@@ -80,8 +72,8 @@ const SExtraInfo = styled.div`
 `;
 export default ProfilePage;
 
-const ProfileBioReadonly = ({ bio }: { bio: string }) => (
-  <InputSection header="Обо мне">
-    <Textarea value={bio} disabled />
-  </InputSection>
-);
+// const ProfileBioReadonly = ({ bio }: { bio: string }) => (
+//   <InputSection header="Обо мне">
+//     <Textarea value={bio} disabled />
+//   </InputSection>
+// );
