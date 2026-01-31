@@ -66,7 +66,6 @@ const Name = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
-  color: var(--tg-theme-button-text-color);
 `;
 const Row = styled.div`
   display: flex;
