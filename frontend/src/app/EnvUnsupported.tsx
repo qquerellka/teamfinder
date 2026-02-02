@@ -49,7 +49,7 @@ export function EnvUnsupported() {
           size="m"
           stretched
           onClick={() => {
-            window.location.href = 'https://t.me/teamfinder_hack_bot';
+            window.location.href = 'https://t.me/teamfinder_hack_bot/hackathons';
           }}
         >
           Перейти сейчас
