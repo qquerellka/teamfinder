@@ -1,7 +1,6 @@
-import { Placeholder, AppRoot } from '@telegram-apps/telegram-ui';
+import { Placeholder, AppRoot, Button } from '@telegram-apps/telegram-ui';
 import { retrieveLaunchParams, isColorDark, isRGB } from '@tma.js/sdk-react';
-import { useMemo } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 
 export function EnvUnsupported() {
   const [platform, isDark] = useMemo(() => {
@@ -14,22 +13,47 @@ export function EnvUnsupported() {
     }
   }, []);
 
-  // const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(3);
+
+  useEffect(() => {
+    // Обратный отсчет
+    const interval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          window.location.href = 'https://t.me/teamfinder_hack_bot';
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <AppRoot
       appearance={isDark ? 'dark' : 'light'}
       platform={['macos', 'ios'].includes(platform) ? 'ios' : 'base'}
     >
       <Placeholder
-        header="Oops"
-        description="You are using too old Telegram client to run this application"
+        header="Требуется обновление"
+        description={`Ваша версия Telegram устарела. Через ${countdown} секунд вы будете перенаправлены в бот...`}
       >
         <img
           alt="Telegram sticker"
           src="https://xelene.me/telegram.gif"
-          style={{ display: 'block', width: '144px', height: '144px' }}
+          style={{ display: 'block', width: '144px', height: '144px', marginBottom: '20px' }}
         />
-        {/* <Button onClick={() => navigate('https://t.me/teamfinder_hack_bot/')}>Перейти в приложение</Button> */}
+        <Button
+          size="m"
+          stretched
+          onClick={() => {
+            window.location.href = 'https://t.me/teamfinder_hack_bot';
+          }}
+        >
+          Перейти сейчас
+        </Button>
       </Placeholder>
     </AppRoot>
   );
