@@ -29,7 +29,7 @@ export function EnvUnsupported() {
           src="https://xelene.me/telegram.gif"
           style={{ display: 'block', width: '144px', height: '144px' }}
         />
-        <Button onClick={() => navigate('')}></Button>
+        <Button onClick={() => navigate('https://t.me/teamfinder_hack_bot/')}>Перейти в приложение</Button>
       </Placeholder>
     </AppRoot>
   );
