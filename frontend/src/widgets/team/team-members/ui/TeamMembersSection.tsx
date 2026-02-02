@@ -176,7 +176,9 @@ const Info = styled.div`
 const Names = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  width: 100%;
+  justify-content: space-between;
+  /* gap: 1rem; */
   /* gap: 4px; */
   /* align-items: baseline; */
 
