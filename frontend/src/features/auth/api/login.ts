@@ -41,8 +41,8 @@ export async function authDev(): Promise<AuthResponse> {
   const body = {
     telegram_id: 0,
     username: 'teamfinder',
-    first_name: 'Team',
-    last_name: 'Finder',
+    first_name: 'Андрей',
+    last_name: 'Денисович',
     avatar_url:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Albert_Einstein_Head_cleaned.jpg/330px-Albert_Einstein_Head_cleaned.jpg',
   };

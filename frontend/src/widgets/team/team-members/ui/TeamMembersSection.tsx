@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Avatar } from '@telegram-apps/telegram-ui';
 
 import type { TeamWithMembers } from '@/entities/team';
-import { ConfirmModal, SIcon, SText } from '@/shared/ui';
+import { ConfirmModal, RoleBadge, SIcon, SText } from '@/shared/ui';
 import { useRemoveTeamMember } from '@/features/team-member/remove';
 import { useNavigate } from 'react-router-dom';
 import { getUserPath } from '@/shared/routing/paths';
@@ -78,12 +78,12 @@ const TeamMemberRow: FC<{
         <Info>
           <Names>
             <SText $fs={16} $fw={600}>
-              {fullName || 'Без имени'}
+              {fullName}
             </SText>
+            <RoleBadge size="s" role={member.role} />
           </Names>
 
           <Meta>
-            <SText $fs={14}>{member.role}</SText>
             {member.user.username && (
               <SText $fs={14} style={{ opacity: 0.8 }}>
                 @{member.user.username}
@@ -132,7 +132,7 @@ const HeaderRow = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0 22px;
+  /* padding: 0 22px; */
   margin-bottom: 0.5rem;
 `;
 
@@ -175,8 +175,10 @@ const Info = styled.div`
 
 const Names = styled.div`
   display: flex;
-  gap: 4px;
-  align-items: baseline;
+  align-items: center;
+  gap: 1rem;
+  /* gap: 4px; */
+  /* align-items: baseline; */
 
   & > * {
     white-space: nowrap;
@@ -187,6 +189,7 @@ const Names = styled.div`
 
 const Meta = styled.div`
   display: flex;
+  align-items: center;
   gap: 8px;
   margin-top: 2px;
 `;

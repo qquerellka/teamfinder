@@ -19,31 +19,44 @@ const colorsForRoleBadge: Record<Role, string> = {
 
 type RoleBadgeProps = {
   role?: Role | null;
+  size?: 's' | 'm';
 };
 
-export const RoleBadge = ({ role }: RoleBadgeProps) => {
+export const RoleBadge = ({ role, size = 'm' }: RoleBadgeProps) => {
   if (!role) {
-    // можно вернуть null, либо плейсхолдер:
-    // return <Placeholder>Роль не указана</Placeholder>;
     return null;
   }
 
   return (
-    <StyledRoleBadge $role={role}>
-      <SText $fs={16} $fw={600}>
+    <StyledRoleBadge $role={role} $size={size}>
+      <SText $fs={size === 's' ? 12 : 16} $fw={600}>
         {role}
       </SText>
     </StyledRoleBadge>
   );
 };
 
-const StyledRoleBadge = styled.div<{ $role?: Role | null }>`
+const StyledRoleBadge = styled.div<{ $role?: Role | null; $size?: 's' | 'm' }>`
   display: flex;
   align-self: flex-start;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0.75rem;
-  border-radius: 1rem;
+
+  ${({ $size }) => {
+    switch ($size) {
+      case 's':
+        return `
+          padding: 0.25rem 0.75rem;
+          border-radius: 0.75rem;
+        `;
+      case 'm':
+      default:
+        return `
+          padding: 0.5rem 0.75rem;
+          border-radius: 1rem;
+        `;
+    }
+  }}
 
   ${({ $role }) => {
     const color = $role ? colorsForRoleBadge[$role] : 'var(--tg-theme-accent-text-color)';
