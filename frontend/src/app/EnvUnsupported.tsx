@@ -1,7 +1,7 @@
-import { Placeholder, AppRoot, Button } from '@telegram-apps/telegram-ui';
+import { Placeholder, AppRoot } from '@telegram-apps/telegram-ui';
 import { retrieveLaunchParams, isColorDark, isRGB } from '@tma.js/sdk-react';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 export function EnvUnsupported() {
   const [platform, isDark] = useMemo(() => {
@@ -14,7 +14,7 @@ export function EnvUnsupported() {
     }
   }, []);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   return (
     <AppRoot
       appearance={isDark ? 'dark' : 'light'}
@@ -29,7 +29,7 @@ export function EnvUnsupported() {
           src="https://xelene.me/telegram.gif"
           style={{ display: 'block', width: '144px', height: '144px' }}
         />
-        <Button onClick={() => navigate('https://t.me/teamfinder_hack_bot/')}>Перейти в приложение</Button>
+        {/* <Button onClick={() => navigate('https://t.me/teamfinder_hack_bot/')}>Перейти в приложение</Button> */}
       </Placeholder>
     </AppRoot>
   );
