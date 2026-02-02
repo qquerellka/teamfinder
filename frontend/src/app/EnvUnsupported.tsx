@@ -21,7 +21,7 @@ export function EnvUnsupported() {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(interval);
-          window.location.href = 'https://t.me/teamfinder_hack_bot';
+          window.location.href = 'https://t.me/teamfinder_hack_bot/hackathons';
           return 0;
         }
         return prev - 1;
