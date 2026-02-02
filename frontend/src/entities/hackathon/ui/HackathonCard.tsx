@@ -37,7 +37,10 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       },
       {
         icon: 'hackathonRegistration',
-        text: hackathon.registrationEndDate===null ? "" : formatRegistrationDate(hackathon.registrationEndDate),
+        text:
+          hackathon.registrationEndDate === null
+            ? ''
+            : formatRegistrationDate(hackathon.registrationEndDate),
       },
       {
         icon: 'hackathonPlace',

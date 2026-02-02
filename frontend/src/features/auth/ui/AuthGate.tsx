@@ -9,7 +9,7 @@ interface AuthGateProps {
 
 export function AuthGate({ children }: AuthGateProps) {
   const { isLoading, isError, error, refetchAuth } = useAuth();
-  
+
   if (isLoading) {
     return <LoaderPage />;
   }

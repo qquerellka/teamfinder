@@ -40,6 +40,7 @@ export const HackathonList: FC = () => {
               placeholder="Название хакатона"
               value={search}
               onChange={e => setSearch(e.target.value)}
+              maxLength={64}
             />
           </InputSection>
           <IconButton onClick={filters.openModal}>

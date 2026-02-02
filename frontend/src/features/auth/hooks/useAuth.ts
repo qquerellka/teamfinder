@@ -7,7 +7,6 @@ import { UserDTO } from '@/entities/user';
 export const AUTH_QUERY_KEY = ['auth'];
 
 export function useAuth() {
-  
   const queryClient = useQueryClient();
   const handledUserIdRef = useRef<string | null>(null);
 

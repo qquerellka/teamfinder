@@ -38,9 +38,9 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
         </SText>
 
         {isCaptain ? (
-          <SIcon onClick={onEditClick} name="edit" size={24}/>
+          <SIcon onClick={onEditClick} name="edit" size={24} />
         ) : isMember ? (
-          <SIcon onClick={leave} name="leaveTeam" size={24}/>
+          <SIcon onClick={leave} name="leaveTeam" size={24} />
         ) : (
           <div />
         )}
@@ -67,7 +67,12 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
       {isMember && (
         <ButtonsSection>
           {isCaptain && team.members.length < team.teamMembersLimit && (
-            <Button mode="white" onClick={copy} stretched disabled={isCopying || team.members.length >= team.teamMembersLimit}>
+            <Button
+              mode="white"
+              onClick={copy}
+              stretched
+              disabled={isCopying || team.members.length >= team.teamMembersLimit}
+            >
               {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
             </Button>
           )}

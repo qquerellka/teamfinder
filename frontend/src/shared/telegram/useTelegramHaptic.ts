@@ -1,3 +1,5 @@
+import { postEvent } from '@tma.js/sdk-react';
+
 export const useTelegramHaptic = () => {
   const impact = (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => {
     const tg = window.Telegram?.WebApp;
@@ -36,3 +38,14 @@ export const useTelegramHaptic = () => {
 
   return { impact, notify, selectionChange };
 };
+
+export async function useHaptic() {
+  try {
+    postEvent('web_app_trigger_haptic_feedback', {
+      type: 'impact',
+      impact_style: 'light',
+    });
+  } catch (error) {
+    console.debug('Haptic feedback not available', error);
+  }
+}

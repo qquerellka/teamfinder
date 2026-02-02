@@ -31,11 +31,11 @@ export const TeamEditPanel: FC<Props> = ({ team, onClose, onExit }) => {
   return (
     <Root>
       <Header>
-        {isCaptain ? <SIcon onClick={del.open} name="delete" size={24}/> : <div />}
+        {isCaptain ? <SIcon onClick={del.open} name="delete" size={24} /> : <div />}
         <SText $fs={14} $fw={500}>
           Моя команда
         </SText>
-        <SIcon onClick={leave} name="leaveTeam" size={24}/>
+        <SIcon onClick={leave} name="leaveTeam" size={24} />
       </Header>
 
       <EditTeamForm

@@ -13,7 +13,7 @@ export const FindTeamMemberPage = () => {
   const { data: team } = useTeam(Number(id));
   const [tab, setTab] = useState<'vacancy' | 'applications'>('vacancy');
   if (team === null) {
-    return <NotFound/>
+    return <NotFound />;
   }
   return (
     <Page>

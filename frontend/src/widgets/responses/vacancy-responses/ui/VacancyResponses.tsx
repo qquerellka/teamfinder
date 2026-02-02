@@ -14,7 +14,6 @@ export const VacancyResponses: FC = () => {
   const { data } = useTeamResponses(Number(id));
   const responses: Response[] = data;
 
-
   const pending = useMemo(() => responses.filter(r => r.status === 'pending'), [responses]);
 
   if (pending.length === 0) {
@@ -35,7 +34,7 @@ export const VacancyResponses: FC = () => {
           actions={
             <ResponseRespondButtons
               responseId={i.id}
-              onAnswered={(status) => {
+              onAnswered={status => {
                 if (status === 'accepted') {
                   navigate(getTeamPath(i.teamId));
                 }

@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { Button, Select, Textarea } from '@telegram-apps/telegram-ui';
-import type { FC, ChangeEvent } from 'react';
+import { type FC, type ChangeEvent, useState } from 'react';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
-import { ButtonsSection, InputSection } from '@/shared/ui';
+import { ButtonsSection, ErrorText, InputSection } from '@/shared/ui';
+import { useHaptic } from '@/shared/telegram/useTelegramHaptic';
 
 interface VacancyFormViewProps {
   role: Role | '';
@@ -30,6 +31,8 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  const [errorDescription, setErrorDescription] = useState(false);
+
   const handleSaveClick = () => {
     if (!canSubmit) return;
     onSubmit();
@@ -40,7 +43,15 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
   };
 
   const handleTextarea = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    onDescriptionChange(e.target.value);
+    const value = e.target.value;
+
+    if (value.length <= 128) {
+      setErrorDescription(false);
+      onDescriptionChange(e.target.value);
+    } else {
+      useHaptic();
+      setErrorDescription(true);
+    }
   };
 
   return (
@@ -51,7 +62,9 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
             value={description}
             onChange={handleTextarea}
             placeholder="Хотим заряженного ИБО перваша"
+            status={errorDescription ? 'error' : 'default'}
           />
+          {errorDescription && <ErrorText>{'Слишком большое описание!'}</ErrorText>}
         </InputSection>
 
         <InputSection header={'Роль'}>

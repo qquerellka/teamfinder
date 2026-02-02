@@ -18,7 +18,10 @@ export const HackathonCreateTeamPage = () => {
 
   return (
     <Page>
-      <CreateTeamForm hackathon={hackathon} onDone={(id: number) => navigate(getTeamPath(id), { replace: true })} />
+      <CreateTeamForm
+        hackathon={hackathon}
+        onDone={(id: number) => navigate(getTeamPath(id), { replace: true })}
+      />
     </Page>
   );
 };

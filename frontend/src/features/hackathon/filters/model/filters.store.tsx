@@ -5,11 +5,11 @@ import { HackathonMode } from '@/shared/types/enums';
 interface HackathonFiltersState {
   search: string;
   mode: HackathonMode | '';
-  
+
   setSearch: (search: string) => void;
   setMode: (mode: HackathonMode | '') => void;
   reset: () => void;
-  
+
   getQueryParams: () => {
     q?: string;
     mode?: HackathonMode;
@@ -21,11 +21,11 @@ export const useHackathonFilters = create<HackathonFiltersState>()(
     (set, get) => ({
       search: '',
       mode: '',
-      
-      setSearch: (search) => set({ search }),
-      setMode: (mode) => set({ mode }),
+
+      setSearch: search => set({ search }),
+      setMode: mode => set({ mode }),
       reset: () => set({ search: '', mode: '' }),
-      
+
       getQueryParams: () => {
         const { search, mode } = get();
         return {
@@ -36,6 +36,6 @@ export const useHackathonFilters = create<HackathonFiltersState>()(
     }),
     {
       name: 'hackathon-page-filters',
-    }
-  )
+    },
+  ),
 );

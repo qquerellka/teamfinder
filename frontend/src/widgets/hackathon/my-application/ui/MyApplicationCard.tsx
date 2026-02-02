@@ -47,10 +47,10 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
 
           <Icons>
             <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
-              <SIcon name="edit"  size={24}/>
+              <SIcon name="edit" size={24} />
             </IconButton>
             <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={openDeleteModal}>
-              <SIcon name="delete" size={24}/>
+              <SIcon name="delete" size={24} />
             </IconButton>
           </Icons>
         </Header>

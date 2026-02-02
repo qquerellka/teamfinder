@@ -102,7 +102,7 @@ const RatioContainer = styled.div`
   gap: 1rem;
 `;
 
-const ModalContainer = styled.form` 
+const ModalContainer = styled.form`
   padding: 1rem;
   display: flex;
   flex-direction: column;

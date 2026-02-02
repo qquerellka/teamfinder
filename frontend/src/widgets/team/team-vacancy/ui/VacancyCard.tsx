@@ -36,10 +36,7 @@ export const VacancyCard: FC<VacancyCardProps> = ({ team, vacancy, onDeleted, on
             <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
               <SIcon name="edit" size={24} />
             </IconButton>
-            <IconButton
-              style={{ borderRadius: 6, padding: 6 }}
-              onClick={openDeleteModal}
-            >
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={openDeleteModal}>
               <SIcon name="delete" size={24} />
             </IconButton>
           </Icons>
@@ -66,14 +63,17 @@ const Wrapper = styled.div`
   background-color: var(--tg-theme-section-bg-color);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   padding: 1rem;
   border-radius: 1rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 `;
 
 const Info = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 0.5rem;
 `;
 
@@ -90,8 +90,3 @@ const Icons = styled.div`
   flex-direction: row;
   gap: 0.5rem;
 `;
-
-// const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
-//   padding: 0;
-//   min-width: auto;
-// `;

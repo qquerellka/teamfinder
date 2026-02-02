@@ -3,11 +3,9 @@ import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Achievement,formatHackPlace } from '@/entities/achievement';
+import { Achievement, formatHackPlace } from '@/entities/achievement';
 import { paths } from '@/shared/routing/paths';
 import { SText } from '@/shared/ui';
-
-
 
 interface AchievementItemProps {
   achievement: Achievement;

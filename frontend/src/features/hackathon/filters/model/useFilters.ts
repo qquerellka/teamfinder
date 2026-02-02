@@ -6,10 +6,7 @@ export interface UseFiltersProps {
   initialMoney?: boolean | null;
 }
 
-export const useFilters = ({ 
-  initialMode = '', 
-  initialMoney = null 
-}: UseFiltersProps = {}) => {
+export const useFilters = ({ initialMode = '', initialMoney = null }: UseFiltersProps = {}) => {
   const [mode, setMode] = useState<HackathonMode | ''>(initialMode);
   const [appliedMode, setAppliedMode] = useState<HackathonMode | ''>(initialMode);
   const [money, setMoney] = useState<boolean | null>(initialMoney);

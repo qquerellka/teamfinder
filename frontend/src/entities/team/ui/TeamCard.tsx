@@ -29,7 +29,10 @@ export const TeamCard: FC<TeamCardProps> = ({
           <SText>{teamName}</SText>
           {isCaptain && <SIcon name={'captain'} size={16} color={'#F3BD28'}></SIcon>}
         </Name>
-        <IconButton style={{ borderRadius: 6, padding: 6 }}>
+        {/* <IconButton style={{ borderRadius: 6, position: 'absolute', top: 12, right: 12,  padding: 6 }}>
+          <SIcon name={'arrow'} size={24} />
+        </IconButton> */}
+        <IconButton style={{ borderRadius: 6, padding: 6, width: 36, height: 36 }}>
           <SIcon name={'arrow'} size={24} />
         </IconButton>
       </Row>
@@ -60,17 +63,25 @@ const Wrapper = styled.div`
   padding: 0.75rem;
   border-radius: 1rem;
   background-color: var(--tg-theme-section-bg-color);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  position: relative;
+  text-align: left;
 `;
+
 const Name = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: start;
+  text-align: left;
   gap: 0.5rem;
 `;
 const Row = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 1rem;
 `;
 
 interface InvitesBadgeProps {
