@@ -1,18 +1,13 @@
-import type { ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { LoaderPage } from '@/shared/ui';
 import { Button, Placeholder } from '@telegram-apps/telegram-ui';
 
 interface AuthGateProps {
   children: ReactNode;
 }
 
-export function AuthGate({ children }: AuthGateProps) {
-  const { isLoading, isError, error, refetchAuth } = useAuth();
-
-  if (isLoading) {
-    return <LoaderPage />;
-  }
+export const AuthGate:FC<AuthGateProps> = ({ children }) => {
+  const { isError, error, refetchAuth } = useAuth();
 
   if (isError) {
     const message = error instanceof Error ? error.message : 'Не удалось авторизоваться';

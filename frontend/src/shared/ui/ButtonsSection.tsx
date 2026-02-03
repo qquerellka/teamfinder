@@ -18,6 +18,7 @@ export const ButtonsSection: FC<ButtonsSectionProps> = ({ children }) => {
 const SButtonsSection = styled.div`
   display: flex;
   flex-direction: column;
+  text-align: center;
   gap: 0.5rem;
   position: fixed;
   bottom: 4.5rem;

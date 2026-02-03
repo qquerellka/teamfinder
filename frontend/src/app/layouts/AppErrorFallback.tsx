@@ -1,6 +1,7 @@
 import { SText } from '@/shared/ui';
 import { Button, Placeholder } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
+import { NotFoundPage } from '@/pages/not-found/NotFound';
 
 type AppErrorFallbackProps = {
   error: unknown;
@@ -8,6 +9,16 @@ type AppErrorFallbackProps = {
 };
 
 export function AppErrorFallback({ error, resetErrorBoundary }: AppErrorFallbackProps) {
+  const isNotFound =
+    error instanceof Error &&
+    (error.message.includes('404') ||
+      error.message.includes('not found') ||
+      error.message.includes('Not Found'));
+
+  if (isNotFound) {
+    return <NotFoundPage />;
+  }
+
   const message =
     error instanceof Error
       ? error.message
@@ -52,10 +63,8 @@ const Root = styled.div`
   min-height: 100vh;
   padding: 1rem;
   box-sizing: border-box;
-
   background: var(--tg-theme-bg-color, #0f172a);
   color: var(--tg-theme-text-color, #ffffff);
-
   display: flex;
   align-items: center;
   justify-content: center;

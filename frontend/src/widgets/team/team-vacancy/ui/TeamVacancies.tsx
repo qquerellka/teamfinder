@@ -40,7 +40,7 @@ export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
       {team.members.length + vacancies.length < team.teamMembersLimit && (
         <ButtonsSection>
           <Button mode="white" onClick={() => setAddVacancy(true)}>
-            {'Создать вакансию'}
+            {vacancies.length > 0 ? 'Создать еще вакансию' : 'Создать вакансию'}
           </Button>
         </ButtonsSection>
       )}

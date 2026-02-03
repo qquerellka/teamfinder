@@ -13,7 +13,7 @@ const ApplicationsPage = lazy(() => import('@/pages/applications/ApplicationsPag
 const ProfilePage = lazy(() => import('@/pages/profile/ProfilePage'));
 const UserTeamsPage = lazy(() => import('@/pages/teams/TeamsPage'));
 const AchievementPage = lazy(() => import('@/pages/achievements/AchievementPage'));
-const NotFound = lazy(() => import('@/pages/not-found/NotFound'));
+const NotFoundPage = lazy(() => import('@/pages/not-found/NotFound'));
 
 const routes: RouteObject[] = [
   {
@@ -59,7 +59,7 @@ const routes: RouteObject[] = [
         ],
       },
 
-      { path: paths.error404, element: <NotFound /> },
+      { path: paths.error404, element: <NotFoundPage /> },
 
       { path: '*', element: <Navigate to={paths.hackathons} replace /> },
     ],
