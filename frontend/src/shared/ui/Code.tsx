@@ -12,18 +12,15 @@ interface CodeBlockProps {
   language?: string;
 }
 
-export const CodeBlock: FC<CodeBlockProps> = ({
-  code,
-  language = 'python',
-}) => {
+export const CodeBlock: FC<CodeBlockProps> = ({ code, language = 'python' }) => {
   const highlighted = useMemo(() => {
     return hljs.highlight(code, { language }).value;
   }, [code, language]);
 
   return (
     <Container>
-      <Pre className="hljs" >
-        <Code dangerouslySetInnerHTML={{ __html: highlighted }} $fs={16}/>
+      <Pre className="hljs">
+        <Code dangerouslySetInnerHTML={{ __html: highlighted }} $fs={16} />
       </Pre>
     </Container>
   );

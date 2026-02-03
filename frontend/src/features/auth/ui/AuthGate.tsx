@@ -6,7 +6,7 @@ interface AuthGateProps {
   children: ReactNode;
 }
 
-export const AuthGate:FC<AuthGateProps> = ({ children }) => {
+export const AuthGate: FC<AuthGateProps> = ({ children }) => {
   const { isError, error, refetchAuth } = useAuth();
 
   if (isError) {
@@ -31,4 +31,4 @@ export const AuthGate:FC<AuthGateProps> = ({ children }) => {
     );
   }
   return <>{children}</>;
-}
+};

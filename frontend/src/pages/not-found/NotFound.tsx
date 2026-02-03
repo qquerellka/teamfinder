@@ -1,6 +1,6 @@
 import { ButtonsSection, SText } from '@/shared/ui';
 import { CodeBlock } from '@/shared/ui/Code';
-import { Button, Placeholder } from '@telegram-apps/telegram-ui';
+import { Button } from '@telegram-apps/telegram-ui';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -24,7 +24,7 @@ while True:
       <CodeBlock code={errorCode} />
 
       <ButtonsSection>
-        <div style={{marginBottom: 16, display: 'flex', flexDirection: 'column'}}>
+        <div style={{ marginBottom: 16, display: 'flex', flexDirection: 'column' }}>
           <SText $fs={60} $fw={500}>
             404
           </SText>
