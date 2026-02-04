@@ -16,7 +16,6 @@ export function EnvUnsupported() {
   const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
-    // Обратный отсчет
     const interval = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {

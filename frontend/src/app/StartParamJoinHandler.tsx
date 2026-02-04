@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState, useCallback } from 'react';
 import { useLaunchParams } from '@tma.js/sdk-react';
-import { useTeam, useJoinTeam } from '@/entities/team'; // Импортируем хук
+import { useTeam, useJoinTeam } from '@/entities/team';
 import { Role, roleOptions } from '@/shared/types/enums';
 import { useAuth } from '@/features/auth';
 import { useNavigate } from 'react-router-dom';

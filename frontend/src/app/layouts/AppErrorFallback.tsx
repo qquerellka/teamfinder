@@ -1,14 +1,15 @@
 import { SText } from '@/shared/ui';
+import { FC } from 'react';
 import { Button, Placeholder } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 import { NotFoundPage } from '@/pages/not-found/NotFound';
 
-type AppErrorFallbackProps = {
+interface AppErrorFallbackProps {
   error: unknown;
-  resetErrorBoundary?: () => void;
+  resetErrorBoundary?: () => void; // сбросить состояние ошибки и перерендерить компонент
 };
 
-export function AppErrorFallback({ error, resetErrorBoundary }: AppErrorFallbackProps) {
+export const AppErrorFallback:FC<AppErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
   const isNotFound =
     error instanceof Error &&
     (error.message.includes('404') ||

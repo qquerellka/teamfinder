@@ -1,15 +1,9 @@
 import { Component, type ComponentType, type PropsWithChildren, type ReactNode } from 'react';
 
-type FallbackRender = (args: { error: unknown; resetErrorBoundary: () => void }) => ReactNode;
 
-export interface ErrorBoundaryProps extends PropsWithChildren {
+interface ErrorBoundaryProps extends PropsWithChildren {
   fallback?: ReactNode | ComponentType<{ error: unknown; resetErrorBoundary?: () => void }>;
-  fallbackRender?: FallbackRender;
-
-  // если поменялись resetKeys — сбрасываем ошибку (например, при смене роута)
   resetKeys?: readonly unknown[];
-
-  // сюда можно прокинуть react-query reset (или любую очистку)
   onReset?: () => void;
 }
 
@@ -51,12 +45,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     const { error } = this.state;
-    const { fallback: Fallback, fallbackRender, children } = this.props;
+    const { fallback: Fallback, children } = this.props;
 
     if (error != null) {
-      if (fallbackRender) {
-        return fallbackRender({ error, resetErrorBoundary: this.resetErrorBoundary });
-      }
 
       if (Fallback) {
         if (typeof Fallback === 'function') {

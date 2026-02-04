@@ -35,22 +35,22 @@ export default function RootLayout() {
   return (
     <>
       <BackButtonController />
-      <SRoot>
-        <SContent $top={0} $bottom={footerHeight}>
+      <Root>
+        <Content $top={0} $bottom={footerHeight}>
           <Outlet />
-        </SContent>
+        </Content>
 
         <FixedLayout vertical="bottom" style={{ display: isKeyboardVisible ? 'none' : 'block' }}>
-          <SFooterInner ref={footerRef}>
+          <FooterInner ref={footerRef}>
             <Navbar />
-          </SFooterInner>
+          </FooterInner>
         </FixedLayout>
-      </SRoot>
+      </Root>
     </>
   );
 }
 
-const SRoot = styled.div`
+const Root = styled.div`
   position: relative;
   min-height: calc(var(--vh, 1vh) * 100);
   max-width: 640px;
@@ -59,17 +59,16 @@ const SRoot = styled.div`
   padding: 1rem;
 `;
 
-const SContent = styled.div<{ $top: number; $bottom: number }>`
+const Content = styled.div<{ $top: number; $bottom: number }>`
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding-top: ${({ $top }) => $top + 12}px;
   padding-bottom: ${({ $bottom }) => $bottom + 12}px;
-  /* position: relative; */
 `;
 
-const SFooterInner = styled.div`
+const FooterInner = styled.div`
   border-radius: 1rem 1rem 0 0;
   background: var(--tg-theme-secondary-bg-color, #fff);
   padding-bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
