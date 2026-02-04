@@ -60,7 +60,6 @@ async function bootstrapBrowser() {
 // ---------- TMA (prod) ----------
 
 async function bootstrapTMA() {
-  // 1) Явно описываем то, что нам нужно из launch params
   const lp = retrieveLaunchParams() as {
     initDataRaw?: string;
     initData?: string;
@@ -72,7 +71,6 @@ async function bootstrapTMA() {
     new URLSearchParams(location.hash.slice(1)).get('tgWebAppData') ||
     new URLSearchParams(location.search).get('tgWebAppData');
 
-  // 2) Жёстко задаём тип initDataRaw как string | undefined
   const initDataRaw: string | undefined =
     lp.initDataRaw ??
     lp.initData ??
