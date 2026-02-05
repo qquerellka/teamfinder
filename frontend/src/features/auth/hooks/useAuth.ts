@@ -1,20 +1,22 @@
-// import { useQueryClient } from '@tanstack/react-query';
-// import { useEffect, useRef } from 'react';
 import { authQueryFn } from '../api/login';
-// import { UserDTO } from '@/entities/user';
 import { useAppQuery } from '@/shared/api/useAppQuery';
 import { AuthResponse } from '../model/types';
 
 export const AUTH_QUERY_KEY = ['auth'];
 
 export function useAuth() {
-  // const queryClient = useQueryClient();
-  // const handledUserIdRef = useRef<string | null>(null);
 
   return useAppQuery<AuthResponse>({
     queryKey: AUTH_QUERY_KEY,
     queryFn: authQueryFn,
   });
+
+}
+
+
+  // const queryClient = useQueryClient();
+  // const handledUserIdRef = useRef<string | null>(null);
+
 
   // useEffect(() => {
   //   const id = query.data?.profile?.id;
@@ -48,4 +50,3 @@ export function useAuth() {
   //   error: query.error,
   //   refetchAuth: query.refetch,
   // };
-}

@@ -3,7 +3,9 @@ import { FC } from 'react';
 import { Button, Placeholder } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 import { NotFoundPage } from '@/pages/not-found/NotFound';
-import { useAuth } from '@/features/auth';
+import { AUTH_QUERY_KEY } from '@/features/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { authQueryFn } from '@/features/auth/api/login';
 
 interface AppErrorFallbackProps {
   error: unknown;
@@ -32,13 +34,31 @@ export const AppErrorFallback: FC<AppErrorFallbackProps> = ({ error, resetErrorB
     window.location.reload();
   };
 
-  const handleRetry = () => {
+  const queryClient = useQueryClient();
+
+  const handleRetry = async () => {
+    // Сначала сбрасываем ошибку
     resetErrorBoundary?.();
-  if (error instanceof Error && error.message.includes('401')) {
-    console.log('401');
-    useAuth();
-  } 
- };
+
+    // Если это ошибка 401, делаем рефетч авторизации
+    if (error instanceof Error && error.message.includes('401')) {
+      try {
+        // Вариант 1: Используем queryClient для ручного запроса
+        await queryClient.fetchQuery({
+          queryKey: AUTH_QUERY_KEY,
+          queryFn: authQueryFn,
+        });
+
+        // Вариант 2: Если нужно просто инвалидировать кэш и заново сделать запрос
+        // await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });
+        // await queryClient.refetchQueries({ queryKey: AUTH_QUERY_KEY });
+      } catch (error) {
+        console.error('Failed to re-authenticate:', error);
+        // Если реавторизация не удалась, перезагружаем страницу
+        window.location.reload();
+      }
+    }
+  };
 
   return (
     <Root>
