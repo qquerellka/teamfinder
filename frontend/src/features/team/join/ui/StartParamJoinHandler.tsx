@@ -17,7 +17,6 @@ export const StartParamJoinHandler = () => {
   const { teamId, profile, getHandledKey } = useStartParamParser();
   const teamQuery = useTeam(teamId || undefined);
 
-
   const haveTeamModal = useHaveTeamModal(teamId, navigateToTeam, getHandledKey);
   const joinTeamModal = useJoinTeamModal(
     teamId,
@@ -32,12 +31,13 @@ export const StartParamJoinHandler = () => {
     teamId,
     hadAdded: joinTeamModal.hadAdded,
     onIsMember: () => {
+      sessionStorage.setItem(getHandledKey(teamId!), '1');
       joinTeamModal.close();
       haveTeamModal.open();
     },
     onNotMember: () => {
       joinTeamModal.open();
-    }
+    },
   });
 
   if (!joinTeamModal.modalOpen && !haveTeamModal.modalOpen) return null;

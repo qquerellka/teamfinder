@@ -32,7 +32,6 @@ apiClient.interceptors.response.use(
 
         // Сбрасываем Authorization в axios по умолчанию
         try {
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete apiClient.defaults.headers.common.Authorization;
         } catch {
           // игнорируем

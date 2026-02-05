@@ -18,13 +18,13 @@ export const useMembershipCheck = ({
   teamId,
   hadAdded,
   onIsMember,
-  onNotMember
+  onNotMember,
 }: UseMembershipCheckProps) => {
   useEffect(() => {
     if (!profile || !teamId || hadAdded) return;
     if (!team) return;
 
-    const isMember = team.members.some((m) => m.user.id === profile.id);
+    const isMember = team.members.some(m => m.user.id === profile.id);
 
     if (isMember) {
       onIsMember();

@@ -36,7 +36,7 @@ export const useJoinTeamModal = (
       onJoinTeam();
     } catch (e) {
       console.error('[StartParamJoinHandler] join failed', e);
-      setHadAdded(false);
+      // setHadAdded(false);
     }
   };
 
