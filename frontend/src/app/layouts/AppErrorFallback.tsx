@@ -3,13 +3,14 @@ import { FC } from 'react';
 import { Button, Placeholder } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 import { NotFoundPage } from '@/pages/not-found/NotFound';
+import { useAuth } from '@/features/auth';
 
 interface AppErrorFallbackProps {
   error: unknown;
   resetErrorBoundary?: () => void; // сбросить состояние ошибки и перерендерить компонент
-};
+}
 
-export const AppErrorFallback:FC<AppErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
+export const AppErrorFallback: FC<AppErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
   const isNotFound =
     error instanceof Error &&
     (error.message.includes('404') ||
@@ -33,7 +34,11 @@ export const AppErrorFallback:FC<AppErrorFallbackProps> = ({ error, resetErrorBo
 
   const handleRetry = () => {
     resetErrorBoundary?.();
-  };
+  if (error instanceof Error && error.message.includes('401')) {
+    console.log('401');
+    useAuth();
+  } 
+ };
 
   return (
     <Root>
@@ -43,7 +48,7 @@ export const AppErrorFallback:FC<AppErrorFallbackProps> = ({ error, resetErrorBo
       >
         <Buttons>
           <Button mode="white" size="m" onClick={handleRetry} disabled={!resetErrorBoundary}>
-            Повторить
+            Повторить!
           </Button>
 
           <Button mode="plain" size="m" onClick={handleReload}>
@@ -58,7 +63,7 @@ export const AppErrorFallback:FC<AppErrorFallbackProps> = ({ error, resetErrorBo
       </Placeholder>
     </Root>
   );
-}
+};
 
 const Root = styled.div`
   min-height: 100vh;

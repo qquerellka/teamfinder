@@ -78,6 +78,7 @@ export async function authTelegram(): Promise<AuthResponse> {
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
+  console.log('authQueryFn');
   const forceDevLogin = import.meta.env.VITE_FORCE_DEV_LOGIN === '1' || import.meta.env.DEV;
 
   if (forceDevLogin) return authDev();
