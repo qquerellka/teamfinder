@@ -1,11 +1,11 @@
 // useMembershipCheck.ts
 import { TeamWithMembers } from '@/entities/team';
-import { UserDTO } from '@/entities/user';
+import { User } from '@/entities/user';
 import { useEffect } from 'react';
 
 interface UseMembershipCheckProps {
   team: TeamWithMembers | null;
-  profile: UserDTO | null;
+  profile: User | null;
   teamId: number | null;
   hadAdded: boolean;
   onIsMember: () => void;

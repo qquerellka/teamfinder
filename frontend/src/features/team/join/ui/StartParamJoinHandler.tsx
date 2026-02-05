@@ -14,7 +14,7 @@ export const StartParamJoinHandler = () => {
   const navigateToTeam = () => navigate(getTeamPath(teamId!));
   const navigateToHackathons = () => navigate('/hackathons');
 
-  const { teamId, profile, getHandledKey } = useStartParamParser();
+  const { teamId, data, getHandledKey } = useStartParamParser();
   const teamQuery = useTeam(teamId || undefined);
 
   const haveTeamModal = useHaveTeamModal(teamId, navigateToTeam, getHandledKey);
@@ -27,7 +27,7 @@ export const StartParamJoinHandler = () => {
 
   useMembershipCheck({
     team: teamQuery.data,
-    profile,
+    profile: data.profile,
     teamId,
     hadAdded: joinTeamModal.hadAdded,
     onIsMember: () => {

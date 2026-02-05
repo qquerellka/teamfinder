@@ -1,7 +1,8 @@
 import { apiClient } from '@/shared/api/client';
-import { AuthResponse } from '../model/types';
+import { AuthResponse, AuthResponseDTO } from '../model/types';
 import { resolveInitDataRaw } from '@/shared/resolveInitDataRaw';
 import { getTgUserId } from '../lib/getTgUserId';
+import { authResponseToCamelCase } from '../lib/dto';
 
 const AUTH_STORAGE_PREFIX = 'tf:auth_token:';
 
@@ -14,27 +15,11 @@ function saveAccessToken(token: string) {
 }
 
 function saveAuthToStorage(data: AuthResponse, tgUserId: number) {
-  const token = data.access_token;
+  const token = data.accessToken;
   localStorage.setItem(tokenKey(tgUserId), token);
   saveAccessToken(token);
 }
 
-// function restoreTokenFromStorage(tgUserId: number): string | null {
-//   const token = localStorage.getItem(tokenKey(tgUserId));
-//   if (!token) return null;
-//   saveAccessToken(token);
-//   return token;
-// }
-
-// function clearAuthStorage(tgUserId: number) {
-//   localStorage.removeItem(tokenKey(tgUserId));
-//   delete apiClient.defaults.headers.common.Authorization;
-// }
-
-// async function fetchProfile(): Promise<AuthResponse['profile']> {
-//   const { data } = await apiClient.get<AuthResponse['profile']>('/users/me');
-//   return data;
-// }
 
 export async function authDev(): Promise<AuthResponse> {
   const body = {
@@ -46,35 +31,28 @@ export async function authDev(): Promise<AuthResponse> {
       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Albert_Einstein_Head_cleaned.jpg/330px-Albert_Einstein_Head_cleaned.jpg',
   };
 
-  const response = await apiClient.post<AuthResponse>('/auth/dev-login', body);
-
-  const data = response.data;
-
-  saveAuthToStorage(data, 0);
-
-  return data;
+  const { data } = await apiClient.post<AuthResponseDTO>('/auth/dev-login', body);
+  saveAuthToStorage(authResponseToCamelCase(data), 0);
+  return authResponseToCamelCase(data);
 }
 
 export async function authTelegram(): Promise<AuthResponse> {
-  // 1) получение строки initData
   console.log('1) получение строки initData');
   const initDataRaw = resolveInitDataRaw();
   if (!initDataRaw) throw new Error('No init_data for tgAuth');
 
-  // 2) получение id пользователя по initData
   console.log('2) получение id пользователя по initData');
   const tgUserId = getTgUserId(initDataRaw);
   if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
+  
   console.log('3) вызов ручки авторизации');
-  // 3) вызов ручки авторизации
-  const { data } = await apiClient.post<AuthResponse>('/auth/telegram', {
+  const { data } = await apiClient.post<AuthResponseDTO>('/auth/telegram', {
     init_data: initDataRaw,
   });
 
   console.log('4) сохранение токена в localStorage и добавление Bearer в заголовок');
-  // 4) сохранение токена в localStorage и добавление Bearer в заголовок
-  saveAuthToStorage(data, tgUserId);
-  return data;
+  saveAuthToStorage(authResponseToCamelCase(data), tgUserId);
+  return authResponseToCamelCase(data);
 }
 
 export async function authQueryFn(): Promise<AuthResponse> {
@@ -89,27 +67,6 @@ export async function authQueryFn(): Promise<AuthResponse> {
 
   const tgUserId = getTgUserId(initDataRaw);
   if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
-
-  // получение токена из localStorage + переустановка Bearer
-  //
-  // const token = restoreTokenFromStorage(tgUserId);
-  // if (token) {
-  //   try {
-  //     const profile = await fetchProfile();
-  //     return { access_token: token, profile };
-  //   } catch (err: unknown) {
-  //     if (axios.isAxiosError(err)) {
-  //       const status = err.response?.status;
-  //       if (status === 401 || status === 403 || status === 404) {
-  //         clearAuthStorage(tgUserId);
-  //       } else {
-  //         throw err;
-  //       }
-  //     } else {
-  //       throw err;
-  //     }
-  //   }
-  // }
 
   return authTelegram();
 }

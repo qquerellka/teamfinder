@@ -7,13 +7,13 @@ interface AuthGateProps {
 }
 
 export const AuthGate: FC<AuthGateProps> = ({ children }) => {
-  const { isError, error, refetchAuth } = useAuth();
+  const { isError, error, refetch } = useAuth();
 
   if (isError) {
     const message = error instanceof Error ? error.message : 'Не удалось авторизоваться';
 
     const isNoInitData = message.toLowerCase().includes('init_data');
-    
+
     return (
       <Placeholder
         header="Ошибка авторизации"
@@ -21,7 +21,7 @@ export const AuthGate: FC<AuthGateProps> = ({ children }) => {
           isNoInitData ? 'Откройте мини-приложение внутри Telegram и попробуйте снова.' : message
         }
       >
-        <Button mode="bezeled" size="m" onClick={() => refetchAuth()}>
+        <Button mode="bezeled" size="m" onClick={() => refetch()}>
           Повторить
         </Button>
         <Button mode="plain" size="m" onClick={() => window.location.reload()}>
