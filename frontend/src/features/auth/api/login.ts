@@ -1,6 +1,5 @@
 import { apiClient } from '@/shared/api/client';
 import { AuthResponse } from '../model/types';
-// import axios from 'axios';
 import { resolveInitDataRaw } from '@/shared/resolveInitDataRaw';
 import { getTgUserId } from '../lib/getTgUserId';
 
@@ -58,18 +57,21 @@ export async function authDev(): Promise<AuthResponse> {
 
 export async function authTelegram(): Promise<AuthResponse> {
   // 1) получение строки initData
+  console.log('1) получение строки initData');
   const initDataRaw = resolveInitDataRaw();
   if (!initDataRaw) throw new Error('No init_data for tgAuth');
 
   // 2) получение id пользователя по initData
+  console.log('2) получение id пользователя по initData');
   const tgUserId = getTgUserId(initDataRaw);
   if (!tgUserId) throw new Error('Cannot parse tg user id from init_data');
-
+  console.log('3) вызов ручки авторизации');
   // 3) вызов ручки авторизации
   const { data } = await apiClient.post<AuthResponse>('/auth/telegram', {
     init_data: initDataRaw,
   });
 
+  console.log('4) сохранение токена в localStorage и добавление Bearer в заголовок');
   // 4) сохранение токена в localStorage и добавление Bearer в заголовок
   saveAuthToStorage(data, tgUserId);
   return data;

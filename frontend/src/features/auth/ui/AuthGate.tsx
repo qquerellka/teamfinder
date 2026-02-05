@@ -13,7 +13,7 @@ export const AuthGate: FC<AuthGateProps> = ({ children }) => {
     const message = error instanceof Error ? error.message : 'Не удалось авторизоваться';
 
     const isNoInitData = message.toLowerCase().includes('init_data');
-
+    
     return (
       <Placeholder
         header="Ошибка авторизации"
