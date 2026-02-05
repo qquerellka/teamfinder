@@ -39,7 +39,8 @@ apiClient.interceptors.response.use(
 
         // Полная перезагрузка мини-приложения.
         // Это надёжнее простого refetch, т.к. заново инициализирует initData.
-        window.location.reload();
+        // window.location.reload();
+        console.log("window")
       } catch {
         // на всякий случай просто пробрасываем ошибку
       }
