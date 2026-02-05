@@ -37,24 +37,16 @@ export const AppErrorFallback: FC<AppErrorFallbackProps> = ({ error, resetErrorB
   const queryClient = useQueryClient();
 
   const handleRetry = async () => {
-    // Сначала сбрасываем ошибку
     resetErrorBoundary?.();
 
-    // Если это ошибка 401, делаем рефетч авторизации
     if (error instanceof Error && error.message.includes('401')) {
       try {
-        // Вариант 1: Используем queryClient для ручного запроса
         await queryClient.fetchQuery({
           queryKey: AUTH_QUERY_KEY,
           queryFn: authQueryFn,
         });
-
-        // Вариант 2: Если нужно просто инвалидировать кэш и заново сделать запрос
-        // await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });
-        // await queryClient.refetchQueries({ queryKey: AUTH_QUERY_KEY });
       } catch (error) {
         console.error('Failed to re-authenticate:', error);
-        // Если реавторизация не удалась, перезагружаем страницу
         window.location.reload();
       }
     }
@@ -68,7 +60,7 @@ export const AppErrorFallback: FC<AppErrorFallbackProps> = ({ error, resetErrorB
       >
         <Buttons>
           <Button mode="white" size="m" onClick={handleRetry} disabled={!resetErrorBoundary}>
-            Повторить!
+            Повторить
           </Button>
 
           <Button mode="plain" size="m" onClick={handleReload}>
