@@ -25,20 +25,20 @@ export const StartParamJoinHandler = () => {
     navigateToTeam,
   );
 
-  useMembershipCheck({
-    team: teamQuery.data,
-    profile: data.profile,
+  useMembershipCheck(
+    teamQuery.data,
+    data.profile,
     teamId,
-    hadAdded: joinTeamModal.hadAdded,
-    onIsMember: () => {
+    joinTeamModal.hadAdded,
+    () => {
       sessionStorage.setItem(getHandledKey(teamId!), '1');
       joinTeamModal.close();
       haveTeamModal.open();
     },
-    onNotMember: () => {
+    () => {
       joinTeamModal.open();
     },
-  });
+  );
 
   if (!joinTeamModal.modalOpen && !haveTeamModal.modalOpen) return null;
 

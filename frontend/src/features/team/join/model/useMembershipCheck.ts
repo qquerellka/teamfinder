@@ -1,25 +1,15 @@
-// useMembershipCheck.ts
 import { TeamWithMembers } from '@/entities/team';
 import { User } from '@/entities/user';
 import { useEffect } from 'react';
 
-interface UseMembershipCheckProps {
-  team: TeamWithMembers | null;
-  profile: User | null;
-  teamId: number | null;
-  hadAdded: boolean;
-  onIsMember: () => void;
-  onNotMember: () => void;
-}
-
-export const useMembershipCheck = ({
-  team,
-  profile,
-  teamId,
-  hadAdded,
-  onIsMember,
-  onNotMember,
-}: UseMembershipCheckProps) => {
+export const useMembershipCheck = (
+  team: TeamWithMembers | null,
+  profile: User | null,
+  teamId: number | null,
+  hadAdded: boolean,
+  onIsMember: () => void,
+  onNotMember: () => void,
+) => {
   useEffect(() => {
     if (!profile || !teamId || hadAdded) return;
     if (!team) return;
@@ -31,5 +21,6 @@ export const useMembershipCheck = ({
     } else {
       onNotMember();
     }
-  }, [team, profile, teamId, hadAdded, onIsMember, onNotMember]);
+  }, [team, profile, teamId]);
 };
+// [team, profile, teamId, hadAdded, onIsMember, onNotMember]
