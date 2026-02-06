@@ -23,9 +23,8 @@ export const useStartParamParser = () => {
 
   return {
     teamId,
-    setTeamId,
     data,
     startParam,
-    getHandledKey
+    getHandledKey,
   };
 };

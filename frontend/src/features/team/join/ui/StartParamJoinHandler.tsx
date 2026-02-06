@@ -1,4 +1,3 @@
-import { useTeam } from '@/entities/team';
 import { roleOptions } from '@/shared/types/enums';
 import { useNavigate } from 'react-router-dom';
 import { getTeamPath } from '@/shared/routing/paths';
@@ -15,7 +14,6 @@ export const StartParamJoinHandler = () => {
   const navigateToHackathons = () => navigate('/hackathons');
 
   const { teamId, data, getHandledKey } = useStartParamParser();
-  const teamQuery = useTeam(teamId || undefined);
 
   const haveTeamModal = useHaveTeamModal(teamId, navigateToTeam, getHandledKey);
   const joinTeamModal = useJoinTeamModal(
@@ -26,7 +24,6 @@ export const StartParamJoinHandler = () => {
   );
 
   useMembershipCheck(
-    teamQuery.data,
     data.profile,
     teamId,
     joinTeamModal.hadAdded,

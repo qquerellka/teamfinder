@@ -1,26 +1,30 @@
-import { TeamWithMembers } from '@/entities/team';
+import { useMyTeamOnHackathon, useTeam } from '@/entities/team';
 import { User } from '@/entities/user';
 import { useEffect } from 'react';
 
 export const useMembershipCheck = (
-  team: TeamWithMembers | null,
   profile: User | null,
   teamId: number | null,
   hadAdded: boolean,
   onIsMember: () => void,
   onNotMember: () => void,
 ) => {
+  // костыль
+  if (teamId === null) {
+    return;
+  }
+  const { data: team } = useTeam(teamId);
+  const { data } = useMyTeamOnHackathon(team.hackathonId);
   useEffect(() => {
     if (!profile || !teamId || hadAdded) return;
     if (!team) return;
 
     const isMember = team.members.some(m => m.user.id === profile.id);
 
-    if (isMember) {
+    if (isMember || data === null) {
       onIsMember();
     } else {
       onNotMember();
     }
   }, [team, profile, teamId]);
 };
-// [team, profile, teamId, hadAdded, onIsMember, onNotMember]

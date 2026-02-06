@@ -19,7 +19,6 @@ function saveAuthToStorage(data: AuthResponse, tgUserId: number) {
   saveAccessToken(token);
 }
 
-
 export async function authDev(): Promise<AuthResponse> {
   const body = {
     telegram_id: 0,

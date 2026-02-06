@@ -1,6 +1,5 @@
 import { Component, type ComponentType, type PropsWithChildren, type ReactNode } from 'react';
 
-
 interface ErrorBoundaryProps extends PropsWithChildren {
   fallback?: ReactNode | ComponentType<{ error: unknown; resetErrorBoundary?: () => void }>;
   resetKeys?: readonly unknown[];
@@ -48,7 +47,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     const { fallback: Fallback, children } = this.props;
 
     if (error != null) {
-
       if (Fallback) {
         if (typeof Fallback === 'function') {
           const FallbackComponent = Fallback as ComponentType<{

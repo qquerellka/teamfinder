@@ -21,7 +21,7 @@ export function useAppQuery<
   options: AppQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
 ): UseSuspenseQueryResult<TData, TError> {
   return useSuspenseQuery({
-    gcTime: 5 * 60 * 1000, // общие дефолты, если нужно
+    gcTime: 5 * 60 * 1000,
     retry: 1,
     ...options,
   });
