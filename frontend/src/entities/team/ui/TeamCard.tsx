@@ -29,9 +29,6 @@ export const TeamCard: FC<TeamCardProps> = ({
           <SText>{teamName}</SText>
           {isCaptain && <SIcon name={'captain'} size={16} color={'#F3BD28'}></SIcon>}
         </Name>
-        {/* <IconButton style={{ borderRadius: 6, position: 'absolute', top: 12, right: 12,  padding: 6 }}>
-          <SIcon name={'arrow'} size={24} />
-        </IconButton> */}
         <IconButton style={{ borderRadius: 6, padding: 6, width: 36, height: 36 }}>
           <SIcon name={'arrow'} size={24} />
         </IconButton>

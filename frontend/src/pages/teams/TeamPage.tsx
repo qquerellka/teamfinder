@@ -10,10 +10,6 @@ export const TeamPage = () => {
   const { data: team } = useTeam(Number(id));
   const { data: user } = useAuthUser();
 
-  // if (team === null) {
-  //   return <NotFound />;
-  // }
-
   if (team.members.filter(m => m.user.id === user.id).length === 1) {
     return (
       <Page>

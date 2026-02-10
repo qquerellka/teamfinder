@@ -17,7 +17,6 @@ interface ResponseCardViewProps {
 export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   firstName,
   secondName,
-  //   username,
   skills,
   actions,
   role,
@@ -29,7 +28,7 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   }, [skills]);
 
   return (
-    <Wrapper onClick={onNavigate}>
+    <ResponseCardContainer onClick={onNavigate}>
       <FirstRow>
         <SText $fs={16} $fw={700}>
           {firstName} {secondName}
@@ -38,7 +37,6 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
       </FirstRow>
 
       <SecondRow>
-        {/* <SText $fs={14} $fw={500}></SText> */}
         <RoleBadge role={role} />
         {/* <CountTeamMembers>
           <SIcon name="profile" />
@@ -50,11 +48,11 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
           {skillsString}
         </SText>
       </SecondRow>
-    </Wrapper>
+    </ResponseCardContainer>
   );
 };
 
-const Wrapper = styled.div`
+const ResponseCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

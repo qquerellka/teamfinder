@@ -3,13 +3,13 @@ import { Hackathon, HackathonDTO } from '../model/types';
 import { hackathonsToCamelCase } from '../lib/dto';
 import { HackathonMode } from '@/shared/types/enums';
 
-interface FetchHackathonsApiResponse {
+interface HackathonsResponseDTO {
   items: HackathonDTO[];
   limit: number;
   offset: number;
 }
 
-export interface FetchHackathonsResponse {
+export interface HackathonsResponse {
   items: Hackathon[];
   limit: number;
   offset: number;
@@ -25,8 +25,8 @@ export interface FetchHackathonsParams {
 
 export async function fetchHackathons(
   params: FetchHackathonsParams = {},
-): Promise<FetchHackathonsResponse> {
-  const { data } = await apiClient.get<FetchHackathonsApiResponse>('/hackathons', { params });
+): Promise<HackathonsResponse> {
+  const { data } = await apiClient.get<HackathonsResponseDTO>('/hackathons', { params });
 
   return {
     limit: data.limit,

@@ -1,10 +1,9 @@
 import { FC, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { TeamWithMembers } from '@/entities/team';
-
 import { TeamCard } from '@/widgets/team/team-card';
 import { TeamEditPanel } from '@/widgets/team/team-edit-panel';
-import { useNavigate } from 'react-router-dom';
 
 interface MyHackathonTeamProps {
   hackathonId: number;

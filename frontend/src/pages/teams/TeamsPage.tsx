@@ -1,9 +1,9 @@
-import { useMyTeams } from '@/entities/team';
-import { TeamCard } from '@/entities/team/ui/TeamCard';
-import { getTeamPath } from '@/shared/routing/paths';
-import { NoItems, Page, SText } from '@/shared/ui';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+
+import { useMyTeams, TeamCard } from '@/entities/team';
+import { getTeamPath } from '@/shared/routing/paths';
+import { NoItems, Page, SText } from '@/shared/ui';
 
 export const UserTeamsPage = () => {
   const { data: teams } = useMyTeams();

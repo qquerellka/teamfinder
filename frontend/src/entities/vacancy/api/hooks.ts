@@ -68,7 +68,7 @@ export function useCreateVacancy(teamId: number) {
   });
 }
 
-type EditVacancyVariables = {
+interface EditVacancyVariables {
   id: number;
   payload: EditVacancy;
 };

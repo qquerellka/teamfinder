@@ -18,7 +18,7 @@ export const InviteCardView: FC<InviteCardViewProps> = ({
   onNavigate,
 }) => {
   return (
-    <Wrapper onClick={onNavigate}>
+    <InviteCardContainer onClick={onNavigate}>
       <FirstRow>
         <SText $fs={16} $fw={700}>
           Приглашение
@@ -38,23 +38,23 @@ export const InviteCardView: FC<InviteCardViewProps> = ({
           </SText>
         </CountTeamMembers>
       </SecondRow>
-    </Wrapper>
+    </InviteCardContainer>
   );
 };
 
-const CountTeamMembers = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-`;
-
-const Wrapper = styled.div`
+const InviteCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.75rem;
   border-radius: 1rem;
   background-color: var(--tg-theme-section-bg-color);
+`;
+
+const CountTeamMembers = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 `;
 
 const FirstRow = styled.div`

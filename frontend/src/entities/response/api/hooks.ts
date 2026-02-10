@@ -93,18 +93,10 @@ export function useUpdateResponse() {
       });
 
       if (data.teamId && data.status === 'accepted') {
-        // Инвалидируем членов команды
         queryClient.invalidateQueries({
           queryKey: [teamKeys.byId(data.teamId), teamKeys.members(data.teamId)],
-          // queryKey: ['teams', data.teamId, 'members'],
         });
 
-        // Также инвалидируем саму команду
-        // queryClient.invalidateQueries({
-        //   queryKey: ['teams', data.teamId],
-        // });
-
-        // Инвалидируем vacancies этой команды
         queryClient.invalidateQueries({
           queryKey: ['vacancies', 'team', data.teamId],
         });

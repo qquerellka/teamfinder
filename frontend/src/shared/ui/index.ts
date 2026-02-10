@@ -11,3 +11,4 @@ export * from './ConfirmModal';
 export * from './TeamLoad';
 export * from './NoItems';
 export * from './ButtonsSection';
+export * from './InvitesBadge';

@@ -8,9 +8,9 @@ import {
   formatRegistrationDate,
   getTeamMembersRange,
 } from '@/shared/helpers/date';
-import { ImageWithSkeleton, SIcon, SText } from '@/shared/ui';
-import type { IconName } from '@/shared/ui/SIcon';
+import { ImageWithSkeleton, SIcon, SText, IconName } from '@/shared/ui';
 import { EHackathonMode } from '@/shared/types/enums';
+
 type HackathonCardVariant = 'full' | 'compact';
 
 interface HackathonCardProps {
@@ -19,17 +19,14 @@ interface HackathonCardProps {
   showShareButton?: boolean;
   onShareClick?: () => void;
 }
-interface HackathonParamConfig {
-  icon: IconName;
-  text: string;
-}
+
 export const HackathonCard: FC<HackathonCardProps> = ({
   hackathon,
   variant = 'full',
   showShareButton = false,
   onShareClick,
 }) => {
-  const params: HackathonParamConfig[] = useMemo(
+  const params: { icon: IconName; text: string }[] = useMemo(
     () => [
       {
         icon: 'hackathonDate',
@@ -65,12 +62,12 @@ export const HackathonCard: FC<HackathonCardProps> = ({
     variant === 'compact' ? params.filter(({ icon }) => icon !== 'hackathonTeam') : params;
 
   return (
-    <SHackathonCard>
-      <SHackathonImage>
+    <HackathonCardContainer>
+      <HackathonImage>
         <ImageWithSkeleton src={hackathon.imageLink} alt={hackathon.name} />
-      </SHackathonImage>
+      </HackathonImage>
 
-      <SHackathonInfo>
+      <HackathonInfo>
         <SText weight="2">{hackathon.name}</SText>
 
         <HackathonParams>
@@ -91,38 +88,32 @@ export const HackathonCard: FC<HackathonCardProps> = ({
             </SInlineButtons>
           </ButtonContainer>
         )}
-      </SHackathonInfo>
-    </SHackathonCard>
+      </HackathonInfo>
+    </HackathonCardContainer>
   );
 };
 
-const SHackathonCard = styled(Card)`
+const HackathonCardContainer = styled(Card)`
   background: var(--tg-theme-section-bg-color, #fff);
   border-radius: 1rem;
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.625rem;
 `;
 
-const SHackathonImage = styled.div`
+const HackathonImage = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 0rem;
 `;
 
-const SHackathonInfo = styled.div`
+const HackathonInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   padding: 0.5rem 0.625rem 0.75rem 0.625rem;
   position: relative;
-`;
-
-const SubTitle = styled(Title)`
-  color: var(--tg-theme-hint-color, #8e8e93);
-  font-size: 1rem;
-  line-height: normal;
 `;
 
 const HackathonParams = styled.div`
@@ -137,6 +128,13 @@ const HackathonParam = styled.div`
   gap: 0.5rem;
   align-items: center;
 `;
+
+const SubTitle = styled(Title)`
+  color: var(--tg-theme-hint-color, #8e8e93);
+  font-size: 1rem;
+  line-height: normal;
+`;
+
 
 const ButtonContainer = styled.div`
   position: absolute;
