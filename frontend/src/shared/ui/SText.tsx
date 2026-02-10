@@ -2,9 +2,7 @@ import { Text } from '@telegram-apps/telegram-ui';
 import styled, { css } from 'styled-components';
 
 type TTextProps = {
-  /** font-size: число (px) или строка (например "20px" | "1.25rem") */
   $fs?: number | string;
-  /** font-weight: 400/500/600/700... или строка */
   $fw?: number | string;
 };
 

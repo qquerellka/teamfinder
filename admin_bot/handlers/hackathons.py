@@ -335,8 +335,7 @@ async def form_registration_link(message: Message, state: FSMContext):
     await state.update_data(registration_link=link)
     await state.set_state(HackathonForm.prize_fund)
     await message.answer(
-        "💰 Введи <b>призовой фонд</b> (например, <code>1 000 000 ₽</code> "
-        "или <code>-</code>, если не указывать):"
+        "💰 Введи <b>призовой фонд</b> (0 если призовых нет):"
     )
 
 
