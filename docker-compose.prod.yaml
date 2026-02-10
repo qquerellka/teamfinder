@@ -27,7 +27,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     environment:
-      - ENVIRONMENT=${ENVIRONMENT}
+      - APP_ENV=${APP_ENV}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - JWT_SECRET=${JWT_SECRET}

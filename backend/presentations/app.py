@@ -23,9 +23,9 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=getattr(settings, "APP_NAME", "MiniApp API"),
         version=getattr(settings, "APP_VERSION", "0.1.0"),
-        docs_url=None if settings.ENVIRONMENT == "prod" else '/docs',
-        redoc_url=None if settings.ENVIRONMENT == "prod" else '/redoc',
-        openapi_url=None if settings.ENVIRONMENT == "prod" else '/openapi.json',
+        docs_url=None if settings.APP_ENV == "prod" else '/docs',
+        redoc_url=None if settings.APP_ENV == "prod" else '/redoc',
+        openapi_url=None if settings.APP_ENV == "prod" else '/openapi.json',
         root_path="/api"
     )
 

@@ -12,13 +12,11 @@ class Settings(BaseSettings):
         extra="ignore",
         case_sensitive=False,
     )
-    
-    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "dev")
 
     # ==== App ====
     APP_NAME: str = "MyBackend"
     APP_VERSION: str = "0.1.0"
-    APP_ENV: str = "dev"
+    APP_ENV: str = os.getenv("APP_ENV", "dev")
 
     # ==== CORS ====
     CORS_ORIGINS: str = "*"
