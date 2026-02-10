@@ -37,7 +37,7 @@ class Hackathon(Base, TimestampMixin):
     team_members_limit: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     registration_link: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    prize_fund: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    prize_fund: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     status: Mapped[HackathonStatus] = mapped_column(
         Enum(HackathonStatus, name="hackathon_status"),

@@ -42,7 +42,7 @@ class HackathonOut(BaseModel):
     team_members_minimum: Optional[int] = None
     team_members_limit: Optional[int] = None
     registration_link: Optional[str] = None
-    prize_fund: Optional[str] = None
+    prize_fund: Optional[int] = None
 
     created_at: str
     updated_at: str
@@ -69,7 +69,7 @@ class HackathonCreateIn(BaseModel):
     team_members_minimum: Optional[int] = None
     team_members_limit: Optional[int] = None
     registration_link: Optional[str] = None
-    prize_fund: Optional[str] = None
+    prize_fund: Optional[int] = None
 
 
 class HackathonUpdateIn(BaseModel):
@@ -87,7 +87,7 @@ class HackathonUpdateIn(BaseModel):
     team_members_minimum: Optional[int] = None
     team_members_limit: Optional[int] = None
     registration_link: Optional[str] = None
-    prize_fund: Optional[str] = None
+    prize_fund: Optional[int] = None
 
 
 # ---- Хелпер упаковки ----

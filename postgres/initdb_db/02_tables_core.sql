@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS hackathon (
   team_members_minimum  INT,
   team_members_limit    INT,
   registration_link     TEXT,
-  prize_fund            TEXT,
+  prize_fund            INT,
   status                hackathon_status NOT NULL DEFAULT 'open',
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT now()

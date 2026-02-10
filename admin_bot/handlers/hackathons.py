@@ -347,8 +347,8 @@ async def form_prize_fund(message: Message, state: FSMContext):
     if text == "-":
         prize = None
     else:
-        # сохраняем строку как есть — бэкенд ждёт Optional[str]
-        prize = text
+        # сохраняем строку как число — бэкенд ждёт Optional[int]
+        prize = int(text)
 
     await state.update_data(prize_fund=prize)
     await state.set_state(HackathonForm.image_link)

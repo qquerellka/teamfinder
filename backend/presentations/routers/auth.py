@@ -147,50 +147,45 @@ async def auth_telegram(payload: TelegramInitIn):
         ),
     )
 
+if settings.APP_ENV == "dev":
+    @router.post("/dev-login", response_model=AuthOut)
+    async def auth_dev_login(payload: DevLoginIn):
+        """
+        Dev-логин для разработки в браузере без настоящего Telegram initData.
+        В prod-окружении (APP_ENV=prod) отключён.
+        """
 
-@router.post("/dev-login", response_model=AuthOut)
-async def auth_dev_login(payload: DevLoginIn):
-    """
-    Dev-логин для разработки в браузере без настоящего Telegram initData.
-    В prod-окружении (APP_ENV=prod) отключён.
-    """
-    if settings.APP_ENV.lower() == "prod":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Dev login is disabled in production",
+        fake_tg_profile = {
+            "id": payload.telegram_id,
+            "username": payload.username,
+            "first_name": payload.first_name,
+            "last_name": payload.last_name,
+            "photo_url": payload.avatar_url,
+        }
+
+        res: AuthResult = await auth_service.authenticate_dev(fake_tg_profile)
+
+        user = await users_repo.get_by_id(res.user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="user not found")
+
+        skills = await users_repo.get_user_skills(res.user_id)
+        achs = await users_repo.get_user_achievements(res.user_id)
+
+        return AuthOut(
+            access_token=res.access_token,
+            profile=UserOut(
+                id=user.id,
+                telegram_id=user.telegram_id,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                avatar_url=user.avatar_url,
+                bio=user.bio,
+                city=user.city,
+                university=user.university,
+                link=user.link,
+                skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
+                achievements=_map_achievements(achs),
+            ),
         )
-
-    fake_tg_profile = {
-        "id": payload.telegram_id,
-        "username": payload.username,
-        "first_name": payload.first_name,
-        "last_name": payload.last_name,
-        "photo_url": payload.avatar_url,
-    }
-
-    res: AuthResult = await auth_service.authenticate_dev(fake_tg_profile)
-
-    user = await users_repo.get_by_id(res.user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="user not found")
-
-    skills = await users_repo.get_user_skills(res.user_id)
-    achs = await users_repo.get_user_achievements(res.user_id)
-
-    return AuthOut(
-        access_token=res.access_token,
-        profile=UserOut(
-            id=user.id,
-            telegram_id=user.telegram_id,
-            username=user.username,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            avatar_url=user.avatar_url,
-            bio=user.bio,
-            city=user.city,
-            university=user.university,
-            link=user.link,
-            skills=[UserSkillOut(id=s.id, slug=s.slug, name=s.name) for s in skills],
-            achievements=_map_achievements(achs),
-        ),
-    )
