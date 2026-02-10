@@ -51,3 +51,5 @@ export function formatRegistrationDate(date: Date): string {
 export function getTeamMembersRange(teamMembersLimit: number, teamMembersMinimum: number): string {
   return `${teamMembersMinimum} - ${teamMembersLimit} участников`;
 }
+
+export const parseDate = (value: string): Date => new Date(value.replace(' ', 'T'));

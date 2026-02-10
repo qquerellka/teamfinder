@@ -19,12 +19,6 @@ export interface ApplicationDTO {
   invites_count: number;
 }
 
-export interface ApplicationsResponseDTO {
-  items: ApplicationDTO[];
-  offset: number;
-  limit: number;
-}
-
 export interface Application {
   id: number;
   hackathonId: number;
@@ -42,24 +36,30 @@ export interface Application {
   status: ApplicationStatus;
 }
 
-export interface ApplicationsResponse {
+export interface ApplicationsResponseDTO {
+  items: ApplicationDTO[];
   offset: number;
   limit: number;
-  items: Application[];
 }
 
-export interface ApplicationCreate {
-  role: Role;
+export interface ApplicationsResponse {
+  items: Application[];
+  offset: number;
+  limit: number;
 }
 
 export interface ApplicationCreateDTO {
   role: Role;
 }
 
-export interface ApplicationEdit {
+export interface ApplicationCreate {
   role: Role;
 }
 
 export interface ApplicationEditDTO {
+  role: Role;
+}
+
+export interface ApplicationEdit {
   role: Role;
 }

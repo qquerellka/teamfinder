@@ -5,20 +5,6 @@ export type AchievementPlace =
   | 'secondPlace'
   | 'firstPlace';
 
-export interface Achievement {
-  id: number;
-  hackathonId: number;
-  role: string;
-  hackathonName: string;
-  place: AchievementPlace;
-}
-
-export interface AchievementsList {
-  offset: number;
-  limit: number;
-  items: Achievement[];
-}
-
 export interface AchievementDTO {
   id: number;
   hackathon_id: number;
@@ -27,23 +13,30 @@ export interface AchievementDTO {
   place: AchievementPlace;
 }
 
-export interface AchievementsResponseDTO {
-  offset: number;
-  limit: number;
-  total: number;
-  items: AchievementDTO[];
+export interface Achievement {
+  id: number;
+  hackathonId: number;
+  role: string;
+  hackathonName: string;
+  place: AchievementPlace;
 }
 
-export type AchievementCreate = {
+export interface AchievementCreateDTO {
+  hackathon_id: number;
+  role: string;
+  place: AchievementPlace;
+};
+
+export interface AchievementCreate {
   hackathonId: number;
   role: string;
   place: AchievementPlace;
 };
 
-export type AchievementCreateDTO = {
-  hackathon_id: number;
-  role: string;
-  place: AchievementPlace;
+export type AchievementPatchDTO = {
+  hackathon_id?: number;
+  role?: string;
+  place?: AchievementPlace;
 };
 
 export interface AchievementPatch {
@@ -51,13 +44,8 @@ export interface AchievementPatch {
   place?: AchievementPlace;
   hackathonId?: number;
 }
-export type AchievementPatchDTO = {
-  hackathon_id?: number;
-  role?: string;
-  place?: AchievementPlace;
-};
 
-export type EditAchievementArgs = {
+export interface EditAchievementArgs {
   id: number;
   patch: AchievementPatch;
 };

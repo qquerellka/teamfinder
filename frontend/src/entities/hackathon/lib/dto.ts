@@ -1,6 +1,5 @@
+import { parseDate } from '@/shared/helpers/date';
 import { Hackathon, HackathonDTO } from '../model/types';
-
-const parseDate = (value: string): Date => new Date(value.replace(' ', 'T'));
 
 export function hackathonsToCamelCase(hackathons: HackathonDTO[]): Hackathon[] {
   return hackathons.map(h => ({

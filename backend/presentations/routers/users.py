@@ -283,67 +283,43 @@ async def search_users(
     }
 
 
-@router.get("/me/achievements", response_model=dict)
+@router.get("/me/achievements", response_model=List[UserAchievementOut])
 async def list_my_achievements(
     role: Optional[m_ach.RoleType] = Query(default=None),
     place: Optional[m_ach.AchievementPlace] = Query(default=None),
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
     current_user_id: int = Depends(get_current_user_id),
 ):
-    items, total = await ach_repo.list_by_user(
+    """
+    Получить все достижения текущего пользователя без пагинации.
+    """
+    items, _ = await ach_repo.list_by_user(
         current_user_id,
         role=role,
         place=place,
-        limit=limit,
-        offset=offset,
+        limit=None,  # Убираем ограничение
+        offset=0,
     )
-    return {
-        "items": [
-            AchievementOut(
-                id=a.id,
-                hackathon_id=a.hackathon_id,
-                role=a.role,
-                place=a.place,
-            )
-            for a in items
-        ],
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-    }
+    
+    # Используем ту же функцию маппинга, что и в других местах
+    return await _map_achievements(items)
 
 
-@router.get("/{user_id}/achievements", response_model=dict)
+@router.get("/{user_id}/achievements", response_model=List[UserAchievementOut])
 async def list_user_achievements(
     user_id: int = Path(..., ge=1),
     role: Optional[m_ach.RoleType] = Query(default=None),
     place: Optional[m_ach.AchievementPlace] = Query(default=None),
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
     _current_user_id: int = Depends(get_current_user_id),
 ):
-    items, total = await ach_repo.list_by_user(
+    items, _ = await ach_repo.list_by_user(
         user_id,
         role=role,
         place=place,
-        limit=limit,
-        offset=offset,
+        limit=None,  # без пагинации
+        offset=0,
     )
-    return {
-        "items": [
-            AchievementOut(
-                id=a.id,
-                hackathon_id=a.hackathon_id,
-                role=a.role,
-                place=a.place,
-            )
-            for a in items
-        ],
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-    }
+
+    return await _map_achievements(items)
 
 
 @router.post(
