@@ -37,8 +37,11 @@ class ApplicationsService:
             user_id=user_id,
             hackathon_id=hackathon_id,
         )
-        if existing:
+        if existing.status == ApplicationStatus.published:
             raise ValueError("app_exists")
+        
+        if existing.status == ApplicationStatus.hidden:
+            await self.apps.delete(existing.id)
 
         return await self.apps.create(
             user_id=user_id,
