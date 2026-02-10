@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Text } from '@telegram-apps/telegram-ui';
 
 import { useMyTeams, TeamCard } from '@/entities/team';
 import { getTeamPath } from '@/shared/routing/paths';
-import { NoItems, Page, SText } from '@/shared/ui';
+import { NoItems, Page } from '@/shared/ui';
 
 export const UserTeamsPage = () => {
   const { data: teams } = useMyTeams();
@@ -14,7 +15,7 @@ export const UserTeamsPage = () => {
   return (
     <Page>
       <TeamsList>
-        <SText>Мои команды</SText>
+        <Text>Мои команды</Text>
         {teams.map(t => (
           <TeamCard
             key={t.id}

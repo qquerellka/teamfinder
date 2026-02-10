@@ -1,9 +1,10 @@
 import { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Text } from '@telegram-apps/telegram-ui';
 
 import { getTeamPath, getUserPath } from '@/shared/routing/paths';
-import { SText } from '@/shared/ui';
+import { NoItems } from '@/shared/ui';
 import { Response, useTeamResponses } from '@/entities/response';
 import { ResponsesCardView } from '@/entities/response/ui/ResponseCardView';
 import { ResponseRespondButtons } from '@/features/response/respond';
@@ -17,16 +18,12 @@ export const VacancyResponses: FC = () => {
   const pending = useMemo(() => responses.filter(r => r.status === 'pending'), [responses]);
 
   if (pending.length === 0) {
-    return (
-      <Wrapper>
-        <SText>Нет откликов :(</SText>
-      </Wrapper>
-    );
+    return <NoItems title="Нет откликов :(" />;
   }
 
   return (
     <Wrapper>
-      <SText style={{ marginBottom: '1rem' }}>Отклики на вакансии</SText>
+      <Text style={{ marginBottom: '1rem' }}>Отклики на вакансии</Text>
 
       {pending.map(i => (
         <ResponsesCardView

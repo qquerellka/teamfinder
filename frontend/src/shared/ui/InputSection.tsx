@@ -1,7 +1,6 @@
 import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
-import { SText } from './SText';
-import { List } from '@telegram-apps/telegram-ui';
+import { List, Text } from '@telegram-apps/telegram-ui';
 
 interface InpurSectionProps {
   children: ReactNode;
@@ -13,9 +12,7 @@ export const InputSection: FC<InpurSectionProps> = ({ children, header }) => {
     <Wrapper>
       {header && (
         <Header>
-          <SText $fw={600} $fs={16}>
-            {header}
-          </SText>
+          <Text weight="2">{header}</Text>
         </Header>
       )}
 
@@ -42,7 +39,6 @@ const Main = styled(List)`
   flex-direction: column;
   width: 100%;
 
-  /* box-shadow: 0 0 0.25rem 0.125rem var(--tg-theme-bg-color); */
   border-radius: 1rem;
   background-color: var(--tg-theme-secondary-bg-color);
   padding: 0;

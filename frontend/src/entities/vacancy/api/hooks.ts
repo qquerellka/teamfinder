@@ -71,7 +71,7 @@ export function useCreateVacancy(teamId: number) {
 interface EditVacancyVariables {
   id: number;
   payload: EditVacancy;
-};
+}
 
 export function useEditVacancy() {
   const queryClient = useQueryClient();

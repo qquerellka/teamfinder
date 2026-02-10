@@ -4,7 +4,7 @@ import { type FC, type ChangeEvent, useState } from 'react';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
 import { ButtonsSection, ErrorText, InputSection } from '@/shared/ui';
-import { useHaptic } from '@/shared/telegram/useTelegramHaptic';
+import { haptic } from '@/shared/telegram/useTelegramHaptic';
 
 interface VacancyFormViewProps {
   role: Role | '';
@@ -49,7 +49,7 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
       setErrorDescription(false);
       onDescriptionChange(e.target.value);
     } else {
-      useHaptic();
+      haptic();
       setErrorDescription(true);
     }
   };

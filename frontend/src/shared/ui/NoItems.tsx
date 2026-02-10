@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { SText } from './SText';
+import { Text } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 
 interface NoItemsProps {
@@ -9,7 +9,7 @@ interface NoItemsProps {
 export const NoItems: FC<NoItemsProps> = ({ title = 'Ничего не найдено :(' }) => {
   return (
     <NotFound>
-      <SText>{title}</SText>
+      <Text>{title}</Text>
     </NotFound>
   );
 };

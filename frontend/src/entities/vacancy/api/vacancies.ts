@@ -1,5 +1,11 @@
 import { apiClient } from '@/shared/api/client';
-import { CreateVacancy, EditVacancy, VacanciesResponseDTO, Vacancy, VacancyDTO } from '../model/types';
+import {
+  CreateVacancy,
+  EditVacancy,
+  VacanciesResponseDTO,
+  Vacancy,
+  VacancyDTO,
+} from '../model/types';
 import { editVacancyToDTO, vacanciesToCamelCase } from '../lib/dto';
 
 export async function teamVacancies(id: number): Promise<Vacancy[]> {

@@ -8,7 +8,7 @@ import {
   formatRegistrationDate,
   getTeamMembersRange,
 } from '@/shared/helpers/date';
-import { ImageWithSkeleton, SIcon, SText, IconName } from '@/shared/ui';
+import { ImageWithSkeleton, SIcon, IconName } from '@/shared/ui';
 import { EHackathonMode } from '@/shared/types/enums';
 
 type HackathonCardVariant = 'full' | 'compact';
@@ -68,15 +68,16 @@ export const HackathonCard: FC<HackathonCardProps> = ({
       </HackathonImage>
 
       <HackathonInfo>
-        <SText weight="2">{hackathon.name}</SText>
-
+        <Title weight="2" plain={true}>
+          {hackathon.name}
+        </Title>
         <HackathonParams>
           {visibleParams.map(({ icon, text }, index) => (
             <HackathonParam key={`${index}-${text}`}>
               <SIcon name={icon} size={16} />
-              <SubTitle level="2" weight="3">
+              <SubTitlee level="2" weight="3">
                 {text}
-              </SubTitle>
+              </SubTitlee>
             </HackathonParam>
           ))}
         </HackathonParams>
@@ -129,12 +130,11 @@ const HackathonParam = styled.div`
   align-items: center;
 `;
 
-const SubTitle = styled(Title)`
+const SubTitlee = styled(Title)`
   color: var(--tg-theme-hint-color, #8e8e93);
   font-size: 1rem;
   line-height: normal;
 `;
-
 
 const ButtonContainer = styled.div`
   position: absolute;

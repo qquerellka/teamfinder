@@ -1,6 +1,6 @@
-import { ButtonsSection, SText } from '@/shared/ui';
+import { ButtonsSection } from '@/shared/ui';
 import { CodeBlock } from '@/shared/ui/Code';
-import { Button } from '@telegram-apps/telegram-ui';
+import { Button, LargeTitle, Text } from '@telegram-apps/telegram-ui';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -25,10 +25,10 @@ while True:
 
       <ButtonsSection>
         <div style={{ marginBottom: 16, display: 'flex', flexDirection: 'column' }}>
-          <SText $fs={60} $fw={500}>
+          <LargeTitle weight="2" plain={true}>
             404
-          </SText>
-          <SText>Страница не найдена</SText>
+          </LargeTitle>
+          <Text>Страница не найдена</Text>
         </div>
 
         <Button size="m" onClick={() => navigate('/')}>
@@ -52,11 +52,3 @@ const Container = styled.div`
   flex-direction: column;
   background: var(--tg-theme-bg-color);
 `;
-
-// const ButtonGroup = styled.div`
-//   display: flex;
-//   gap: 0.5rem;
-//   flex-wrap: wrap;
-//   justify-content: center;
-//   margin: 1.5rem 0;
-// `;

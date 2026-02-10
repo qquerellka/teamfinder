@@ -3,7 +3,7 @@ import python from 'highlight.js/lib/languages/python';
 import 'highlight.js/styles/github-dark.css';
 import { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { SText } from './SText';
+import { Text } from '@telegram-apps/telegram-ui';
 
 hljs.registerLanguage('python', python);
 
@@ -20,7 +20,7 @@ export const CodeBlock: FC<CodeBlockProps> = ({ code, language = 'python' }) => 
   return (
     <Container>
       <Pre className="hljs">
-        <Code dangerouslySetInnerHTML={{ __html: highlighted }} $fs={16} />
+        <Code dangerouslySetInnerHTML={{ __html: highlighted }} />
       </Pre>
     </Container>
   );
@@ -30,12 +30,12 @@ const Container = styled.div`
   overflow-x: auto;
 `;
 
-const Pre = styled(SText)`
+const Pre = styled(Text)`
   margin: 0;
   background: var(--tg-theme-bg-color);
   white-space: pre;
 `;
 
-const Code = styled(SText)`
+const Code = styled(Text)`
   display: block;
 `;

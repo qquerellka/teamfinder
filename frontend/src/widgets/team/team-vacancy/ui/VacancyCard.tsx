@@ -1,10 +1,11 @@
+import { IconButton, Text } from '@telegram-apps/telegram-ui';
+import { FC } from 'react';
+import styled from 'styled-components';
+
 import { TeamWithMembers } from '@/entities/team';
 import { Vacancy } from '@/entities/vacancy';
 import { useDeleteVacancyForm } from '@/features/vacancy/delete/model/useDeleteVacancy';
-import { ConfirmModal, RoleBadge, SIcon, SText } from '@/shared/ui';
-import { IconButton } from '@telegram-apps/telegram-ui';
-import { FC } from 'react';
-import styled from 'styled-components';
+import { ConfirmModal, RoleBadge, SIcon } from '@/shared/ui';
 
 interface VacancyCardProps {
   team: TeamWithMembers;
@@ -29,9 +30,7 @@ export const VacancyCard: FC<VacancyCardProps> = ({ team, vacancy, onDeleted, on
     <>
       <Wrapper>
         <Header>
-          <SText $fs={16} $fw={600}>
-            {'Кого ищем?'}
-          </SText>
+          <Text weight="1">{'Кого ищем?'}</Text>
           <Icons>
             <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
               <SIcon name="edit" size={24} />
@@ -43,7 +42,7 @@ export const VacancyCard: FC<VacancyCardProps> = ({ team, vacancy, onDeleted, on
         </Header>
         <RoleBadge role={vacancy.role} />
         <Info>
-          <SText>{vacancy.description}</SText>
+          <Text>{vacancy.description}</Text>
         </Info>
       </Wrapper>
       <ConfirmModal

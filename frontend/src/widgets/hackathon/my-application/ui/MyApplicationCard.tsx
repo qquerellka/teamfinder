@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { IconButton } from '@telegram-apps/telegram-ui';
+import { IconButton, Subheadline, Text } from '@telegram-apps/telegram-ui';
 import { useMemo, type FC } from 'react';
 
 import type { Hackathon } from '@/entities/hackathon';
 import type { Application } from '@/entities/application';
 import { formatRegistrationDate } from '@/shared/helpers/date';
-import { RoleBadge, SIcon, SText } from '@/shared/ui';
+import { RoleBadge, SIcon } from '@/shared/ui';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 import { useDeleteApplication } from '@/features/application/delete';
 
@@ -41,9 +41,7 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
     <>
       <Wrapper>
         <Header>
-          <SText $fs={16} $fw={600}>
-            {hackathon.name}
-          </SText>
+          <Text weight="2">{hackathon.name}</Text>
 
           <Icons>
             <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
@@ -57,14 +55,14 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
         <Info>
           <InfoItem>
             <SIcon name="hackathonRegistration" />
-            <SText $fs={14} $fw={500}>
+            <Subheadline plain={true} level="2" weight="3">
               {formatRegistrationDate(hackathon.registrationEndDate)}
-            </SText>
+            </Subheadline>
           </InfoItem>
           <InfoItem>
-            <SText $fs={14} $fw={500}>
+            <Subheadline plain={true} level="2" weight="3">
               {skillsString}
-            </SText>
+            </Subheadline>
           </InfoItem>
         </Info>
 

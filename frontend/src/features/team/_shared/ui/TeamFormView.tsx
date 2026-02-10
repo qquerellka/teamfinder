@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
 import { InputSection, ButtonsSection, ErrorText } from '@/shared/ui';
-import { useHaptic } from '@/shared/telegram/useTelegramHaptic';
+import { haptic } from '@/shared/telegram/useTelegramHaptic';
 
 type BaseProps = {
   hackathonName: string;
@@ -77,7 +77,7 @@ export const TeamFormView: FC<Props> = props => {
       onNameChange(value);
     } else {
       setErrorName(true);
-      useHaptic();
+      haptic();
     }
   };
 
@@ -88,7 +88,7 @@ export const TeamFormView: FC<Props> = props => {
       onDescriptionChange(value);
     } else {
       setErrorDescription(true);
-      useHaptic();
+      haptic();
     }
   };
 

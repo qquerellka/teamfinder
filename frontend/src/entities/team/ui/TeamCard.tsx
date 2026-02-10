@@ -1,5 +1,5 @@
-import { SIcon, SText, TeamLoad } from '@/shared/ui';
-import { IconButton } from '@telegram-apps/telegram-ui';
+import { SIcon, TeamLoad } from '@/shared/ui';
+import { IconButton, Text } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import styled from 'styled-components';
 
@@ -26,7 +26,7 @@ export const TeamCard: FC<TeamCardProps> = ({
     <Wrapper onClick={onNavigate}>
       <Row>
         <Name>
-          <SText>{teamName}</SText>
+          <Text>{teamName}</Text>
           {isCaptain && <SIcon name={'captain'} size={16} color={'#F3BD28'}></SIcon>}
         </Name>
         <IconButton style={{ borderRadius: 6, padding: 6, width: 36, height: 36 }}>
@@ -36,7 +36,7 @@ export const TeamCard: FC<TeamCardProps> = ({
       {invitesCount > 0 ? (
         <>
           <Row>
-            <SText>{hackathonName}</SText>
+            <Text>{hackathonName}</Text>
           </Row>
           <Row>
             <InvitesBadge count={invitesCount} />
@@ -45,7 +45,7 @@ export const TeamCard: FC<TeamCardProps> = ({
         </>
       ) : (
         <Row>
-          <SText>{hackathonName}</SText>
+          <Text>{hackathonName}</Text>
           <TeamLoad teamMembersCount={teamMembersCount} teamMembersLimit={teamMembersLimit} />
         </Row>
       )}
@@ -88,7 +88,7 @@ export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
   return <Badge>{count} хотят вступить</Badge>;
 };
 
-const Badge = styled(SText)`
+const Badge = styled(Text)`
   border-radius: 1.5rem;
   padding: 0 0.5rem;
   background-color: var(--tg-theme-section-header-text-color);

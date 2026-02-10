@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { Button, Input, Textarea } from '@telegram-apps/telegram-ui';
+import { Button, Input, Textarea, Text } from '@telegram-apps/telegram-ui';
 import { useNavigate } from 'react-router-dom';
 
 import type { TeamWithMembers } from '@/entities/team';
 import { useAuthUser } from '@/entities/user';
 
-import { InputSection, SIcon, SText, ButtonsSection } from '@/shared/ui';
+import { InputSection, SIcon, ButtonsSection } from '@/shared/ui';
 import { getFindTeamMembersPath } from '@/shared/routing/paths';
 
 import { useCopyTeamInviteLink } from '@/features/team/copy-invite-link';
@@ -33,9 +33,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
     <Root>
       <Header>
         <div style={{ width: 24 }} />
-        <SText $fs={14} $fw={500}>
-          {isMember ? 'Моя команда' : 'Команда'}
-        </SText>
+        <Text weight="2">{isMember ? 'Моя команда' : 'Команда'}</Text>
 
         {isCaptain ? (
           <SIcon onClick={onEditClick} name="edit" size={24} />

@@ -1,6 +1,5 @@
 export * from './Page';
 export * from './LoaderPage';
-export * from './PlatformInputsBorder';
 export * from './RoleBadge';
 export * from './SIcon';
 export * from './SText';

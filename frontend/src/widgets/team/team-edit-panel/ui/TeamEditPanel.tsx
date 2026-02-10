@@ -3,13 +3,13 @@ import styled from 'styled-components';
 
 import type { TeamWithMembers } from '@/entities/team';
 import { useAuthUser } from '@/entities/user';
-
-import { SIcon, SText, ConfirmModal } from '@/shared/ui';
+import { SIcon, ConfirmModal } from '@/shared/ui';
 
 import { EditTeamForm } from '@/features/team/edit';
 import { useDeleteTeamAction } from '@/features/team/delete';
 import { useLeaveTeamAction } from '@/features/team/leave';
 import { TeamMembersSection } from '@/widgets/team/team-members';
+import { Subheadline } from '@telegram-apps/telegram-ui';
 
 interface Props {
   team: TeamWithMembers;
@@ -32,9 +32,9 @@ export const TeamEditPanel: FC<Props> = ({ team, onClose, onExit }) => {
     <Root>
       <Header>
         {isCaptain ? <SIcon onClick={del.open} name="delete" size={24} /> : <div />}
-        <SText $fs={14} $fw={500}>
+        <Subheadline level="2" weight="2">
           Моя команда
-        </SText>
+        </Subheadline>
         <SIcon onClick={leave} name="leaveTeam" size={24} />
       </Header>
 

@@ -1,8 +1,16 @@
 import { roleOptions } from '@/shared/types/enums';
 import { useNavigate } from 'react-router-dom';
 import { getTeamPath } from '@/shared/routing/paths';
-import { InputSection, SIcon, SText } from '@/shared/ui';
-import { Button, IconButton, List, Modal, Placeholder, Select } from '@telegram-apps/telegram-ui';
+import { InputSection, SIcon } from '@/shared/ui';
+import {
+  Button,
+  IconButton,
+  List,
+  Modal,
+  Placeholder,
+  Select,
+  Text,
+} from '@telegram-apps/telegram-ui';
 import { useHaveTeamModal } from '../model/useHaveTeamModal';
 import { useJoinTeamModal } from '../model/useJoinTeamModal';
 import { useStartParamParser } from '../model/useStartParamParser';
@@ -51,7 +59,7 @@ export const StartParamJoinHandler = () => {
             gap: 0,
           }}
         >
-          <SText>Выбор роли</SText>
+          <Text>Выбор роли</Text>
 
           <InputSection header="Роль">
             <Select value={joinTeamModal.role} onChange={joinTeamModal.select}>

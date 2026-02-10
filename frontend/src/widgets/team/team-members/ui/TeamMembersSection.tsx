@@ -1,9 +1,9 @@
 import type { FC } from 'react';
 import styled from 'styled-components';
-import { Avatar } from '@telegram-apps/telegram-ui';
+import { Avatar, Subheadline, Text } from '@telegram-apps/telegram-ui';
 
 import type { TeamWithMembers } from '@/entities/team';
-import { ConfirmModal, RoleBadge, SIcon, SText } from '@/shared/ui';
+import { ConfirmModal, RoleBadge, SIcon, TeamLoad } from '@/shared/ui';
 import { useRemoveTeamMember } from '@/features/team-member/remove';
 import { useNavigate } from 'react-router-dom';
 import { getUserPath } from '@/shared/routing/paths';
@@ -21,16 +21,10 @@ export const TeamMembersSection: FC<{
   return (
     <Block>
       <HeaderRow>
-        <SText $fs={16} $fw={600} style={{ color: 'var(--tg-theme-section-header-text-color)' }}>
+        <Text weight="2" style={{ color: 'var(--tg-theme-section-header-text-color)' }}>
           Участники
-        </SText>
-
-        <Count>
-          <SIcon name="profile" />
-          <SText $fs={16} $fw={700}>
-            {members.length} / {membersLimit}
-          </SText>
-        </Count>
+        </Text>
+        <TeamLoad teamMembersCount={members.length} teamMembersLimit={membersLimit} />
       </HeaderRow>
 
       <List>
@@ -77,17 +71,15 @@ const TeamMemberRow: FC<{
 
         <Info>
           <Names>
-            <SText $fs={16} $fw={600}>
-              {fullName}
-            </SText>
+            <Text weight="2">{fullName}</Text>
             <RoleBadge size="s" role={member.role} />
           </Names>
 
           <Meta>
             {member.user.username && (
-              <SText $fs={14} style={{ opacity: 0.8 }}>
+              <Subheadline level="2" style={{ opacity: 0.8 }}>
                 @{member.user.username}
-              </SText>
+              </Subheadline>
             )}
           </Meta>
         </Info>
@@ -132,14 +124,7 @@ const HeaderRow = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  /* padding: 0 22px; */
   margin-bottom: 0.5rem;
-`;
-
-const Count = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 `;
 
 const List = styled.div`
@@ -178,9 +163,6 @@ const Names = styled.div`
   align-items: center;
   width: 100%;
   justify-content: space-between;
-  /* gap: 1rem; */
-  /* gap: 4px; */
-  /* align-items: baseline; */
 
   & > * {
     white-space: nowrap;

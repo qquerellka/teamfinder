@@ -1,11 +1,11 @@
 import { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { IconButton } from '@telegram-apps/telegram-ui';
+import { IconButton, Text } from '@telegram-apps/telegram-ui';
 
 import type { Application } from '@/entities/application';
 import { useHackathonApplications } from '@/entities/application';
 import type { Team } from '@/entities/team';
-import { NoItems, RoleBadge, SIcon, SText } from '@/shared/ui';
+import { NoItems, RoleBadge, SIcon } from '@/shared/ui';
 import { useTeamInvites } from '@/entities/invite';
 import { useSendInviteAction } from '@/features/invite/send';
 import { useNavigate } from 'react-router-dom';
@@ -90,9 +90,9 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
   return (
     <Wrapper onClick={onNavigate}>
       <FirstRow>
-        <SText $fs={16} $fw={600}>
+        <Text weight="2">
           {application.firstName} {application.lastName}
-        </SText>
+        </Text>
         <RoleBadge role={application.role} />
       </FirstRow>
 
@@ -111,7 +111,7 @@ const ApplicationCard: FC<ApplicationCardProps> = ({
           </IconButton>
         )}
 
-        <SText>{skillsString}</SText>
+        <Text>{skillsString}</Text>
       </SecondRow>
     </Wrapper>
   );

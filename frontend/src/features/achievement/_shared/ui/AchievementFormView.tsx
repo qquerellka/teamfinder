@@ -1,12 +1,12 @@
 import type { FC, ChangeEvent } from 'react';
-import { Button, Input, Select } from '@telegram-apps/telegram-ui';
+import { Button, Input, Select, Subheadline } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 
 import type { Hackathon } from '@/entities/hackathon';
 import { placeOptions } from '@/entities/achievement';
 import { roleOptions } from '@/shared/types/enums';
 import type { AchievementFormValues, AchievementFormField } from '../model/types';
-import { SText, InputSection, ButtonsSection } from '@/shared/ui';
+import { InputSection, ButtonsSection } from '@/shared/ui';
 
 type BaseProps = {
   values: AchievementFormValues;
@@ -65,9 +65,9 @@ export const AchievementFormView: FC<Props> = props => {
 
   return (
     <SProfile>
-      <SText $fs={14} $fw="semibold">
+      <Subheadline weight="2">
         {props.mode === 'create' ? 'Новое достижение' : 'Редактировать достижение'}
-      </SText>
+      </Subheadline>
 
       <InputSection header={'Хакатон'}>
         {props.mode === 'create' ? (

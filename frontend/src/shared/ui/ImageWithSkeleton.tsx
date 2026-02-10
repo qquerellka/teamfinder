@@ -51,7 +51,7 @@ const Img = styled.img<{ $visible: boolean }>`
 `;
 
 const SkeletonOverlay = styled(Skeleton)`
-  position: absolute !important;
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;

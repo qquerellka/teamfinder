@@ -1,21 +1,23 @@
 import { useAuthUserApplications } from '@/entities/application';
 import { ApplicationCard } from '@/entities/application/ui/ApplicationCard';
 import { getHackathonParticipationPath } from '@/shared/routing/paths';
-import { NoItems, Page, SText } from '@/shared/ui';
+import { NoItems, Page } from '@/shared/ui';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Text } from '@telegram-apps/telegram-ui';
 
 export const ApplicationsPage = () => {
   const { data: applications } = useAuthUserApplications();
   const navigate = useNavigate();
   const filteredApplications = applications.filter(a => a.status === 'published');
+
   if (!filteredApplications || filteredApplications.length === 0) {
     return <NoItems title={'У вас нет активных анкет :('} />;
   }
   return (
     <Page>
       <ApplicationsList>
-        <SText>Мои анкеты</SText>
+        <Text>Мои анкеты</Text>
         {filteredApplications.map(a => (
           <ApplicationCard
             key={a.id}

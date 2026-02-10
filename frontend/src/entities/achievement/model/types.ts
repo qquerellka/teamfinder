@@ -25,13 +25,13 @@ export interface AchievementCreateDTO {
   hackathon_id: number;
   role: string;
   place: AchievementPlace;
-};
+}
 
 export interface AchievementCreate {
   hackathonId: number;
   role: string;
   place: AchievementPlace;
-};
+}
 
 export type AchievementPatchDTO = {
   hackathon_id?: number;
@@ -48,7 +48,7 @@ export interface AchievementPatch {
 export interface EditAchievementArgs {
   id: number;
   patch: AchievementPatch;
-};
+}
 
 export const placeOptions: { label: string; value: AchievementPlace }[] = [
   { label: '1 место', value: 'firstPlace' },

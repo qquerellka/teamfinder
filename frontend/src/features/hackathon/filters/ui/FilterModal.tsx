@@ -1,7 +1,6 @@
 import { FC, useCallback } from 'react';
 import styled from 'styled-components';
-import { Button, Modal, Radio } from '@telegram-apps/telegram-ui';
-import { SText } from '@/shared/ui';
+import { Button, Modal, Radio, Text } from '@telegram-apps/telegram-ui';
 import { HackathonMode } from '@/shared/types/enums';
 
 const MODE_OPTIONS = [
@@ -51,24 +50,24 @@ export const FilterModal: FC<FilterModalProps> = ({
   return (
     <Modal open={isOpen}>
       <ModalContainer>
-        <SText>{'Фильтры'}</SText>
+        <Text>{'Фильтры'}</Text>
 
         <Section>
-          <SText>{'Формат проведения'}</SText>
+          <Text>{'Формат проведения'}</Text>
           {MODE_OPTIONS.map(({ value, label }) => (
             <RatioContainer key={`mode-${value}`}>
               <Radio name="mode" checked={mode === value} onChange={() => onModeChange(value)} />
-              <SText>{label}</SText>
+              <Text>{label}</Text>
             </RatioContainer>
           ))}
         </Section>
 
         <Section>
-          <SText>{'Призовые'}</SText>
+          <Text>{'Призовые'}</Text>
           {MONEY_OPTIONS.map(({ value, label }) => (
             <RatioContainer key={`money-${value}`}>
               <Radio name="money" checked={money === value} onChange={() => onMoneyChange(value)} />
-              <SText>{label}</SText>
+              <Text>{label}</Text>
             </RatioContainer>
           ))}
         </Section>

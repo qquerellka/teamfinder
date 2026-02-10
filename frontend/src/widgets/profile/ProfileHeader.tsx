@@ -1,10 +1,9 @@
-import { Avatar, Link } from '@telegram-apps/telegram-ui';
+import { Avatar, Link, Text, Title } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 import { FC } from 'react';
 
 import { User } from '@/entities/user';
 import { createSafeTelegramLink, isValidTelegramUsername } from '@/shared/helpers/telegramUsername';
-import { SText } from '@/shared/ui';
 
 interface ProfileHeaderProps {
   user: User;
@@ -17,12 +16,12 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
     <ProfileHeaderContainer>
       <Avatar size={96} src={user.avatarUrl || undefined} />
       <ProfileFullName>
-        <SText $fs={24} $fw={600}>
+        <Title plain={true} weight="2">
           {user.firstName}
-        </SText>
-        <SText $fs={24} $fw={600}>
+        </Title>
+        <Title plain={true} weight="2">
           {user.secondName}
-        </SText>
+        </Title>
         {showLink && (
           <UsernameLink
             href={tgLink !== null ? tgLink : undefined}
@@ -30,9 +29,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
             rel="noopener noreferrer"
             onClick={e => e.stopPropagation()}
           >
-            <SText $fs={16} $fw={600}>
-              @{user.username}
-            </SText>
+            <Text weight="2">@{user.username}</Text>
           </UsernameLink>
         )}
       </ProfileFullName>
@@ -51,7 +48,6 @@ const ProfileFullName = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
 `;
 
 const UsernameLink = styled(Link)`

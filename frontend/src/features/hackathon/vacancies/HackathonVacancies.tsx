@@ -1,8 +1,8 @@
 import { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { IconButton } from '@telegram-apps/telegram-ui';
+import { IconButton, Text } from '@telegram-apps/telegram-ui';
 
-import { NoItems, RoleBadge, SIcon, SText } from '@/shared/ui';
+import { NoItems, RoleBadge, SIcon } from '@/shared/ui';
 import { Hackathon } from '@/entities/hackathon';
 import { useHackathonVacancies, Vacancy } from '@/entities/vacancy';
 import { useMyResponses } from '@/entities/response';
@@ -89,9 +89,7 @@ const VacancyCard: FC<VacancyCardProps> = ({
   return (
     <Wrapper onClick={onNavigate}>
       <FirstRow>
-        <SText $fs={16} $fw={600}>
-          {vacancy.teamName}
-        </SText>
+        <Text weight="2">{vacancy.teamName}</Text>
         <RoleBadge role={vacancy.role} />
       </FirstRow>
 
@@ -111,7 +109,7 @@ const VacancyCard: FC<VacancyCardProps> = ({
           </IconButton>
         )}
 
-        <SText>{vacancy.description}</SText>
+        <Text>{vacancy.description}</Text>
       </SecondRow>
     </Wrapper>
   );

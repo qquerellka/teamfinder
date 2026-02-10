@@ -2,10 +2,10 @@ import type { FC } from 'react';
 import styled from 'styled-components';
 import { Spinner } from '@telegram-apps/telegram-ui';
 
-type LoaderPageProps = {
+interface LoaderPageProps {
   text?: string;
   fullHeight?: boolean;
-};
+}
 
 export const LoaderPage: FC<LoaderPageProps> = ({ fullHeight = true }) => {
   return (
@@ -23,8 +23,3 @@ const Root = styled.div<{ $fullHeight: boolean }>`
   padding: 12px;
   row-gap: 8px;
 `;
-
-// const Text = styled.span`
-//   font-size: 14px;
-//   opacity: 0.8;
-// `;

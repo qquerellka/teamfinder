@@ -1,10 +1,10 @@
-import { IconButton } from '@telegram-apps/telegram-ui';
+import { IconButton, Text, Subheadline } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import styled from 'styled-components';
 
 import { formatRegistrationDate } from '@/shared/helpers/date';
 import { Role } from '@/shared/types/enums';
-import { RoleBadge, SIcon, SText, InvitesBadge } from '@/shared/ui';
+import { RoleBadge, SIcon, InvitesBadge } from '@/shared/ui';
 
 interface ApplicationCardProps {
   hackathonName: string;
@@ -30,19 +30,17 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
       <NavigateIcon style={{ borderRadius: 6, padding: 6 }}>
         <SIcon name="arrow" size={24} />
       </NavigateIcon>
-      <SText $fs={16} $fw={600}>
-        {hackathonName}
-      </SText>
+      <Text weight="2">{hackathonName}</Text>
       <ApplicationInfo>
         <InfoItem>
           <SIcon name={'hackathonRegistration'} />
-          <SText $fs={14} $fw={500}>
+          <Subheadline plain={true} level="2" weight="2">
             {formatRegistrationDate(registrationEndDate)}
-          </SText>
+          </Subheadline>
         </InfoItem>
         <InfoItem>
           <SIcon name={'hackathonPlace'} />
-          <SText $fs={14} $fw={500}>{`${city} • ${mode}`}</SText>
+          <Subheadline plain={true} level="2" weight="2">{`${city} • ${mode}`}</Subheadline>
         </InfoItem>
       </ApplicationInfo>
       {invitesCount > 0 && <InvitesBadge count={invitesCount} />}

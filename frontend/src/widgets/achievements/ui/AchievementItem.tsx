@@ -1,11 +1,10 @@
-import { Cell } from '@telegram-apps/telegram-ui';
+import { Cell, Text } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Achievement, formatHackPlace } from '@/entities/achievement';
 import { paths } from '@/shared/routing/paths';
-import { SText } from '@/shared/ui';
 
 interface AchievementItemProps {
   achievement: Achievement;
@@ -23,28 +22,14 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement, canEdit
     return (
       <AchievementContainer
         onClick={() => handleAchievementClick(achievement.id)}
-        after={
-          <SText $fs={16} $fw={500}>
-            {formatHackPlace(achievement.place)}
-          </SText>
-        }
+        after={<Text weight="2">{formatHackPlace(achievement.place)}</Text>}
       >
-        <SText $fs={16} $fw={500}>
-          {achievement.hackathonName}
-        </SText>
+        <Text weight="2">{achievement.hackathonName}</Text>
       </AchievementContainer>
     );
   return (
-    <AchievementContainer
-      after={
-        <SText $fs={16} $fw={500}>
-          {formatHackPlace(achievement.place)}
-        </SText>
-      }
-    >
-      <SText $fs={16} $fw={500}>
-        {achievement.hackathonName}
-      </SText>
+    <AchievementContainer after={<Text weight="2">{formatHackPlace(achievement.place)}</Text>}>
+      <Text weight="2">{achievement.hackathonName}</Text>
     </AchievementContainer>
   );
 };

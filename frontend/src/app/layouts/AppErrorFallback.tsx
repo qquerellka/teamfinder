@@ -1,6 +1,5 @@
-import { SText } from '@/shared/ui';
 import { FC } from 'react';
-import { Button, Placeholder } from '@telegram-apps/telegram-ui';
+import { Button, Placeholder, Subheadline, Text } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 import { NotFoundPage } from '@/pages/not-found/NotFound';
 import { AUTH_QUERY_KEY } from '@/features/auth';
@@ -70,7 +69,7 @@ export const AppErrorFallback: FC<AppErrorFallbackProps> = ({ error, resetErrorB
 
         <ErrorDetails>
           <DetailsTitle>Техническая информация</DetailsTitle>
-          <DetailsText>{message}</DetailsText>
+          <DetailsText plain={true}>{message}</DetailsText>
         </ErrorDetails>
       </Placeholder>
     </Root>
@@ -100,16 +99,13 @@ const ErrorDetails = styled.div`
   text-align: left;
 `;
 
-const DetailsTitle = styled(SText)`
-  font-size: 0.75rem;
+const DetailsTitle = styled(Text)`
   opacity: 0.7;
   margin-bottom: 0.25rem;
 `;
 
-const DetailsText = styled(SText)`
+const DetailsText = styled(Subheadline)`
   margin: 0;
-  font-size: 0.625rem;
-  line-height: 1.4;
   white-space: pre-wrap;
   word-break: break-word;
   opacity: 0.7;
