@@ -1,15 +1,15 @@
 import { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { IconButton, Text } from '@telegram-apps/telegram-ui';
 
 import type { Application } from '@/entities/application';
 import { useHackathonApplications } from '@/entities/application';
 import type { Team } from '@/entities/team';
-import { NoItems, RoleBadge, SIcon } from '@/shared/ui';
+import { NoItems } from '@/shared/ui';
 import { useTeamInvites } from '@/entities/invite';
 import { useSendInviteAction } from '@/features/invite/send';
 import { useNavigate } from 'react-router-dom';
 import { getUserPath } from '@/shared/routing/paths';
+import { ApplicationCard } from '@/widgets/team/application-card';
 
 interface TeamApplicationsProps {
   team: Team;
@@ -64,79 +64,5 @@ export const TeamApplications: FC<TeamApplicationsProps> = ({ team }) => {
 const ApplicationsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-`;
-
-interface ApplicationCardProps {
-  application: Application;
-  invited: boolean;
-  isInviting: boolean;
-  onInvite: () => void;
-  onNavigate: () => void;
-}
-
-const ApplicationCard: FC<ApplicationCardProps> = ({
-  application,
-  invited,
-  isInviting,
-  onInvite,
-  onNavigate,
-}) => {
-  const skillsString = useMemo(() => {
-    const skills = application.skills?.slice(0, 4) ?? [];
-    return skills.map(s => s.name).join(', ');
-  }, [application.skills]);
-
-  return (
-    <Wrapper onClick={onNavigate}>
-      <FirstRow>
-        <Text weight="2">
-          {application.firstName} {application.lastName}
-        </Text>
-        <RoleBadge role={application.role} />
-      </FirstRow>
-
-      <SecondRow>
-        {invited ? (
-          <SIcon name="sentInvite" size={36} />
-        ) : (
-          <IconButton
-            onClick={e => {
-              e.stopPropagation();
-              onInvite();
-            }}
-            disabled={isInviting}
-          >
-            <SIcon name="plus" />
-          </IconButton>
-        )}
-
-        <Text>{skillsString}</Text>
-      </SecondRow>
-    </Wrapper>
-  );
-};
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-radius: 1rem;
-  background-color: var(--tg-theme-section-bg-color);
-`;
-
-const FirstRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 0.5rem;
-`;
-
-const SecondRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: end;
   gap: 0.5rem;
 `;

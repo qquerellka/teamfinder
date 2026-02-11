@@ -7,17 +7,20 @@ export const CreateApplicationForm: FC<{
   hackathonName: string;
   onDone?: () => void;
 }> = ({ hackathonId, hackathonName, onDone }) => {
-  const form = useCreateApplicationForm({ hackathonId, onDone });
+  const { role, isSaving, canSubmit, setRole, submit } = useCreateApplicationForm({
+    hackathonId,
+    onDone,
+  });
 
   return (
     <ApplicationFormView
       hackathonName={hackathonName}
-      role={form.role}
+      role={role}
       submitLabel="Создать анкету"
-      loading={form.isSaving}
-      canSubmit={form.canSubmit}
-      onRoleChange={form.setRole}
-      onSubmit={form.submit}
+      loading={isSaving}
+      canSubmit={canSubmit}
+      onRoleChange={setRole}
+      onSubmit={submit}
     />
   );
 };

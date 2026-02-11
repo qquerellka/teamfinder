@@ -11,7 +11,7 @@ import { LoaderPage } from '@/shared/ui';
 import { Suspense } from 'react';
 
 import { QueryErrorResetBoundary, useQueryClient } from '@tanstack/react-query';
-import { StartParamJoinHandler } from '../features/team/join';
+import { StartParamJoinHandler } from '../features/team/join-by-link';
 
 function AppInner() {
   const location = useLocation();

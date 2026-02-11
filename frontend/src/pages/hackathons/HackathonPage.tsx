@@ -21,6 +21,7 @@ import { openLink } from '@tma.js/sdk-react';
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { data: hackathon } = useHackathonQuery(Number(id));
   const { data: user, isLoading: isUserLoading } = useAuthUser();
@@ -28,7 +29,6 @@ const HackathonPage: React.FC = () => {
   const { data: team } = useMyTeamOnHackathon(Number(id));
 
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   const url = normalizeUrl((hackathon as Hackathon).registrationLink);
 

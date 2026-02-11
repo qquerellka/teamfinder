@@ -9,9 +9,11 @@ import { NoItems, Page } from '@/shared/ui';
 export const UserTeamsPage = () => {
   const { data: teams } = useMyTeams();
   const navigate = useNavigate();
+
   if (!teams || teams.length === 0) {
     return <NoItems title={'У вас нет активных команд :('} />;
   }
+
   return (
     <Page>
       <TeamsList>

@@ -4,8 +4,8 @@ import { useParams } from 'react-router-dom';
 
 import { Page } from '@/shared/ui';
 import { useTeam } from '@/entities/team';
-import { TeamApplications } from '@/features/team/applications/TeamApplications';
 import { TeamVacancies } from '@/widgets/team/team-vacancy';
+import { TeamApplications } from '@/widgets/team/applications-list';
 
 export const FindTeamMemberPage = () => {
   const { id } = useParams<{ id: string }>();
