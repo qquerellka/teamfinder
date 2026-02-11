@@ -12,35 +12,26 @@ Telegram Mini App для хакатонов, которая помогает у�
 
 ---
 
-## Быстрый старт через Docker
+## Локальный запуск через Docker Compose
 
-Минимальный способ поднять всё целиком (nginx + frontend + backend + postgres + admin‑bot).
+Проще всего поднять все сервисы локально через `docker-compose.yml`.
 
 Требования:
 
 - Docker и Docker Compose
-- файл `.env` в корне (можно скопировать из `.env.example`)
+- файл `.env` в корне (можно скопировать из `env.example` и при необходимости переименовать в `.env`)
 
 Запуск:
 
 ```bash
-cp .env.example .env   # при первом старте
-docker compose -f docker-compose.prod.yaml --env-file .env up --build
+cp env.example .env   # при первом старте
+docker compose up --build
 ```
 
-После старта:
+После старта (зависит от конфигурации `docker-compose.yml`):
 
-- **Frontend**: `https://<ваш-домен>` (например, `https://teamfinder.tech`)
-- **Backend API**: `https://<ваш-домен>/api`
-- **Swagger** (если `APP_ENV != prod`): `https://<ваш-домен>/api/docs`
-
-Стек сервисов в `docker-compose.prod.yaml`:
-
-- `nginx` — TLS/HTTP‑вход, проксирование на `frontend` и `backend`
-- `frontend` — Vite‑сборка React‑клиента
-- `backend` — FastAPI + SQLAlchemy + S3
-- `postgres` — PostgreSQL
-- `admin-bot` — админ‑бот для создания/удаления хакатонов
+- **Frontend**: обычно `http://localhost` или `http://localhost:<порт>`
+- **Backend API**: `http://localhost:<порт>/api`
 
 ---
 
