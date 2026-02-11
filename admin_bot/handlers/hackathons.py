@@ -39,11 +39,49 @@ def _parse_date(text: str) -> datetime | None:
 
 @router.message(Command("start"))
 async def cmd_start(message: Message):
+    user_id = message.from_user.id
+    
+    if _is_admin(user_id):
+        await message.answer(
+            "✅ <b>Привет, администратор!</b>\n\n"
+            "Я админ-бот Teamfinder. Ты можешь управлять хакатонами на платформе:\n\n"
+            "📋 <b>Доступные команды:</b>\n"
+            "• /addhackathon — добавить новый хакатон\n"
+            "• /deletehackathon — удалить хакатон по ID\n"
+            "• /help — список всех команд\n\n"
+            "Выбери действие из меню или введи команду."
+        )
+    else:
+        await message.answer(
+            "❌ <b>Вы не можете пользоваться функциями администратора</b>\n\n"
+            # "Этот бот предназначен только для администраторов платформы Teamfinder.\n"
+            # "У тебя нет прав для использования этого бота.\n\n"
+            # "Если ты считаешь, что это ошибка, свяжись с разработчиками."
+        )
+
+
+@router.message(Command("help"))
+async def cmd_help(message: Message):
+    if not _is_admin(message.from_user.id):
+        await message.answer("❌ У тебя нет прав администратора.")
+        return
+    
     await message.answer(
-        "Привет! Я админ-бот Teamfinder.\n\n"
-        "Сейчас умею:\n"
-        "• /addhackathon — добавить хакатон на платформу.\n"
-        "• /deletehackathon — удалить хакатон по ID.\n"
+        "📋 <b>Справка по командам админ-бота:</b>\n\n"
+        "/start — перезапустить бота\n"
+        "/addhackathon — добавить новый хакатон\n"
+        "/deletehackathon — удалить хакатон по ID\n"
+        "/help — показать это сообщение\n\n"
+        "<b>Процесс добавления хакатона:</b>\n"
+        "1. Название и описание\n"
+        "2. Даты проведения\n"
+        "3. Дедлайн регистрации\n"
+        "4. Формат и город\n"
+        "5. Размеры команд\n"
+        "6. Ссылки и призовой фонд\n"
+        "7. Изображение\n"
+        "8. Подтверждение данных\n\n"
+        "Все поля можно пропустить, отправив «-»"
     )
 
 
