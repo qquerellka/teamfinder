@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS hackathon (
   end_date              TIMESTAMPTZ NOT NULL,
   registration_end_date TIMESTAMPTZ,
   mode                  hackathon_mode NOT NULL DEFAULT 'online',
+  tracks                hackathon_track[] NOT NULL DEFAULT '{}',
   city                  TEXT DEFAULT NULL,
   team_members_minimum  INT,
   team_members_limit    INT,

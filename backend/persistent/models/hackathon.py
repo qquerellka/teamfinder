@@ -3,10 +3,11 @@ from datetime import datetime
 from typing import Optional, List
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Text, Integer, DateTime, Enum
+from sqlalchemy import String, Text, Integer, DateTime, Enum, text
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from persistent.base import Base, TimestampMixin
-from persistent.enums import HackathonMode, HackathonStatus
+from persistent.enums import HackathonMode, HackathonStatus, HackathonTrack
 
 
 class Hackathon(Base, TimestampMixin):
@@ -30,6 +31,12 @@ class Hackathon(Base, TimestampMixin):
         Enum(HackathonMode, name="hackathon_mode"),
         nullable=False,
         default=HackathonMode.online,
+    )
+    tracks: Mapped[list[HackathonTrack]] = mapped_column(
+        ARRAY(Enum(HackathonTrack, name="hackathon_track")),
+        nullable=False,
+        default=list,
+        server_default=text("'{}'::hackathon_track[]"),
     )
     city: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 

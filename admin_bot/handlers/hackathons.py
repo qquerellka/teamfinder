@@ -21,6 +21,28 @@ router = Router()
 DATE_FORMAT = "%d.%m.%Y"
 ALLOWED_MODES = ("online", "offline", "hybrid")
 
+ALLOWED_TRACKS = ("ctf", "ml", "product", "algo", "case", "game")
+
+TRACK_LABELS = {
+    "ctf": "CTF",
+    "ml": "ML",
+    "product": "Product",
+    "algo": "Algo",
+    "case": "Case",
+    "game": "Game",
+}
+
+def _tracks_keyboard(selected: set[str]) -> InlineKeyboardMarkup:
+    rows = []
+    for t in ALLOWED_TRACKS:
+        mark = "✅ " if t in selected else ""
+        rows.append([InlineKeyboardButton(text=f"{mark}{TRACK_LABELS[t]}", callback_data=f"track_{t}")])
+
+    rows.append([
+        InlineKeyboardButton(text="✅ Готово", callback_data="tracks_done"),
+        InlineKeyboardButton(text="🧹 Очистить", callback_data="tracks_clear"),
+    ])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 def _is_admin(user_id: int) -> bool:
     return user_id in settings.admin_ids
@@ -40,7 +62,7 @@ def _parse_date(text: str) -> datetime | None:
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     user_id = message.from_user.id
-    
+
     if _is_admin(user_id):
         await message.answer(
             "✅ <b>Привет, администратор!</b>\n\n"
@@ -65,7 +87,7 @@ async def cmd_help(message: Message):
     if not _is_admin(message.from_user.id):
         await message.answer("❌ У тебя нет прав администратора.")
         return
-    
+
     await message.answer(
         "📋 <b>Справка по командам админ-бота:</b>\n\n"
         "/start — перезапустить бота\n"
@@ -110,10 +132,15 @@ async def form_name(message: Message, state: FSMContext):
 @router.message(HackathonForm.description)
 async def form_description(message: Message, state: FSMContext):
     await state.update_data(description=(message.text or "").strip())
-    await state.set_state(HackathonForm.start_date)
+
+    await state.update_data(tracks=[])
+    await state.set_state(HackathonForm.tracks)
+
+    kb = _tracks_keyboard(set())
     await message.answer(
-        "📅 Введи <b>дату начала</b> в формате <code>dd.mm.yyyy</code> "
-        "(например, 10.01.2025):"
+        "🧩 Выбери <b>треки хакатона</b> (можно несколько).\n"
+        "Нажимай кнопки, чтобы отмечать/снимать. Потом нажми <b>Готово</b>.",
+        reply_markup=kb,
     )
 
 
@@ -229,11 +256,14 @@ async def form_registration_end_date(message: Message, state: FSMContext):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🌐 Online", callback_data="mode_online"),
-                InlineKeyboardButton(text="🏢 Offline", callback_data="mode_offline"),
+                InlineKeyboardButton(
+                    text="🌐 Online", callback_data="mode_online"),
+                InlineKeyboardButton(
+                    text="🏢 Offline", callback_data="mode_offline"),
             ],
             [
-                InlineKeyboardButton(text="🔀 Hybrid", callback_data="mode_hybrid"),
+                InlineKeyboardButton(
+                    text="🔀 Hybrid", callback_data="mode_hybrid"),
             ],
         ]
     )
@@ -244,7 +274,7 @@ async def form_registration_end_date(message: Message, state: FSMContext):
 # ===== Обработчик выбора mode =====
 
 
-@router.callback_query(F.data.startswith("mode_"))
+@router.callback_query(StateFilter(HackathonForm.mode), F.data.startswith("mode_"))
 async def process_mode_selection(callback: CallbackQuery, state: FSMContext):
     # Извлекаем тип из callback_data
     mode_type = callback.data.replace("mode_", "")
@@ -263,7 +293,8 @@ async def process_mode_selection(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup(reply_markup=None)
 
     # Показываем пользователю выбранный вариант
-    mode_texts = {"online": "🌐 Online", "offline": "🏢 Offline", "hybrid": "🔀 Hybrid"}
+    mode_texts = {"online": "🌐 Online",
+                  "offline": "🏢 Offline", "hybrid": "🔀 Hybrid"}
 
     await callback.message.answer(f"✅ Формат: <b>{mode_texts[mode_type]}</b>")
 
@@ -412,6 +443,9 @@ async def form_image_link(message: Message, state: FSMContext):
 
     await state.update_data(image_file_id=image_file_id)
     data = await state.get_data()
+    
+    tracks = data.get("tracks") or []
+    tracks_text = ", ".join(TRACK_LABELS[t] for t in tracks) if tracks else "—"
 
     preview = (
         f"<b>Проверь данные хакатона:</b>\n"
@@ -421,6 +455,7 @@ async def form_image_link(message: Message, state: FSMContext):
         f"• Дедлайн регистрации: {data.get('registration_end_date') or '—'}\n"
         f"• Город: {data['city']}\n"
         f"• Формат: {data['mode']}\n"
+        f"• Треки: {tracks_text}\n"
         f"• Команда: "
         f"{data.get('team_members_minimum') or '—'}–"
         f"{data.get('team_members_limit') or '—'} чел.\n"
@@ -457,6 +492,7 @@ async def form_confirm(message: Message, state: FSMContext):
         "end_date": data["end_date"],
         "registration_end_date": data.get("registration_end_date"),
         "mode": data["mode"],
+        "tracks": data.get("tracks") or [],
         "status": "open",
         "city": data["city"],
         "team_members_minimum": data.get("team_members_minimum"),
@@ -497,7 +533,7 @@ async def cmd_delete_hackathon(message: Message, state: FSMContext):
 @router.message(DeleteHackathonForm.hackathon_id)
 async def delete_form_hackathon_id(message: Message, state: FSMContext):
     text = (message.text or "").strip()
-    
+
     try:
         hackathon_id = int(text)
         if hackathon_id <= 0:
@@ -511,11 +547,11 @@ async def delete_form_hackathon_id(message: Message, state: FSMContext):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="✅ Да, удалить", 
+                    text="✅ Да, удалить",
                     callback_data=f"confirm_delete_{hackathon_id}"
                 ),
                 InlineKeyboardButton(
-                    text="❌ Отмена", 
+                    text="❌ Отмена",
                     callback_data="cancel_delete"
                 ),
             ]
@@ -546,7 +582,7 @@ async def confirm_delete_hackathon(callback: CallbackQuery, state: FSMContext):
     try:
         # Вызываем API для удаления
         success = await delete_hackathon(hackathon_id)
-        
+
         if success:
             await callback.message.answer(
                 f"✅ Хакатон с ID <code>{hackathon_id}</code> успешно удалён."
@@ -560,7 +596,7 @@ async def confirm_delete_hackathon(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer(
             f"⚠️ Ошибка при удалении хакатона: <code>{e}</code>"
         )
-    
+
     await state.clear()
     await callback.answer()
 
@@ -570,4 +606,52 @@ async def cancel_delete_hackathon(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     await callback.message.edit_reply_markup(reply_markup=None)
     await callback.message.answer("❌ Удаление хакатона отменено.")
+    await callback.answer()
+
+@router.callback_query(StateFilter(HackathonForm.tracks), F.data.startswith("track_"))
+async def process_track_toggle(callback: CallbackQuery, state: FSMContext):
+    track = callback.data.replace("track_", "", 1)
+    if track not in ALLOWED_TRACKS:
+        await callback.answer("Неверный трек")
+        return
+
+    data = await state.get_data()
+    selected = set(data.get("tracks") or [])
+
+    if track in selected:
+        selected.remove(track)
+        action = "убрано"
+    else:
+        selected.add(track)
+        action = "добавлено"
+
+    # сохраняем в стабильном порядке (как в ALLOWED_TRACKS)
+    ordered = [t for t in ALLOWED_TRACKS if t in selected]
+    await state.update_data(tracks=ordered)
+
+    await callback.message.edit_reply_markup(reply_markup=_tracks_keyboard(set(ordered)))
+    await callback.answer(f"{TRACK_LABELS[track]}: {action}")
+
+
+@router.callback_query(StateFilter(HackathonForm.tracks), F.data == "tracks_clear")
+async def process_tracks_clear(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(tracks=[])
+    await callback.message.edit_reply_markup(reply_markup=_tracks_keyboard(set()))
+    await callback.answer("Очищено")
+
+
+@router.callback_query(StateFilter(HackathonForm.tracks), F.data == "tracks_done")
+async def process_tracks_done(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    tracks = data.get("tracks") or []
+    tracks_text = ", ".join(TRACK_LABELS[t] for t in tracks) if tracks else "—"
+
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.answer(f"✅ Треки: <b>{tracks_text}</b>")
+
+    await state.set_state(HackathonForm.start_date)
+    await callback.message.answer(
+        "📅 Введи <b>дату начала</b> в формате <code>dd.mm.yyyy</code> "
+        "(например, 10.01.2025):"
+    )
     await callback.answer()

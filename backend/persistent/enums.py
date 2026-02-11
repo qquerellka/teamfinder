@@ -29,7 +29,7 @@ class ApplicationStatus(str, Enum):
 
 
 # -----------------------------------------------------------------------------
-# РЕЖИМ И СТАТУС ХАКАТОНА
+# РЕЖИМ, СТАТУС И ТРЭК ХАКАТОНА
 # -----------------------------------------------------------------------------
 class HackathonMode(str, Enum):
     online = "online"
@@ -41,6 +41,13 @@ class HackathonStatus(str, Enum):
     open = "open"
     closed = "closed"
 
+class HackathonTrack(str, Enum):
+    ctf = "ctf"
+    ml = "ml"
+    product = "product"
+    algo = "algo"
+    case = "case"
+    game = "game"
 
 # -----------------------------------------------------------------------------
 # СТАТУС КОМАНДЫ (team_status)

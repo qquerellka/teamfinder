@@ -1,4 +1,5 @@
 CREATE INDEX IF NOT EXISTS idx_app_hack_status    ON application (hackathon_id, status);
+CREATE INDEX IF NOT EXISTS hackathon_tracks_gin ON hackathon USING GIN (tracks);
 CREATE INDEX IF NOT EXISTS idx_team_hack          ON team (hackathon_id);
 CREATE INDEX IF NOT EXISTS idx_vac_team_status    ON vacancy (team_id, status);
 CREATE INDEX IF NOT EXISTS idx_notif_user_unread  ON notification (user_id, is_read);

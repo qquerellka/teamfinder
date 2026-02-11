@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from services.hackathons import HackathonsService, HackathonListResult
 from infrastructure.admin_auth import require_admin_token
-from persistent.enums import HackathonMode
+from persistent.enums import HackathonMode, HackathonTrack
 
 router = APIRouter(prefix="/hackathons", tags=["hackathons"])
 service = HackathonsService()
@@ -37,6 +37,7 @@ class HackathonOut(BaseModel):
     registration_end_date: Optional[str] = None
 
     mode: str
+    tracks: List[HackathonTrack] = Field(default_factory=list)
     status: str
     city: Optional[str] = None
     team_members_minimum: Optional[int] = None
@@ -65,6 +66,7 @@ class HackathonCreateIn(BaseModel):
 
     mode: str
     status: str = "open"
+    tracks: List[HackathonTrack] = Field(default_factory=list)
     city: Optional[str] = None
     team_members_minimum: Optional[int] = None
     team_members_limit: Optional[int] = None
@@ -83,6 +85,7 @@ class HackathonUpdateIn(BaseModel):
 
     mode: Optional[str] = None
     status: Optional[str] = None
+    tracks: Optional[List[HackathonTrack]] = None
     city: Optional[str] = None
     team_members_minimum: Optional[int] = None
     team_members_limit: Optional[int] = None
@@ -106,6 +109,7 @@ def _pack(h) -> HackathonOut:
             str(h.registration_end_date) if h.registration_end_date else None
         ),
         mode=h.mode,
+        tracks=list(h.tracks or []),
         status=h.status,
         city=h.city,
         team_members_minimum=h.team_members_minimum,
@@ -128,7 +132,8 @@ async def list_hackathons(
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     hackathon_mode: Optional[HackathonMode] = Query(default=None, alias='mode'),
-    with_prize_fund: Optional[bool] = Query(default=None, alias='prize_fund')
+    with_prize_fund: Optional[bool] = Query(default=None, alias='prize_fund'),
+    tracks: Optional[List[HackathonTrack]] = Query(default=None),
 ):
     """
     Список открытых хакатонов (status = 'open') с пагинацией.
@@ -138,7 +143,8 @@ async def list_hackathons(
         limit=limit,
         offset=offset,
         hackathon_mode=hackathon_mode,
-        with_prize_fund=with_prize_fund
+        with_prize_fund=with_prize_fund,
+        tracks = tracks,
     )
     return {
         "items": [_pack(h).model_dump() for h in result.items],
@@ -173,7 +179,7 @@ async def create_hackathon(
     Если передан image_file_id — забираем картинку из Telegram и кладём в S3.
     """
     try:
-        h = await service.create_from_payload(payload.model_dump())
+        h = await service.create_from_payload(payload.model_dump(mode="json"))
     except ValueError as e:
         msg = str(e)
         if msg.startswith("invalid_date_format:"):
@@ -200,7 +206,7 @@ async def update_hackathon(
     Частично обновить хакатон.
     Даты ожидаем в формате dd.mm.yyyy.
     """
-    data = payload.model_dump(exclude_unset=True)
+    data = payload.model_dump(exclude_unset=True, mode="json")
 
     try:
         h = await service.update_from_payload(hackathon_id, data)

@@ -11,6 +11,7 @@ class HackathonForm(StatesGroup):
     registration_end_date = State()
     city = State()
     mode = State()
+    tracks = State()
     team_min = State()
     team_max = State()
     registration_link = State()
