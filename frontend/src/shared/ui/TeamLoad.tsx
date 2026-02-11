@@ -11,9 +11,9 @@ export const TeamLoad: FC<TeamLoadProps> = ({ teamMembersCount, teamMembersLimit
   return (
     <CountTeamMembers>
       <SIcon name="profile" />
-      <Subheadline weight="2">
+      <StyledSubheadline weight="2">
         {teamMembersCount} / {teamMembersLimit}
-      </Subheadline>
+      </StyledSubheadline>
     </CountTeamMembers>
   );
 };
@@ -22,4 +22,11 @@ const CountTeamMembers = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+`;
+
+const StyledSubheadline = styled(Subheadline)`
+  display: inline-flex;
+  white-space: nowrap;
 `;
