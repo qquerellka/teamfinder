@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Sequence
 
 from sqlalchemy import select
 
 from repositories.base import BaseRepository
 from persistent.models import hackathon as m_hack
-from persistent.enums import HackathonStatus, HackathonMode
+from persistent.enums import HackathonStatus, HackathonMode, HackathonTrack
 
 
 class HackathonsRepo(BaseRepository):
@@ -23,7 +23,8 @@ class HackathonsRepo(BaseRepository):
         limit: int = 50,
         offset: int = 0,
         hackathon_mode: Optional[HackathonMode] = None,
-        with_prize_fund: Optional[bool] = None
+        with_prize_fund: Optional[bool] = None,
+        tracks: Optional[Sequence[HackathonTrack]] = None,
     ) -> List[m_hack.Hackathon]:
         """
         Список открытых хакатонов.
@@ -49,6 +50,9 @@ class HackathonsRepo(BaseRepository):
                     stmt = stmt.where(H.prize_fund.is_not(None))
                 else:
                     stmt = stmt.where(H.prize_fund.is_(None))
+                    
+            if tracks:
+                stmt = stmt.where(H.tracks.overlap(list(tracks)))
             
             stmt = stmt.order_by(H.start_date.desc()).limit(limit).offset(offset)
             res = await s.execute(stmt)
