@@ -94,7 +94,6 @@ SELECT
 """)
 
 async def main():
-    print("working")
     interval = int(os.getenv("CLOSE_JOB_INTERVAL", "60"))
 
     engine = create_async_engine(DATABASE_URL, pool_pre_ping=True)
@@ -103,8 +102,7 @@ async def main():
     while True:
         async with Session() as s:
             async with s.begin():
-                res = await s.execute(SQL)
-                print(res.one())
+                await s.execute(SQL)
         await asyncio.sleep(interval)
 
 if __name__ == "__main__":
