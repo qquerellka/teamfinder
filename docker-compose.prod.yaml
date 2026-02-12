@@ -80,5 +80,23 @@ services:
       - backend
     restart: unless-stopped
 
+  scheduler:
+    container_name: scheduler
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    command: python -m jobs.close_hackathons
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - CLOSE_JOB_INTERVAL=${CLOSE_JOB_INTERVAL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   db-data:
