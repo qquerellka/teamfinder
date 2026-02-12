@@ -11,7 +11,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
-  CREATE TYPE team_status AS ENUM ('forming','ready');
+  CREATE TYPE team_status AS ENUM ('forming','ready','hidden');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN

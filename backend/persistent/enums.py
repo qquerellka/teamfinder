@@ -41,6 +41,7 @@ class HackathonStatus(str, Enum):
     open = "open"
     closed = "closed"
 
+
 class HackathonTrack(str, Enum):
     ctf = "ctf"
     ml = "ml"
@@ -52,9 +53,12 @@ class HackathonTrack(str, Enum):
 # -----------------------------------------------------------------------------
 # СТАТУС КОМАНДЫ (team_status)
 # -----------------------------------------------------------------------------
+
+
 class TeamStatus(str, Enum):
     forming = "forming"
     ready = "ready"
+    hidden = "hidden"
 
 
 # -----------------------------------------------------------------------------
@@ -114,9 +118,3 @@ class NotifType(str, Enum):
     team_entry = "team:entry"
     team_leave = "team:leave"
     team_kicked = "team:kicked"
-    
-class InviteStatus(str, Enum):
-    pending  = "pending"
-    accepted = "accepted"
-    rejected = "rejected"
-    expired  = "expired"

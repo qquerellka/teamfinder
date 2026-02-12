@@ -67,5 +67,18 @@ services:
       - backend
     restart: unless-stopped
 
+  scheduler:
+    container_name: scheduler
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    command: python -m jobs.close_hackathons
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   db-data:
