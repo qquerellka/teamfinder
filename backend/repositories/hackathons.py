@@ -25,6 +25,7 @@ class HackathonsRepo(BaseRepository):
         hackathon_mode: Optional[HackathonMode] = None,
         with_prize_fund: Optional[bool] = None,
         tracks: Optional[Sequence[HackathonTrack]] = None,
+        active: Optional[bool] = True,
     ) -> List[m_hack.Hackathon]:
         """
         Список открытых хакатонов.
@@ -36,7 +37,7 @@ class HackathonsRepo(BaseRepository):
         H = m_hack.Hackathon
 
         async with self._sm() as s:
-            stmt = select(H).where(H.status == HackathonStatus.open)
+            stmt = select(H)
 
             if q:
                 like = f"%{q}%"
@@ -53,6 +54,9 @@ class HackathonsRepo(BaseRepository):
                     
             if tracks:
                 stmt = stmt.where(H.tracks.overlap(list(tracks)))
+                
+            if active:
+                stmt = stmt.where(H.status == HackathonStatus.open)
             
             stmt = stmt.order_by(H.start_date.desc()).limit(limit).offset(offset)
             res = await s.execute(stmt)

@@ -134,6 +134,7 @@ async def list_hackathons(
     hackathon_mode: Optional[HackathonMode] = Query(default=None, alias='mode'),
     with_prize_fund: Optional[bool] = Query(default=None, alias='prize_fund'),
     tracks: Optional[List[HackathonTrack]] = Query(default=None),
+    active: Optional[bool] = Query(default=True)
 ):
     """
     Список открытых хакатонов (status = 'open') с пагинацией.
@@ -144,7 +145,8 @@ async def list_hackathons(
         offset=offset,
         hackathon_mode=hackathon_mode,
         with_prize_fund=with_prize_fund,
-        tracks = tracks,
+        tracks=tracks,
+        active=active,
     )
     return {
         "items": [_pack(h).model_dump() for h in result.items],

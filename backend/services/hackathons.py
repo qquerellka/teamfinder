@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Optional, List
 
 from fastapi import UploadFile
 
 from repositories.hackathons import HackathonsRepo
 from persistent.models import hackathon as m_hack
-from persistent.enums import HackathonMode, HackathonTrack
+from persistent.enums import HackathonMode, HackathonTrack, HackathonStatus
 from infrastructure.telegram_files import download_telegram_file
 from infrastructure.s3_client import (
     upload_hackathon_image_to_s3,
@@ -91,6 +91,7 @@ class HackathonsService:
         hackathon_mode: Optional[HackathonMode],
         with_prize_fund: Optional[bool],
         tracks: Optional[list[HackathonTrack]] = None,
+        active: Optional[bool] = True,
     ) -> HackathonListResult:
         """
         Список открытых хакатонов (status = 'open') с простым текстовым фильтром.
@@ -102,6 +103,7 @@ class HackathonsService:
             hackathon_mode=hackathon_mode,
             with_prize_fund=with_prize_fund,
             tracks=tracks,
+            active=active,
         )
         return HackathonListResult(items=items, limit=limit, offset=offset)
 
@@ -138,7 +140,10 @@ class HackathonsService:
             data.get("registration_end_date"),
             "registration_end_date",
         )
-
+        if data.get("end_date") is not None:
+            close_at = data["end_date"] - timedelta(minutes=1)
+            if datetime.now() >= close_at:
+                data["status"] = HackathonStatus.closed
         hackathon = await self.repo.create(**data)
 
         if image_file_id:
