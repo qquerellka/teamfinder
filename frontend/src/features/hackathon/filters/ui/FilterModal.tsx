@@ -17,7 +17,7 @@ const MONEY_OPTIONS = [
 ] as const;
 
 const STATUS_OPTIONS = [
-  { value: 'open', label: 'Актульные' },
+  { value: 'open', label: 'Актуальные' },
   { value: 'closed', label: 'Архивные' },
 ] as const;
 
@@ -80,7 +80,7 @@ export const FilterModal: FC<FilterModalProps> = ({
             </RatioContainer>
           ))}
         </Section>
-        
+
         <Section>
           <Text>{'Статус'}</Text>
           {STATUS_OPTIONS.map(({ value, label }) => (
