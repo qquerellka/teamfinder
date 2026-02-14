@@ -21,6 +21,7 @@ export const HackathonList: FC = () => {
     q,
     mode: filters.queryParams.mode,
     prize_fund: filters.queryParams.hasPrize,
+    status: filters.queryParams.status,
   });
 
   const handleResetAll = useCallback(() => {
@@ -67,6 +68,8 @@ export const HackathonList: FC = () => {
         onModeChange={filters.setMode}
         money={filters.money}
         onMoneyChange={filters.setMoney}
+        status={filters.status}
+        onStatusChange={filters.setStatus}
         onApply={filters.applyFilters}
         onReset={handleResetAll}
       />

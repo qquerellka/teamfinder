@@ -18,17 +18,19 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement, canEdit
     navigate(`${paths.userRoot}/achievements/${id}`);
   };
 
+  const placeText = formatHackPlace(achievement.place);
+
   if (canEdit)
     return (
       <AchievementContainer
         onClick={() => handleAchievementClick(achievement.id)}
-        after={<Text weight="2">{formatHackPlace(achievement.place)}</Text>}
+        after={<PlaceText weight="2">{placeText}</PlaceText>}
       >
         <Text weight="2">{achievement.hackathonName}</Text>
       </AchievementContainer>
     );
   return (
-    <AchievementContainer after={<Text weight="2">{formatHackPlace(achievement.place)}</Text>}>
+    <AchievementContainer after={<PlaceText weight="2">{placeText}</PlaceText>}>
       <Text weight="2">{achievement.hackathonName}</Text>
     </AchievementContainer>
   );
@@ -37,4 +39,9 @@ export const AchievementItem: FC<AchievementItemProps> = ({ achievement, canEdit
 const AchievementContainer = styled(Cell)`
   background-color: var(--tg-theme-section-bg-color);
   border-radius: 1rem;
+`;
+
+const PlaceText = styled(Text)`
+  white-space: nowrap;
+  flex-shrink: 0;
 `;

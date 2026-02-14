@@ -73,11 +73,25 @@ const HackathonPage: React.FC = () => {
     navigate(paths.userRoot);
   };
 
+  const handleGoToAddAch = () => {
+    navigate(paths.userAchievementsRoot)
+  }
+
   return (
     <>
       <Page>
         <HackathonCard hackathon={hackathon} variant="full" />
-        {application ? (
+        {hackathon.status === 'closed' ? (
+          <ButtonsSection>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
+              Подробнее
+            </Button>
+
+            <Button onClick={handleGoToAddAch} disabled={isUserLoading}>
+              Добавить в достижения
+            </Button>
+          </ButtonsSection>
+        ) : application ? (
           <ButtonsSection>
             <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее

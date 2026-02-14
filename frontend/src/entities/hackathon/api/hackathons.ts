@@ -1,7 +1,7 @@
 import { apiClient } from '@/shared/api/client';
 import { Hackathon, HackathonDTO } from '../model/types';
 import { hackathonsToCamelCase } from '../lib/dto';
-import { HackathonMode } from '@/shared/types/enums';
+import { HackathonMode, HackathonStatus } from '@/shared/types/enums';
 
 interface HackathonsResponseDTO {
   items: HackathonDTO[];
@@ -21,6 +21,7 @@ export interface FetchHackathonsParams {
   offset?: number;
   mode?: HackathonMode;
   prize_fund?: boolean;
+  status?: HackathonStatus;
 }
 
 export async function fetchHackathons(

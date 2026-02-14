@@ -13,9 +13,17 @@ export const AchievementContainer: FC<AchievementContainerProps> = ({ id, onDone
   const isCreate = !id || id === 'new';
 
   const { data: user } = useAuthUser();
-  const { data: hackathonsResponse } = useHackathonsQuery();
+  const { data: closedHackathons } = useHackathonsQuery({status: 'closed'});
+  // Создаем Set с ID хакатонов, которые уже есть в достижениях пользователя
+const achievedHackathonIds = new Set(
+  user?.achievements?.map(achievement => achievement.hackathonId) || []
+);
 
-  const hackathons = hackathonsResponse?.items ?? [];
+// Фильтруем закрытые хакатоны, оставляя только те, которых нет в достижениях
+const noAchsHackathons = closedHackathons.items?.filter(
+  hackathon => !achievedHackathonIds.has(hackathon.id)
+) || [];
+
   const achievement = useMemo(() => {
     if (isCreate) return null;
 
@@ -29,7 +37,7 @@ export const AchievementContainer: FC<AchievementContainerProps> = ({ id, onDone
     <>
       {isCreate ? (
         <AchievementCreateForm
-          hackathons={hackathons.filter(h => h.status === 'closed')}
+          hackathons={noAchsHackathons}
           onDone={onDone}
         />
       ) : (

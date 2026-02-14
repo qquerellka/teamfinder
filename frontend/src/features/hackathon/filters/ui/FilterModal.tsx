@@ -1,7 +1,7 @@
 import { FC, useCallback } from 'react';
 import styled from 'styled-components';
 import { Button, Modal, Radio, Text } from '@telegram-apps/telegram-ui';
-import { HackathonMode } from '@/shared/types/enums';
+import { HackathonMode, HackathonStatus } from '@/shared/types/enums';
 
 const MODE_OPTIONS = [
   { value: '', label: 'Неважно' },
@@ -16,6 +16,11 @@ const MONEY_OPTIONS = [
   { value: false, label: 'Нет' },
 ] as const;
 
+const STATUS_OPTIONS = [
+  { value: 'open', label: 'Актульные' },
+  { value: 'closed', label: 'Архивные' },
+] as const;
+
 interface FilterModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,6 +28,8 @@ interface FilterModalProps {
   onModeChange: (mode: HackathonMode | '') => void;
   money: boolean | null;
   onMoneyChange: (money: boolean | null) => void;
+  status: HackathonStatus | '';
+  onStatusChange: (status: HackathonStatus | '') => void;
   onApply: () => void;
   onReset: () => void;
 }
@@ -34,6 +41,8 @@ export const FilterModal: FC<FilterModalProps> = ({
   onModeChange,
   money,
   onMoneyChange,
+  status,
+  onStatusChange,
   onApply,
   onReset,
 }) => {
@@ -67,6 +76,16 @@ export const FilterModal: FC<FilterModalProps> = ({
           {MONEY_OPTIONS.map(({ value, label }) => (
             <RatioContainer key={`money-${value}`}>
               <Radio name="money" checked={money === value} onChange={() => onMoneyChange(value)} />
+              <Text>{label}</Text>
+            </RatioContainer>
+          ))}
+        </Section>
+        
+        <Section>
+          <Text>{'Статус'}</Text>
+          {STATUS_OPTIONS.map(({ value, label }) => (
+            <RatioContainer key={`status-${value}`}>
+              <Radio name="status" checked={status === value} onChange={() => onStatusChange(value)} />
               <Text>{label}</Text>
             </RatioContainer>
           ))}
