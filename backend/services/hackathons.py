@@ -9,7 +9,7 @@ from fastapi import UploadFile
 
 from repositories.hackathons import HackathonsRepo
 from persistent.models import hackathon as m_hack
-from persistent.enums import HackathonMode, HackathonTrack, HackathonStatus
+from persistent.enums import HackathonMode, HackathonTrack, HackathonStatus, HackathonsStatusFilter
 from infrastructure.telegram_files import download_telegram_file
 from infrastructure.s3_client import (
     upload_hackathon_image_to_s3,
@@ -91,7 +91,7 @@ class HackathonsService:
         hackathon_mode: Optional[HackathonMode],
         with_prize_fund: Optional[bool],
         tracks: Optional[list[HackathonTrack]] = None,
-        active: Optional[bool] = True,
+        status: Optional[HackathonsStatusFilter] = HackathonsStatusFilter.open,
     ) -> HackathonListResult:
         """
         Список открытых хакатонов (status = 'open') с простым текстовым фильтром.
@@ -103,7 +103,7 @@ class HackathonsService:
             hackathon_mode=hackathon_mode,
             with_prize_fund=with_prize_fund,
             tracks=tracks,
-            active=active,
+            status=status,
         )
         return HackathonListResult(items=items, limit=limit, offset=offset)
 

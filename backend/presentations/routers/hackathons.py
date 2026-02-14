@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from services.hackathons import HackathonsService, HackathonListResult
 from infrastructure.admin_auth import require_admin_token
-from persistent.enums import HackathonMode, HackathonTrack
+from persistent.enums import HackathonMode, HackathonTrack, HackathonsStatusFilter
 
 router = APIRouter(prefix="/hackathons", tags=["hackathons"])
 service = HackathonsService()
@@ -134,7 +134,7 @@ async def list_hackathons(
     hackathon_mode: Optional[HackathonMode] = Query(default=None, alias='mode'),
     with_prize_fund: Optional[bool] = Query(default=None, alias='prize_fund'),
     tracks: Optional[List[HackathonTrack]] = Query(default=None),
-    active: Optional[bool] = Query(default=True)
+    status: Optional[HackathonsStatusFilter] = Query(default=HackathonsStatusFilter.open)
 ):
     """
     Список открытых хакатонов (status = 'open') с пагинацией.
@@ -146,7 +146,7 @@ async def list_hackathons(
         hackathon_mode=hackathon_mode,
         with_prize_fund=with_prize_fund,
         tracks=tracks,
-        active=active,
+        status=status,
     )
     return {
         "items": [_pack(h).model_dump() for h in result.items],

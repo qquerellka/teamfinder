@@ -118,3 +118,8 @@ class NotifType(str, Enum):
     team_entry = "team:entry"
     team_leave = "team:leave"
     team_kicked = "team:kicked"
+
+class HackathonsStatusFilter(str, Enum):
+    open = "open"
+    closed = "closed"
+    all = "all"
