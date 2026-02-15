@@ -15,7 +15,7 @@ export const paths = {
   userRoot: '/user',
   userById: '/user/:id',
   userAchievementsRoot: '/user/achievements/new',
-  userAchievement: '/profile/achievements/:id',
+  userAchievement: '/user/achievements/:id',
 
   findNewTeamMembers: `/teams/:id/find`,
 } as const;
@@ -38,3 +38,7 @@ export const getUserPath = (id: number) => {
 
 export const getHackathonCreateTeamPath = (id: number) =>
   paths.hackathonCreateTeam.replace(':id', String(id));
+
+export const getUserAchievementPath = (id: number) => 
+  paths.userAchievement.replace(':id', String(id));
+;

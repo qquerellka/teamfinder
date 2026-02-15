@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@telegram-apps/telegram-ui';
 
@@ -10,6 +10,7 @@ import {
   getHackathonCreateTeamPath,
   getHackathonParticipationPath,
   getTeamPath,
+  getUserAchievementPath,
   paths,
 } from '@/shared/routing/paths';
 
@@ -22,20 +23,22 @@ import { openLink } from '@tma.js/sdk-react';
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const hackathonId = Number(id);
 
-  const { data: hackathon } = useHackathonQuery(Number(id));
+  const { data: hackathon } = useHackathonQuery(hackathonId);
   const { data: user, isLoading: isUserLoading } = useAuthUser();
-  const { data: application } = useAuthUserApplicationsOnHackathon(Number(id));
-  const { data: team } = useMyTeamOnHackathon(Number(id));
+  const { data: application } = useAuthUserApplicationsOnHackathon(hackathonId);
+  const { data: team } = useMyTeamOnHackathon(hackathonId);
 
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
 
   const url = normalizeUrl((hackathon as Hackathon).registrationLink);
+  const participatedHack = user.achievements.filter(a => a.hackathonId === hackathonId);
 
   const handleGoToApplication = () => {
     if (isUserLoading) return;
 
-    if (id) navigate(getHackathonParticipationPath(Number(id)));
+    if (id) navigate(getHackathonParticipationPath(hackathonId));
   };
 
   const handleGoToCreateApplication = () => {
@@ -48,7 +51,7 @@ const HackathonPage: React.FC = () => {
       return;
     }
 
-    if (id) navigate(getHackathonParticipationPath(Number(id)));
+    if (id) navigate(getHackathonParticipationPath(hackathonId));
   };
 
   const handleGoToTeam = () => {
@@ -65,7 +68,7 @@ const HackathonPage: React.FC = () => {
       return;
     }
 
-    if (id) navigate(getHackathonCreateTeamPath(Number(id)));
+    if (id) navigate(getHackathonCreateTeamPath(hackathonId));
   };
 
   const handleGoToProfile = () => {
@@ -74,14 +77,33 @@ const HackathonPage: React.FC = () => {
   };
 
   const handleGoToAddAch = () => {
-    navigate(paths.userAchievementsRoot)
-  }
+    navigate(paths.userAchievementsRoot);
+  };
 
+  const achievement = useMemo(() => {
+    if (!user || !Number.isFinite(hackathonId)) return undefined;
+    return user.achievements?.find(a => a.hackathonId === hackathonId);
+  }, [user, hackathonId]);
+
+  const handleGoToAch = useCallback(() => {
+    if (!achievement) return;
+    navigate(getUserAchievementPath(achievement.id));
+  }, [achievement, navigate]);
   return (
     <>
       <Page>
         <HackathonCard hackathon={hackathon} variant="full" />
-        {hackathon.status === 'closed' ? (
+        {participatedHack.length > 0 ? (
+          <ButtonsSection>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
+              Подробнее
+            </Button>
+
+            <Button onClick={handleGoToAch} disabled={isUserLoading || !achievement}>
+              К достижению
+            </Button>
+          </ButtonsSection>
+        ) : hackathon.status === 'closed' ? (
           <ButtonsSection>
             <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее

@@ -113,12 +113,12 @@ export const AchievementFormView: FC<Props> = props => {
       </InputSection>
 
       <ButtonsSection>
-        <Button size="l" onClick={onSave} stretched disabled={!canSubmit || isSaving}>
+        <Button onClick={onSave} stretched disabled={!canSubmit || isSaving}>
           {props.mode === 'create' ? 'Добавить' : 'Сохранить'}
         </Button>
 
         {props.mode === 'edit' && (
-          <DeleteButton size="l" onClick={props.onDelete} stretched disabled={props.isDeleting}>
+          <DeleteButton onClick={props.onDelete} stretched disabled={props.isDeleting}>
             Удалить
           </DeleteButton>
         )}
