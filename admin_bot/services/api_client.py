@@ -31,14 +31,18 @@ async def list_hackathons(
     *,
     limit: int = 5,
     offset: int = 0,
-    status: str = "open",
+    status: str = "all",
     q: str | None = None,
+    all_status: bool = False,
 ) -> dict:
     params: dict[str, object] = {
         "limit": limit,
         "offset": offset,
-        "status": status,
     }
+    if all_status:
+        params["all"] = True
+    else:
+        params["status"] = status
     if q:
         params["q"] = q
 

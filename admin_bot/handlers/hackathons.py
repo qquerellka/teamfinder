@@ -211,6 +211,27 @@ def _format_api_error(error: Exception) -> str:
 
 def _list_keyboard(items: list[dict], offset: int, limit: int, status: str) -> InlineKeyboardMarkup:
     rows = []
+    filter_row = []
+    if status == "open":
+        filter_row.append(InlineKeyboardButton(text="✅ Open", callback_data="noop"))
+    else:
+        filter_row.append(
+            InlineKeyboardButton(text="🟢 Open", callback_data="list:open:0")
+        )
+    if status == "closed":
+        filter_row.append(InlineKeyboardButton(text="✅ Closed", callback_data="noop"))
+    else:
+        filter_row.append(
+            InlineKeyboardButton(text="🔴 Closed", callback_data="list:closed:0")
+        )
+    if status == "all":
+        filter_row.append(InlineKeyboardButton(text="✅ All", callback_data="noop"))
+    else:
+        filter_row.append(
+            InlineKeyboardButton(text="⚪ All", callback_data="list:all:0")
+        )
+    if filter_row:
+        rows.append(filter_row)
     for item in items:
         hack_id = item.get("id")
         rows.append(
@@ -290,10 +311,15 @@ async def _send_delete_confirmation(
 
 
 async def _send_hackathon_list(
-    message: Message, *, status: str = "open", offset: int = 0
+    message: Message, *, status: str = "all", offset: int = 0
 ) -> None:
     try:
-        data = await list_hackathons(limit=LIST_PAGE_SIZE, offset=offset, status=status)
+        data = await list_hackathons(
+            limit=LIST_PAGE_SIZE,
+            offset=offset,
+            status=status,
+            all_status=(status == "all"),
+        )
     except Exception as e:
         await message.answer(f"⚠️ {_format_api_error(e)}")
         return
@@ -430,7 +456,7 @@ async def menu_list(callback: CallbackQuery):
         await callback.answer("Нет прав администратора")
         return
     await callback.answer()
-    await _send_hackathon_list(callback.message, status="open", offset=0)
+    await _send_hackathon_list(callback.message, status="all", offset=0)
 
 
 @router.callback_query(F.data == "menu_update")
@@ -481,7 +507,7 @@ async def cmd_list_hackathons(message: Message):
         await message.answer("❌ У тебя нет прав администратора.")
         return
 
-    status = "open"
+    status = "all"
     parts = (message.text or "").split(maxsplit=1)
     if len(parts) > 1:
         candidate = parts[1].strip().lower()
@@ -505,6 +531,11 @@ async def list_pagination(callback: CallbackQuery):
 
     await callback.answer()
     await _send_hackathon_list(callback.message, status=status, offset=offset)
+
+
+@router.callback_query(F.data == "noop")
+async def noop_callback(callback: CallbackQuery):
+    await callback.answer()
 
 
 @router.callback_query(F.data.startswith("view:"))
