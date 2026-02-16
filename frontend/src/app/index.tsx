@@ -74,7 +74,7 @@ async function bootstrapTMA() {
   const initDataRaw: string | undefined =
     lp.initDataRaw ??
     lp.initData ??
-    (window?.Telegram?.WebApp?.initData as string | undefined) ??
+    // (window?.Telegram?.WebApp?.initData as string | undefined) ??
     (a ? decodeURIComponent(a) : undefined);
 
   setInitDataRaw(initDataRaw);
@@ -83,8 +83,8 @@ async function bootstrapTMA() {
 
   await init({
     debug,
-    // eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform || ""),
-    eruda: true,
+    eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform || ""),
+    // eruda: true,
     mockForMacOS: false,
   });
 

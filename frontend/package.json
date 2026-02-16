@@ -22,6 +22,7 @@
     "@telegram-apps/telegram-ui": "^2.1.13",
     "@tma.js/sdk-react": "^3.0.8",
     "@tonconnect/ui-react": "^2.2.0",
+    "axios": "^1.13.5",
     "eruda": "^3.4.3",
     "highlight.js": "^11.11.1",
     "react": "^18.3.1",
