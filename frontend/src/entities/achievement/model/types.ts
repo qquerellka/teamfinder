@@ -1,3 +1,5 @@
+import { Role } from "@/shared/types/enums";
+
 export type AchievementPlace =
   | 'participant'
   | 'finalyst'
@@ -8,7 +10,7 @@ export type AchievementPlace =
 export interface AchievementDTO {
   id: number;
   hackathon_id: number;
-  role: string;
+  role: Role;
   hackathon_name: string;
   place: AchievementPlace;
 }
@@ -16,31 +18,31 @@ export interface AchievementDTO {
 export interface Achievement {
   id: number;
   hackathonId: number;
-  role: string;
+  role: Role;
   hackathonName: string;
   place: AchievementPlace;
 }
 
 export interface AchievementCreateDTO {
   hackathon_id: number;
-  role: string;
+  role: Role;
   place: AchievementPlace;
 }
 
 export interface AchievementCreate {
   hackathonId: number;
-  role: string;
+  role: Role;
   place: AchievementPlace;
 }
 
 export type AchievementPatchDTO = {
   hackathon_id?: number;
-  role?: string;
+  role?: Role;
   place?: AchievementPlace;
 };
 
 export interface AchievementPatch {
-  role?: string;
+  role?: Role;
   place?: AchievementPlace;
   hackathonId?: number;
 }

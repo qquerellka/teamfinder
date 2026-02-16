@@ -4,7 +4,7 @@ import './styles/reset.css';
 
 import ReactDOM from 'react-dom/client';
 import { StrictMode } from 'react';
-import { retrieveLaunchParams } from '@tma.js/sdk-react';
+import { retrieveLaunchParams, retrieveRawInitData } from '@tma.js/sdk-react';
 
 import { init } from '@/app/init';
 import { App } from './App';
@@ -17,13 +17,6 @@ function loadUmamiAnalytics() {
     script.defer = true;
     script.src = 'https://cloud.umami.is/script.js';
     script.setAttribute('data-website-id', 'fd2a58b1-bd8f-4a06-8d93-7ff983757e42');
-
-    if (import.meta.env.DEV) {
-      console.log('Umami script would be loaded in production');
-    } else {
-      document.head.appendChild(script);
-      console.log('Umami analytics loaded');
-    }
   } else {
     console.log('Development mode - Umami analytics disabled');
   }
@@ -31,6 +24,7 @@ function loadUmamiAnalytics() {
 
 const FORCE_BROWSER = import.meta.env.VITE_FORCE_BROWSER === 'true';
 
+// не во всех браузерах поддерживается
 if (import.meta.env.DEV || FORCE_BROWSER) {
   await import('./mocks/mockEnv');
 }
@@ -54,21 +48,17 @@ async function bootstrapBrowser() {
 }
 
 async function bootstrapTMA() {
-  const lp = retrieveLaunchParams() as {
-    initDataRaw?: string;
-    initData?: string;
-    tgWebAppStartParam?: string;
-    tgWebAppPlatform?: string;
-  };
-
+  const lp = retrieveLaunchParams();
+  const initDataRaww = retrieveRawInitData();
+  console.log(initDataRaww);
   const a =
     new URLSearchParams(location.hash.slice(1)).get('tgWebAppData') ||
     new URLSearchParams(location.search).get('tgWebAppData');
 
   const initDataRaw: string | undefined =
-    lp.initDataRaw ??
-    lp.initData ??
-    (a ? decodeURIComponent(a) : undefined);
+    // lp.initDataRaw ??
+    // lp.initData ??
+    a ? decodeURIComponent(a) : undefined;
 
   setInitDataRaw(initDataRaw);
 
@@ -76,7 +66,7 @@ async function bootstrapTMA() {
 
   await init({
     debug,
-    eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform || ""),
+    eruda: debug && ['ios', 'android'].includes(lp.tgWebAppPlatform || ''),
     mockForMacOS: false,
   });
 
