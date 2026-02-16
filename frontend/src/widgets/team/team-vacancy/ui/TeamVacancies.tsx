@@ -32,7 +32,6 @@ export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
           team={team}
           vacancy={v}
           onEditClick={() => setIsEditing(true)}
-          onDeleted={() => console.log('vacancy deleted')}
         />
       ))}
 
