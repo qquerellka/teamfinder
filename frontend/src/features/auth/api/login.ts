@@ -3,19 +3,12 @@ import { AuthResponse, AuthResponseDTO } from '../model/types';
 import { resolveInitDataRaw } from '@/shared/resolveInitDataRaw';
 import { authResponseToCamelCase } from '../lib/dto';
 
-// const AUTH_STORAGE_PREFIX = 'tf:auth_token:';
-
-// function tokenKey(tgUserId: number) {
-//   return `${AUTH_STORAGE_PREFIX}${tgUserId}`;
-// }
-
 function saveAccessToken(token: string) {
   apiClient.defaults.headers.common.Authorization = `Bearer ${token}`;
 }
 
 function saveAuthToStorage(data: AuthResponse) {
   const token = data.accessToken;
-  // localStorage.setItem(tokenKey(tgUserId), token);
   saveAccessToken(token);
 }
 

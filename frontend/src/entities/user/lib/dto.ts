@@ -16,7 +16,7 @@ export function userToCamelCase(dto: UserDTO): User {
     telegramId: dto.telegram_id,
     username: dto.username,
     firstName: dto.first_name,
-    secondName: dto.last_name,
+    lastName: dto.last_name,
     avatarUrl: dto.avatar_url,
     bio: dto.bio ?? null,
     city: dto.city ?? null,

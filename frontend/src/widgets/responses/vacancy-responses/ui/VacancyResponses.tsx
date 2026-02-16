@@ -39,7 +39,7 @@ export const VacancyResponses: FC = () => {
             />
           }
           firstName={i.user.firstName}
-          secondName={i.user.lastName}
+          lastName={i.user.lastName}
           username={i.user.username}
           skills={i.skills}
           role={i.role}

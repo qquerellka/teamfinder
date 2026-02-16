@@ -8,7 +8,7 @@ import {
   getAuthUserApplicationOnHackathon,
   getAuthUserApplications,
   getHackathonApplications,
-} from './aplications';
+} from './applications';
 import {
   Application,
   ApplicationCreate,

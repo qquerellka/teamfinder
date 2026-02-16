@@ -4,7 +4,7 @@ import { useMemo, type FC } from 'react';
 
 import type { Hackathon } from '@/entities/hackathon';
 import type { Application } from '@/entities/application';
-import { formatRegistrationDate } from '@/shared/helpers/date';
+import { formatRegistrationDate } from '@/shared/helpers/formatters/date';
 import { RoleBadge, SIcon } from '@/shared/ui';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 import { useDeleteApplication } from '@/features/application/delete';
@@ -13,7 +13,7 @@ interface MyApplicationCardProps {
   hackathon: Hackathon;
   application: Application;
   onEditClick?: () => void;
-  onDeleted?: () => void; // важно
+  onDeleted?: () => void;
 }
 
 export const MyApplicationCard: FC<MyApplicationCardProps> = ({
@@ -31,7 +31,7 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
   } = useDeleteApplication({
     hackathonId: hackathon.id,
     applicationId: application.id,
-    onDone: onDeleted, // единый стиль
+    onDone: onDeleted,
   });
   const skillsString = useMemo(() => {
     const skills = application.skills?.slice(0, 4) ?? [];
@@ -115,8 +115,3 @@ const Icons = styled.div`
   flex-direction: row;
   gap: 0.5rem;
 `;
-
-// const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
-//   padding: 0;
-//   min-width: auto;
-// `;

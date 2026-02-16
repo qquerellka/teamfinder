@@ -45,10 +45,10 @@ export const AchievementFormView: FC<Props> = props => {
         return (raw ? Number(raw) : null) as AchievementFormValues[K];
 
       case 'role':
-        return raw as AchievementFormValues[K]; // Role | ""
+        return raw as AchievementFormValues[K];
 
       case 'place':
-        return raw as AchievementFormValues[K]; // AchievementPlace | ""
+        return raw as AchievementFormValues[K];
 
       default: {
         const _exhaustive: never = field;

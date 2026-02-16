@@ -106,7 +106,7 @@ export const StartParamJoinHandler = () => {
       >
         <Placeholder
           description="У вас уже есть команда на этот хакатон"
-          header="Не получиться присоединиться"
+          header="Не получится присоединиться"
         >
           <img
             alt="Telegram sticker"

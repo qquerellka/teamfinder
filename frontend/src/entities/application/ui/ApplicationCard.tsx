@@ -2,7 +2,7 @@ import { IconButton, Text, Subheadline } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import styled from 'styled-components';
 
-import { formatRegistrationDate } from '@/shared/helpers/date';
+import { formatRegistrationDate } from '@/shared/helpers/formatters/date';
 import { Role } from '@/shared/types/enums';
 import { RoleBadge, SIcon, InvitesBadge } from '@/shared/ui';
 

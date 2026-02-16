@@ -35,7 +35,7 @@ export const queryKeys = {
     byHackathon: (hackathonId: number) => ['teams', 'hackathon', hackathonId] as const,
     me: ['teams', 'me'] as const,
     meByHackathon: (hackathonId: number) => ['teams', 'me', 'hackathon', hackathonId] as const,
-    byId: (id?: number) => ['teams', 'detail', id] as const, // Добавляем 'detail' для ясности
+    byId: (id?: number) => ['teams', 'detail', id] as const,
     members: (teamId: number) => ['teams', teamId, 'members'] as const,
   },
   vacancies: {
@@ -45,7 +45,7 @@ export const queryKeys = {
     byId: (id: number) => ['vacancies', id] as const,
   },
   responses: {
-    all: ['responses'] as const, // /me/responses
+    all: ['responses'] as const,
     byTeam: (teamId: number) => ['responses', 'team', teamId] as const,
     byVacancy: (vacancyId: number) => ['responses', 'vacancy', vacancyId] as const,
     me: ['responses', 'me'] as const,

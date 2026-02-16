@@ -38,9 +38,6 @@ export function useAddTeamMember(teamId: number) {
   });
 }
 
-// Обновить участника (его роль / капитанство)
-// здесь предполагается, что на бэке PATCH /teams/{id}/members
-// меняет "текущего" участника или того, кто зашит в payload
 export function useEditTeamMember(teamId: number) {
   const queryClient = useQueryClient();
 

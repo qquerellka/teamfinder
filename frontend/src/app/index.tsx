@@ -12,14 +12,12 @@ import { EnvUnsupported } from '@/app/EnvUnsupported';
 import { setInitDataRaw } from '@/shared/initDataStore';
 
 function loadUmamiAnalytics() {
-  // Подключаем только в production режиме
   if (import.meta.env.PROD) {
     const script = document.createElement('script');
     script.defer = true;
     script.src = 'https://cloud.umami.is/script.js';
     script.setAttribute('data-website-id', 'fd2a58b1-bd8f-4a06-8d93-7ff983757e42');
 
-    // Можно добавить дополнительные атрибуты для отладки
     if (import.meta.env.DEV) {
       console.log('Umami script would be loaded in production');
     } else {
@@ -39,8 +37,6 @@ if (import.meta.env.DEV || FORCE_BROWSER) {
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
-// ---------- БРАУЗЕР (dev) ----------
-
 async function bootstrapBrowser() {
   const debug = true;
 
@@ -57,8 +53,6 @@ async function bootstrapBrowser() {
   );
 }
 
-// ---------- TMA (prod) ----------
-
 async function bootstrapTMA() {
   const lp = retrieveLaunchParams() as {
     initDataRaw?: string;
@@ -74,7 +68,6 @@ async function bootstrapTMA() {
   const initDataRaw: string | undefined =
     lp.initDataRaw ??
     lp.initData ??
-    // (window?.Telegram?.WebApp?.initData as string | undefined) ??
     (a ? decodeURIComponent(a) : undefined);
 
   setInitDataRaw(initDataRaw);
@@ -84,7 +77,6 @@ async function bootstrapTMA() {
   await init({
     debug,
     eruda: debug && ["ios", "android"].includes(lp.tgWebAppPlatform || ""),
-    // eruda: true,
     mockForMacOS: false,
   });
 
@@ -94,8 +86,6 @@ async function bootstrapTMA() {
     </StrictMode>,
   );
 }
-
-// ---------- ЕДИНАЯ ТОЧКА ВХОДА ----------
 
 (async () => {
   try {

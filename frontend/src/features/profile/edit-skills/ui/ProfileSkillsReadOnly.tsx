@@ -14,11 +14,8 @@ export const ProfileSkillsReadonly = ({ skills }: { skills: Skill[] }) => {
 
   const baseOptions = useMemo(() => toOptions(allSkills), [allSkills]);
 
-  // выбранные навыки профиля, который смотрим
   const selectedFallback = useMemo(() => toOptions(skills ?? []), [skills]);
 
-  // важно: чтобы Multiselect точно мог показать выбранные элементы,
-  // добавим выбранные в options (если их нет в allSkills)
   const options = useMemo(() => {
     const map = new Map<string, Option>();
     for (const o of baseOptions) map.set(String(o.value), o);

@@ -6,7 +6,7 @@ export interface User {
   telegramId: number;
   username: string;
   firstName: string;
-  secondName: string;
+  lastName: string;
   avatarUrl: string;
   bio?: string | null;
   city?: string | null;

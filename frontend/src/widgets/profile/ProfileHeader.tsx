@@ -20,7 +20,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
           {user.firstName}
         </Title>
         <Title plain={true} weight="2">
-          {user.secondName}
+          {user.lastName}
         </Title>
         {showLink && (
           <UsernameLink

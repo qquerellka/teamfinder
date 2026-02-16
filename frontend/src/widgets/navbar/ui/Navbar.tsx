@@ -51,7 +51,6 @@ export const Navbar: FC = () => {
             {matchPath({ path, end: false }, pathname) ? (
               <SIcon active={true} name={icon} size={28} />
             ) : (
-              // <StyledSIcon name={icon} size={28} />
               <SIcon name={icon} size={28} />
             )}
           </NavLink>
@@ -83,9 +82,3 @@ const SItem = styled(Tabbar.Item)`
     margin: 0;
   }
 `;
-
-// Свечение иконки, убрали, так в светлой теме выглядит ужасно
-// const StyledSIcon = styled(SIcon)`
-//   display: inline-block;
-//   filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
-// `;

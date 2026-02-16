@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import { FixedLayout } from '@telegram-apps/telegram-ui';
-import { Navbar } from '@/widgets/Navbar';
+import { Navbar } from '@/widgets/navbar/ui/Navbar';
 import BackButtonController from './BackButtonController';
 
 export default function RootLayout() {

@@ -6,8 +6,7 @@ import type { Hackathon } from '@/entities/hackathon';
 import {
   formatDateRange,
   formatRegistrationDate,
-  getTeamMembersRange,
-} from '@/shared/helpers/date';
+} from '@/shared/helpers/formatters/date';
 import { ImageWithSkeleton, SIcon, IconName } from '@/shared/ui';
 import { EHackathonMode } from '@/shared/types/enums';
 
@@ -18,6 +17,10 @@ interface HackathonCardProps {
   variant?: HackathonCardVariant;
   showShareButton?: boolean;
   onShareClick?: () => void;
+}
+
+export function getTeamMembersRange(teamMembersLimit: number, teamMembersMinimum: number): string {
+  return `${teamMembersMinimum} - ${teamMembersLimit} участников`;
 }
 
 export const HackathonCard: FC<HackathonCardProps> = ({
@@ -75,9 +78,9 @@ export const HackathonCard: FC<HackathonCardProps> = ({
           {visibleParams.map(({ icon, text }, index) => (
             <HackathonParam key={`${index}-${text}`}>
               <SIcon name={icon} size={16} />
-              <SubTitlee level="2" weight="3">
+              <StyledSubTitle level="2" weight="3">
                 {text}
-              </SubTitlee>
+              </StyledSubTitle>
             </HackathonParam>
           ))}
         </HackathonParams>
@@ -106,7 +109,6 @@ const HackathonCardContainer = styled(Card)`
 const HackathonImage = styled.div`
   position: relative;
   overflow: hidden;
-  border-radius: 0rem;
 `;
 
 const HackathonInfo = styled.div`
@@ -130,7 +132,7 @@ const HackathonParam = styled.div`
   align-items: center;
 `;
 
-const SubTitlee = styled(Title)`
+const StyledSubTitle = styled(Title)`
   color: var(--tg-theme-hint-color, #8e8e93);
   font-size: 1rem;
   line-height: normal;

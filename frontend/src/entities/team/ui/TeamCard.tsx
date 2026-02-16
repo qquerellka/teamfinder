@@ -85,7 +85,9 @@ interface InvitesBadgeProps {
   count: number;
 }
 export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
-  return <Badge>{count} хотят вступить</Badge>;
+    const verb = count === 1 ? "хочет" : "хотят";
+
+  return <Badge>{count} {verb} вступить</Badge>;
 };
 
 const Badge = styled(Text)`

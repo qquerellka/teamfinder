@@ -20,11 +20,7 @@ export const VacancyCard: FC<VacancyCardProps> = ({
   responsed,
   vacancy,
 }) => {
-  //   const skillsString = useMemo(() => {
-  //     const skills = application.skills?.slice(0, 4) ?? [];
-  //     return skills.map((s) => s.name).join(", ");
-  //   }, [application.skills]);
-
+  
   return (
     <Wrapper onClick={onNavigate}>
       <FirstRow>

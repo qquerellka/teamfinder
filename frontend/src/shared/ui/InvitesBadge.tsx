@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { Text } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
+import { pluralizeInvites } from '../helpers/formatters/pluralize';
 
 interface InvitesBadgeProps {
   count: number;
 }
 export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
-  return <Badge>{count} приглашений в команды</Badge>;
+  return <Badge>{count} {pluralizeInvites(count, "приглашение", "приглашения", "приглашений")} в команды</Badge>;
 };
 
 const Badge = styled(Text)`

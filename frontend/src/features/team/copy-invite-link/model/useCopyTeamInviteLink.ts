@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { getTeamJoinLink } from '@/entities/team';
 
 async function copyToClipboard(text: string): Promise<boolean> {
-  // 1) modern API
   try {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text);
@@ -12,7 +11,6 @@ async function copyToClipboard(text: string): Promise<boolean> {
     console.error(error);
   }
 
-  // 2) iOS fallback
   try {
     const ta = document.createElement('textarea');
     ta.value = text;
@@ -25,7 +23,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
     document.body.appendChild(ta);
     ta.focus();
     ta.select();
-    ta.setSelectionRange(0, ta.value.length); // важно для iOS
+    ta.setSelectionRange(0, ta.value.length);
 
     const ok = document.execCommand('copy');
     document.body.removeChild(ta);
@@ -62,13 +60,12 @@ export function useCopyTeamInviteLink(teamId: number) {
   }, [teamId]);
 
   const copy = async () => {
-    if (!url) return; // кнопку лучше disabled пока url нет
+    if (!url) return;
 
     setIsCopying(true);
     try {
       const ok = await copyToClipboard(url);
       if (!ok) {
-        // тут можно открыть модалку с ссылкой для ручного копирования
         return;
       }
 
@@ -85,6 +82,6 @@ export function useCopyTeamInviteLink(teamId: number) {
     copied,
     isCopying: isCopying || isLoadingUrl,
     isReady: Boolean(url),
-    url, // пригодится для fallback UI
+    url
   };
 }

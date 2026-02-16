@@ -7,7 +7,7 @@ import { Subheadline, Text } from '@telegram-apps/telegram-ui';
 
 interface ResponseCardViewProps {
   firstName: string;
-  secondName: string;
+  lastName: string;
   username: string;
   skills: Skill[];
   role: Role;
@@ -17,7 +17,7 @@ interface ResponseCardViewProps {
 
 export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   firstName,
-  secondName,
+  lastName,
   skills,
   actions,
   role,
@@ -32,7 +32,7 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
     <ResponseCardContainer onClick={onNavigate}>
       <FirstRow>
         <Text weight="1">
-          {firstName} {secondName}
+          {firstName} {lastName}
         </Text>
         {actions}
       </FirstRow>

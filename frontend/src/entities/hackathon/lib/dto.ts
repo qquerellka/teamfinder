@@ -1,4 +1,4 @@
-import { parseDate } from '@/shared/helpers/date';
+import { parseDate } from '@/shared/helpers/formatters/date';
 import { Hackathon, HackathonDTO } from '../model/types';
 
 export function hackathonsToCamelCase(hackathons: HackathonDTO[]): Hackathon[] {
