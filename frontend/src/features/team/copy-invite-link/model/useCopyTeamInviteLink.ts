@@ -82,6 +82,6 @@ export function useCopyTeamInviteLink(teamId: number) {
     copied,
     isCopying: isCopying || isLoadingUrl,
     isReady: Boolean(url),
-    url
+    url,
   };
 }

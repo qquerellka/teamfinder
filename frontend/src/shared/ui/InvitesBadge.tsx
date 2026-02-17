@@ -7,7 +7,11 @@ interface InvitesBadgeProps {
   count: number;
 }
 export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
-  return <Badge>{count} {pluralizeInvites(count, "приглашение", "приглашения", "приглашений")} в команды</Badge>;
+  return (
+    <Badge>
+      {count} {pluralizeInvites(count, 'приглашение', 'приглашения', 'приглашений')} в команды
+    </Badge>
+  );
 };
 
 const Badge = styled(Text)`

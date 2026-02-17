@@ -77,7 +77,7 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
 
           {isCaptain && team.members.length < team.teamMembersLimit && (
             <Button
-              onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
+              onClick={() => navigate(getFindTeamMembersPath(team.id))}
               stretched
               disabled={isCopying || team.members.length >= team.teamMembersLimit}
             >

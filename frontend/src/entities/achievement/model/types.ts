@@ -1,4 +1,4 @@
-import { Role } from "@/shared/types/enums";
+import { Role } from '@/shared/types/enums';
 
 export type AchievementPlace =
   | 'participant'

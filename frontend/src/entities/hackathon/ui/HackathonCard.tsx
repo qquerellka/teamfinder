@@ -3,10 +3,7 @@ import styled from 'styled-components';
 import { Card, InlineButtons, Title } from '@telegram-apps/telegram-ui';
 
 import type { Hackathon } from '@/entities/hackathon';
-import {
-  formatDateRange,
-  formatRegistrationDate,
-} from '@/shared/helpers/formatters/date';
+import { formatDateRange, formatRegistrationDate } from '@/shared/helpers/formatters/date';
 import { ImageWithSkeleton, SIcon, IconName } from '@/shared/ui';
 import { EHackathonMode } from '@/shared/types/enums';
 

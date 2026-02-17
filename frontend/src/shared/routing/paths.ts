@@ -20,7 +20,7 @@ export const paths = {
   findNewTeamMembers: `/teams/:id/find`,
 } as const;
 
-export const getHackathonPath = (id: string) => paths.hackathon.replace(':id', String(id));
+export const getHackathonPath = (id: number) => paths.hackathon.replace(':id', String(id));
 
 export const getTeamPath = (id: number) => paths.team.replace(':id', String(id));
 
@@ -29,7 +29,7 @@ export const getHackathonParticipationPath = (id: number) =>
 
 export const getHackathonTeamPath = (id: number) => paths.hackathonTeam.replace(':id', String(id));
 
-export const getFindTeamMembersPath = (id: string) =>
+export const getFindTeamMembersPath = (id: number) =>
   paths.findNewTeamMembers.replace(':id', String(id));
 
 export const getUserPath = (id: number) => {
@@ -39,6 +39,5 @@ export const getUserPath = (id: number) => {
 export const getHackathonCreateTeamPath = (id: number) =>
   paths.hackathonCreateTeam.replace(':id', String(id));
 
-export const getUserAchievementPath = (id: number) => 
+export const getUserAchievementPath = (id: number) =>
   paths.userAchievement.replace(':id', String(id));
-;

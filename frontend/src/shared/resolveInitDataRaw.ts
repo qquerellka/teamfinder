@@ -17,7 +17,6 @@ export function resolveInitDataRaw(): string | undefined {
   }
 
   if (typeof window !== 'undefined') {
-
     const hash = new URLSearchParams(window.location.hash.slice(1));
     const search = new URLSearchParams(window.location.search);
     const viaParam = hash.get('tgWebAppData') ?? search.get('tgWebAppData');

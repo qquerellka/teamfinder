@@ -50,15 +50,6 @@ async function bootstrapBrowser() {
 async function bootstrapTMA() {
   const lp = retrieveLaunchParams();
   const initDataRaw = retrieveRawInitData();
-  // const a =
-  //   new URLSearchParams(location.hash.slice(1)).get('tgWebAppData') ||
-  //   new URLSearchParams(location.search).get('tgWebAppData');
-
-  // const initDataRaw: string | undefined =
-  //   // lp.initDataRaw ??
-  //   // lp.initData ??
-  //   a ? decodeURIComponent(a) : undefined;
-
   setInitDataRaw(initDataRaw);
 
   const debug = (lp.tgWebAppStartParam || '').includes('debug') || import.meta.env.DEV;

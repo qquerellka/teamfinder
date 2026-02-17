@@ -76,7 +76,7 @@ export const HackathonList: FC = () => {
           <>
             <Grid>
               {items.map(h => (
-                <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
+                <CardLink key={h.id} to={getHackathonPath(h.id)}>
                   <HackathonCard hackathon={h} />
                 </CardLink>
               ))}

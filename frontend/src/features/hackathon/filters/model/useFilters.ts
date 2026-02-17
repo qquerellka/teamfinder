@@ -7,7 +7,11 @@ export interface UseFiltersProps {
   initialStatus?: HackathonStatus | '';
 }
 
-export const useFilters = ({ initialMode = '', initialMoney = null, initialStatus = 'open' }: UseFiltersProps = {}) => {
+export const useFilters = ({
+  initialMode = '',
+  initialMoney = null,
+  initialStatus = 'open',
+}: UseFiltersProps = {}) => {
   const [mode, setMode] = useState<HackathonMode | ''>(initialMode);
   const [appliedMode, setAppliedMode] = useState<HackathonMode | ''>(initialMode);
   const [money, setMoney] = useState<boolean | null>(initialMoney);
@@ -47,7 +51,7 @@ export const useFilters = ({ initialMode = '', initialMoney = null, initialStatu
     appliedMode,
     money,
     appliedMoney,
-    status, 
+    status,
     appliedStatus,
     isModalOpen,
 

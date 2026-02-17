@@ -27,12 +27,7 @@ export const TeamVacancies: FC<{ team: TeamWithMembers }> = ({ team }) => {
   return (
     <Wrapper>
       {vacancies.map(v => (
-        <VacancyCard
-          key={v.id}
-          team={team}
-          vacancy={v}
-          onEditClick={() => setIsEditing(true)}
-        />
+        <VacancyCard key={v.id} team={team} vacancy={v} onEditClick={() => setIsEditing(true)} />
       ))}
 
       <VacancyResponses />

@@ -85,7 +85,11 @@ export const FilterModal: FC<FilterModalProps> = ({
           <Text>{'Статус'}</Text>
           {STATUS_OPTIONS.map(({ value, label }) => (
             <RatioContainer key={`status-${value}`}>
-              <Radio name="status" checked={status === value} onChange={() => onStatusChange(value)} />
+              <Radio
+                name="status"
+                checked={status === value}
+                onChange={() => onStatusChange(value)}
+              />
               <Text>{label}</Text>
             </RatioContainer>
           ))}

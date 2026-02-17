@@ -20,7 +20,6 @@ export const VacancyCard: FC<VacancyCardProps> = ({
   responsed,
   vacancy,
 }) => {
-  
   return (
     <Wrapper onClick={onNavigate}>
       <FirstRow>
