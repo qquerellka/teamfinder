@@ -1,6 +1,5 @@
 import { FC } from 'react';
-import { Modal, Button, List } from '@telegram-apps/telegram-ui';
-import { SText } from './SText';
+import { Modal, Button, List, Text } from '@telegram-apps/telegram-ui';
 
 export interface ConfirmModalProps {
   open: boolean;
@@ -41,7 +40,7 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
           gap: 0,
         }}
       >
-        <SText>{title}</SText>
+        <Text>{title}</Text>
         <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
           <Button mode="bezeled" type="button" stretched disabled={loading} onClick={onCancel}>
             {cancelText}

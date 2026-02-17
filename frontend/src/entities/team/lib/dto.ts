@@ -23,6 +23,7 @@ export function teamsToCamelCase(teamsDTO: TeamDTO[]): Team[] {
     status: t.status,
   }));
 }
+
 export function editTeamToDTO(team: EditTeam): EditTeamDTO {
   return {
     name: team.name,
@@ -30,6 +31,7 @@ export function editTeamToDTO(team: EditTeam): EditTeamDTO {
     status: team.status,
   };
 }
+
 export function teamsResponseToCamelCase(response: TeamsDTOResponse): TeamsResponse {
   return {
     offset: response.offset,
@@ -37,6 +39,7 @@ export function teamsResponseToCamelCase(response: TeamsDTOResponse): TeamsRespo
     items: teamsToCamelCase(response.items),
   };
 }
+
 export function createTeamToDTO(payload: CreateTeam): CreateTeamDTO {
   return {
     role: payload.role,

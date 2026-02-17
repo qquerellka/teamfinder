@@ -1,3 +1,5 @@
+import { Role } from '@/shared/types/enums';
+
 export type AchievementPlace =
   | 'participant'
   | 'finalyst'
@@ -5,62 +7,50 @@ export type AchievementPlace =
   | 'secondPlace'
   | 'firstPlace';
 
-export interface Achievement {
-  id: number;
-  hackathonId: number;
-  role: string;
-  hackathonName: string;
-  place: AchievementPlace;
-}
-
-export interface AchievementsList {
-  offset: number;
-  limit: number;
-  items: Achievement[];
-}
-
 export interface AchievementDTO {
   id: number;
   hackathon_id: number;
-  role: string;
+  role: Role;
   hackathon_name: string;
   place: AchievementPlace;
 }
 
-export interface AchievementsResponseDTO {
-  offset: number;
-  limit: number;
-  total: number;
-  items: AchievementDTO[];
+export interface Achievement {
+  id: number;
+  hackathonId: number;
+  role: Role;
+  hackathonName: string;
+  place: AchievementPlace;
 }
 
-export type AchievementCreate = {
-  hackathonId: number;
-  role: string;
-  place: AchievementPlace;
-};
-
-export type AchievementCreateDTO = {
+export interface AchievementCreateDTO {
   hackathon_id: number;
-  role: string;
+  role: Role;
   place: AchievementPlace;
+}
+
+export interface AchievementCreate {
+  hackathonId: number;
+  role: Role;
+  place: AchievementPlace;
+}
+
+export type AchievementPatchDTO = {
+  hackathon_id?: number;
+  role?: Role;
+  place?: AchievementPlace;
 };
 
 export interface AchievementPatch {
-  role?: string;
+  role?: Role;
   place?: AchievementPlace;
   hackathonId?: number;
 }
-export type AchievementPatchDTO = {
-  hackathon_id?: number;
-  role?: string;
-  place?: AchievementPlace;
-};
 
-export type EditAchievementArgs = {
+export interface EditAchievementArgs {
   id: number;
   patch: AchievementPatch;
-};
+}
 
 export const placeOptions: { label: string; value: AchievementPlace }[] = [
   { label: '1 место', value: 'firstPlace' },

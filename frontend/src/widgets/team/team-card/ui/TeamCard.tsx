@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { Button, Input, Textarea } from '@telegram-apps/telegram-ui';
+import { Button, Input, Textarea, Text } from '@telegram-apps/telegram-ui';
 import { useNavigate } from 'react-router-dom';
 
 import type { TeamWithMembers } from '@/entities/team';
 import { useAuthUser } from '@/entities/user';
 
-import { InputSection, SIcon, SText } from '@/shared/ui';
+import { InputSection, SIcon, ButtonsSection } from '@/shared/ui';
 import { getFindTeamMembersPath } from '@/shared/routing/paths';
 
 import { useCopyTeamInviteLink } from '@/features/team/copy-invite-link';
@@ -32,15 +32,13 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
   return (
     <Root>
       <Header>
-        <div />
-        <SText $fs={14} $fw={500}>
-          {isMember ? 'Моя команда' : 'Команда'}
-        </SText>
+        <div style={{ width: 24 }} />
+        <Text weight="2">{isMember ? 'Моя команда' : 'Команда'}</Text>
 
         {isCaptain ? (
-          <SIcon onClick={onEditClick} name="edit" />
+          <SIcon onClick={onEditClick} name="edit" size={24} />
         ) : isMember ? (
-          <SIcon onClick={leave} name="leaveTeam"/>
+          <SIcon onClick={leave} name="leaveTeam" size={24} />
         ) : (
           <div />
         )}
@@ -65,29 +63,28 @@ export const TeamCard: FC<TeamCardProps> = ({ team, onEditClick, onExit }) => {
         canRemoveMembers={isCaptain}
       />
       {isMember && (
-        <Buttons>
-          {isCaptain && (
-            <SButton mode="bezeled" onClick={copy} stretched disabled={isCopying}>
+        <ButtonsSection>
+          {isCaptain && team.members.length < team.teamMembersLimit && (
+            <Button
+              mode="white"
+              onClick={copy}
+              stretched
+              disabled={isCopying || team.members.length >= team.teamMembersLimit}
+            >
               {copied ? 'Ссылка скопирована' : 'Пригласить по ссылке'}
-            </SButton>
+            </Button>
           )}
 
-          {isCaptain && (
-            <SButton
-              onClick={() => navigate(getFindTeamMembersPath(String(team.id)))}
+          {isCaptain && team.members.length < team.teamMembersLimit && (
+            <Button
+              onClick={() => navigate(getFindTeamMembersPath(team.id))}
               stretched
-              disabled={isCopying}
+              disabled={isCopying || team.members.length >= team.teamMembersLimit}
             >
               Найти участников
-            </SButton>
+            </Button>
           )}
-
-          {/* {!isCaptain && (
-            <SButton mode="bezeled" onClick={leave} stretched disabled={isLeaving}>
-              Покинуть команду
-            </SButton>
-          )} */}
-        </Buttons>
+        </ButtonsSection>
       )}
     </Root>
   );
@@ -106,16 +103,4 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-const Buttons = styled.div`
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const SButton = styled(Button)`
-  width: 100%;
 `;

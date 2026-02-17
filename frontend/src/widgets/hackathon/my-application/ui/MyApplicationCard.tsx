@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { Button } from '@telegram-apps/telegram-ui';
+import { IconButton, Subheadline, Text } from '@telegram-apps/telegram-ui';
 import { useMemo, type FC } from 'react';
 
 import type { Hackathon } from '@/entities/hackathon';
 import type { Application } from '@/entities/application';
-import { formatRegistrationDate } from '@/shared/helpers/date';
-import { RoleBadge, SIcon, SText } from '@/shared/ui';
+import { formatRegistrationDate } from '@/shared/helpers/formatters/date';
+import { RoleBadge, SIcon } from '@/shared/ui';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 import { useDeleteApplication } from '@/features/application/delete';
 
@@ -13,7 +13,7 @@ interface MyApplicationCardProps {
   hackathon: Hackathon;
   application: Application;
   onEditClick?: () => void;
-  onDeleted?: () => void; // важно
+  onDeleted?: () => void;
 }
 
 export const MyApplicationCard: FC<MyApplicationCardProps> = ({
@@ -31,7 +31,7 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
   } = useDeleteApplication({
     hackathonId: hackathon.id,
     applicationId: application.id,
-    onDone: onDeleted, // единый стиль
+    onDone: onDeleted,
   });
   const skillsString = useMemo(() => {
     const skills = application.skills?.slice(0, 4) ?? [];
@@ -41,30 +41,28 @@ export const MyApplicationCard: FC<MyApplicationCardProps> = ({
     <>
       <Wrapper>
         <Header>
-          <SText $fs={16} $fw={600}>
-            {hackathon.name}
-          </SText>
+          <Text weight="2">{hackathon.name}</Text>
 
           <Icons>
-            <IconButton type="button" onClick={onEditClick}>
-              <SIcon name="edit" />
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
+              <SIcon name="edit" size={24} />
             </IconButton>
-            <IconButton type="button" onClick={openDeleteModal}>
-              <SIcon name="delete" />
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={openDeleteModal}>
+              <SIcon name="delete" size={24} />
             </IconButton>
           </Icons>
         </Header>
         <Info>
           <InfoItem>
             <SIcon name="hackathonRegistration" />
-            <SText $fs={14} $fw={500}>
+            <Subheadline plain={true} level="2" weight="3">
               {formatRegistrationDate(hackathon.registrationEndDate)}
-            </SText>
+            </Subheadline>
           </InfoItem>
           <InfoItem>
-            <SText $fs={14} $fw={500}>
+            <Subheadline plain={true} level="2" weight="3">
               {skillsString}
-            </SText>
+            </Subheadline>
           </InfoItem>
         </Info>
 
@@ -115,10 +113,5 @@ const Header = styled.div`
 const Icons = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 1rem;
-`;
-
-const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
-  padding: 0;
-  min-width: auto;
+  gap: 0.5rem;
 `;

@@ -5,10 +5,10 @@ from typing import Optional, List
 from sqlalchemy import select, func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from persistend.enums import InviteStatus, RoleType
-from persistend.models.invite import Invite
-from persistend.models.application import Application
-from persistend.models.team import Team
+from persistent.enums import InviteStatus, RoleType
+from persistent.models.invite import Invite
+from persistent.models.application import Application
+from persistent.models.team import Team
 
 from infrastructure.db import get_sessionmaker
 async_session_maker = get_sessionmaker()
@@ -145,3 +145,31 @@ class InvitesRepo:
                 stmt = stmt.where(Invite.status == status)
             res = await session.execute(stmt)
             return int(res.scalar_one())
+        
+    async def expire_all_pending_for_application(
+        self,
+        application_id: int,
+        except_invite_id: Optional[int] = None,
+    ) -> int:
+        """
+        Обновляет статус всех pending-инвайтов для анкеты на expired.
+        Можно исключить один инвайт (например, принятый).
+        Возвращает количество обновленных инвайтов.
+        """
+        async with async_session_maker() as session:
+            stmt = (
+                update(Invite)
+                .where(Invite.application_id == application_id)
+                .where(Invite.status == InviteStatus.pending)
+            )
+            
+            if except_invite_id is not None:
+                stmt = stmt.where(Invite.id != except_invite_id)
+            
+            stmt = stmt.values(status=InviteStatus.expired)
+            
+            result = await session.execute(stmt)
+            await session.commit()
+            return result.rowcount
+
+invites_repo = InvitesRepo()

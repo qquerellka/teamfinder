@@ -1,17 +1,3 @@
-export const roleOptions: { label: string; value: Role }[] = [
-  { label: 'Backend', value: 'Backend' },
-  { label: 'Frontend', value: 'Frontend' },
-  { label: 'Fullstack', value: 'Fullstack' },
-  { label: 'ML', value: 'ML' },
-  { label: 'Manager', value: 'Manager' },
-  { label: 'Designer', value: 'Designer' },
-  { label: 'DevOps', value: 'DevOps' },
-  { label: 'GameDev', value: 'GameDev' },
-  { label: 'MobileDev', value: 'MobileDev' },
-  { label: 'Analytics', value: 'Analytics' },
-  { label: 'QA', value: 'QA' },
-];
-
 export const ROLES = [
   'DevOps',
   'GameDev',
@@ -28,6 +14,27 @@ export const ROLES = [
 ] as const;
 
 export type Role = (typeof ROLES)[number];
+
+export const ROLE_LABELS = {
+  Backend: 'Backend',
+  Frontend: 'Frontend',
+  Fullstack: 'Fullstack',
+  ML: 'ML',
+  Manager: 'Manager',
+  Designer: 'Designer',
+  DevOps: 'DevOps',
+  GameDev: 'GameDev',
+  MobileDev: 'MobileDev',
+  Analytics: 'Analytics',
+  QA: 'QA',
+  DS: 'DS',
+} as const satisfies Record<Role, string>;
+
+export const roleOptions = ROLES.map(role => ({
+  value: role,
+  label: ROLE_LABELS[role],
+})) satisfies ReadonlyArray<{ label: string; value: Role }>;
+
 export type HackathonMode = 'online' | 'offline' | 'hybrid';
 export type HackathonStatus = 'open' | 'closed';
 

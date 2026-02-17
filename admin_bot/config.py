@@ -30,7 +30,7 @@ def _parse_admin_ids(raw: str | None) -> List[int]:
 
 settings = Settings(
     bot_token=os.environ.get("ADMIN_BOT_TOKEN", ""),
-    api_url=os.environ.get("API_URL", "http://api:8000"),
+    api_url=os.environ.get("API_URL", "https://teamfinder/tech/"),
     api_token=os.environ.get("ADMIN_API_TOKEN", ""),
     admin_ids=_parse_admin_ids(os.environ.get("ADMIN_TELEGRAM_IDS")),
 )

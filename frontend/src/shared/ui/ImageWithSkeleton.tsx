@@ -44,13 +44,12 @@ const Img = styled.img<{ $visible: boolean }>`
   width: 100%;
   height: 100%;
   object-fit: cover;
-
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transition: opacity 0.2s ease-in-out;
 `;
 
 const SkeletonOverlay = styled(Skeleton)`
-  position: absolute !important;
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;

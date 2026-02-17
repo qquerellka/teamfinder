@@ -35,3 +35,9 @@ export interface CreateVacancy {
   role: Role;
   description: string;
 }
+
+export interface VacanciesResponseDTO {
+  items: VacancyDTO[];
+  offset: number;
+  limit: number;
+}

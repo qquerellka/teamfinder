@@ -1,6 +1,7 @@
-export const normalizeUrl = (raw?: string | null): string | undefined => {
-  if (!raw) return undefined;
-  const trimmed = raw.trim();
-  if (!trimmed) return undefined;
-  return trimmed;
+export const normalizeUrl = (urlString?: string | null): string | null => {
+  if (!urlString) return null;
+  if (urlString.startsWith('http://') || urlString.startsWith('https://')) {
+    return urlString;
+  }
+  return `https://${urlString}`;
 };

@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Optional, List
 
 from fastapi import UploadFile
 
 from repositories.hackathons import HackathonsRepo
-from persistend.models import hackathon as m_hack
+from persistent.models import hackathon as m_hack
+from persistent.enums import HackathonMode, HackathonTrack, HackathonStatus, HackathonsStatusFilter
 from infrastructure.telegram_files import download_telegram_file
 from infrastructure.s3_client import (
     upload_hackathon_image_to_s3,
@@ -55,6 +56,30 @@ class HackathonsService:
             return datetime.strptime(value, "%d.%m.%Y")
         except ValueError as exc:
             raise ValueError(f"invalid_date_format:{field_name}") from exc
+        
+    @staticmethod
+    def _normalize_tracks(value: Any) -> list[HackathonTrack]:
+        """
+        Принимает None | list[str] | list[HackathonTrack]
+        Возвращает list[HackathonTrack] без дублей (с сохранением порядка).
+        """
+        if value is None:
+            return []
+
+        if not isinstance(value, list):
+            raise ValueError("tracks must be a list")
+
+        out: list[HackathonTrack] = []
+        seen: set[HackathonTrack] = set()
+
+        for item in value:
+            v = item.value if isinstance(item, HackathonTrack) else str(item)
+            tr = HackathonTrack(v)
+            if tr not in seen:
+                out.append(tr)
+                seen.add(tr)
+
+        return out
 
     # --------- ЧТЕНИЕ ---------
 
@@ -63,11 +88,23 @@ class HackathonsService:
         q: Optional[str],
         limit: int,
         offset: int,
+        hackathon_mode: Optional[HackathonMode],
+        with_prize_fund: Optional[bool],
+        tracks: Optional[list[HackathonTrack]] = None,
+        status: Optional[HackathonsStatusFilter] = HackathonsStatusFilter.open,
     ) -> HackathonListResult:
         """
         Список открытых хакатонов (status = 'open') с простым текстовым фильтром.
         """
-        items = await self.repo.list_open(q=q, limit=limit, offset=offset)
+        items = await self.repo.list_open(
+            q=q,
+            limit=limit,
+            offset=offset,
+            hackathon_mode=hackathon_mode,
+            with_prize_fund=with_prize_fund,
+            tracks=tracks,
+            status=status,
+        )
         return HackathonListResult(items=items, limit=limit, offset=offset)
 
     async def get_by_id(self, hackathon_id: int) -> Optional[m_hack.Hackathon]:
@@ -93,6 +130,7 @@ class HackathonsService:
              обновляем image_link через repo.update.
         """
         data = dict(raw)
+        data["tracks"] = self._normalize_tracks(data.get("tracks"))
 
         image_file_id = data.pop("image_file_id", None) or None  # пустые строки → None
 
@@ -102,7 +140,10 @@ class HackathonsService:
             data.get("registration_end_date"),
             "registration_end_date",
         )
-
+        if data.get("end_date") is not None:
+            close_at = data["end_date"] - timedelta(minutes=1)
+            if datetime.now() >= close_at:
+                data["status"] = HackathonStatus.closed
         hackathon = await self.repo.create(**data)
 
         if image_file_id:
@@ -135,6 +176,8 @@ class HackathonsService:
             return await self.repo.get_by_id(hackathon_id)
 
         data = dict(raw)
+        if "tracks" in data:
+            data["tracks"] = self._normalize_tracks(data["tracks"])
 
         for field_name in ("start_date", "end_date", "registration_end_date"):
             if field_name in data:

@@ -20,7 +20,7 @@ export function useProfileBioEditor() {
     setError(null);
     lastSavedRef.current = initial;
     initializedRef.current = true;
-  }, [user?.id]); // важно: не на весь user объект
+  }, [user?.id]);
 
   const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const next = e.target.value;

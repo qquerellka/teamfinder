@@ -4,7 +4,8 @@ from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
-from persistend.enums import TeamStatus, RoleType, HackathonStatus
+from persistent.enums import TeamStatus, RoleType, HackathonStatus
+from persistent.models import Team
 from presentations.routers.users import get_current_user_id
 from services.teams import TeamsService
 from services.team_members import TeamMembersService
@@ -126,7 +127,7 @@ async def _ensure_team_exists(team_id: int):
     return team
 
 
-async def _ensure_captain(team, user_id: int):
+async def _ensure_captain(team: Team, user_id: int):
     if team.captain_id != user_id:
         raise HTTPException(status_code=403, detail="forbidden: not a captain")
 

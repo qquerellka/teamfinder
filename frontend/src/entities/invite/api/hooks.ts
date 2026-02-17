@@ -13,6 +13,7 @@ import type { Invite, CreateInvite, UpdateInvite, MegaInvite } from '../model/ty
 import { useAppQuery } from '@/shared/api/useAppQuery';
 
 const inviteKeys = queryKeys.invites;
+const applicationKeys = queryKeys.applications;
 
 export function useTeamInvites(teamId: number) {
   return useAppQuery<Invite[], Error>({
@@ -93,6 +94,10 @@ export function useUpdateInvite() {
     onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: inviteKeys.byId(data.id),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: applicationKeys.me,
       });
 
       if (data.teamId) {

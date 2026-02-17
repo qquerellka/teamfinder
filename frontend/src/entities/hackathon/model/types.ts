@@ -13,7 +13,7 @@ export interface Hackathon {
   teamMembersMinimum: number;
   teamMembersLimit: number;
   registrationLink: string;
-  prizeFund: string;
+  prizeFund: number;
   imageLink: string;
 }
 
@@ -31,7 +31,7 @@ export interface HackathonDTO {
   team_members_minimum: number;
   team_members_limit: number;
   registration_link: string;
-  prize_fund: string;
+  prize_fund: number;
   created_at: string;
   updated_at: string;
 }

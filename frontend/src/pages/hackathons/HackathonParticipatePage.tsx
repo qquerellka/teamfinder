@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import { SegmentedControl } from '@telegram-apps/telegram-ui';
+
 import { Page } from '@/shared/ui';
 import { useHackathonQuery } from '@/entities/hackathon';
-import { SegmentedControl } from '@telegram-apps/telegram-ui';
-import { MyHackathonApplication } from '@/widgets/hackathon/my-application/ui/MyHackathonApplication';
-import styled from 'styled-components';
-import { HackathonVacancies } from '@/features/hackathon/vacancies/HackathonVacancies';
+import { MyHackathonApplication } from '@/widgets/hackathon/my-application';
+import { HackathonVacancies } from '@/widgets/hackathon/vacancies-list';
 
 const HackathonParticipatePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const hackathonId = Number(id);
 
-  const { data: hackathon } = useHackathonQuery(hackathonId);
+  const { data: hackathon } = useHackathonQuery(Number(id));
 
   const [tab, setTab] = useState<'applications' | 'vacancies'>('applications');
 

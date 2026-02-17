@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Sequence
 
 from sqlalchemy import select
 
 from repositories.base import BaseRepository
-from persistend.models import hackathon as m_hack
-from persistend.enums import HackathonStatus
+from persistent.models import hackathon as m_hack
+from persistent.enums import HackathonStatus, HackathonMode, HackathonTrack, HackathonsStatusFilter
 
 
 class HackathonsRepo(BaseRepository):
@@ -22,21 +22,43 @@ class HackathonsRepo(BaseRepository):
         q: str | None = None,
         limit: int = 50,
         offset: int = 0,
+        hackathon_mode: Optional[HackathonMode] = None,
+        with_prize_fund: Optional[bool] = None,
+        tracks: Optional[Sequence[HackathonTrack]] = None,
+        status: Optional[HackathonsStatusFilter] = HackathonsStatusFilter.open,
     ) -> List[m_hack.Hackathon]:
         """
         Список открытых хакатонов.
         Параметры:
-          • q — текстовый фильтр по name/description (ILIKE).
+          q - текстовый фильтр по name/description (ILIKE)
+          hackathon_mode - фильтр по формату хакатона
+          with_prize_fund - есть ли призовой фонд 
         """
         H = m_hack.Hackathon
 
         async with self._sm() as s:
-            stmt = select(H).where(H.status == HackathonStatus.open)
+            stmt = select(H)
+            if status == HackathonsStatusFilter.open:
+                stmt = stmt.where(H.status == HackathonStatus.open)
+            elif status == HackathonsStatusFilter.closed:
+                stmt = stmt.where(H.status == HackathonStatus.closed)
 
             if q:
                 like = f"%{q}%"
                 stmt = stmt.where((H.name.ilike(like)) | (H.description.ilike(like)))
-
+                
+            if hackathon_mode:
+                stmt = stmt.where(H.mode == hackathon_mode)
+                
+            if with_prize_fund is not None:
+                if with_prize_fund:
+                    stmt = stmt.where(H.prize_fund.is_not(None))
+                else:
+                    stmt = stmt.where(H.prize_fund.is_(None))
+                    
+            if tracks:
+                stmt = stmt.where(H.tracks.overlap(list(tracks)))
+            
             stmt = stmt.order_by(H.start_date.desc()).limit(limit).offset(offset)
             res = await s.execute(stmt)
             return list(res.scalars().all())

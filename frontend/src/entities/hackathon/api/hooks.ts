@@ -3,10 +3,8 @@ import { queryKeys } from '@/shared/api/queryKeys';
 import { useAppQuery } from '@/shared/api/useAppQuery';
 
 export function useHackathonsQuery(params: FetchHackathonsParams = {}) {
-  const { q } = params;
-
   return useAppQuery({
-    queryKey: [...queryKeys.hackathons.list, q ?? ''],
+    queryKey: [...queryKeys.hackathons.list, params],
     queryFn: () => fetchHackathons(params),
     staleTime: 60_000,
   });

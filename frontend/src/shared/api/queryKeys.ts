@@ -32,10 +32,10 @@ export const queryKeys = {
 
   teams: {
     all: ['teams'] as const,
-    byHackathon: (hackathonId: number) => ['teams', 'hackathon', hackathonId] as const, // GET /hackathons/{id}/teams
-    me: ['teams', 'me'] as const, // GET /me/teams
-    meByHackathon: (hackathonId: number) => ['teams', 'me', 'hackathon', hackathonId] as const, // GET /hackathons/{id}/teams/me
-    byId: (id: number) => ['teams', id] as const, // GET /teams/{id}
+    byHackathon: (hackathonId: number) => ['teams', 'hackathon', hackathonId] as const,
+    me: ['teams', 'me'] as const,
+    meByHackathon: (hackathonId: number) => ['teams', 'me', 'hackathon', hackathonId] as const,
+    byId: (id?: number) => ['teams', 'detail', id] as const,
     members: (teamId: number) => ['teams', teamId, 'members'] as const,
   },
   vacancies: {
@@ -45,7 +45,8 @@ export const queryKeys = {
     byId: (id: number) => ['vacancies', id] as const,
   },
   responses: {
-    all: ['responses'] as const, // /me/responses
+    all: ['responses'] as const,
+    byTeam: (teamId: number) => ['responses', 'team', teamId] as const,
     byVacancy: (vacancyId: number) => ['responses', 'vacancy', vacancyId] as const,
     me: ['responses', 'me'] as const,
     byId: (id: number) => ['responses', id] as const,

@@ -1,10 +1,11 @@
+import { IconButton, Text } from '@telegram-apps/telegram-ui';
+import { FC } from 'react';
+import styled from 'styled-components';
+
 import { TeamWithMembers } from '@/entities/team';
 import { Vacancy } from '@/entities/vacancy';
 import { useDeleteVacancyForm } from '@/features/vacancy/delete/model/useDeleteVacancy';
-import { ConfirmModal, RoleBadge, SIcon, SText } from '@/shared/ui';
-import { Button } from '@telegram-apps/telegram-ui';
-import { FC } from 'react';
-import styled from 'styled-components';
+import { ConfirmModal, RoleBadge, SIcon } from '@/shared/ui';
 
 interface VacancyCardProps {
   team: TeamWithMembers;
@@ -29,21 +30,19 @@ export const VacancyCard: FC<VacancyCardProps> = ({ team, vacancy, onDeleted, on
     <>
       <Wrapper>
         <Header>
-          <SText $fs={16} $fw={600}>
-            {'Кого ищем?'}
-          </SText>
+          <Text weight="1">{'Кого ищем?'}</Text>
           <Icons>
-            <IconButton type="button" onClick={onEditClick}>
-              <SIcon name="edit" />
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={onEditClick}>
+              <SIcon name="edit" size={24} />
             </IconButton>
-            <IconButton type="button" onClick={openDeleteModal}>
-              <SIcon name="delete" />
+            <IconButton style={{ borderRadius: 6, padding: 6 }} onClick={openDeleteModal}>
+              <SIcon name="delete" size={24} />
             </IconButton>
           </Icons>
         </Header>
         <RoleBadge role={vacancy.role} />
         <Info>
-          <SText>{vacancy.description}</SText>
+          <Text>{vacancy.description}</Text>
         </Info>
       </Wrapper>
       <ConfirmModal
@@ -63,14 +62,17 @@ const Wrapper = styled.div`
   background-color: var(--tg-theme-section-bg-color);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.5rem;
   padding: 1rem;
   border-radius: 1rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 `;
 
 const Info = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 0.5rem;
 `;
 
@@ -85,10 +87,5 @@ const Header = styled.div`
 const Icons = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 1rem;
-`;
-
-const IconButton = styled(Button).attrs({ mode: 'plain', size: 's' })`
-  padding: 0;
-  min-width: auto;
+  gap: 0.5rem;
 `;

@@ -1,9 +1,10 @@
-import type { FC, ChangeEvent } from 'react';
+import { type FC, type ChangeEvent, useState, useEffect, useRef } from 'react';
 import { Button, Input, Select, Textarea } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
-import { InputSection } from '@/shared/ui';
+import { InputSection, ButtonsSection, ErrorText } from '@/shared/ui';
+import { haptic } from '@/shared/telegram/useTelegramHaptic';
 
 type BaseProps = {
   hackathonName: string;
@@ -33,7 +34,7 @@ type Props = CreateProps | EditProps;
 
 const parseRole = (raw: string): Role | '' => (raw ? (raw as Role) : '');
 
-export const TeamFormView: FC<Props> = (props) => {
+export const TeamFormView: FC<Props> = props => {
   const {
     hackathonName,
     name,
@@ -46,10 +47,49 @@ export const TeamFormView: FC<Props> = (props) => {
     onSubmit,
     onCancel,
   } = props;
+  const [errorName, setErrorName] = useState(false);
+  const [errorDescription, setErrorDescription] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const adjustHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+
+      const newHeight = Math.min(textarea.scrollHeight, 200);
+      textarea.style.height = `${newHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [description]);
 
   const handleRole = (e: ChangeEvent<HTMLSelectElement>) => {
     if (props.mode !== 'create') return;
     props.onRoleChange(parseRole(e.target.value));
+  };
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length <= 64) {
+      setErrorName(false);
+      onNameChange(value);
+    } else {
+      setErrorName(true);
+      haptic();
+    }
+  };
+
+  const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    if (value.length <= 256) {
+      setErrorDescription(false);
+      onDescriptionChange(value);
+    } else {
+      setErrorDescription(true);
+      haptic();
+    }
   };
 
   return (
@@ -60,11 +100,28 @@ export const TeamFormView: FC<Props> = (props) => {
         </InputSection>
 
         <InputSection header="Название команды">
-          <Input value={name} onChange={e => onNameChange(e.target.value)} />
+          <Input
+            value={name}
+            onChange={handleNameChange}
+            status={errorName ? 'error' : 'default'}
+          />
+          {errorName && <ErrorText>{'Слишком длиное название команды!'}</ErrorText>}
         </InputSection>
 
         <InputSection header="Описание команды">
-          <Textarea value={description} onChange={e => onDescriptionChange(e.target.value)} />
+          <Textarea
+            ref={textareaRef}
+            value={description}
+            onChange={handleDescriptionChange}
+            status={errorDescription ? 'error' : 'default'}
+            style={{
+              resize: 'none',
+              overflowY: 'hidden',
+              backgroundColor: 'var(--tg-theme-secondary-bg-color)',
+              transition: 'height 0.2s ease',
+            }}
+          />
+          {errorDescription && <ErrorText>{'Слишком длиное описание команды!'}</ErrorText>}
         </InputSection>
 
         {props.mode === 'create' && (
@@ -84,32 +141,19 @@ export const TeamFormView: FC<Props> = (props) => {
         {props.extra}
       </InputsWrapper>
       <ButtonsSection>
-        <SButton onClick={onSubmit} stretched disabled={!canSubmit || loading}>
+        <Button onClick={onSubmit} stretched disabled={!canSubmit || loading}>
           {submitLabel}
-        </SButton>
+        </Button>
 
         {onCancel && (
-          <SButton mode="bezeled" stretched onClick={onCancel} disabled={loading}>
+          <Button mode="white" stretched onClick={onCancel} disabled={loading}>
             Отмена
-          </SButton>
+          </Button>
         )}
       </ButtonsSection>
     </>
   );
 };
-
-const ButtonsSection = styled.div`
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const SButton = styled(Button)`
-  width: 100%;
-  margin: 0;
-`;
 
 const InputsWrapper = styled.section`
   display: flex;

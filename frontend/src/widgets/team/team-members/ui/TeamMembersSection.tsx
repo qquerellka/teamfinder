@@ -1,9 +1,9 @@
 import type { FC } from 'react';
 import styled from 'styled-components';
-import { Avatar } from '@telegram-apps/telegram-ui';
+import { Avatar, Subheadline, Text } from '@telegram-apps/telegram-ui';
 
 import type { TeamWithMembers } from '@/entities/team';
-import { ConfirmModal, SIcon, SText } from '@/shared/ui';
+import { ConfirmModal, RoleBadge, SIcon, TeamLoad } from '@/shared/ui';
 import { useRemoveTeamMember } from '@/features/team-member/remove';
 import { useNavigate } from 'react-router-dom';
 import { getUserPath } from '@/shared/routing/paths';
@@ -21,16 +21,10 @@ export const TeamMembersSection: FC<{
   return (
     <Block>
       <HeaderRow>
-        <SText $fs={16} $fw={600} style={{ color: 'var(--tg-theme-section-header-text-color)' }}>
+        <Text weight="2" style={{ color: 'var(--tg-theme-section-header-text-color)' }}>
           Участники
-        </SText>
-
-        <Count>
-          <SIcon name="profile" />
-          <SText $fs={16} $fw={700}>
-            {members.length} / {membersLimit}
-          </SText>
-        </Count>
+        </Text>
+        <TeamLoad teamMembersCount={members.length} teamMembersLimit={membersLimit} />
       </HeaderRow>
 
       <List>
@@ -77,17 +71,15 @@ const TeamMemberRow: FC<{
 
         <Info>
           <Names>
-            <SText $fs={16} $fw={600}>
-              {fullName || 'Без имени'}
-            </SText>
+            <Text weight="2">{fullName}</Text>
+            <RoleBadge size="s" role={member.role} />
           </Names>
 
           <Meta>
-            <SText $fs={14}>{member.role}</SText>
             {member.user.username && (
-              <SText $fs={14} style={{ opacity: 0.8 }}>
+              <Subheadline level="2" style={{ opacity: 0.8 }}>
                 @{member.user.username}
-              </SText>
+              </Subheadline>
             )}
           </Meta>
         </Info>
@@ -97,6 +89,7 @@ const TeamMemberRow: FC<{
         ) : canRemove ? (
           <SIcon
             name="cross"
+            size={16}
             color="#F55A5A"
             onClick={e => {
               e.stopPropagation();
@@ -131,14 +124,7 @@ const HeaderRow = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0 22px;
   margin-bottom: 0.5rem;
-`;
-
-const Count = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 `;
 
 const List = styled.div`
@@ -174,8 +160,9 @@ const Info = styled.div`
 
 const Names = styled.div`
   display: flex;
-  gap: 4px;
-  align-items: baseline;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
 
   & > * {
     white-space: nowrap;
@@ -186,6 +173,7 @@ const Names = styled.div`
 
 const Meta = styled.div`
   display: flex;
+  align-items: center;
   gap: 8px;
   margin-top: 2px;
 `;

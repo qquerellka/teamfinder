@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 import { Button } from '@telegram-apps/telegram-ui';
 
 import { HackathonCard, useHackathonQuery, Hackathon } from '@/entities/hackathon';
@@ -11,39 +10,38 @@ import {
   getHackathonCreateTeamPath,
   getHackathonParticipationPath,
   getTeamPath,
+  getUserAchievementPath,
   paths,
 } from '@/shared/routing/paths';
 
 import { normalizeUrl } from '@/shared/helpers/url';
 import { Page } from '@/shared/ui';
-import { ConfirmModal } from '@/shared/ui/ConfirmModal';
+import { ConfirmModal, ButtonsSection } from '@/shared/ui/';
 import { useMyTeamOnHackathon } from '@/entities/team';
+import { openLink } from '@tma.js/sdk-react';
 
 const HackathonPage: React.FC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const hackathonId = Number(id);
 
-  const { data: hackathon } = useHackathonQuery(Number(id));
+  const { data: hackathon } = useHackathonQuery(hackathonId);
   const { data: user, isLoading: isUserLoading } = useAuthUser();
-  const { data: application } = useAuthUserApplicationsOnHackathon(Number(id));
-  const { data: team } = useMyTeamOnHackathon(Number(id));
+  const { data: application } = useAuthUserApplicationsOnHackathon(hackathonId);
+  const { data: team } = useMyTeamOnHackathon(hackathonId);
 
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   const url = normalizeUrl((hackathon as Hackathon).registrationLink);
+  const participatedHack = user.achievements.filter(a => a.hackathonId === hackathonId);
 
-  const openExternal = () => {
-    if (!url) return;
+  const handleGoToApplication = () => {
+    if (isUserLoading) return;
 
-    const wa = window.Telegram?.WebApp;
-    if (wa?.openLink) {
-      wa.openLink(url, { try_instant_view: true });
-    } else {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
+    if (id) navigate(getHackathonParticipationPath(hackathonId));
   };
 
-  const handleGoToApplications = () => {
+  const handleGoToCreateApplication = () => {
     if (isUserLoading) return;
 
     const hasSkills = !!user && Array.isArray(user.skills) && user.skills.length > 0;
@@ -53,18 +51,11 @@ const HackathonPage: React.FC = () => {
       return;
     }
 
-    if (id) navigate(getHackathonParticipationPath(Number(id)));
+    if (id) navigate(getHackathonParticipationPath(hackathonId));
   };
 
   const handleGoToTeam = () => {
     if (isUserLoading) return;
-
-    const hasSkills = !!user && Array.isArray(user.skills) && user.skills.length > 0;
-
-    if (!hasSkills) {
-      setIsSkillsModalOpen(true);
-      return;
-    }
 
     if (id) navigate(getTeamPath(Number(team?.id)));
   };
@@ -76,8 +67,8 @@ const HackathonPage: React.FC = () => {
       setIsSkillsModalOpen(true);
       return;
     }
-    
-    if (id) navigate(getHackathonCreateTeamPath(Number(id)));
+
+    if (id) navigate(getHackathonCreateTeamPath(hackathonId));
   };
 
   const handleGoToProfile = () => {
@@ -85,42 +76,75 @@ const HackathonPage: React.FC = () => {
     navigate(paths.userRoot);
   };
 
+  const handleGoToAddAch = () => {
+    navigate(paths.userAchievementsRoot);
+  };
+
+  const achievement = useMemo(() => {
+    if (!user || !Number.isFinite(hackathonId)) return undefined;
+    return user.achievements?.find(a => a.hackathonId === hackathonId);
+  }, [user, hackathonId]);
+
+  const handleGoToAch = useCallback(() => {
+    if (!achievement) return;
+    navigate(getUserAchievementPath(achievement.id));
+  }, [achievement, navigate]);
   return (
     <>
       <Page>
         <HackathonCard hackathon={hackathon} variant="full" />
-        {application ? (
+        {participatedHack.length > 0 ? (
           <ButtonsSection>
-            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее
-            </SButton>
+            </Button>
 
-            <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
+            <Button onClick={handleGoToAch} disabled={isUserLoading || !achievement}>
+              К достижению
+            </Button>
+          </ButtonsSection>
+        ) : hackathon.status === 'closed' ? (
+          <ButtonsSection>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
+              Подробнее
+            </Button>
+
+            <Button onClick={handleGoToAddAch} disabled={isUserLoading}>
+              Добавить в достижения
+            </Button>
+          </ButtonsSection>
+        ) : application ? (
+          <ButtonsSection>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
+              Подробнее
+            </Button>
+
+            <Button onClick={handleGoToApplication} disabled={isUserLoading}>
               Моя анкета
-            </SButton>
+            </Button>
           </ButtonsSection>
         ) : team ? (
           <ButtonsSection>
-            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее
-            </SButton>
+            </Button>
 
-            <SButton onClick={handleGoToTeam} disabled={isUserLoading}>
+            <Button onClick={handleGoToTeam} disabled={isUserLoading}>
               Моя команда
-            </SButton>
+            </Button>
           </ButtonsSection>
         ) : (
           <ButtonsSection>
-            <SButton mode="bezeled" onClick={openExternal} disabled={!url}>
+            <Button mode="white" onClick={() => openLink(url!)} disabled={!url}>
               Подробнее
-            </SButton>
+            </Button>
 
-            <SButton onClick={handleGoToApplications} disabled={isUserLoading}>
+            <Button onClick={handleGoToCreateApplication} disabled={isUserLoading}>
               Найти команду
-            </SButton>
-            <SButton onClick={handleGoToCreateTeam} disabled={isUserLoading}>
+            </Button>
+            <Button onClick={handleGoToCreateTeam} disabled={isUserLoading}>
               Создать команду
-            </SButton>
+            </Button>
           </ButtonsSection>
         )}
       </Page>
@@ -129,7 +153,7 @@ const HackathonPage: React.FC = () => {
         open={isSkillsModalOpen}
         title="Чтобы участвовать в хакатоне, добавьте хотя бы один навык в свой профиль."
         cancelText="Потом"
-        confirmText="Заполнить профиль"
+        confirmText="Заполнить"
         loading={false}
         onCancel={() => setIsSkillsModalOpen(false)}
         onConfirm={handleGoToProfile}
@@ -139,14 +163,3 @@ const HackathonPage: React.FC = () => {
 };
 
 export default HackathonPage;
-
-const SButton = styled(Button)`
-  width: 100%;
-`;
-
-const ButtonsSection = styled.div`
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;

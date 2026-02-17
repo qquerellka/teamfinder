@@ -5,32 +5,30 @@ import { useCreateTeam } from '@/entities/team/api/hooks';
 import { TeamFormView } from '../../_shared/ui/TeamFormView';
 import { useCreateTeamForm } from '../model/useCreateTeamForm';
 import { Role } from '@/shared/types/enums';
-import { SText } from '@/shared/ui';
 import styled from 'styled-components';
+import { Subheadline } from '@telegram-apps/telegram-ui';
 
 export const CreateTeamForm: FC<{
   hackathon: Hackathon;
-  onDone?: () => void;
+  onDone?: (id: number) => void;
 }> = ({ hackathon, onDone }) => {
   const createMutation = useCreateTeam(hackathon.id);
   const form = useCreateTeamForm();
 
   const submit = async () => {
     if (!form.canSubmit) return;
-    await createMutation.mutateAsync({
+    const res = await createMutation.mutateAsync({
       role: form.role as Role,
       name: form.name,
       description: form.description,
     });
-    onDone?.();
+    onDone?.(res.id);
   };
 
   return (
     <>
       <Header>
-        <SText $fs={14} $fw={500}>
-          Создание команды
-        </SText>
+        <Subheadline weight="2">Создание команды</Subheadline>
       </Header>
       <TeamFormView
         mode="create"

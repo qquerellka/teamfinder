@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { Button, Select, Textarea } from '@telegram-apps/telegram-ui';
-import type { FC, ChangeEvent } from 'react';
+import { type FC, type ChangeEvent, useState } from 'react';
 
 import { roleOptions, type Role } from '@/shared/types/enums';
-import { InputSection } from '@/shared/ui';
+import { ButtonsSection, ErrorText, InputSection } from '@/shared/ui';
+import { haptic } from '@/shared/telegram/useTelegramHaptic';
 
 interface VacancyFormViewProps {
   role: Role | '';
@@ -30,6 +31,8 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  const [errorDescription, setErrorDescription] = useState(false);
+
   const handleSaveClick = () => {
     if (!canSubmit) return;
     onSubmit();
@@ -40,7 +43,15 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
   };
 
   const handleTextarea = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    onDescriptionChange(e.target.value);
+    const value = e.target.value;
+
+    if (value.length <= 128) {
+      setErrorDescription(false);
+      onDescriptionChange(e.target.value);
+    } else {
+      haptic();
+      setErrorDescription(true);
+    }
   };
 
   return (
@@ -51,7 +62,9 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
             value={description}
             onChange={handleTextarea}
             placeholder="Хотим заряженного ИБО перваша"
+            status={errorDescription ? 'error' : 'default'}
           />
+          {errorDescription && <ErrorText>{'Слишком большое описание!'}</ErrorText>}
         </InputSection>
 
         <InputSection header={'Роль'}>
@@ -73,7 +86,7 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
         </Button>
 
         {onCancel && (
-          <Button mode="bezeled" stretched onClick={onCancel} disabled={loading}>
+          <Button mode="white" stretched onClick={onCancel} disabled={loading}>
             Отмена
           </Button>
         )}
@@ -81,14 +94,6 @@ export const VacancyFormView: FC<VacancyFormViewProps> = ({
     </>
   );
 };
-
-const ButtonsSection = styled.div`
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
 
 const InputsWrapper = styled.div`
   display: flex;

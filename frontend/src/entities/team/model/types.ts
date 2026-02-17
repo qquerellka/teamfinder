@@ -108,9 +108,3 @@ export interface TeamsResponse {
   limit: number;
   items: Team[];
 }
-
-export interface MyTeamsRsponse {
-  offset: number;
-  limit: number;
-  items: MyTeam[];
-}

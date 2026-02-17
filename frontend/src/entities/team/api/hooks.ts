@@ -9,9 +9,11 @@ import {
   createTeam,
   editTeam,
   deleteTeam,
+  joinTeamMe,
 } from './teams';
 import { Team, TeamsResponse, CreateTeam, EditTeam, TeamWithMembers, MyTeam } from '../model/types';
 import { useAppQuery } from '@/shared/api/useAppQuery';
+import { Role } from '@/shared/types/enums';
 
 const teamKeys = queryKeys.teams;
 
@@ -113,6 +115,29 @@ export function useDeleteTeam() {
       });
       queryClient.invalidateQueries({
         queryKey: teamKeys.meByHackathon(variables.hackathonId),
+      });
+    },
+  });
+}
+
+export function useJoinTeam() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { id: number; role: Role }>({
+    mutationFn: ({ id, role }) => joinTeamMe(id, role),
+    onSuccess: (_, variables) => {
+      const { id: teamId } = variables;
+
+      queryClient.invalidateQueries({
+        queryKey: teamKeys.byId(teamId),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: teamKeys.members(teamId),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: teamKeys.me,
       });
     },
   });

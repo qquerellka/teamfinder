@@ -1,12 +1,12 @@
 import type { FC, ChangeEvent } from 'react';
-import { Button, Input, Select } from '@telegram-apps/telegram-ui';
+import { Button, Input, Select, Subheadline } from '@telegram-apps/telegram-ui';
 import styled from 'styled-components';
 
 import type { Hackathon } from '@/entities/hackathon';
 import { placeOptions } from '@/entities/achievement';
 import { roleOptions } from '@/shared/types/enums';
 import type { AchievementFormValues, AchievementFormField } from '../model/types';
-import { SText, InputSection } from '@/shared/ui';
+import { InputSection, ButtonsSection } from '@/shared/ui';
 
 type BaseProps = {
   values: AchievementFormValues;
@@ -45,10 +45,10 @@ export const AchievementFormView: FC<Props> = props => {
         return (raw ? Number(raw) : null) as AchievementFormValues[K];
 
       case 'role':
-        return raw as AchievementFormValues[K]; // Role | ""
+        return raw as AchievementFormValues[K];
 
       case 'place':
-        return raw as AchievementFormValues[K]; // AchievementPlace | ""
+        return raw as AchievementFormValues[K];
 
       default: {
         const _exhaustive: never = field;
@@ -65,9 +65,9 @@ export const AchievementFormView: FC<Props> = props => {
 
   return (
     <SProfile>
-      <SText $fs={14} $fw="semibold">
+      <Subheadline weight="2">
         {props.mode === 'create' ? 'Новое достижение' : 'Редактировать достижение'}
-      </SText>
+      </Subheadline>
 
       <InputSection header={'Хакатон'}>
         {props.mode === 'create' ? (
@@ -113,12 +113,12 @@ export const AchievementFormView: FC<Props> = props => {
       </InputSection>
 
       <ButtonsSection>
-        <Button size="l" onClick={onSave} stretched disabled={!canSubmit || isSaving}>
+        <Button onClick={onSave} stretched disabled={!canSubmit || isSaving}>
           {props.mode === 'create' ? 'Добавить' : 'Сохранить'}
         </Button>
 
         {props.mode === 'edit' && (
-          <DeleteButton size="l" onClick={props.onDelete} stretched disabled={props.isDeleting}>
+          <DeleteButton onClick={props.onDelete} stretched disabled={props.isDeleting}>
             Удалить
           </DeleteButton>
         )}
@@ -138,13 +138,4 @@ const SProfile = styled.section`
 
 const DeleteButton = styled(Button)`
   background-color: var(--tg-theme-destructive-text-color);
-`;
-
-const ButtonsSection = styled.section`
-  width: 100%;
-  margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 `;

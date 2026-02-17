@@ -7,7 +7,11 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
-  CREATE TYPE team_status AS ENUM ('forming','ready');
+  CREATE TYPE hackathon_track AS ENUM ('ctf','ml', 'product', 'algo', 'case', 'game');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE team_status AS ENUM ('forming','ready','hidden');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN

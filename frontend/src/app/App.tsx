@@ -11,7 +11,7 @@ import { LoaderPage } from '@/shared/ui';
 import { Suspense } from 'react';
 
 import { QueryErrorResetBoundary, useQueryClient } from '@tanstack/react-query';
-import { StartParamJoinHandler } from './StartParamJoinHandler';
+import { StartParamJoinHandler } from '../features/team/join-by-link';
 
 function AppInner() {
   const location = useLocation();
@@ -25,7 +25,6 @@ function AppInner() {
           resetKeys={[location.key]}
           onReset={() => {
             reset();
-            // чтобы “повторить” реально перезапускало запросы
             queryClient.invalidateQueries({
               predicate: q => q.queryKey[0] !== 'auth',
             });

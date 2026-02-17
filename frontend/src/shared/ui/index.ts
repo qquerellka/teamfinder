@@ -1,6 +1,5 @@
 export * from './Page';
 export * from './LoaderPage';
-export * from './PlatformInputsBorder';
 export * from './RoleBadge';
 export * from './SIcon';
 export * from './SText';
@@ -10,3 +9,5 @@ export * from './ErrorText';
 export * from './ConfirmModal';
 export * from './TeamLoad';
 export * from './NoItems';
+export * from './ButtonsSection';
+export * from './InvitesBadge';

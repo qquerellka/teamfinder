@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     # ==== App ====
     APP_NAME: str = "MyBackend"
     APP_VERSION: str = "0.1.0"
-    APP_ENV: str = "dev"
+    APP_ENV: str = os.getenv("APP_ENV", "dev")
 
     # ==== CORS ====
     CORS_ORIGINS: str = "*"
@@ -28,8 +28,8 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "app_user")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "app_password")
     DATABASE_URL: Optional[str] = None
-    TG_BOT_USERNAME: str = os.getenv("TG_BOT_USERNAME", "teamfinder_test_bot")
-    TG_APP_NAME: str = os.getenv("TG_APP_NAME", "tfapp")
+    TG_BOT_USERNAME: str = os.getenv("TG_BOT_USERNAME", "teamfinder_hack_bot")
+    TG_APP_NAME: str = os.getenv("TG_APP_NAME", "")
 
     # ==== Pool/Echo ====
     DB_POOL_SIZE: int = 5

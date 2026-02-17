@@ -27,6 +27,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     environment:
+      - APP_ENV=${APP_ENV}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - JWT_SECRET=${JWT_SECRET}
@@ -77,6 +78,24 @@ services:
       - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
     depends_on:
       - backend
+    restart: unless-stopped
+
+  scheduler:
+    container_name: scheduler
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    command: python -m jobs.close_hackathons
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - CLOSE_JOB_INTERVAL=${CLOSE_JOB_INTERVAL}
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

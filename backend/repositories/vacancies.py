@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from typing import Optional, List, Sequence, Any
 
-from sqlalchemy import select
+from sqlalchemy import select, func
+
+from fastapi import HTTPException, status
 
 from repositories.base import BaseRepository
-from persistend.enums import VacancyStatus, RoleType
-from persistend.models.vacancy import Vacancy
-from persistend.models.team import Team
+from persistent.enums import VacancyStatus, RoleType
+from persistent.models.vacancy import Vacancy
+from persistent.models.team import Team
+from persistent.models.hackathon import Hackathon
+from persistent.models.team_member import TeamMember
 
 
 class VacanciesRepo(BaseRepository):
@@ -54,7 +58,8 @@ class VacanciesRepo(BaseRepository):
             if role:
                 stmt = stmt.where(V.role == role)
 
-            stmt = stmt.order_by(V.created_at.desc()).offset(offset).limit(limit)
+            stmt = stmt.order_by(V.created_at.desc()).offset(
+                offset).limit(limit)
 
             res = await s.execute(stmt)
             return list(res.scalars().all())
@@ -68,6 +73,41 @@ class VacanciesRepo(BaseRepository):
         # skills: Optional[Sequence[str]] = None,
     ) -> Vacancy:
         async with self._sm() as s:
+            async with s.begin():
+                team_row = await s.execute(
+                    select(Team)
+                    .where(Team.id == team_id)
+                    .with_for_update()
+                )
+                team = team_row.scalar_one()
+
+                limit_ = await s.scalar(
+                    select(Hackathon.team_members_limit)
+                    .where(Hackathon.id == team.hackathon_id)
+                )
+
+                if limit_ is not None:
+                    members = await s.scalar(
+                        select(func.count())
+                        .select_from(TeamMember)
+                        .where(TeamMember.team_id == team_id)
+                    )
+
+                    open_vacancies = await s.scalar(
+                        select(func.count())
+                        .select_from(Vacancy)
+                        .where(
+                            Vacancy.team_id == team_id,
+                            Vacancy.status == VacancyStatus.open,
+                        )
+                    )
+
+                    if members + open_vacancies >= limit_:
+                        raise HTTPException(
+                            status_code=status.HTTP_409_CONFLICT,
+                            detail="Team has no free slots for new active vacancies",
+                        )
+
             obj = Vacancy(
                 team_id=team_id,
                 role=role,

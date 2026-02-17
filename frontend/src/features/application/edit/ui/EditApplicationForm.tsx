@@ -8,7 +8,7 @@ export const EditApplicationForm: FC<{
   application: Application;
   onCancel: () => void;
 }> = ({ hackathonName, application, onCancel }) => {
-  const form = useEditApplicationForm({
+  const { role, isSaving, submit, canSubmit, setRole } = useEditApplicationForm({
     application,
     onDone: onCancel,
   });
@@ -16,12 +16,12 @@ export const EditApplicationForm: FC<{
   return (
     <ApplicationFormView
       hackathonName={hackathonName}
-      role={form.role}
+      role={role}
       submitLabel="Сохранить"
-      loading={form.isSaving}
-      canSubmit={form.canSubmit}
-      onRoleChange={form.setRole}
-      onSubmit={form.submit}
+      loading={isSaving}
+      canSubmit={canSubmit}
+      onRoleChange={setRole}
+      onSubmit={submit}
       onCancel={onCancel}
     />
   );

@@ -23,7 +23,7 @@ export const EditTeamForm: FC<{
       id: team.id,
       payload: { name: form.name, description: form.description },
     });
-    onCancel(); // закрываем edit-mode
+    onCancel();
   };
 
   return (

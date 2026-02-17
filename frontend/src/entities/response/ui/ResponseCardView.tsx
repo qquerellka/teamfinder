@@ -1,25 +1,27 @@
 import { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { RoleBadge, SText } from '@/shared/ui';
+import { RoleBadge } from '@/shared/ui';
 import { Skill } from '@/entities/skill';
 import { Role } from '@/shared/types/enums';
+import { Subheadline, Text } from '@telegram-apps/telegram-ui';
 
 interface ResponseCardViewProps {
   firstName: string;
-  secondName: string;
+  lastName: string;
   username: string;
   skills: Skill[];
   role: Role;
   actions?: React.ReactNode;
+  onNavigate: () => void;
 }
 
 export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   firstName,
-  secondName,
-  //   username,
+  lastName,
   skills,
   actions,
   role,
+  onNavigate,
 }) => {
   const skillsString = useMemo(() => {
     const sskills = skills?.slice(0, 4) ?? [];
@@ -27,32 +29,25 @@ export const ResponsesCardView: FC<ResponseCardViewProps> = ({
   }, [skills]);
 
   return (
-    <Wrapper>
+    <ResponseCardContainer onClick={onNavigate}>
       <FirstRow>
-        <SText $fs={16} $fw={700}>
-          {firstName} {secondName}
-        </SText>
+        <Text weight="1">
+          {firstName} {lastName}
+        </Text>
         {actions}
       </FirstRow>
 
       <SecondRow>
-        {/* <SText $fs={14} $fw={500}></SText> */}
         <RoleBadge role={role} />
-        {/* <CountTeamMembers>
-          <SIcon name="profile" />
-          <SText $fs={14} $fw={500}>
-            {teamMembersCount} / {teamMembersLimit}
-          </SText>
-        </CountTeamMembers> */}
-        <SText $fs={14} $fw={500}>
+        <Subheadline level="2" weight="2">
           {skillsString}
-        </SText>
+        </Subheadline>
       </SecondRow>
-    </Wrapper>
+    </ResponseCardContainer>
   );
 };
 
-const Wrapper = styled.div`
+const ResponseCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

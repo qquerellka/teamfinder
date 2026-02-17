@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import styled from 'styled-components';
-import { SIcon, SText } from '@/shared/ui';
+import { TeamLoad } from '@/shared/ui';
+import { Subheadline, Text } from '@telegram-apps/telegram-ui';
 
 interface InviteCardViewProps {
   teamName: string;
@@ -18,37 +19,24 @@ export const InviteCardView: FC<InviteCardViewProps> = ({
   onNavigate,
 }) => {
   return (
-    <Wrapper onClick={onNavigate}>
+    <InviteCardContainer onClick={onNavigate}>
       <FirstRow>
-        <SText $fs={16} $fw={700}>
-          Приглашение
-        </SText>
+        <Text weight="1">Приглашение</Text>
         {actions}
       </FirstRow>
 
       <SecondRow>
-        <SText $fs={14} $fw={500}>
+        <Subheadline level="2" weight="2">
           {teamName}
-        </SText>
+        </Subheadline>
 
-        <CountTeamMembers>
-          <SIcon name="profile" />
-          <SText $fs={14} $fw={500}>
-            {teamMembersCount} / {teamMembersLimit}
-          </SText>
-        </CountTeamMembers>
+        <TeamLoad teamMembersCount={teamMembersCount} teamMembersLimit={teamMembersLimit} />
       </SecondRow>
-    </Wrapper>
+    </InviteCardContainer>
   );
 };
 
-const CountTeamMembers = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-`;
-
-const Wrapper = styled.div`
+const InviteCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

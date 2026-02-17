@@ -1,35 +1,57 @@
-import { FC, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { IconButton, Input, Pagination } from '@telegram-apps/telegram-ui';
 
 import { getHackathonPath } from '@/shared/routing/paths';
 import { HackathonCard, useHackathonsQuery } from '@/entities/hackathon';
-import { Button, Cell, Checkbox, IconButton, Input, Modal } from '@telegram-apps/telegram-ui';
 import { useDebouncedValue } from '@/shared/helpers/useDebounceValue';
-import { InputSection, NoItems, SIcon, SText } from '@/shared/ui';
+import { InputSection, NoItems, SIcon } from '@/shared/ui';
+import { FilterModal, useFilters } from '@/features/hackathon/filters';
 
-interface HackathonsFilters {
-  online: boolean;
-  offline: boolean;
-  hybrid: boolean;
-  withPrize: boolean;
-}
+const PAGE_SIZE = 10;
 
 export const HackathonList: FC = () => {
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, 800);
+  const [page, setPage] = useState(1);
 
+  const debouncedSearch = useDebouncedValue(search, 800);
   const q = debouncedSearch.trim() || undefined;
 
-  const { data } = useHackathonsQuery({ q });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const filters = useFilters();
 
-  const [filters, setFilters] = useState<HackathonsFilters>({
-    online: false,
-    offline: false,
-    hybrid: false,
-    withPrize: false,
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const { data, isFetching } = useHackathonsQuery({
+    q,
+    mode: filters.queryParams.mode,
+    prize_fund: filters.queryParams.hasPrize,
+    status: filters.queryParams.status,
+    limit: PAGE_SIZE + 1,
+    offset,
   });
+
+  useEffect(() => {
+    setPage(1);
+  }, [q, filters.queryParams.mode, filters.queryParams.hasPrize, filters.queryParams.status]);
+
+  const hasNext = (data?.items?.length ?? 0) > PAGE_SIZE;
+  const items = useMemo(
+    () => (hasNext ? data!.items.slice(0, PAGE_SIZE) : (data?.items ?? [])),
+    [data?.items, hasNext],
+  );
+  const count = hasNext ? page + 1 : page;
+
+  const handleResetAll = useCallback(() => {
+    filters.resetFilters();
+    setSearch('');
+  }, [filters]);
+  const handlePageChange = useCallback((_: unknown, p: number) => {
+    setPage(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const hasActiveFilters = filters.appliedMode !== '' && filters.appliedMoney !== null;
 
   return (
     <>
@@ -40,113 +62,59 @@ export const HackathonList: FC = () => {
               before={<SIcon name="search" color={''} />}
               placeholder="Название хакатона"
               value={search}
-              // style={{width: '100%', boxSizing:'border-box'}}
               onChange={e => setSearch(e.target.value)}
+              maxLength={64}
             />
           </InputSection>
-          <IconButton onClick={() => setIsModalOpen(true)}>
-            <SIcon name="filters" />
+          <IconButton onClick={filters.openModal}>
+            <SIcon name="filters" color={hasActiveFilters ? 'var(--tg-theme-link-color)' : ''} />
           </IconButton>
         </SearchSection>
-        {data.items.length === 0 ? (
+        {items.length === 0 ? (
           <NoItems title={'Ничего не нашлось :('} />
         ) : (
-          <Grid>
-            {data.items.map(h => (
-              <CardLink key={h.id} to={getHackathonPath(`${h.id}`)}>
-                <HackathonCard hackathon={h} />
-              </CardLink>
-            ))}
-          </Grid>
+          <>
+            <Grid>
+              {items.map(h => (
+                <CardLink key={h.id} to={getHackathonPath(h.id)}>
+                  <HackathonCard hackathon={h} />
+                </CardLink>
+              ))}
+            </Grid>
+
+            {count > 1 && (
+              <PaginationRow>
+                <Pagination
+                  count={count}
+                  page={page}
+                  onChange={handlePageChange}
+                  disabled={isFetching}
+                  boundaryCount={1}
+                  siblingCount={1}
+                  hideNextButton={!hasNext}
+                  hidePrevButton={page === 1}
+                />
+              </PaginationRow>
+            )}
+          </>
         )}
       </Wrapper>
-      <Modal open={isModalOpen}>
-        <ModalContainer>
-          <SText>{'Фильтры'}</SText>
-          <Cell
-            before={
-              <Checkbox
-                name="online"
-                checked={filters.online}
-                onChange={e => setFilters(prev => ({ ...prev, online: e.target.checked }))}
-              />
-            }
-          >
-            {'Онлайн'}
-          </Cell>
-          <Cell
-            before={
-              <Checkbox
-                name="offline"
-                checked={filters.offline}
-                onChange={e => setFilters(prev => ({ ...prev, offline: e.target.checked }))}
-              />
-            }
-          >
-            {'Оффлайн'}
-          </Cell>
-          <Cell
-            before={
-              <Checkbox
-                name="hybrid"
-                checked={filters.hybrid}
-                onChange={e => setFilters(prev => ({ ...prev, hybrid: e.target.checked }))}
-              />
-            }
-          >
-            {'Гибрид'}
-          </Cell>
-          <Cell
-            before={
-              <Checkbox
-                name="withPrize"
-                checked={filters.withPrize}
-                onChange={e =>
-                  setFilters(prev => ({
-                    ...prev,
-                    withPrize: e.target.checked,
-                  }))
-                }
-              />
-            }
-          >
-            {'С призовыми'}
-          </Cell>
-          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-            <Button
-              mode="bezeled"
-              type="button"
-              stretched
-              // disabled={loading}
-              onClick={() => setIsModalOpen(false)}
-            >
-              {'Сбросить'}
-            </Button>
 
-            <Button
-              type="button"
-              stretched
-              // loading={loading}
-              // onClick={onConfirm}
-              onClick={() => setIsModalOpen(false)}
-            >
-              {'Применить'}
-            </Button>
-          </div>
-        </ModalContainer>
-      </Modal>
+      <FilterModal
+        isOpen={filters.isModalOpen}
+        onClose={filters.closeModal}
+        mode={filters.mode}
+        onModeChange={filters.setMode}
+        money={filters.money}
+        onMoneyChange={filters.setMoney}
+        status={filters.status}
+        onStatusChange={filters.setStatus}
+        onApply={filters.applyFilters}
+        onReset={handleResetAll}
+      />
     </>
   );
 };
-
-const ModalContainer = styled.section`
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  gap: 0.5rem;
-`;
-
 const Wrapper = styled.section`
   display: flex;
   flex-direction: column;
@@ -166,8 +134,7 @@ const CardLink = styled(Link)`
 
 const SearchSection = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: start;
+  align-items: center;
   gap: 1rem;
 `;
 
@@ -182,4 +149,10 @@ const SInput = styled(Input)`
     font-size: 14px;
     line-height: 18px;
   }
+`;
+
+const PaginationRow = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;

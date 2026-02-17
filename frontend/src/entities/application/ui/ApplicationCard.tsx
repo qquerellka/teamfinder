@@ -1,8 +1,10 @@
-import { formatRegistrationDate } from '@/shared/helpers/date';
-import { Role } from '@/shared/types/enums';
-import { RoleBadge, SIcon, SText } from '@/shared/ui';
+import { IconButton, Text, Subheadline } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import styled from 'styled-components';
+
+import { formatRegistrationDate } from '@/shared/helpers/formatters/date';
+import { Role } from '@/shared/types/enums';
+import { RoleBadge, SIcon, InvitesBadge } from '@/shared/ui';
 
 interface ApplicationCardProps {
   hackathonName: string;
@@ -24,30 +26,30 @@ export const ApplicationCard: FC<ApplicationCardProps> = ({
   onNavigate,
 }) => {
   return (
-    <Wrapper onClick={onNavigate}>
-      <NavigateIcon name="arrow" />
-      <SText $fs={16} $fw={600}>
-        {hackathonName}
-      </SText>
-      <Info>
+    <ApplicationContainer onClick={onNavigate}>
+      <NavigateIcon style={{ borderRadius: 6, padding: 6 }}>
+        <SIcon name="arrow" size={24} />
+      </NavigateIcon>
+      <Text weight="2">{hackathonName}</Text>
+      <ApplicationInfo>
         <InfoItem>
           <SIcon name={'hackathonRegistration'} />
-          <SText $fs={14} $fw={500}>
+          <Subheadline plain={true} level="2" weight="2">
             {formatRegistrationDate(registrationEndDate)}
-          </SText>
+          </Subheadline>
         </InfoItem>
         <InfoItem>
           <SIcon name={'hackathonPlace'} />
-          <SText $fs={14} $fw={500}>{`${city} • ${mode}`}</SText>
+          <Subheadline plain={true} level="2" weight="2">{`${city} • ${mode}`}</Subheadline>
         </InfoItem>
-      </Info>
+      </ApplicationInfo>
       {invitesCount > 0 && <InvitesBadge count={invitesCount} />}
       <RoleBadge role={role}></RoleBadge>
-    </Wrapper>
+    </ApplicationContainer>
   );
 };
 
-const Wrapper = styled.div`
+const ApplicationContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -57,7 +59,8 @@ const Wrapper = styled.div`
   background-color: var(--tg-theme-section-bg-color);
   position: relative;
 `;
-const Info = styled.div`
+
+const ApplicationInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -67,25 +70,11 @@ const InfoItem = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-
   gap: 0.5rem;
 `;
 
-const NavigateIcon = styled(SIcon)`
+const NavigateIcon = styled(IconButton)`
   position: absolute;
   top: 1rem;
   right: 1rem;
-`;
-
-interface InvitesBadgeProps {
-  count: number;
-}
-export const InvitesBadge: FC<InvitesBadgeProps> = ({ count }) => {
-  return <Badge>{count} приглашений в команды</Badge>;
-};
-
-const Badge = styled(SText)`
-  border-radius: 1.5rem;
-  padding: 0.25rem 0.75rem;
-  background-color: var(--tg-theme-accent-text-color);
 `;

@@ -41,11 +41,12 @@ CREATE TABLE IF NOT EXISTS hackathon (
   end_date              TIMESTAMPTZ NOT NULL,
   registration_end_date TIMESTAMPTZ,
   mode                  hackathon_mode NOT NULL DEFAULT 'online',
+  tracks                hackathon_track[] NOT NULL DEFAULT '{}',
   city                  TEXT DEFAULT NULL,
   team_members_minimum  INT,
   team_members_limit    INT,
   registration_link     TEXT,
-  prize_fund            TEXT,
+  prize_fund            INT,
   status                hackathon_status NOT NULL DEFAULT 'open',
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -108,6 +109,7 @@ CREATE TABLE IF NOT EXISTS response (
   id          SERIAL PRIMARY KEY,
   vacancy_id  INT NOT NULL REFERENCES vacancy(id) ON DELETE CASCADE,
   user_id     INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  application_id INT NOT NULL REFERENCES application(id) ON DELETE CASCADE,
   status      response_status NOT NULL DEFAULT 'pending',
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()

@@ -5,7 +5,7 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
-from persistend.enums import InviteStatus, RoleType
+from persistent.enums import InviteStatus, RoleType
 from services.invites import InvitesService, InviteWithContext
 from presentations.routers.users import get_current_user_id
 
@@ -138,7 +138,7 @@ async def create_invite_for_team(
 async def list_team_invites(
     team_id: int,
     status_param: Optional[InviteStatus] = Query(
-        default=None, alias="status", description="Фильтр по статусу",
+        default=InviteStatus.pending, alias="status", description="Фильтр по статусу",
     ),
     current_user_id: int = Depends(get_current_user_id),
 ):
@@ -176,7 +176,7 @@ async def list_team_invites(
 async def list_application_invites(
     application_id: int,
     status_param: Optional[InviteStatus] = Query(
-        default=None, alias="status", description="Фильтр по статусу",
+        default=InviteStatus.pending, alias="status", description="Фильтр по статусу",
     ),
     current_user_id: int = Depends(get_current_user_id),
 ):
@@ -208,7 +208,7 @@ async def list_application_invites(
 @router.get("/me/invites", response_model=List[MyInviteOut])
 async def list_my_invites(
     hackathon_id: Optional[int] = Query(default=None),
-    status_param: Optional[InviteStatus] = Query(default=None, alias="status"),
+    status_param: Optional[InviteStatus] = Query(default=InviteStatus.pending, alias="status"),
     current_user_id: int = Depends(get_current_user_id),
 ):
     invites = await invites_service.list_for_user(

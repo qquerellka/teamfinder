@@ -6,9 +6,9 @@ from typing import Optional, List
 from sqlalchemy import select, update, delete, func
 
 from repositories.base import BaseRepository
-from persistend.models import application as m_app
-from persistend.models import users as m_users
-
+from persistent.models import application as m_app
+from persistent.models import users as m_users
+from persistent.enums import ApplicationStatus
 
 class ApplicationsRepo(BaseRepository):
     """
@@ -47,6 +47,7 @@ class ApplicationsRepo(BaseRepository):
         hackathon_id: int,
         role: Optional[str],
         q: Optional[str],
+        status: ApplicationStatus,
         limit: int,
         offset: int,
     ) -> List[m_app.Application]:
@@ -62,6 +63,7 @@ class ApplicationsRepo(BaseRepository):
                 select(A)
                 .join(U, U.id == A.user_id)
                 .where(A.hackathon_id == hackathon_id)
+                .where(A.status == status)
             )
 
             if role:

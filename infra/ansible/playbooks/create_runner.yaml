@@ -41,7 +41,7 @@
         --url "{{ apiurl }}"
         --token "{{ gitlab_runner_auth_token }}"
         --executor "docker"
-        --docker-image "docker:24.0"
+        --docker-image "docker:26.0"
         --docker-volumes "/var/run/docker.sock:/var/run/docker.sock"
         --docker-volumes "/root/.docker:/root/.docker"
         --description "{{ runnerdesc }}"

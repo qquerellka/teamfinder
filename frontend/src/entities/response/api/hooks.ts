@@ -14,6 +14,7 @@ import type { Response, UpdateResponse } from '../model/types';
 import { useAppQuery } from '@/shared/api/useAppQuery';
 
 const responseKeys = queryKeys.responses;
+const teamKeys = queryKeys.teams;
 
 export function useVacancyResponses(vacancyId: number) {
   return useAppQuery<Response[], Error>({
@@ -90,6 +91,16 @@ export function useUpdateResponse() {
       queryClient.invalidateQueries({
         queryKey: responseKeys.byVacancy(data.vacancyId),
       });
+
+      if (data.teamId && data.status === 'accepted') {
+        queryClient.invalidateQueries({
+          queryKey: [teamKeys.byId(data.teamId), teamKeys.members(data.teamId)],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ['vacancies', 'team', data.teamId],
+        });
+      }
 
       queryClient.invalidateQueries({
         queryKey: responseKeys.me,

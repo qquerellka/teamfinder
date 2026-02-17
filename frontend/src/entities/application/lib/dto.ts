@@ -7,8 +7,7 @@ import {
   ApplicationEdit,
   ApplicationEditDTO,
 } from '../model/types';
-
-const parseDate = (value: string): Date => new Date(value.replace(' ', 'T'));
+import { parseDate } from '@/shared/helpers/formatters/date';
 
 export function applicationsToCamelCase(applications: ApplicationDTO[]): Application[] {
   return applications.map(a => ({

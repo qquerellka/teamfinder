@@ -4,4 +4,4 @@ export type ApplicationFormValues = {
   role: Role | '';
 };
 
-export type ApplicationFormField = keyof ApplicationFormValues; // "role"
+export type ApplicationFormField = keyof ApplicationFormValues;

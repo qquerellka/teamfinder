@@ -1,17 +1,14 @@
-import type { ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { LoaderPage } from '@/shared/ui';
 import { Button, Placeholder } from '@telegram-apps/telegram-ui';
 
 interface AuthGateProps {
   children: ReactNode;
 }
 
-export function AuthGate({ children }: AuthGateProps) {
-  const { isLoading, isError, error, refetchAuth } = useAuth();
-  if (isLoading) {
-    return <LoaderPage />;
-  }
+export const AuthGate: FC<AuthGateProps> = ({ children }) => {
+  const { isError, error, refetch } = useAuth();
+
   if (isError) {
     const message = error instanceof Error ? error.message : 'Не удалось авторизоваться';
 
@@ -24,7 +21,7 @@ export function AuthGate({ children }: AuthGateProps) {
           isNoInitData ? 'Откройте мини-приложение внутри Telegram и попробуйте снова.' : message
         }
       >
-        <Button mode="bezeled" size="m" onClick={() => refetchAuth()}>
+        <Button mode="bezeled" size="m" onClick={() => refetch()}>
           Повторить
         </Button>
         <Button mode="plain" size="m" onClick={() => window.location.reload()}>
@@ -34,4 +31,4 @@ export function AuthGate({ children }: AuthGateProps) {
     );
   }
   return <>{children}</>;
-}
+};

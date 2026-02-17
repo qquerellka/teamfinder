@@ -5,6 +5,8 @@ from typing import Optional
 from repositories.applications import ApplicationsRepo
 from repositories.users import UsersRepo
 
+from persistent.enums import ApplicationStatus
+
 
 class ApplicationsService:
     """Сервисный слой для анкет пользователей на хакатоны."""
@@ -36,7 +38,11 @@ class ApplicationsService:
             hackathon_id=hackathon_id,
         )
         if existing:
-            raise ValueError("app_exists")
+            if existing.status == ApplicationStatus.published:
+                raise ValueError("app_exists")
+            
+            if existing.status == ApplicationStatus.hidden:
+                await self.apps.delete(existing.id)
 
         return await self.apps.create(
             user_id=user_id,
@@ -52,6 +58,7 @@ class ApplicationsService:
         hackathon_id: int,
         role: Optional[str] = None,
         q: Optional[str] = None,
+        status: ApplicationStatus = ApplicationStatus.published,
         limit: int = 50,
         offset: int = 0,
     ):
@@ -65,6 +72,7 @@ class ApplicationsService:
         return await self.apps.search(
             hackathon_id=hackathon_id,
             role=role,
+            status=status,
             q=q,
             limit=limit,
             offset=offset,

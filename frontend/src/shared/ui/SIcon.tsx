@@ -147,7 +147,6 @@ const Wrap = styled.span<{
     stroke: currentColor;
   } */
 
-  // станет:
   & > svg {
     width: 100%;
     height: 100%;

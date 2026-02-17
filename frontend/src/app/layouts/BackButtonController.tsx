@@ -18,13 +18,11 @@ export default function BackButtonController() {
   useEffect(() => {
     const isTab = TAB_ROUTES.has(pathname);
     if (!bb.isSupported()) return;
-    if (isTab) bb.hide();
-    else bb.show();
+    isTab ? bb.hide() : bb.show();
   }, [pathname]);
 
   const handleClick = useCallback(() => {
-    if (window.history.length > 1) navigate(-1);
-    else navigate(paths.hackathons, { replace: true });
+    window.history.length > 1 ? navigate(-1) : navigate(paths.hackathons, { replace: true });
   }, [navigate]);
 
   useEffect(() => {
